@@ -1,8 +1,8 @@
 # allo_carto
 
-Allô Carto was made to drill French words into your brain with flashcard quizzes, games, and exercises until you actually know them.
+Allô Carto was made to drill words into your brain with flashcard quizzes, games, and exercises until you actually know them.
 
-Tracking how many words you know in another language matters. Like a lot. Vocabulary is the backbone of language comprehension. You need to learn multiple words every day, and you should know exactly how many you know.
+When learning another language, tracking how many words you know in matters. Like a lot. You need to learn multiple words every day, and you should know exactly how many you know.
 
 ## Getting Started
 
