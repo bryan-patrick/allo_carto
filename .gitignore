@@ -1,3 +1,8 @@
+# SQLite databases (generated at runtime, not committed)
+*.db
+*.sqlite
+*.sqlite3
+
 # Miscellaneous
 *.class
 *.log

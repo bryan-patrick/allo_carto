@@ -1,6 +1,10 @@
+// Packages
 import 'package:flutter/material.dart';
 
+// Features
+import '../features/home/home_page.dart';
 import '../features/profile/profile_page.dart';
+import '../features/review/review_page.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({
@@ -22,8 +26,8 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      const _ShellPage(title: 'Home'),
-      const _ShellPage(title: 'Review'),
+      const HomePage(),
+      const ReviewPage(),
       ProfilePage(
         themeMode: widget.themeMode,
         onThemeModeChanged: widget.onThemeModeChanged,
