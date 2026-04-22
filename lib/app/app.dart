@@ -21,13 +21,13 @@ class _AlloCartoAppState extends State<AlloCartoApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.red,
+          seedColor: Colors.indigo,
           brightness: Brightness.light,
         ),
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.red,
+          seedColor: Colors.lightBlue,
           brightness: Brightness.dark,
         ),
       ),

@@ -3,13 +3,13 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 // Models
+import '../models/user_word_progress.dart';
 import '../models/word.dart';
 
 class DatabaseService {
   DatabaseService._();
 
   static final DatabaseService instance = DatabaseService._();
-
   static Database? _db;
 
   Future<Database> get database async {
@@ -23,32 +23,69 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 1,
+      version: 3,
       onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE words (
-            id TEXT PRIMARY KEY,
-            french TEXT NOT NULL,
-            pronunciation TEXT,
-            english TEXT NOT NULL,
-            part_of_speech TEXT NOT NULL,
-            cefr_level TEXT NOT NULL,
-            category TEXT NOT NULL,
-            subcategory TEXT NOT NULL,
-            example_fr TEXT,
-            example_en TEXT,
-            gender TEXT
-          )
-        ''');
-
+        await _createWordsTable(db);
+        await _createUserWordProgressTable(db);
         await _seedWords(db);
       },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await _createUserWordProgressTable(db);
+        }
+        if (oldVersion < 3) {
+          await _addWordFormColumns(db);
+        }
+      },
     );
+  }
+
+  Future<void> _createWordsTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE words (
+        id TEXT PRIMARY KEY,
+        french TEXT NOT NULL,
+        pronunciation TEXT,
+        english TEXT NOT NULL,
+        part_of_speech TEXT NOT NULL,
+        lemma_id TEXT,
+        form_type TEXT,
+        tense TEXT,
+        mood TEXT,
+        person TEXT,
+        grammatical_number TEXT,
+        cefr_level TEXT NOT NULL,
+        category TEXT NOT NULL,
+        subcategory TEXT NOT NULL,
+        example_fr TEXT,
+        example_en TEXT,
+        gender TEXT
+      )
+    ''');
+  }
+
+  Future<void> _addWordFormColumns(Database db) async {
+    await db.execute('ALTER TABLE words ADD COLUMN lemma_id TEXT');
+    await db.execute('ALTER TABLE words ADD COLUMN form_type TEXT');
+    await db.execute('ALTER TABLE words ADD COLUMN tense TEXT');
+    await db.execute('ALTER TABLE words ADD COLUMN mood TEXT');
+    await db.execute('ALTER TABLE words ADD COLUMN person TEXT');
+    await db.execute('ALTER TABLE words ADD COLUMN grammatical_number TEXT');
+  }
+
+  Future<void> _createUserWordProgressTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS user_word_progress (
+        word_id TEXT PRIMARY KEY,
+        correct_count INTEGER NOT NULL DEFAULT 0
+      )
+    ''');
   }
 
   Future<void> _seedWords(Database db) async {
     final words = _starterWords;
     final batch = db.batch();
+
     for (final word in words) {
       batch.insert('words', word.toMap());
     }
@@ -71,6 +108,7 @@ class DatabaseService {
       whereArgs: [category],
       orderBy: 'subcategory, french',
     );
+
     return rows.map(Word.fromMap).toList();
   }
 
@@ -82,6 +120,7 @@ class DatabaseService {
       whereArgs: [cefrLevel],
       orderBy: 'french',
     );
+
     return rows.map(Word.fromMap).toList();
   }
 
@@ -90,15 +129,42 @@ class DatabaseService {
     final rows = await db.rawQuery(
       'SELECT DISTINCT category FROM words ORDER BY category',
     );
+
     return rows.map((r) => r['category'] as String).toList();
   }
 
   Future<void> insertWord(Word word) async {
     final db = await database;
+
     await db.insert(
       'words',
       word.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  // --- User Progress Queries ---
+
+  Future<Map<String, UserWordProgress>> getAllProgress() async {
+    final db = await database;
+    final rows = await db.query('user_word_progress');
+
+    return {
+      for (final row in rows)
+        row['word_id'] as String: UserWordProgress.fromMap(row),
+    };
+  }
+
+  Future<void> incrementCorrectCount(String wordId) async {
+    final db = await database;
+
+    await db.rawInsert(
+      '''
+      INSERT INTO user_word_progress (word_id, correct_count)
+      VALUES (?, 1)
+      ON CONFLICT(word_id) DO UPDATE SET correct_count = correct_count + 1
+    ''',
+      [wordId],
     );
   }
 }
@@ -232,6 +298,8 @@ const _starterWords = [
     pronunciation: 'mahn-zhay',
     english: 'to eat',
     partOfSpeech: 'verb',
+    lemmaId: 'manger',
+    formType: 'infinitive',
     cefrLevel: 'A1',
     category: 'Food & Drink',
     subcategory: 'Actions',
@@ -239,16 +307,72 @@ const _starterWords = [
     exampleEn: 'I love eating crêpes.',
   ),
   Word(
+    id: 'mange_present_1s',
+    french: 'mange',
+    pronunciation: 'mahnzh',
+    english: 'I eat',
+    partOfSpeech: 'verb',
+    lemmaId: 'manger',
+    formType: 'conjugated',
+    tense: 'present',
+    mood: 'indicative',
+    person: 'first',
+    grammaticalNumber: 'singular',
+    cefrLevel: 'A1',
+    category: 'Food & Drink',
+    subcategory: 'Actions',
+    exampleFr: 'Je mange une pomme.',
+    exampleEn: 'I eat an apple.',
+  ),
+  Word(
+    id: 'mangerai_future_1s',
+    french: 'mangerai',
+    pronunciation: 'mahn-zhuh-ray',
+    english: 'I will eat',
+    partOfSpeech: 'verb',
+    lemmaId: 'manger',
+    formType: 'conjugated',
+    tense: 'future',
+    mood: 'indicative',
+    person: 'first',
+    grammaticalNumber: 'singular',
+    cefrLevel: 'A2',
+    category: 'Food & Drink',
+    subcategory: 'Actions',
+    exampleFr: 'Je mangerai plus tard.',
+    exampleEn: 'I will eat later.',
+  ),
+  Word(
     id: 'boire',
     french: 'boire',
     pronunciation: 'bwar',
     english: 'to drink',
     partOfSpeech: 'verb',
+    lemmaId: 'boire',
+    formType: 'infinitive',
     cefrLevel: 'A1',
     category: 'Food & Drink',
     subcategory: 'Actions',
     exampleFr: 'Il aime boire du café.',
     exampleEn: 'He likes to drink coffee.',
+  ),
+  Word(
+    id: 'bois_present_1s',
+    french: 'bois',
+    pronunciation: 'bwah',
+    english: 'I drink',
+    partOfSpeech: 'verb',
+    lemmaId: 'boire',
+    formType: 'conjugated',
+    tense: 'present',
+    mood: 'indicative',
+    person: 'first',
+    grammaticalNumber: 'singular',
+    cefrLevel: 'A1',
+    category: 'Food & Drink',
+    subcategory: 'Actions',
+    exampleFr: 'Je bois de l’eau.',
+    exampleEn: 'I drink water.',
   ),
   Word(
     id: 'rouge',
@@ -330,6 +454,8 @@ const _starterWords = [
     pronunciation: 'trah-vai-yay',
     english: 'to work',
     partOfSpeech: 'verb',
+    lemmaId: 'travailler',
+    formType: 'infinitive',
     cefrLevel: 'A1',
     category: 'Work',
     subcategory: 'Actions',
@@ -342,6 +468,8 @@ const _starterWords = [
     pronunciation: 'ah-prahn-druh',
     english: 'to learn',
     partOfSpeech: 'verb',
+    lemmaId: 'apprendre',
+    formType: 'infinitive',
     cefrLevel: 'A2',
     category: 'Education',
     subcategory: 'Actions',
