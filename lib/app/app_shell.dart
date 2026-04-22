@@ -59,6 +59,11 @@ class _AppShellState extends State<AppShell> {
             selectedIcon: Icon(Icons.settings),
             label: 'Settings',
           ),
+          NavigationDestination(
+            icon: Icon(Icons.auto_graph),
+            selectedIcon: Icon(Icons.auto_awesome),
+            label: 'Stats',
+          ),
         ],
       ),
     );

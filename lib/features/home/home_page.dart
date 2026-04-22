@@ -1,6 +1,9 @@
 // Packages
 import 'package:flutter/material.dart';
 
+// Features
+import '../deck/deck_page.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -19,7 +22,7 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Choose a mode below to keep your streak alive.',
+              'You\'ve learned 14 words today. That\'s a new record!',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 24),
@@ -29,7 +32,14 @@ class HomePage extends StatelessWidget {
                 title: const Text('Open a Deck'),
                 subtitle: const Text('Learn more words'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const DeckPage(),
+                      fullscreenDialog: true,
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 12),
