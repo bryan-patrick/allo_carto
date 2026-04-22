@@ -23,7 +23,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: (db, version) async {
         await _createWordsTable(db);
         await _createUserWordProgressTable(db);
@@ -35,6 +35,9 @@ class DatabaseService {
         }
         if (oldVersion < 3) {
           await _addWordFormColumns(db);
+        }
+        if (oldVersion < 4) {
+          await _updateStarterWordMeanings(db);
         }
       },
     );
@@ -80,6 +83,15 @@ class DatabaseService {
         correct_count INTEGER NOT NULL DEFAULT 0
       )
     ''');
+  }
+
+  Future<void> _updateStarterWordMeanings(Database db) async {
+    await db.update(
+      'words',
+      {'english': 'big / tall / large'},
+      where: 'id = ?',
+      whereArgs: ['grand'],
+    );
   }
 
   Future<void> _seedWords(Database db) async {
@@ -402,7 +414,7 @@ const _starterWords = [
     id: 'grand',
     french: 'grand',
     pronunciation: 'grahn',
-    english: 'big / tall',
+    english: 'big / tall / large',
     partOfSpeech: 'adjective',
     cefrLevel: 'A1',
     category: 'Descriptions',
