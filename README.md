@@ -1,8 +1,8 @@
 # Allô Cartô (WIP)
 
-Allô Carto was made to drill words into your brain with flashcard quizzes, games, and exercises until you actually know them.
+A flashcard language learning app made to help drill words into your brain with flashcards, games, and exercises.
 
-When learning another language, tracking how many words you know matters. Like a lot. You need to learn multiple words every day, and you should know exactly how many you know.
+The idea is to help users track how many new words they're learning a day and how well they know them. 
 
 <img src="preview_apprendre.gif" width="400" alt="description">
 
