@@ -15,6 +15,16 @@ class UserWordProgress {
     return MasteryTier.none;
   }
 
+  /// The correct-count threshold for the next mastery tier.
+  /// Returns null when the user has already reached platinum.
+  int? get nextTierAt {
+    if (correctCount < 3) return 3;
+    if (correctCount < 8) return 8;
+    if (correctCount < 15) return 15;
+    if (correctCount < 30) return 30;
+    return null;
+  }
+
   factory UserWordProgress.fromMap(Map<String, dynamic> map) {
     return UserWordProgress(
       wordId: map['word_id'] as String,

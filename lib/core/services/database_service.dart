@@ -23,7 +23,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: (db, version) async {
         await _createWordsTable(db);
         await _createUserWordProgressTable(db);
@@ -38,6 +38,10 @@ class DatabaseService {
         }
         if (oldVersion < 4) {
           await _updateStarterWordMeanings(db);
+        }
+        if (oldVersion < 5) {
+          await _ensureLegacyWordColumns(db);
+          await _backfillStarterWordPronunciations(db);
         }
       },
     );
@@ -85,6 +89,21 @@ class DatabaseService {
     ''');
   }
 
+  Future<void> _ensureLegacyWordColumns(Database db) async {
+    final columns = await db.rawQuery('PRAGMA table_info(words)');
+    final existingColumns = columns
+        .map((column) => column['name'] as String)
+        .toSet();
+
+    if (!existingColumns.contains('pronunciation')) {
+      await db.execute('ALTER TABLE words ADD COLUMN pronunciation TEXT');
+    }
+
+    if (!existingColumns.contains('gender')) {
+      await db.execute('ALTER TABLE words ADD COLUMN gender TEXT');
+    }
+  }
+
   Future<void> _updateStarterWordMeanings(Database db) async {
     await db.update(
       'words',
@@ -92,6 +111,26 @@ class DatabaseService {
       where: 'id = ?',
       whereArgs: ['grand'],
     );
+  }
+
+  Future<void> _backfillStarterWordPronunciations(Database db) async {
+    final batch = db.batch();
+
+    for (final word in _starterWords) {
+      final pronunciation = word.pronunciation;
+      if (pronunciation == null || pronunciation.isEmpty) {
+        continue;
+      }
+
+      batch.update(
+        'words',
+        {'pronunciation': pronunciation},
+        where: 'id = ? AND (pronunciation IS NULL OR pronunciation = ?)',
+        whereArgs: [word.id, ''],
+      );
+    }
+
+    await batch.commit(noResult: true);
   }
 
   Future<void> _seedWords(Database db) async {

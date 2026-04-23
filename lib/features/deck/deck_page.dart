@@ -1,4 +1,7 @@
 // Packages
+import 'dart:math' as math;
+
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 
 // Models
@@ -30,10 +33,16 @@ class _DeckPageState extends State<DeckPage> {
   int _attemptsUsed = 0;
   bool _lastWasCorrect = false;
   String? _feedback;
+  late final ConfettiController _confettiController;
+  // Tracks correct answers earned in this session so WordCard shows live counts.
+  final Map<String, int> _sessionCorrects = {};
 
   @override
   void initState() {
     super.initState();
+    _confettiController = ConfettiController(
+      duration: const Duration(milliseconds: 380),
+    );
     _deckFuture = _loadDeck();
   }
 
@@ -46,6 +55,7 @@ class _DeckPageState extends State<DeckPage> {
 
   @override
   void dispose() {
+    _confettiController.dispose();
     _answerController.dispose();
     super.dispose();
   }
@@ -64,9 +74,27 @@ class _DeckPageState extends State<DeckPage> {
         expected: currentWord.english,
       );
       final correct = matchResult.isCorrect;
+      var shouldCelebrateLevelUp = false;
 
       if (correct) {
+        final previousCorrectCount =
+            (data.progressMap[currentWord.id]?.correctCount ?? 0) +
+            (_sessionCorrects[currentWord.id] ?? 0);
+        final previousTier = UserWordProgress(
+          wordId: currentWord.id,
+          correctCount: previousCorrectCount,
+        ).masteryTier;
+        final nextTier = UserWordProgress(
+          wordId: currentWord.id,
+          correctCount: previousCorrectCount + 1,
+        ).masteryTier;
+        shouldCelebrateLevelUp = nextTier.index > previousTier.index;
+
         await UserProgressService.instance.incrementCorrect(currentWord.id);
+        if (!mounted) return;
+        if (shouldCelebrateLevelUp) {
+          _confettiController.play();
+        }
       }
 
       if (!mounted) return;
@@ -75,6 +103,8 @@ class _DeckPageState extends State<DeckPage> {
         _lastWasCorrect = correct;
 
         if (correct) {
+          _sessionCorrects[currentWord.id] =
+              (_sessionCorrects[currentWord.id] ?? 0) + 1;
           _feedback = _successFeedback(matchResult.feedbackType);
           _isCheckingAnswer = false;
           return;
@@ -98,8 +128,10 @@ class _DeckPageState extends State<DeckPage> {
       _answerController.clear();
       _isCheckingAnswer = true;
       _attemptsUsed = 0;
+      _lastWasCorrect = false;
       _feedback = null;
     });
+    _confettiController.stop();
   }
 
   String _successFeedback(AnswerFeedbackType feedbackType) {
@@ -176,55 +208,133 @@ class _DeckPageState extends State<DeckPage> {
           }
 
           final currentWord = data.words[_currentIndex];
-          final mastery =
-              data.progressMap[currentWord.id]?.masteryTier ?? MasteryTier.none;
+          final liveCorrectCount =
+              (data.progressMap[currentWord.id]?.correctCount ?? 0) +
+              (_sessionCorrects[currentWord.id] ?? 0);
+          final mastery = UserWordProgress(
+            wordId: currentWord.id,
+            correctCount: liveCorrectCount,
+          ).masteryTier;
 
           return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: WordCard(
-                      word: currentWord,
-                      mastery: mastery,
-                      cardIndex: _currentIndex,
-                      deckSize: data.words.length,
-                    ),
-                  ),
-                  TextField(
-                    controller: _answerController,
-                    enabled: _isCheckingAnswer,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _checkOrAdvance(data),
-                    decoration: const InputDecoration(
-                      labelText: 'Type the meaning in English',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  if (_feedback != null)
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        _feedback!,
-                        style: TextStyle(
-                          color: _lastWasCorrect ? Colors.green : Colors.orange,
-                          fontWeight: FontWeight.w600,
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: WordCard(
+                          key: ValueKey(currentWord.id),
+                          word: currentWord,
+                          mastery: mastery,
+                          correctCount: liveCorrectCount,
+                          cardIndex: _currentIndex,
+                          deckSize: data.words.length,
+                          flipped: _lastWasCorrect,
                         ),
                       ),
-                    ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () => _checkOrAdvance(data),
-                      child: Text(_isCheckingAnswer ? 'Check answer' : 'Next'),
+                      TextField(
+                        controller: _answerController,
+                        enabled: _isCheckingAnswer,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) => _checkOrAdvance(data),
+                        decoration: const InputDecoration(
+                          labelText: 'Type the meaning in English',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      if (_feedback != null)
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            _feedback!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: _lastWasCorrect
+                                  ? Colors.green
+                                  : Colors.orange,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: () => _checkOrAdvance(data),
+                          style: !_isCheckingAnswer && _lastWasCorrect
+                              ? FilledButton.styleFrom(
+                                  backgroundColor: ColorScheme.fromSeed(
+                                    seedColor: Colors.green,
+                                    brightness: Theme.of(context).brightness,
+                                  ).primary,
+                                )
+                              : null,
+                          child: Text(
+                            _isCheckingAnswer ? 'Check answer' : 'Next',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ConfettiWidget(
+                            confettiController: _confettiController,
+                            blastDirection: -math.pi / 2 + 0.16,
+                            blastDirectionality:
+                                BlastDirectionality.directional,
+                            emissionFrequency: 0.03,
+                            numberOfParticles: 5,
+                            shouldLoop: false,
+                            gravity: 0.20,
+                            maxBlastForce: 90,
+                            minBlastForce: 45,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ConfettiWidget(
+                            confettiController: _confettiController,
+                            blastDirection: -math.pi / 2,
+                            blastDirectionality:
+                                BlastDirectionality.directional,
+                            emissionFrequency: 0.03,
+                            numberOfParticles: 6,
+                            shouldLoop: false,
+                            gravity: 0.20,
+                            maxBlastForce: 90,
+                            minBlastForce: 45,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ConfettiWidget(
+                            confettiController: _confettiController,
+                            blastDirection: -math.pi / 2 - 0.16,
+                            blastDirectionality:
+                                BlastDirectionality.directional,
+                            emissionFrequency: 0.03,
+                            numberOfParticles: 5,
+                            shouldLoop: false,
+                            gravity: 0.20,
+                            maxBlastForce: 90,
+                            minBlastForce: 45,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },

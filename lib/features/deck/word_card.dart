@@ -1,28 +1,116 @@
 // Packages
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 // Models
 import '../../core/models/user_word_progress.dart';
 import '../../core/models/word.dart';
 
-class WordCard extends StatelessWidget {
+class WordCard extends StatefulWidget {
   const WordCard({
     super.key,
     required this.word,
     required this.mastery,
+    required this.correctCount,
     required this.cardIndex,
     required this.deckSize,
+    required this.flipped,
   });
 
   final Word word;
   final MasteryTier mastery;
+  final int correctCount;
   final int cardIndex;
   final int deckSize;
+  final bool flipped;
+
+  @override
+  State<WordCard> createState() => _WordCardState();
+}
+
+class _WordCardState extends State<WordCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+  }
+
+  @override
+  void didUpdateWidget(WordCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.flipped && !oldWidget.flipped) {
+      _controller.forward();
+    } else if (!widget.flipped && oldWidget.flipped) {
+      // Instant reset when moving to next card.
+      _controller.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, _) {
+        final angle = _animation.value * math.pi;
+        final showBack = angle > math.pi / 2;
+
+        // The back face needs to be mirrored so text reads correctly.
+        final transform = Matrix4.identity()
+          ..setEntry(3, 2, 0.001) // perspective
+          ..rotateY(showBack ? angle - math.pi : angle);
+
+        return Transform(
+          alignment: Alignment.center,
+          transform: transform,
+          child: showBack
+              ? _CardFace.back(widget: widget, context: context)
+              : _CardFace.front(widget: widget, context: context),
+        );
+      },
+    );
+  }
+}
+
+class _CardFace extends StatelessWidget {
+  const _CardFace({required this.widget, required this.isBack});
+
+  final WordCard widget;
+  final bool isBack;
+
+  factory _CardFace.front({
+    required WordCard widget,
+    required BuildContext context,
+  }) {
+    return _CardFace(widget: widget, isBack: false);
+  }
+
+  factory _CardFace.back({
+    required WordCard widget,
+    required BuildContext context,
+  }) {
+    return _CardFace(widget: widget, isBack: true);
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final w = widget;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -34,33 +122,38 @@ class WordCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              /**
-               * CEFR badge row
-               */
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _CEFRBadge(level: word.cefrLevel),
-                  _MasteryBadge(tier: mastery),
+                  _CEFRBadge(level: w.word.cefrLevel),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _MasteryBadge(tier: w.mastery),
+                      const SizedBox(width: 8),
+                      _CountBadge(
+                        value: w.correctCount,
+                        colorScheme: colorScheme,
+                        textTheme: theme.textTheme,
+                      ),
+                    ],
+                  ),
                 ],
               ),
               const Spacer(),
-              /**
-               * Word
-               * TODO: Convert from french only to any lang
-               */
+              // French word
               Text(
-                word.french,
+                w.word.french,
                 style: theme.textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
-              if (word.pronunciation != null) ...[
+              if (w.word.pronunciation != null) ...[
                 const SizedBox(height: 12),
                 Text(
-                  word.pronunciation!,
+                  '(${w.word.pronunciation!})',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontStyle: FontStyle.italic,
@@ -68,17 +161,80 @@ class WordCard extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ],
+              // English answer — only visible on back
+              if (isBack) ...[
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withAlpha(24),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.green.withAlpha(80),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    w.word.english,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
               const Spacer(),
-              /**
-               * Card position
-               */
               Text(
-                '${cardIndex + 1} / $deckSize',
+                '${w.cardIndex + 1} / ${w.deckSize}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CountBadge extends StatelessWidget {
+  const _CountBadge({
+    required this.value,
+    required this.colorScheme,
+    required this.textTheme,
+  });
+
+  final int value;
+  final ColorScheme colorScheme;
+  final TextTheme textTheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 250),
+      transitionBuilder: (child, animation) {
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+          child: FadeTransition(opacity: animation, child: child),
+        );
+      },
+      child: Container(
+        key: ValueKey(value),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: colorScheme.outlineVariant, width: 1),
+        ),
+        child: Text(
+          '$value',
+          style: textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontVariations: const [FontVariation('wght', 600)],
           ),
         ),
       ),
