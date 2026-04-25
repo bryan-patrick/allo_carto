@@ -22,6 +22,7 @@ class UserWordProgress {
     if (correctCount < 8) return 8;
     if (correctCount < 15) return 15;
     if (correctCount < 30) return 30;
+
     return null;
   }
 

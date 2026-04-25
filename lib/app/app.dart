@@ -2,46 +2,15 @@
 import 'package:flutter/material.dart';
 
 // App
-import 'app_shell.dart';
+import 'app_state.dart';
 
+/*
+ * Hello World
+ * This is the root of the tree 
+ */
 class AlloCartoApp extends StatefulWidget {
   const AlloCartoApp({super.key});
 
   @override
-  State<AlloCartoApp> createState() => _AlloCartoAppState();
-}
-
-class _AlloCartoAppState extends State<AlloCartoApp> {
-  ThemeMode _themeMode = ThemeMode.system;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Allo Carto',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
-          brightness: Brightness.light,
-        ),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.lightBlue,
-          brightness: Brightness.dark,
-        ),
-      ),
-      themeMode: _themeMode,
-      home: AppShell(
-        themeMode: _themeMode,
-        onThemeModeChanged: _handleThemeModeChanged,
-      ),
-    );
-  }
-
-  void _handleThemeModeChanged(ThemeMode mode) {
-    setState(() {
-      _themeMode = mode;
-    });
-  }
+  State<AlloCartoApp> createState() => AlloCartoAppState();
 }

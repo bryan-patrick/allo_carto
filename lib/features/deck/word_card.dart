@@ -1,6 +1,5 @@
 // Packages
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 // Models
@@ -47,10 +46,10 @@ class _WordCardState extends State<WordCard>
   @override
   void didUpdateWidget(WordCard oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if (widget.flipped && !oldWidget.flipped) {
       _controller.forward();
     } else if (!widget.flipped && oldWidget.flipped) {
-      // Instant reset when moving to next card.
       _controller.reset();
     }
   }
@@ -314,6 +313,7 @@ class _MasteryBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final a = _attrs;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

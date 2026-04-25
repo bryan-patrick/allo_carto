@@ -1,11 +1,15 @@
 // Packages
 import 'package:flutter/material.dart';
 
-// Features
-import '../features/home/home_page.dart';
-import '../features/profile/profile_page.dart';
-import '../features/review/review_page.dart';
+// App
+import 'app_shell_state.dart';
 
+/*
+ * Contruct the actual StatefulWidget that is our App shell.
+ * 
+ * Note: setting finals to constructor vars is shorthand to
+ * actually set that value (they aren't undefined)
+ */
 class AppShell extends StatefulWidget {
   const AppShell({
     super.key,
@@ -17,71 +21,5 @@ class AppShell extends StatefulWidget {
   final ValueChanged<ThemeMode> onThemeModeChanged;
 
   @override
-  State<AppShell> createState() => _AppShellState();
-}
-
-class _AppShellState extends State<AppShell> {
-  int _selectedIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    final pages = [
-      const HomePage(),
-      const ReviewPage(),
-      ProfilePage(
-        themeMode: widget.themeMode,
-        onThemeModeChanged: widget.onThemeModeChanged,
-      ),
-    ];
-
-    return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: pages),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.quiz_outlined),
-            selectedIcon: Icon(Icons.quiz),
-            label: 'Review',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.auto_graph),
-            selectedIcon: Icon(Icons.auto_awesome),
-            label: 'Stats',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ShellPage extends StatelessWidget {
-  const _ShellPage({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(title, style: Theme.of(context).textTheme.headlineMedium),
-      ),
-    );
-  }
+  State<AppShell> createState() => AppShellState();
 }
