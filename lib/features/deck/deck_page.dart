@@ -10,8 +10,8 @@ import '../../core/models/word.dart';
 
 // Services
 import '../../core/services/answer_matcher.dart';
+import '../../core/services/database_service.dart';
 import '../../core/services/deck_service.dart';
-import '../../core/services/user_progress_service.dart';
 
 // Widgets
 import 'word_card.dart';
@@ -48,7 +48,7 @@ class _DeckPageState extends State<DeckPage> {
 
   Future<_DeckData> _loadDeck() async {
     final words = await DeckService.instance.assembleDeck();
-    final progressMap = await UserProgressService.instance.getAllProgress();
+    final progressMap = await DatabaseService.instance.getAllProgress();
 
     return _DeckData(words: words, progressMap: progressMap);
   }
@@ -90,7 +90,7 @@ class _DeckPageState extends State<DeckPage> {
         ).masteryTier;
         shouldCelebrateLevelUp = nextTier.index > previousTier.index;
 
-        await UserProgressService.instance.incrementCorrect(currentWord.id);
+        await DatabaseService.instance.incrementCorrectCount(currentWord.id);
         if (!mounted) return;
         if (shouldCelebrateLevelUp) {
           _confettiController.play();

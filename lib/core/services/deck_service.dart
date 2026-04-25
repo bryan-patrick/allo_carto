@@ -7,7 +7,6 @@ import '../models/word.dart';
 
 // Services
 import 'database_service.dart';
-import 'user_progress_service.dart';
 
 /*
  * The methods in this file  build a user deck for the user to study and learn
@@ -35,7 +34,7 @@ class DeckService {
 
   Future<List<Word>> assembleDeck() async {
     final allWords = await DatabaseService.instance.getAllWords();
-    final progressMap = await UserProgressService.instance.getAllProgress();
+    final progressMap = await DatabaseService.instance.getAllProgress();
 
     /*
      * Bucket words by mastery tier; platinum excluded from pool.
