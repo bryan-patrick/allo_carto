@@ -6,7 +6,7 @@ class UserProgressService {
 
   static final UserProgressService instance = UserProgressService._();
 
-  Future<Map<String, UserWordProgress>> getAllProgress() {
+  Future<Map<String, MasteryProgress>> getAllProgress() {
     return DatabaseService.instance.getAllProgress();
   }
 

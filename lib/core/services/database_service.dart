@@ -1,3 +1,9 @@
+/*
+ * This will eventually be replaced with a real interface, schema and data.
+ * 
+ * For now I let AI generate it...looks like hell.
+ */
+
 // Packages
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -196,13 +202,13 @@ class DatabaseService {
 
   // --- User Progress Queries ---
 
-  Future<Map<String, UserWordProgress>> getAllProgress() async {
+  Future<Map<String, MasteryProgress>> getAllProgress() async {
     final db = await database;
     final rows = await db.query('user_word_progress');
 
     return {
       for (final row in rows)
-        row['word_id'] as String: UserWordProgress.fromMap(row),
+        row['word_id'] as String: MasteryProgress.fromMap(row),
     };
   }
 

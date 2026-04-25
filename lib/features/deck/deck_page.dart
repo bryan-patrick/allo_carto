@@ -80,11 +80,11 @@ class _DeckPageState extends State<DeckPage> {
         final previousCorrectCount =
             (data.progressMap[currentWord.id]?.correctCount ?? 0) +
             (_sessionCorrects[currentWord.id] ?? 0);
-        final previousTier = UserWordProgress(
+        final previousTier = MasteryProgress(
           wordId: currentWord.id,
           correctCount: previousCorrectCount,
         ).masteryTier;
-        final nextTier = UserWordProgress(
+        final nextTier = MasteryProgress(
           wordId: currentWord.id,
           correctCount: previousCorrectCount + 1,
         ).masteryTier;
@@ -146,9 +146,9 @@ class _DeckPageState extends State<DeckPage> {
     return switch (result.feedbackType) {
       AnswerFeedbackType.missingArticle => 'Close! Remember the article!',
       AnswerFeedbackType.wrongArticle => 'Close! That\'s the wrong article.',
-      AnswerFeedbackType.missingInfinitiveMarker =>
+      AnswerFeedbackType.missingInfinitive =>
         'Close! You forgot the infinitive.',
-      AnswerFeedbackType.wrongInfinitiveMarker =>
+      AnswerFeedbackType.wrongInfinitive =>
         'Close! That infinitive marker is not right. Try again.',
       _ => 'Not quite. Try again.',
     };
@@ -160,9 +160,9 @@ class _DeckPageState extends State<DeckPage> {
         'Close! You forgot the article. Expected: $expectedMeaning',
       AnswerFeedbackType.wrongArticle =>
         'Close! The article is not right. Expected: $expectedMeaning',
-      AnswerFeedbackType.missingInfinitiveMarker =>
+      AnswerFeedbackType.missingInfinitive =>
         'Close! You forgot the infinitive marker. Expected: $expectedMeaning',
-      AnswerFeedbackType.wrongInfinitiveMarker =>
+      AnswerFeedbackType.wrongInfinitive =>
         'Close! The infinitive marker is not right. Expected: $expectedMeaning',
       _ => 'Not quite. Expected: $expectedMeaning',
     };
@@ -211,7 +211,7 @@ class _DeckPageState extends State<DeckPage> {
           final liveCorrectCount =
               (data.progressMap[currentWord.id]?.correctCount ?? 0) +
               (_sessionCorrects[currentWord.id] ?? 0);
-          final mastery = UserWordProgress(
+          final mastery = MasteryProgress(
             wordId: currentWord.id,
             correctCount: liveCorrectCount,
           ).masteryTier;
@@ -376,5 +376,5 @@ class _DeckData {
   const _DeckData({required this.words, required this.progressMap});
 
   final List<Word> words;
-  final Map<String, UserWordProgress> progressMap;
+  final Map<String, MasteryProgress> progressMap;
 }

@@ -1,7 +1,10 @@
+/*
+ * Handles the badge / state of how well a user knows a word / card (aka "MasteryTier")
+ */
 enum MasteryTier { none, bronze, silver, gold, platinum }
 
-class UserWordProgress {
-  const UserWordProgress({required this.wordId, required this.correctCount});
+class MasteryProgress {
+  const MasteryProgress({required this.wordId, required this.correctCount});
 
   final String wordId;
   final int correctCount;
@@ -15,8 +18,10 @@ class UserWordProgress {
     return MasteryTier.none;
   }
 
-  /// The correct-count threshold for the next mastery tier.
-  /// Returns null when the user has already reached platinum.
+  /*
+   * Short circuit returns. I really don't like this.
+   * Maybe there's a better way?
+   */
   int? get nextTierAt {
     if (correctCount < 3) return 3;
     if (correctCount < 8) return 8;
@@ -26,8 +31,8 @@ class UserWordProgress {
     return null;
   }
 
-  factory UserWordProgress.fromMap(Map<String, dynamic> map) {
-    return UserWordProgress(
+  factory MasteryProgress.fromMap(Map<String, dynamic> map) {
+    return MasteryProgress(
       wordId: map['word_id'] as String,
       correctCount: map['correct_count'] as int,
     );

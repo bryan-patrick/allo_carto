@@ -15,11 +15,34 @@ import 'app.dart';
 
 /*
  * Root shell state
- * Keep track of themeMode (dark, light) and currentPage
+ * Keep track of themeMode (dark, light), views, and currentView
  */
 class AlloCartoAppState extends State<AlloCartoApp> {
   ThemeMode themeMode = ThemeMode.system;
-  int currentPage = 0;
+  int currentView = 0;
+
+  static const pages = [
+    NavigationDestination(
+      icon: Icon(Icons.home_outlined),
+      selectedIcon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.quiz_outlined),
+      selectedIcon: Icon(Icons.quiz),
+      label: 'Review',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.settings_outlined),
+      selectedIcon: Icon(Icons.settings),
+      label: 'Settings',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.auto_graph),
+      selectedIcon: Icon(Icons.auto_awesome),
+      label: 'Stats',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +51,11 @@ class AlloCartoAppState extends State<AlloCartoApp> {
       const ReviewPage(),
       ProfilePage(
         themeMode: themeMode,
-        onThemeModeChanged: _handleThemeModeChanged,
+        onThemeModeChanged: (mode) {
+          setState(() {
+            themeMode = mode;
+          });
+        },
       ),
     ];
 
@@ -39,44 +66,17 @@ class AlloCartoAppState extends State<AlloCartoApp> {
       theme: themeData,
       themeMode: themeMode,
       home: Scaffold(
-        body: IndexedStack(index: currentPage, children: pages),
+        body: IndexedStack(index: currentView, children: pages),
         bottomNavigationBar: NavigationBar(
-          selectedIndex: currentPage,
+          selectedIndex: currentView,
           onDestinationSelected: (index) {
             setState(() {
-              currentPage = index;
+              currentView = index;
             });
           },
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.quiz_outlined),
-              selectedIcon: Icon(Icons.quiz),
-              label: 'Review',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.auto_graph),
-              selectedIcon: Icon(Icons.auto_awesome),
-              label: 'Stats',
-            ),
-          ],
+          destinations: pages,
         ),
       ),
     );
-  }
-
-  void _handleThemeModeChanged(ThemeMode mode) {
-    setState(() {
-      themeMode = mode;
-    });
   }
 }

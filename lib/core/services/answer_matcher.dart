@@ -1,35 +1,41 @@
+// Dart
 import 'dart:math' as math;
 
+// Packages
 import 'package:diacritic/diacritic.dart';
 
+/*
+ * We want to be helpful and somewhat relaxed
+ * when it comes to user answers. It is 
+ * important that we be extremely clear
+ * with users if their answer is wrong.
+ */
 enum AnswerFeedbackType {
   exact,
   closeEnough,
   missingArticle,
   wrongArticle,
-  missingInfinitiveMarker,
-  wrongInfinitiveMarker,
+  missingInfinitive,
+  wrongInfinitive,
   wrong,
 }
 
-class AnswerMatchResult {
-  const AnswerMatchResult({
-    required this.isCorrect,
-    required this.feedbackType,
-    this.expectedMeaning,
-    this.matchedMeaning,
-  });
+typedef AnswerMatchResult = ({
+  bool isCorrect,
+  AnswerFeedbackType feedbackType,
+  String? expectedMeaning,
+  String? matchedMeaning,
+});
 
-  final bool isCorrect;
-  final AnswerFeedbackType feedbackType;
-  final String? expectedMeaning;
-  final String? matchedMeaning;
-}
+typedef LanguageRules = ({Set<String> articles, Set<String> infinitiveMarkers});
 
+/*
+ * Namespace for matching utilities
+ */
 class AnswerMatcher {
   const AnswerMatcher._();
 
-  static const _englishRules = _LanguageRules(
+  static const LanguageRules englishRules = (
     articles: {'a', 'an', 'the'},
     infinitiveMarkers: {'to'},
   );
@@ -38,64 +44,73 @@ class AnswerMatcher {
     required String userAnswer,
     required String expected,
   }) {
-    final normalizedInput = _normalize(userAnswer);
+    /*
+     * Step 1: clean up the user's answer so case, accents,
+     * punctuation, and weird spacing do not get in the way.
+     */
+    final normalizedInput = normalize(userAnswer);
 
     if (normalizedInput.isEmpty) {
-      return const AnswerMatchResult(
+      return (
         isCorrect: false,
         feedbackType: AnswerFeedbackType.wrong,
+        expectedMeaning: null,
+        matchedMeaning: null,
       );
     }
 
-    final candidates = _extractCandidates(expected);
+    /*
+     * Step 2: split the expected answer into every acceptable
+     * answer so we can check each one in turn.
+     */
+    final acceptedAnswers = extractAcceptedAnswers(expected);
 
-    if (candidates.isEmpty) {
-      return const AnswerMatchResult(
+    if (acceptedAnswers.isEmpty) {
+      return (
         isCorrect: false,
         feedbackType: AnswerFeedbackType.wrong,
+        expectedMeaning: null,
+        matchedMeaning: null,
       );
     }
 
-    AnswerMatchResult? bestIncorrectResult;
+    /*
+     * Step 3: If the answer is close enough, 
+     * or just a tiny typo away, we stop here.
+     */
+    final correctResult = findCorrectMatch(
+      normalizedInput: normalizedInput,
+      acceptedAnswers: acceptedAnswers,
+    );
 
-    for (final candidate in candidates) {
-      final exactOrLenientResult = _matchCandidateLeniently(
-        normalizedInput: normalizedInput,
-        candidate: candidate,
-      );
-      if (exactOrLenientResult != null) {
-        return exactOrLenientResult;
-      }
-
-      final articleResult = _matchLeadingTokenDifference(
-        normalizedInput: normalizedInput,
-        candidate: candidate,
-        validTokens: _englishRules.articles,
-        missingType: AnswerFeedbackType.missingArticle,
-        wrongType: AnswerFeedbackType.wrongArticle,
-      );
-      if (articleResult != null) {
-        bestIncorrectResult ??= articleResult;
-      }
-
-      final infinitiveResult = _matchLeadingTokenDifference(
-        normalizedInput: normalizedInput,
-        candidate: candidate,
-        validTokens: _englishRules.infinitiveMarkers,
-        missingType: AnswerFeedbackType.missingInfinitiveMarker,
-        wrongType: AnswerFeedbackType.wrongInfinitiveMarker,
-      );
-      if (infinitiveResult != null) {
-        bestIncorrectResult ??= infinitiveResult;
-      }
+    if (correctResult != null) {
+      return correctResult;
     }
 
-    return bestIncorrectResult ??
-        AnswerMatchResult(
-          isCorrect: false,
-          feedbackType: AnswerFeedbackType.wrong,
-          expectedMeaning: expected,
-        );
+    /*
+     * Step 4: nothing counted as correct, so now we look for a
+     * near miss like an article.
+     */
+    final nearMissResult = findNearMiss(
+      normalizedInput: normalizedInput,
+      acceptedAnswers: acceptedAnswers,
+    );
+
+    if (nearMissResult != null) {
+      return nearMissResult;
+    }
+
+    /*
+     * Step 5: if we got this far, the answer was just plain wrong,
+     * so return the fallback result with the expected meaning and
+     * call the user a loser
+     */
+    return (
+      isCorrect: false,
+      feedbackType: AnswerFeedbackType.wrong,
+      expectedMeaning: expected,
+      matchedMeaning: null,
+    );
   }
 
   static bool isCorrect({
@@ -105,41 +120,103 @@ class AnswerMatcher {
     return match(userAnswer: userAnswer, expected: expected).isCorrect;
   }
 
-  static AnswerMatchResult? _matchCandidateLeniently({
+  /*
+   * First pass: check every accepted answer for anything we are willing to
+   * accept as correct, from exact matches to tiny typo tolerance.
+   */
+  static AnswerMatchResult? findCorrectMatch({
     required String normalizedInput,
-    required String candidate,
+    required List<String> acceptedAnswers,
   }) {
-    if (normalizedInput == candidate) {
-      return AnswerMatchResult(
+    for (final acceptedAnswer in acceptedAnswers) {
+      final result = _matchAcceptedAnswerLeniently(
+        normalizedInput: normalizedInput,
+        acceptedAnswer: acceptedAnswer,
+      );
+      if (result != null) {
+        return result;
+      }
+    }
+
+    return null;
+  }
+
+  /*
+   * Second pass: if nothing was correct, try to spot a specific kind
+   * of almost-right answer so the UI can give a nicer hint.
+   */
+  static AnswerMatchResult? findNearMiss({
+    required String normalizedInput,
+    required List<String> acceptedAnswers,
+  }) {
+    AnswerMatchResult? bestIncorrectResult;
+
+    for (final acceptedAnswer in acceptedAnswers) {
+      final articleResult = _matchLeadingTokenDifference(
+        normalizedInput: normalizedInput,
+        acceptedAnswer: acceptedAnswer,
+        validTokens: englishRules.articles,
+        missingType: AnswerFeedbackType.missingArticle,
+        wrongType: AnswerFeedbackType.wrongArticle,
+      );
+      if (articleResult != null) {
+        bestIncorrectResult ??= articleResult;
+      }
+
+      final infinitiveResult = _matchLeadingTokenDifference(
+        normalizedInput: normalizedInput,
+        acceptedAnswer: acceptedAnswer,
+        validTokens: englishRules.infinitiveMarkers,
+        missingType: AnswerFeedbackType.missingInfinitive,
+        wrongType: AnswerFeedbackType.wrongInfinitive,
+      );
+      if (infinitiveResult != null) {
+        bestIncorrectResult ??= infinitiveResult;
+      }
+    }
+
+    return bestIncorrectResult;
+  }
+
+  static AnswerMatchResult? _matchAcceptedAnswerLeniently({
+    required String normalizedInput,
+    required String acceptedAnswer,
+  }) {
+    if (normalizedInput == acceptedAnswer) {
+      return (
         isCorrect: true,
         feedbackType: AnswerFeedbackType.exact,
-        matchedMeaning: candidate,
+        expectedMeaning: null,
+        matchedMeaning: acceptedAnswer,
       );
     }
 
-    if (normalizedInput.contains(candidate)) {
-      return AnswerMatchResult(
+    if (normalizedInput.contains(acceptedAnswer)) {
+      return (
         isCorrect: true,
         feedbackType: AnswerFeedbackType.closeEnough,
-        matchedMeaning: candidate,
+        expectedMeaning: null,
+        matchedMeaning: acceptedAnswer,
       );
     }
 
-    if (_letterDistance(normalizedInput, candidate) <= 1) {
-      return AnswerMatchResult(
+    if (_letterDistance(normalizedInput, acceptedAnswer) <= 1) {
+      return (
         isCorrect: true,
         feedbackType: AnswerFeedbackType.closeEnough,
-        matchedMeaning: candidate,
+        expectedMeaning: null,
+        matchedMeaning: acceptedAnswer,
       );
     }
 
     final inputWords = normalizedInput.split(' ');
     for (final word in inputWords) {
-      if (_letterDistance(word, candidate) <= 1) {
-        return AnswerMatchResult(
+      if (_letterDistance(word, acceptedAnswer) <= 1) {
+        return (
           isCorrect: true,
           feedbackType: AnswerFeedbackType.closeEnough,
-          matchedMeaning: candidate,
+          expectedMeaning: null,
+          matchedMeaning: acceptedAnswer,
         );
       }
     }
@@ -149,27 +226,27 @@ class AnswerMatcher {
 
   static AnswerMatchResult? _matchLeadingTokenDifference({
     required String normalizedInput,
-    required String candidate,
+    required String acceptedAnswer,
     required Set<String> validTokens,
     required AnswerFeedbackType missingType,
     required AnswerFeedbackType wrongType,
   }) {
-    final candidateWords = candidate.split(' ');
-    if (candidateWords.length < 2) {
+    final acceptedAnswerWords = acceptedAnswer.split(' ');
+    if (acceptedAnswerWords.length < 2) {
       return null;
     }
 
-    final expectedLead = candidateWords.first;
+    final expectedLead = acceptedAnswerWords.first;
     if (!validTokens.contains(expectedLead)) {
       return null;
     }
 
-    final expectedCore = candidateWords.skip(1).join(' ');
+    final expectedCore = acceptedAnswerWords.skip(1).join(' ');
     if (normalizedInput == expectedCore) {
-      return AnswerMatchResult(
+      return (
         isCorrect: false,
         feedbackType: missingType,
-        expectedMeaning: candidate,
+        expectedMeaning: acceptedAnswer,
         matchedMeaning: expectedCore,
       );
     }
@@ -184,10 +261,10 @@ class AnswerMatcher {
     if (validTokens.contains(inputLead) &&
         inputLead != expectedLead &&
         inputCore == expectedCore) {
-      return AnswerMatchResult(
+      return (
         isCorrect: false,
         feedbackType: wrongType,
-        expectedMeaning: candidate,
+        expectedMeaning: acceptedAnswer,
         matchedMeaning: normalizedInput,
       );
     }
@@ -195,20 +272,20 @@ class AnswerMatcher {
     return null;
   }
 
-  static List<String> _extractCandidates(String expected) {
+  static List<String> extractAcceptedAnswers(String expected) {
     final rawParts = expected.split(
       RegExp(r'\s*(?:/|;|,|\bor\b)\s*', caseSensitive: false),
     );
 
     return rawParts
-        .map(_normalize)
+        .map(normalize)
         .map((part) => part.trim())
         .where((part) => part.isNotEmpty)
         .toSet()
         .toList();
   }
 
-  static String _normalize(String value) {
+  static String normalize(String value) {
     final withoutDiacritics = removeDiacritics(value.toLowerCase());
     final alphanumericOnly = withoutDiacritics.replaceAll(
       RegExp(r'[^a-z0-9\s]'),
@@ -219,10 +296,13 @@ class AnswerMatcher {
   }
 
   /*
-   * Computes Levenshtein edit distance using dynamic programming. 
+   * I have no fucking clue how this works. It's a dynamic programming solution.
    * 
-   * This is Wagner-Fischer DP table optimization with two rows
-   * Search for DP "Levenshtein distance" and "Wagner-Fischer algorithm"
+   * I am a little concerned that it has three loops though so I'll note to look
+   * at it more in depth some other time. 
+   * 
+   * TODO: Look into this algo to see if we really need something this grand
+   * Google "Levenshtein distance" and "Wagner-Fischer algorithm" 
    */
   static int _letterDistance(String a, String b) {
     if (a == b) {
@@ -245,6 +325,7 @@ class AnswerMatcher {
 
       for (var j = 1; j <= b.length; j++) {
         final substitutionCost = a[i - 1] == b[j - 1] ? 0 : 1;
+
         current[j] = math.min(
           current[j - 1] + 1,
           math.min(previous[j] + 1, previous[j - 1] + substitutionCost),
@@ -258,11 +339,4 @@ class AnswerMatcher {
 
     return previous[b.length];
   }
-}
-
-class _LanguageRules {
-  const _LanguageRules({required this.articles, required this.infinitiveMarkers});
-
-  final Set<String> articles;
-  final Set<String> infinitiveMarkers;
 }
