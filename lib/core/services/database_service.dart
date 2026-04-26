@@ -136,17 +136,17 @@ class DatabaseService {
   /*
    * Get user progress (by word)
    */
-  Future<Map> getAllProgress() async {
+  Future<Map<String, MasteryProgress>> getAllProgress() async {
     final db = await database;
     final rows = await db.query('user_word_progress');
 
-    return {
+    return <String, MasteryProgress>{
       for (final row in rows)
         row['word_id'] as String: MasteryProgress.fromMap(row),
     };
   }
 
-  static Map _buildEmptyReviewStats() {
+  static Map<String, Map<MasteryTier, int>> _buildEmptyReviewStats() {
     final emptyStats = <String, Map<MasteryTier, int>>{};
 
     for (final level in _cefrLevels) {
@@ -168,7 +168,7 @@ class DatabaseService {
    * 
    * IDK how to do this in SQL, there's probably a better way.
    */
-  Future<Map> getReviewStatsByLevel() async {
+  Future<Map<String, Map<MasteryTier, int>>> getReviewStatsByLevel() async {
     final db = await database;
     final rows = await db.rawQuery('''
       SELECT
