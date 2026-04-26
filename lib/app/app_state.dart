@@ -21,7 +21,7 @@ class AlloCartoAppState extends State<AlloCartoApp> {
   ThemeMode themeMode = ThemeMode.system;
   int currentView = 0;
 
-  static const pages = [
+  static const destinations = [
     NavigationDestination(
       icon: Icon(Icons.home_outlined),
       selectedIcon: Icon(Icons.home),
@@ -36,11 +36,6 @@ class AlloCartoAppState extends State<AlloCartoApp> {
       icon: Icon(Icons.settings_outlined),
       selectedIcon: Icon(Icons.settings),
       label: 'Settings',
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.auto_graph),
-      selectedIcon: Icon(Icons.auto_awesome),
-      label: 'Stats',
     ),
   ];
 
@@ -74,7 +69,7 @@ class AlloCartoAppState extends State<AlloCartoApp> {
               currentView = index;
             });
           },
-          destinations: pages,
+          destinations: destinations,
         ),
       ),
     );
