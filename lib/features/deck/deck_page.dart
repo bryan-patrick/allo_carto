@@ -1,6 +1,7 @@
-// Packages
+// Core Lib
 import 'dart:math' as math;
 
+// Packages
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 

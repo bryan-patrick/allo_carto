@@ -28,8 +28,8 @@ class AlloCartoAppState extends State<AlloCartoApp> {
       label: 'Home',
     ),
     NavigationDestination(
-      icon: Icon(Icons.quiz_outlined),
-      selectedIcon: Icon(Icons.quiz),
+      icon: Icon(Icons.star_outline),
+      selectedIcon: Icon(Icons.star),
       label: 'Review',
     ),
     NavigationDestination(

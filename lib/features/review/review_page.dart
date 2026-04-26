@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 
 // Core
-import '../../core/models/word.dart';
 import '../../core/services/database_service.dart';
+import '../../core/models/user_word_progress.dart';
 
 class ReviewPage extends StatefulWidget {
   const ReviewPage({super.key});
@@ -15,24 +15,59 @@ class ReviewPage extends StatefulWidget {
 class _ReviewPageState extends State<ReviewPage> {
   final DatabaseService _database = DatabaseService.instance;
 
-  List<Word> _words = const [];
+  /*
+   * This is just a fancy way to make this shape:
+   * 
+   * {
+   *  A1: {
+   *   MasteryTier.none: 0, 
+   *   MasteryTier.bronze: 0, 
+   *   MasteryTier.silver: 0, 
+   *   MasteryTier.gold: 0, 
+   *   MasteryTier.platinum: 0
+   *  },
+   *  B2: ...etc.
+   * }
+   */
+  static const _cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+  Map<String, Map<MasteryTier, int>> stats = _buildEmptyStats();
+
+  static Map<String, Map<MasteryTier, int>> _buildEmptyStats() {
+    final emptyStats = <String, Map<MasteryTier, int>>{};
+
+    for (final level in _cefrLevels) {
+      final tierCounts = <MasteryTier, int>{};
+
+      for (final tier in MasteryTier.values) {
+        tierCounts[tier] = 0;
+      }
+
+      emptyStats[level] = tierCounts;
+    }
+
+    return emptyStats;
+  }
+
   bool _isLoading = true;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    _loadWords();
+    _loadStats();
   }
 
-  Future<void> _loadWords() async {
+  Future<void> _loadStats() async {
     try {
-      final words = await _database.getAllWords();
+      final reviewStats = await _database.getReviewStatsByLevel();
+
       if (!mounted) {
         return;
       }
+
       setState(() {
-        _words = words;
+        stats = reviewStats;
         _isLoading = false;
       });
     } catch (e) {
@@ -40,7 +75,7 @@ class _ReviewPageState extends State<ReviewPage> {
         return;
       }
       setState(() {
-        _error = 'Failed to load words: $e';
+        _error = 'Failed to load stats: $e';
         _isLoading = false;
       });
     }
@@ -67,29 +102,97 @@ class _ReviewPageState extends State<ReviewPage> {
 
     return ListView.separated(
       padding: const EdgeInsets.all(16),
-      itemCount: _words.length,
+      itemCount: _cefrLevels.length,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
-        final word = _words[index];
+        final level = _cefrLevels[index];
+        final levelStats = stats[level]!;
+
         return Card(
-          child: ListTile(
-            title: Column(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(word.french),
-                if (word.pronunciation != null &&
-                    word.pronunciation!.isNotEmpty)
-                  Text(
-                    word.pronunciation!,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+                Text(level, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final tier in MasteryTier.values)
+                      _TierCountChip(tier: tier, count: levelStats[tier] ?? 0),
+                  ],
+                ),
               ],
             ),
-            subtitle: Text(word.english),
-            trailing: Text(word.cefrLevel),
           ),
         );
       },
+    );
+  }
+}
+
+class _TierCountChip extends StatelessWidget {
+  const _TierCountChip({required this.tier, required this.count});
+
+  final MasteryTier tier;
+  final int count;
+
+  ({String label, Color color, IconData icon}) get _attrs {
+    return switch (tier) {
+      MasteryTier.none => (
+        label: 'New',
+        color: Colors.blueGrey,
+        icon: Icons.fiber_new_outlined,
+      ),
+      MasteryTier.bronze => (
+        label: 'Bronze',
+        color: const Color(0xFFCD7F32),
+        icon: Icons.military_tech_outlined,
+      ),
+      MasteryTier.silver => (
+        label: 'Silver',
+        color: Colors.grey,
+        icon: Icons.military_tech_outlined,
+      ),
+      MasteryTier.gold => (
+        label: 'Gold',
+        color: Colors.amber,
+        icon: Icons.military_tech_outlined,
+      ),
+      MasteryTier.platinum => (
+        label: 'Platinum',
+        color: Colors.cyan,
+        icon: Icons.workspace_premium_outlined,
+      ),
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final attrs = _attrs;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: attrs.color.withAlpha(24),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: attrs.color.withAlpha(80)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(attrs.icon, size: 16, color: attrs.color),
+          const SizedBox(width: 6),
+          Text(
+            attrs.label,
+            style: TextStyle(color: attrs.color, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(width: 6),
+          Text('$count', style: Theme.of(context).textTheme.labelLarge),
+        ],
+      ),
     );
   }
 }

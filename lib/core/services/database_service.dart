@@ -1,7 +1,7 @@
 /*
  * This will eventually be replaced with a real interface, schema and data.
  * 
- * For now I let AI generate it...looks like hell.
+ * Spins up a SQLlite DB for storing word progress and stats
  */
 
 // Packages
@@ -15,6 +15,7 @@ import '../models/word.dart';
 class DatabaseService {
   DatabaseService._();
 
+  static const List<String> _cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
   static final DatabaseService instance = DatabaseService._();
   static Database? _db;
 
@@ -34,21 +35,6 @@ class DatabaseService {
         await _createWordsTable(db);
         await _createUserWordProgressTable(db);
         await _seedWords(db);
-      },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
-          await _createUserWordProgressTable(db);
-        }
-        if (oldVersion < 3) {
-          await _addWordFormColumns(db);
-        }
-        if (oldVersion < 4) {
-          await _updateStarterWordMeanings(db);
-        }
-        if (oldVersion < 5) {
-          await _ensureLegacyWordColumns(db);
-          await _backfillStarterWordPronunciations(db);
-        }
       },
     );
   }
@@ -77,15 +63,6 @@ class DatabaseService {
     ''');
   }
 
-  Future<void> _addWordFormColumns(Database db) async {
-    await db.execute('ALTER TABLE words ADD COLUMN lemma_id TEXT');
-    await db.execute('ALTER TABLE words ADD COLUMN form_type TEXT');
-    await db.execute('ALTER TABLE words ADD COLUMN tense TEXT');
-    await db.execute('ALTER TABLE words ADD COLUMN mood TEXT');
-    await db.execute('ALTER TABLE words ADD COLUMN person TEXT');
-    await db.execute('ALTER TABLE words ADD COLUMN grammatical_number TEXT');
-  }
-
   Future<void> _createUserWordProgressTable(Database db) async {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS user_word_progress (
@@ -93,50 +70,6 @@ class DatabaseService {
         correct_count INTEGER NOT NULL DEFAULT 0
       )
     ''');
-  }
-
-  Future<void> _ensureLegacyWordColumns(Database db) async {
-    final columns = await db.rawQuery('PRAGMA table_info(words)');
-    final existingColumns = columns
-        .map((column) => column['name'] as String)
-        .toSet();
-
-    if (!existingColumns.contains('pronunciation')) {
-      await db.execute('ALTER TABLE words ADD COLUMN pronunciation TEXT');
-    }
-
-    if (!existingColumns.contains('gender')) {
-      await db.execute('ALTER TABLE words ADD COLUMN gender TEXT');
-    }
-  }
-
-  Future<void> _updateStarterWordMeanings(Database db) async {
-    await db.update(
-      'words',
-      {'english': 'big / tall / large'},
-      where: 'id = ?',
-      whereArgs: ['grand'],
-    );
-  }
-
-  Future<void> _backfillStarterWordPronunciations(Database db) async {
-    final batch = db.batch();
-
-    for (final word in _starterWords) {
-      final pronunciation = word.pronunciation;
-      if (pronunciation == null || pronunciation.isEmpty) {
-        continue;
-      }
-
-      batch.update(
-        'words',
-        {'pronunciation': pronunciation},
-        where: 'id = ? AND (pronunciation IS NULL OR pronunciation = ?)',
-        whereArgs: [word.id, ''],
-      );
-    }
-
-    await batch.commit(noResult: true);
   }
 
   Future<void> _seedWords(Database db) async {
@@ -200,9 +133,10 @@ class DatabaseService {
     );
   }
 
-  // --- User Progress Queries ---
-
-  Future<Map<String, MasteryProgress>> getAllProgress() async {
+  /*
+   * Get user progress (by word)
+   */
+  Future<Map> getAllProgress() async {
     final db = await database;
     final rows = await db.query('user_word_progress');
 
@@ -210,6 +144,69 @@ class DatabaseService {
       for (final row in rows)
         row['word_id'] as String: MasteryProgress.fromMap(row),
     };
+  }
+
+  static Map _buildEmptyReviewStats() {
+    final emptyStats = <String, Map<MasteryTier, int>>{};
+
+    for (final level in _cefrLevels) {
+      final tierCounts = <MasteryTier, int>{};
+
+      for (final tier in MasteryTier.values) {
+        tierCounts[tier] = 0;
+      }
+
+      emptyStats[level] = tierCounts;
+    }
+
+    return emptyStats;
+  }
+
+  /*
+   * This is for the review page. We need stats for words by MasteryTier
+   * We don't want to duplicate a prop for count so we need the query.
+   * 
+   * IDK how to do this in SQL, there's probably a better way.
+   */
+  Future<Map> getReviewStatsByLevel() async {
+    final db = await database;
+    final rows = await db.rawQuery('''
+      SELECT
+        w.cefr_level AS cefr_level,
+        CASE
+          WHEN COALESCE(p.correct_count, 0) >= 30 THEN 'platinum'
+          WHEN COALESCE(p.correct_count, 0) >= 15 THEN 'gold'
+          WHEN COALESCE(p.correct_count, 0) >= 8 THEN 'silver'
+          WHEN COALESCE(p.correct_count, 0) >= 3 THEN 'bronze'
+          ELSE 'none'
+        END AS mastery_tier,
+        COUNT(*) AS word_count
+      FROM words w
+      LEFT JOIN user_word_progress p ON p.word_id = w.id
+      GROUP BY
+        w.cefr_level,
+        CASE
+          WHEN COALESCE(p.correct_count, 0) >= 30 THEN 'platinum'
+          WHEN COALESCE(p.correct_count, 0) >= 15 THEN 'gold'
+          WHEN COALESCE(p.correct_count, 0) >= 8 THEN 'silver'
+          WHEN COALESCE(p.correct_count, 0) >= 3 THEN 'bronze'
+          ELSE 'none'
+        END
+      ORDER BY w.cefr_level
+    ''');
+
+    final stats = _buildEmptyReviewStats();
+
+    for (final row in rows) {
+      final level = row['cefr_level'] as String;
+      final tierName = row['mastery_tier'] as String;
+      final count = (row['word_count'] as num).toInt();
+      final tier = MasteryTier.values.byName(tierName);
+
+      stats[level]?[tier] = count;
+    }
+
+    return stats;
   }
 
   Future<void> incrementCorrectCount(String wordId) async {
@@ -220,7 +217,7 @@ class DatabaseService {
       INSERT INTO user_word_progress (word_id, correct_count)
       VALUES (?, 1)
       ON CONFLICT(word_id) DO UPDATE SET correct_count = correct_count + 1
-    ''',
+      ''',
       [wordId],
     );
   }
