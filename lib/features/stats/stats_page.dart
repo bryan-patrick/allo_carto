@@ -5,18 +5,19 @@ import 'package:flutter/material.dart';
 import '../../core/services/database_service.dart';
 import '../../core/models/user_word_progress.dart';
 
-class ReviewPage extends StatefulWidget {
-  const ReviewPage({super.key});
+class StatsPage extends StatefulWidget {
+  const StatsPage({super.key});
 
   @override
-  State<ReviewPage> createState() => _ReviewPageState();
+  State<StatsPage> createState() => _StatsPageState();
 }
 
-class _ReviewPageState extends State<ReviewPage> {
+class _StatsPageState extends State<StatsPage> {
   final DatabaseService _database = DatabaseService.instance;
 
   /*
-   * This is just a fancy way to make this shape:
+   * This is just a fancy way to make this shape dynamically
+   * based on the enum:
    * 
    * {
    *  A1: {
@@ -84,7 +85,7 @@ class _ReviewPageState extends State<ReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Review')),
+      appBar: AppBar(title: const Text('Stats')),
       body: _buildBody(context),
     );
   }
@@ -139,7 +140,7 @@ class _TierCountChip extends StatelessWidget {
   final MasteryTier tier;
   final int count;
 
-  ({String label, Color color, IconData icon}) get _attrs {
+  ({String label, Color color, IconData icon}) get _tierProps {
     return switch (tier) {
       MasteryTier.none => (
         label: 'New',
@@ -171,24 +172,25 @@ class _TierCountChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final attrs = _attrs;
+    final props = _tierProps;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: attrs.color.withAlpha(24),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: attrs.color.withAlpha(80)),
+        color: props.color.withAlpha(24),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: props.color.withAlpha(80)),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          Icon(attrs.icon, size: 16, color: attrs.color),
+          Icon(props.icon, size: 16, color: props.color),
           const SizedBox(width: 6),
           Text(
-            attrs.label,
-            style: TextStyle(color: attrs.color, fontWeight: FontWeight.w600),
+            props.label,
+            style: TextStyle(color: props.color, fontWeight: FontWeight.w600),
           ),
+          const Spacer(), // Push the text to the right
           const SizedBox(width: 6),
           Text('$count', style: Theme.of(context).textTheme.labelLarge),
         ],

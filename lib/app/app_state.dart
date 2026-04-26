@@ -8,7 +8,7 @@ import 'theme/ac_dark_theme.dart';
 // Features
 import '../features/home/home_page.dart';
 import '../features/profile/profile_page.dart';
-import '../features/review/review_page.dart';
+import '../features/stats/stats_page.dart';
 
 // App
 import 'app.dart';
@@ -30,7 +30,7 @@ class AlloCartoAppState extends State<AlloCartoApp> {
     NavigationDestination(
       icon: Icon(Icons.star_outline),
       selectedIcon: Icon(Icons.star),
-      label: 'Review',
+      label: 'Stats',
     ),
     NavigationDestination(
       icon: Icon(Icons.settings_outlined),
@@ -43,7 +43,7 @@ class AlloCartoAppState extends State<AlloCartoApp> {
   Widget build(BuildContext context) {
     final pages = [
       const HomePage(),
-      const ReviewPage(),
+      const StatsPage(),
       ProfilePage(
         themeMode: themeMode,
         onThemeModeChanged: (mode) {
