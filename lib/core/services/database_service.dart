@@ -1,8 +1,7 @@
-/*
- * This will eventually be replaced with a real interface, schema and data.
- * 
- * Spins up a SQLlite DB for storing word progress and stats
- */
+// TODO: Refactor. This file is a disaster.
+//
+// schema and data.
+// Spins up a SQLlite DB for storing word progress and stats.
 
 // Packages
 import 'package:path/path.dart';

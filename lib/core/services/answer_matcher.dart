@@ -4,12 +4,10 @@ import 'dart:math' as math;
 // Packages
 import 'package:diacritic/diacritic.dart';
 
-/*
- * We want to be helpful and somewhat relaxed
- * when it comes to user answers. It is 
- * important that we be extremely clear
- * with users if their answer is wrong.
- */
+// We want to be helpful and somewhat relaxed
+// when it comes to user answers. It is
+// important that we be extremely clear
+// with users if their answer is wrong.
 enum AnswerFeedbackType {
   exact,
   closeEnough,
@@ -27,27 +25,23 @@ typedef AnswerMatchResult = ({
   String? matchedMeaning,
 });
 
-typedef LanguageRules = ({Set<String> articles, Set<String> infinitiveMarkers});
+typedef LanguageRules = ({Set<String> articles, Set<String> infinitives});
 
-/*
- * Namespace for matching utilities
- */
+// Namespace for matching utilities
 class AnswerMatcher {
   const AnswerMatcher._();
 
   static const LanguageRules englishRules = (
     articles: {'a', 'an', 'the'},
-    infinitiveMarkers: {'to'},
+    infinitives: {'to'},
   );
 
   static AnswerMatchResult match({
     required String userAnswer,
     required String expected,
   }) {
-    /*
-     * Step 1: clean up the user's answer so case, accents,
-     * punctuation, and weird spacing do not get in the way.
-     */
+    // Clean up the user's answer so case, accents,
+    // punctuation, and weird spacing do not get in the way.
     final normalizedInput = normalize(userAnswer);
 
     if (normalizedInput.isEmpty) {
@@ -59,10 +53,8 @@ class AnswerMatcher {
       );
     }
 
-    /*
-     * Step 2: split the expected answer into every acceptable
-     * answer so we can check each one in turn.
-     */
+    // Split the expected answer into every acceptable
+    // answer so we can check each one in turn.
     final acceptedAnswers = extractAcceptedAnswers(expected);
 
     if (acceptedAnswers.isEmpty) {
@@ -74,10 +66,8 @@ class AnswerMatcher {
       );
     }
 
-    /*
-     * Step 3: If the answer is close enough, 
-     * or just a tiny typo away, we stop here.
-     */
+    // If the answer is close enough,
+    // or just a tiny typo away, we stop here.
     final correctResult = findCorrectMatch(
       normalizedInput: normalizedInput,
       acceptedAnswers: acceptedAnswers,
@@ -87,10 +77,8 @@ class AnswerMatcher {
       return correctResult;
     }
 
-    /*
-     * Step 4: nothing counted as correct, so now we look for a
-     * near miss like an article.
-     */
+    // Nothing counted as correct, so now we look for a
+    // near miss like an article.
     final nearMissResult = findNearMiss(
       normalizedInput: normalizedInput,
       acceptedAnswers: acceptedAnswers,
@@ -100,11 +88,9 @@ class AnswerMatcher {
       return nearMissResult;
     }
 
-    /*
-     * Step 5: if we got this far, the answer was just plain wrong,
-     * so return the fallback result with the expected meaning and
-     * call the user a loser
-     */
+    // If we got this far, the answer was just plain wrong,
+    // so return the fallback result with the expected meaning and
+    // call the user a loser
     return (
       isCorrect: false,
       feedbackType: AnswerFeedbackType.wrong,
@@ -120,16 +106,14 @@ class AnswerMatcher {
     return match(userAnswer: userAnswer, expected: expected).isCorrect;
   }
 
-  /*
-   * First pass: check every accepted answer for anything we are willing to
-   * accept as correct, from exact matches to tiny typo tolerance.
-   */
+  // First pass: check every accepted answer for anything we are willing to
+  // accept as correct, from exact matches to tiny typo tolerance.
   static AnswerMatchResult? findCorrectMatch({
     required String normalizedInput,
     required List<String> acceptedAnswers,
   }) {
     for (final acceptedAnswer in acceptedAnswers) {
-      final result = _matchAcceptedAnswerLeniently(
+      final result = matchAcceptedAnswer(
         normalizedInput: normalizedInput,
         acceptedAnswer: acceptedAnswer,
       );
@@ -141,10 +125,8 @@ class AnswerMatcher {
     return null;
   }
 
-  /*
-   * Second pass: if nothing was correct, try to spot a specific kind
-   * of almost-right answer so the UI can give a nicer hint.
-   */
+  // Second pass: if nothing was correct, try to find a specific kind
+  // of "almost right" answer so the UI can give a hint.
   static AnswerMatchResult? findNearMiss({
     required String normalizedInput,
     required List<String> acceptedAnswers,
@@ -152,7 +134,7 @@ class AnswerMatcher {
     AnswerMatchResult? bestIncorrectResult;
 
     for (final acceptedAnswer in acceptedAnswers) {
-      final articleResult = _matchLeadingTokenDifference(
+      final articleResult = matchFirstWord(
         normalizedInput: normalizedInput,
         acceptedAnswer: acceptedAnswer,
         validTokens: englishRules.articles,
@@ -163,10 +145,10 @@ class AnswerMatcher {
         bestIncorrectResult ??= articleResult;
       }
 
-      final infinitiveResult = _matchLeadingTokenDifference(
+      final infinitiveResult = matchFirstWord(
         normalizedInput: normalizedInput,
         acceptedAnswer: acceptedAnswer,
-        validTokens: englishRules.infinitiveMarkers,
+        validTokens: englishRules.infinitives,
         missingType: AnswerFeedbackType.missingInfinitive,
         wrongType: AnswerFeedbackType.wrongInfinitive,
       );
@@ -178,7 +160,7 @@ class AnswerMatcher {
     return bestIncorrectResult;
   }
 
-  static AnswerMatchResult? _matchAcceptedAnswerLeniently({
+  static AnswerMatchResult? matchAcceptedAnswer({
     required String normalizedInput,
     required String acceptedAnswer,
   }) {
@@ -200,7 +182,7 @@ class AnswerMatcher {
       );
     }
 
-    if (_letterDistance(normalizedInput, acceptedAnswer) <= 1) {
+    if (letterDistance(normalizedInput, acceptedAnswer) <= 1) {
       return (
         isCorrect: true,
         feedbackType: AnswerFeedbackType.closeEnough,
@@ -211,7 +193,7 @@ class AnswerMatcher {
 
     final inputWords = normalizedInput.split(' ');
     for (final word in inputWords) {
-      if (_letterDistance(word, acceptedAnswer) <= 1) {
+      if (letterDistance(word, acceptedAnswer) <= 1) {
         return (
           isCorrect: true,
           feedbackType: AnswerFeedbackType.closeEnough,
@@ -224,7 +206,7 @@ class AnswerMatcher {
     return null;
   }
 
-  static AnswerMatchResult? _matchLeadingTokenDifference({
+  static AnswerMatchResult? matchFirstWord({
     required String normalizedInput,
     required String acceptedAnswer,
     required Set<String> validTokens,
@@ -232,35 +214,29 @@ class AnswerMatcher {
     required AnswerFeedbackType wrongType,
   }) {
     final acceptedAnswerWords = acceptedAnswer.split(' ');
-    if (acceptedAnswerWords.length < 2) {
+    final expectedFirstWord = acceptedAnswerWords.first;
+    final expectedAnswer = acceptedAnswerWords.skip(1).join(' ');
+    final inputWords = normalizedInput.split(' ');
+    final inputFirstWord = inputWords.first;
+    final inputAnswer = inputWords.skip(1).join(' ');
+
+    if (acceptedAnswerWords.length < 2 ||
+        !validTokens.contains(expectedFirstWord)) {
       return null;
     }
 
-    final expectedLead = acceptedAnswerWords.first;
-    if (!validTokens.contains(expectedLead)) {
-      return null;
-    }
-
-    final expectedCore = acceptedAnswerWords.skip(1).join(' ');
-    if (normalizedInput == expectedCore) {
+    if (normalizedInput == expectedAnswer) {
       return (
         isCorrect: false,
         feedbackType: missingType,
         expectedMeaning: acceptedAnswer,
-        matchedMeaning: expectedCore,
+        matchedMeaning: expectedAnswer,
       );
     }
 
-    final inputWords = normalizedInput.split(' ');
-    if (inputWords.length < 2) {
-      return null;
-    }
-
-    final inputLead = inputWords.first;
-    final inputCore = inputWords.skip(1).join(' ');
-    if (validTokens.contains(inputLead) &&
-        inputLead != expectedLead &&
-        inputCore == expectedCore) {
+    if (validTokens.contains(inputFirstWord) &&
+        inputFirstWord != expectedFirstWord &&
+        inputAnswer == expectedAnswer) {
       return (
         isCorrect: false,
         feedbackType: wrongType,
@@ -295,16 +271,14 @@ class AnswerMatcher {
     return alphanumericOnly.replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 
-  /*
-   * I have no fucking clue how this works. It's a dynamic programming solution.
-   * 
-   * I am a little concerned that it has three loops though so I'll note to look
-   * at it more in depth some other time. 
-   * 
-   * TODO: Look into this algo to see if we really need something this grand
-   * Google "Levenshtein distance" and "Wagner-Fischer algorithm" 
-   */
-  static int _letterDistance(String a, String b) {
+  // I have no fucking clue how this works. It's a dynamic programming solution.
+  //
+  // I am a little concerned that it has three loops though so I'll note to look
+  // at it more in depth some other time.
+  //
+  // TODO: Look into this algo to see if we really need it
+  // Google "Levenshtein distance" and "Wagner-Fischer algorithm"
+  static int letterDistance(String a, String b) {
     if (a == b) {
       return 0;
     }

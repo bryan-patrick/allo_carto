@@ -5,15 +5,17 @@ import 'package:flutter/material.dart';
 import '../../core/services/database_service.dart';
 import '../../core/models/user_word_progress.dart';
 
+typedef Stats = Map<String, Map<MasteryTier, int>>;
+
 class StatsPage extends StatefulWidget {
   const StatsPage({super.key});
 
   @override
-  State<StatsPage> createState() => _StatsPageState();
+  State<StatsPage> createState() => StatsPageState();
 }
 
-class _StatsPageState extends State<StatsPage> {
-  final DatabaseService _database = DatabaseService.instance;
+class StatsPageState extends State<StatsPage> {
+  final DatabaseService database = DatabaseService.instance;
 
   /*
    * This is just a fancy way to make this shape dynamically
@@ -30,38 +32,27 @@ class _StatsPageState extends State<StatsPage> {
    *  B2: ...etc.
    * }
    */
-  static const _cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+  static const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-  Map<String, Map<MasteryTier, int>> stats = _buildEmptyStats();
+  Stats stats = buildEmptyStats();
 
-  static Map<String, Map<MasteryTier, int>> _buildEmptyStats() {
-    final emptyStats = <String, Map<MasteryTier, int>>{};
+  static Stats buildEmptyStats() => {
+    for (final level in cefrLevels)
+      level: {for (final tier in MasteryTier.values) tier: 0},
+  };
 
-    for (final level in _cefrLevels) {
-      final tierCounts = <MasteryTier, int>{};
-
-      for (final tier in MasteryTier.values) {
-        tierCounts[tier] = 0;
-      }
-
-      emptyStats[level] = tierCounts;
-    }
-
-    return emptyStats;
-  }
-
-  bool _isLoading = true;
-  String? _error;
+  bool isLoading = true;
+  String? error;
 
   @override
   void initState() {
     super.initState();
-    _loadStats();
+    loadStats();
   }
 
-  Future<void> _loadStats() async {
+  Future<void> loadStats() async {
     try {
-      final reviewStats = await _database.getReviewStatsByLevel();
+      final reviewStats = await database.getReviewStatsByLevel();
 
       if (!mounted) {
         return;
@@ -69,15 +60,15 @@ class _StatsPageState extends State<StatsPage> {
 
       setState(() {
         stats = reviewStats;
-        _isLoading = false;
+        isLoading = false;
       });
     } catch (e) {
       if (!mounted) {
         return;
       }
       setState(() {
-        _error = 'Failed to load stats: $e';
-        _isLoading = false;
+        error = 'Failed to load stats: $e';
+        isLoading = false;
       });
     }
   }
@@ -86,46 +77,126 @@ class _StatsPageState extends State<StatsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Stats')),
-      body: _buildBody(context),
+      body: buildBody(context),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    if (_isLoading) {
+  // https://api.flutter.dev/flutter/dart-core/Iterable/fold.html
+  Map<MasteryTier, int> get overallTierTotals => {
+    for (final tier in MasteryTier.values)
+      tier: cefrLevels.fold<int>(
+        0,
+        (sum, level) => sum + (stats[level]?[tier] ?? 0),
+      ),
+  };
+
+  Widget buildBody(BuildContext context) {
+    if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_error != null) {
+    if (error != null) {
       return Center(
-        child: Padding(padding: const EdgeInsets.all(16), child: Text(_error!)),
+        child: Padding(padding: const EdgeInsets.all(16), child: Text(error!)),
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: _cefrLevels.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
+    return ListView.builder(
+      padding: const EdgeInsets.all(8),
+      itemCount: cefrLevels.length + 1,
       itemBuilder: (context, index) {
-        final level = _cefrLevels[index];
-        final levelStats = stats[level]!;
+        if (index == 0) {
+          final totals = overallTierTotals;
+          final grandTotal =
+              (totals[MasteryTier.bronze] ?? 0) +
+              (totals[MasteryTier.silver] ?? 0) +
+              (totals[MasteryTier.gold] ?? 0) +
+              (totals[MasteryTier.platinum] ?? 0);
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(level, style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (final tier in MasteryTier.values)
-                      _TierCountChip(tier: tier, count: levelStats[tier] ?? 0),
+                    Text(
+                      'All Levels Totals',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Wrap(
+                      children: [
+                        for (final tier in MasteryTier.values)
+                          TierCountChip(tier: tier, count: totals[tier] ?? 0),
+                      ],
+                    ),
+                    const Divider(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      child: Row(
+                        children: [
+                          const Text('Grand total:'),
+                          const Spacer(),
+                          Text(
+                            '$grandTotal',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ],
+              ),
+            ),
+          );
+        }
+
+        final level = cefrLevels[index - 1];
+        final levelStats = stats[level]!;
+        final medalTotal =
+            (levelStats[MasteryTier.bronze] ?? 0) +
+            (levelStats[MasteryTier.silver] ?? 0) +
+            (levelStats[MasteryTier.gold] ?? 0) +
+            (levelStats[MasteryTier.platinum] ?? 0);
+
+        return Padding(
+          padding: EdgeInsets.only(bottom: index == cefrLevels.length ? 0 : 8),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(level, style: Theme.of(context).textTheme.titleMedium),
+                  Wrap(
+                    children: [
+                      for (final tier in MasteryTier.values)
+                        TierCountChip(tier: tier, count: levelStats[tier] ?? 0),
+                    ],
+                  ),
+                  const Divider(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        const Text('Total:'),
+                        const Spacer(),
+                        Text(
+                          '$medalTotal',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -134,13 +205,13 @@ class _StatsPageState extends State<StatsPage> {
   }
 }
 
-class _TierCountChip extends StatelessWidget {
-  const _TierCountChip({required this.tier, required this.count});
+class TierCountChip extends StatelessWidget {
+  const TierCountChip({super.key, required this.tier, required this.count});
 
   final MasteryTier tier;
   final int count;
 
-  ({String label, Color color, IconData icon}) get _tierProps {
+  ({String label, Color color, IconData icon}) get tierProps {
     return switch (tier) {
       MasteryTier.none => (
         label: 'New',
@@ -172,29 +243,13 @@ class _TierCountChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final props = _tierProps;
+    final props = tierProps;
 
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: props.color.withAlpha(24),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: props.color.withAlpha(80)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Icon(props.icon, size: 16, color: props.color),
-          const SizedBox(width: 6),
-          Text(
-            props.label,
-            style: TextStyle(color: props.color, fontWeight: FontWeight.w600),
-          ),
-          const Spacer(), // Push the text to the right
-          const SizedBox(width: 6),
-          Text('$count', style: Theme.of(context).textTheme.labelLarge),
-        ],
-      ),
+    return ListTile(
+      leading: Icon(props.icon, size: 26, color: props.color),
+      title: Text(props.label, style: TextStyle(color: props.color)),
+      trailing: Text('$count', style: Theme.of(context).textTheme.titleMedium),
+      dense: true,
     );
   }
 }

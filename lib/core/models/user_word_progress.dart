@@ -1,6 +1,4 @@
-/*
- * Handles the badge / state of how well a user knows a word / card (aka "MasteryTier")
- */
+// Handles the badge / state of how well a user knows a word / card (aka "MasteryTier")
 enum MasteryTier { none, bronze, silver, gold, platinum }
 
 class MasteryProgress {
@@ -9,6 +7,8 @@ class MasteryProgress {
   final String wordId;
   final int correctCount;
 
+  // Short circuit returns. I really don't like this.
+  // Maybe there's a better way?
   MasteryTier get masteryTier {
     if (correctCount >= 30) return MasteryTier.platinum;
     if (correctCount >= 15) return MasteryTier.gold;
@@ -18,10 +18,6 @@ class MasteryProgress {
     return MasteryTier.none;
   }
 
-  /*
-   * Short circuit returns. I really don't like this.
-   * Maybe there's a better way?
-   */
   int? get nextTierAt {
     if (correctCount < 3) return 3;
     if (correctCount < 8) return 8;

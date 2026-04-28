@@ -13,10 +13,8 @@ import '../features/stats/stats_page.dart';
 // App
 import 'app.dart';
 
-/*
- * Root shell state
- * Keep track of themeMode (dark, light), views, and currentView
- */
+// Root shell state
+// Keep track of themeMode (dark, light), views, and currentView
 class AlloCartoAppState extends State<AlloCartoApp> {
   ThemeMode themeMode = ThemeMode.system;
   int currentView = 0;

@@ -1,6 +1,4 @@
-/*
- * Gives the properties of each of the words for the cards
- */
+// Gives the properties of each of the words for the cards
 class Word {
   const Word({
     required this.id,

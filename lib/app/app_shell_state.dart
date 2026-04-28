@@ -9,11 +9,9 @@ import '../features/home/home_page.dart';
 import '../features/profile/profile_page.dart';
 import '../features/stats/stats_page.dart';
 
-/*
- * State for the containing shell of our app.
- * For now it just keeps track of deck index.
- * It returns a Scaffold, our main layout. 
- */
+// State for the containing shell of our app.
+// For now it just keeps track of deck index.
+// It returns a Scaffold, our main layout.
 class AppShellState extends State<AppShell> {
   int selectedIndex = 0;
 
