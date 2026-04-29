@@ -37,6 +37,7 @@ dependencies:
   path: ^1.9.1
   diacritic: ^0.1.6
   confetti: ^0.8.0
+  csv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,14 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/data/seed_words_a1.csv
+    - assets/data/seed_words_a2.csv
+    - assets/data/seed_words_b1.csv
+    - assets/data/seed_words_b2.csv
+    - assets/data/seed_words_c1.csv
+    - assets/data/seed_words_c2.csv
 
   # To add assets to your application, add an assets section, like this:
   # assets:

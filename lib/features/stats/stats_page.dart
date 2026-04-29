@@ -134,7 +134,7 @@ class StatsPageState extends State<StatsPage> {
                     const Divider(),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
+                        horizontal: 24,
                         vertical: 10,
                       ),
                       child: Row(
@@ -181,7 +181,7 @@ class StatsPageState extends State<StatsPage> {
                   const Divider(),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
+                      horizontal: 24,
                       vertical: 10,
                     ),
                     child: Row(

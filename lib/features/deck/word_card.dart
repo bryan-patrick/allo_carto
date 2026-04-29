@@ -15,6 +15,7 @@ class WordCard extends StatefulWidget {
     required this.cardIndex,
     required this.deckSize,
     required this.flipped,
+    required this.isSkipping,
   });
 
   final Word word;
@@ -23,24 +24,28 @@ class WordCard extends StatefulWidget {
   final int cardIndex;
   final int deckSize;
   final bool flipped;
+  final bool isSkipping;
 
   @override
-  State<WordCard> createState() => _WordCardState();
+  State<WordCard> createState() => WordCardState();
 }
 
-class _WordCardState extends State<WordCard>
+class WordCardState extends State<WordCard>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _animation;
+  late final AnimationController animationController;
+  late final Animation<double> animation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+    animation = CurvedAnimation(
+      parent: animationController,
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -48,90 +53,82 @@ class _WordCardState extends State<WordCard>
     super.didUpdateWidget(oldWidget);
 
     if (widget.flipped && !oldWidget.flipped) {
-      _controller.forward();
+      animationController.forward();
     } else if (!widget.flipped && oldWidget.flipped) {
-      _controller.reset();
+      animationController.reset();
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _animation,
+      animation: animation,
       builder: (context, _) {
-        final angle = _animation.value * math.pi;
+        final angle = animation.value * math.pi;
         final showBack = angle > math.pi / 2;
 
-        // The back face needs to be mirrored so text reads correctly.
+        // Always rotate the whole card. If back is visible, flip only that face
+        // so text reads normally instead of mirrored.
         final transform = Matrix4.identity()
-          ..setEntry(3, 2, 0.001) // perspective
-          ..rotateY(showBack ? angle - math.pi : angle);
+          ..setEntry(3, 2, 0.002) // perspective
+          ..rotateY(angle);
+
+        final face = showBack
+            ? Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.rotationY(math.pi),
+                child: CardFace(widget: widget, isBack: true),
+              )
+            : CardFace(widget: widget, isBack: false);
 
         return Transform(
           alignment: Alignment.center,
           transform: transform,
-          child: showBack
-              ? _CardFace.back(widget: widget, context: context)
-              : _CardFace.front(widget: widget, context: context),
+          child: face,
         );
       },
     );
   }
 }
 
-class _CardFace extends StatelessWidget {
-  const _CardFace({required this.widget, required this.isBack});
+class CardFace extends StatelessWidget {
+  const CardFace({super.key, required this.widget, required this.isBack});
 
   final WordCard widget;
   final bool isBack;
-
-  factory _CardFace.front({
-    required WordCard widget,
-    required BuildContext context,
-  }) {
-    return _CardFace(widget: widget, isBack: false);
-  }
-
-  factory _CardFace.back({
-    required WordCard widget,
-    required BuildContext context,
-  }) {
-    return _CardFace(widget: widget, isBack: true);
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final w = widget;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Card(
         elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _CEFRBadge(level: w.word.cefrLevel),
+                  CEFRBadge(level: widget.word.cefrLevel),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _MasteryBadge(tier: w.mastery),
+                      MasteryBadge(tier: widget.mastery),
                       const SizedBox(width: 8),
-                      _CountBadge(
-                        value: w.correctCount,
+                      CountBadge(
+                        value: widget.correctCount,
                         colorScheme: colorScheme,
                         textTheme: theme.textTheme,
                       ),
@@ -142,17 +139,16 @@ class _CardFace extends StatelessWidget {
               const Spacer(),
               // French word
               Text(
-                w.word.french,
-                style: theme.textTheme.displaySmall?.copyWith(
+                widget.word.french,
+                style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
-              if (w.word.pronunciation != null) ...[
-                const SizedBox(height: 12),
+              if (widget.word.pronunciation != null) ...[
                 Text(
-                  '(${w.word.pronunciation!})',
+                  '(${widget.word.pronunciation})',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontStyle: FontStyle.italic,
@@ -162,25 +158,31 @@ class _CardFace extends StatelessWidget {
               ],
               // English answer — only visible on back
               if (isBack) ...[
-                const SizedBox(height: 20),
                 Container(
+                  margin: const EdgeInsets.all(12),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
+                    horizontal: 12,
+                    vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.green.withAlpha(24),
-                    borderRadius: BorderRadius.circular(12),
+                    color: widget.isSkipping
+                        ? Colors.grey.withAlpha(12)
+                        : Colors.green.withAlpha(24),
+                    borderRadius: BorderRadius.circular(4),
                     border: Border.all(
-                      color: Colors.green.withAlpha(80),
+                      color: widget.isSkipping
+                          ? Colors.grey.withAlpha(24)
+                          : Colors.green.withAlpha(24),
                       width: 1,
                     ),
                   ),
                   child: Text(
-                    w.word.english,
+                    widget.word.english,
                     style: theme.textTheme.headlineSmall?.copyWith(
-                      color: Colors.green.shade700,
-                      fontWeight: FontWeight.w700,
+                      color: widget.isSkipping
+                          ? Colors.grey.shade400
+                          : Colors.green.shade700,
+                      fontSize: 18,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -188,7 +190,7 @@ class _CardFace extends StatelessWidget {
               ],
               const Spacer(),
               Text(
-                '${w.cardIndex + 1} / ${w.deckSize}',
+                '${widget.cardIndex + 1} / ${widget.deckSize}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -201,8 +203,9 @@ class _CardFace extends StatelessWidget {
   }
 }
 
-class _CountBadge extends StatelessWidget {
-  const _CountBadge({
+class CountBadge extends StatelessWidget {
+  const CountBadge({
+    super.key,
     required this.value,
     required this.colorScheme,
     required this.textTheme,
@@ -241,15 +244,19 @@ class _CountBadge extends StatelessWidget {
   }
 }
 
-class _CEFRBadge extends StatelessWidget {
-  const _CEFRBadge({required this.level});
+class CEFRBadge extends StatelessWidget {
+  const CEFRBadge({super.key, required this.level});
 
   final String level;
 
-  Color _color(BuildContext context) {
+  Color levelColor(BuildContext context) {
     return switch (level) {
-      'A1' || 'A2' => Colors.green.shade600,
-      'B1' || 'B2' => Colors.orange.shade700,
+      'A1' => Colors.yellow.shade700,
+      'A2' => Colors.orange.shade700,
+      'B1' => Colors.green.shade700,
+      'B2' => Colors.blue.shade700,
+      'C1' => Colors.purple.shade700,
+      'C2' => Colors.deepPurple.shade700,
       _ => Colors.red.shade700,
     };
   }
@@ -259,14 +266,13 @@ class _CEFRBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: _color(context).withAlpha(30),
+        color: levelColor(context).withAlpha(30),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _color(context), width: 1),
       ),
       child: Text(
         level,
         style: TextStyle(
-          color: _color(context),
+          color: levelColor(context),
           fontWeight: FontWeight.bold,
           fontSize: 12,
         ),
@@ -275,8 +281,8 @@ class _CEFRBadge extends StatelessWidget {
   }
 }
 
-class _MasteryBadge extends StatelessWidget {
-  const _MasteryBadge({required this.tier});
+class MasteryBadge extends StatelessWidget {
+  const MasteryBadge({super.key, required this.tier});
 
   final MasteryTier tier;
 
@@ -289,12 +295,12 @@ class _MasteryBadge extends StatelessWidget {
       ),
       MasteryTier.bronze => (
         label: 'Bronze',
-        color: const Color(0xFFCD7F32),
+        color: Colors.brown.shade700,
         icon: Icons.military_tech_outlined,
       ),
       MasteryTier.silver => (
         label: 'Silver',
-        color: Colors.grey.shade500,
+        color: Colors.grey.shade700,
         icon: Icons.military_tech_outlined,
       ),
       MasteryTier.gold => (

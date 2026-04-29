@@ -9,3 +9,7 @@ The idea is to help users track how many new words they're learning a day and ho
 ![App preview](preview.jpg)
 
 ![Stats](stats.jpg)
+
+## Commands
+
+- Run on simulator: flutter run -d "iPhone 17 Pro"

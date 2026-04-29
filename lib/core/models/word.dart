@@ -14,10 +14,8 @@ class Word {
     this.grammaticalNumber,
     required this.cefrLevel,
     required this.category,
-    required this.subcategory,
-    this.exampleFr,
-    this.exampleEn,
     this.gender,
+    required this.variant,
   });
 
   final String id;
@@ -33,9 +31,7 @@ class Word {
   final String? grammaticalNumber;
   final String cefrLevel;
   final String category;
-  final String subcategory;
-  final String? exampleFr;
-  final String? exampleEn;
+  final String variant;
   final String? gender;
 
   factory Word.fromMap(Map<String, dynamic> map) {
@@ -53,9 +49,7 @@ class Word {
       grammaticalNumber: map['grammatical_number'] as String?,
       cefrLevel: map['cefr_level'] as String,
       category: map['category'] as String,
-      subcategory: map['subcategory'] as String,
-      exampleFr: map['example_fr'] as String?,
-      exampleEn: map['example_en'] as String?,
+      variant: (map['variant'] as String?) ?? 'shared',
       gender: map['gender'] as String?,
     );
   }
@@ -75,9 +69,7 @@ class Word {
       'grammatical_number': grammaticalNumber,
       'cefr_level': cefrLevel,
       'category': category,
-      'subcategory': subcategory,
-      'example_fr': exampleFr,
-      'example_en': exampleEn,
+      'variant': variant,
       'gender': gender,
     };
   }

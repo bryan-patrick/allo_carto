@@ -27,16 +27,18 @@ class DeckPage extends StatefulWidget {
   const DeckPage({super.key});
 
   @override
-  State<DeckPage> createState() => _DeckPageState();
+  State<DeckPage> createState() => DeckPageState();
 }
 
-class _DeckPageState extends State<DeckPage> {
+class DeckPageState extends State<DeckPage> {
   final TextEditingController answerController = TextEditingController();
   late Future<DeckData> deck;
   static const int maxAttemptsPerCard = 3;
   String? feedback;
   bool isCheckingAnswer = true;
+  bool isCardFlipped = false;
   bool lastWasCorrect = false;
+  bool isSkipping = false;
   int currentIndex = 0;
   int attemptsUsed = 0;
 
@@ -73,8 +75,20 @@ class _DeckPageState extends State<DeckPage> {
   // 1. Get "previousTier"" and "nextTier" and see if we leveled up.
   // 2. Persist +1 correct answer to the DB.
   // 3. Confetti if the answer is in a new mastery tier.
-  Future<void> _checkOrAdvance(DeckData data) async {
+  Future<void> checkAnswer(DeckData data, {bool skip = false}) async {
     final currentWord = data.words[currentIndex];
+    int attemptsRemaining = maxAttemptsPerCard - attemptsUsed;
+
+    if (skip) {
+      setState(() {
+        isCheckingAnswer = false;
+        isCardFlipped = true;
+        lastWasCorrect = false;
+        feedback = null;
+        isSkipping = true;
+      });
+      return;
+    }
 
     // Check the answer
     // Evaluate user's answer against the current card's expected meaning.
@@ -118,38 +132,47 @@ class _DeckPageState extends State<DeckPage> {
         if (correct) {
           sessionCorrects[currentWord.id] =
               (sessionCorrects[currentWord.id] ?? 0) + 1;
-          feedback = successFeedback(matchResult.feedbackType);
           isCheckingAnswer = false;
+          isCardFlipped = true;
+          feedback = successFeedback(matchResult.feedbackType);
 
           return;
         }
 
         attemptsUsed += 1;
-
-        final attemptsRemaining = maxAttemptsPerCard - attemptsUsed;
+        attemptsRemaining = maxAttemptsPerCard - attemptsUsed;
 
         if (attemptsRemaining > 0) {
-          feedback = retryFeedback(matchResult);
           isCheckingAnswer = true;
+          isCardFlipped = false;
+          feedback = retryFeedback(matchResult);
         } else {
-          feedback = finalFeedback(matchResult, currentWord.english);
           isCheckingAnswer = false;
+          isCardFlipped = true;
+          feedback = finalFeedback(matchResult, currentWord.english);
         }
       });
+
       return;
     }
 
     // The current card is done increment the index and reset the state
+    advanceToNextCard();
+
+    confettiController.stop();
+  }
+
+  void advanceToNextCard() {
     setState(() {
       currentIndex += 1;
       answerController.clear();
       isCheckingAnswer = true;
+      isCardFlipped = false;
       attemptsUsed = 0;
       lastWasCorrect = false;
       feedback = null;
+      isSkipping = false;
     });
-
-    confettiController.stop();
   }
 
   static const successMessages = {
@@ -209,7 +232,7 @@ class _DeckPageState extends State<DeckPage> {
           final data = snapshot.data!;
 
           if (currentIndex >= data.words.length) {
-            return _DeckCompleteView(
+            return DeckCompleteView(
               totalCards: data.words.length,
               onClose: () => Navigator.of(context).pop(),
             );
@@ -239,20 +262,21 @@ class _DeckPageState extends State<DeckPage> {
                           correctCount: liveCorrectCount,
                           cardIndex: currentIndex,
                           deckSize: data.words.length,
-                          flipped: lastWasCorrect,
+                          flipped: isCardFlipped,
+                          isSkipping: isSkipping,
                         ),
                       ),
                       TextField(
                         controller: answerController,
                         enabled: isCheckingAnswer,
                         textInputAction: TextInputAction.done,
-                        onSubmitted: (_) => _checkOrAdvance(data),
+                        onSubmitted: (_) => checkAnswer(data),
                         decoration: const InputDecoration(
                           labelText: 'Type the meaning in English',
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 4),
                       if (feedback != null)
                         Align(
                           alignment: Alignment.center,
@@ -267,23 +291,37 @@ class _DeckPageState extends State<DeckPage> {
                             ),
                           ),
                         ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          onPressed: () => _checkOrAdvance(data),
-                          style: !isCheckingAnswer && lastWasCorrect
-                              ? FilledButton.styleFrom(
-                                  backgroundColor: ColorScheme.fromSeed(
-                                    seedColor: Colors.green,
-                                    brightness: Theme.of(context).brightness,
-                                  ).primary,
-                                )
-                              : null,
-                          child: Text(
-                            isCheckingAnswer ? 'Check answer' : 'Next',
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton(
+                              onPressed: () => checkAnswer(data),
+                              style: !isCheckingAnswer && lastWasCorrect
+                                  ? FilledButton.styleFrom(
+                                      backgroundColor: ColorScheme.fromSeed(
+                                        seedColor: isSkipping
+                                            ? Colors.orange
+                                            : Colors.green,
+                                        brightness: Theme.of(
+                                          context,
+                                        ).brightness,
+                                      ).primary,
+                                    )
+                                  : null,
+                              child: Text(
+                                isCheckingAnswer ? 'Check answer' : 'Next',
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 12),
+                          OutlinedButton(
+                            onPressed: isCheckingAnswer
+                                ? () => checkAnswer(data, skip: true)
+                                : null,
+                            child: Text('Skip'),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                     ],
@@ -351,8 +389,12 @@ class _DeckPageState extends State<DeckPage> {
   }
 }
 
-class _DeckCompleteView extends StatelessWidget {
-  const _DeckCompleteView({required this.totalCards, required this.onClose});
+class DeckCompleteView extends StatelessWidget {
+  const DeckCompleteView({
+    super.key,
+    required this.totalCards,
+    required this.onClose,
+  });
 
   final int totalCards;
   final VoidCallback onClose;
@@ -371,7 +413,7 @@ class _DeckCompleteView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text('You reviewed $totalCards cards.'),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             FilledButton(onPressed: onClose, child: const Text('Close deck')),
           ],
         ),

@@ -1,0 +1,24 @@
+id,french,pronunciation,english,part_of_speech,lemma_id,form_type,tense,mood,person,grammatical_number,cefr_level,category,gender,variant
+bonjour,bonjour,bon-zhoor,hello,interjection,,,,,,,A1,Social,,shared
+au_revoir,au revoir,oh-ruh-vwar,goodbye,interjection,,,,,,,A1,Social,,shared
+merci,merci,mehr-see,thank you,interjection,,,,,,,A1,Social,,shared
+sil_vous_plait,s'il vous plaît,seel-voo-pleh,please,expression,,,,,,,A1,Social,,shared
+oui,oui,wee,yes,adverb,,,,,,,A1,Social,,shared
+non,non,nohn,no,adverb,,,,,,,A1,Social,,shared
+chat,chat,shah,cat,noun,,,,,,,A1,Animals,masculine,shared
+chien,chien,shee-ehn,dog,noun,,,,,,,A1,Animals,masculine,shared
+maison,maison,may-zohn,house,noun,,,,,,,A1,Home,feminine,shared
+eau,eau,oh,water,noun,,,,,,,A1,Food & Drink,feminine,shared
+manger,manger,mahn-zhay,to eat,verb,manger,infinitive,,,,,A1,Food & Drink,,shared
+mange,mange,mahnzh,I eat,verb,manger,conjugated,present,indicative,first,singular,A1,Food & Drink,,shared
+boire,boire,bwar,to drink,verb,boire,infinitive,,,,,A1,Food & Drink,,shared
+bois,bois,bwah,I drink,verb,boire,conjugated,present,indicative,first,singular,A1,Food & Drink,,shared
+rouge,rouge,roozh,red,adjective,,,,,,,A1,Colors,,shared
+bleu,bleu,bluh,blue,adjective,,,,,,,A1,Colors,,shared
+grand,grand,grahn,big / tall / large,adjective,,,,,,,A1,Descriptions,,shared
+petit,petit,puh-tee,small / little,adjective,,,,,,,A1,Descriptions,,shared
+ami,ami,ah-mee,friend,noun,,,,,,,A1,People,masculine,shared
+ville,ville,veel,city / town,noun,,,,,,,A1,Places,feminine,shared
+travailler,travailler,trah-vai-yay,to work,verb,travailler,infinitive,,,,,A1,Work,,shared
+char,char,shar,car,noun,,,,,,,A1,Transport,masculine,quebecois
+bienvenue,bienvenue,bee-ehn-vuh-new,you're welcome,expression,,,,,,,A1,Social,,quebecois

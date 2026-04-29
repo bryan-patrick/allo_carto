@@ -4,6 +4,8 @@
 // Spins up a SQLlite DB for storing word progress and stats.
 
 // Packages
+import 'package:csv/csv.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -15,6 +17,14 @@ class DatabaseService {
   DatabaseService._();
 
   static const List<String> _cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+  static const List<String> _seedCsvAssets = [
+    'assets/data/seed_words_a1.csv',
+    'assets/data/seed_words_a2.csv',
+    'assets/data/seed_words_b1.csv',
+    'assets/data/seed_words_b2.csv',
+    'assets/data/seed_words_c1.csv',
+    'assets/data/seed_words_c2.csv',
+  ];
   static final DatabaseService instance = DatabaseService._();
   static Database? _db;
 
@@ -25,12 +35,22 @@ class DatabaseService {
 
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'allo_carto.db');
+    final path = join(dbPath, 'allo_carto_v9.db');
+
+    // Temporary hard reset while iterating on schema/seed changes.
+    await deleteDatabase(path);
 
     return openDatabase(
       path,
-      version: 5,
+      version: 9,
       onCreate: (db, version) async {
+        await _createWordsTable(db);
+        await _createUserWordProgressTable(db);
+        await _seedWords(db);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        await db.execute('DROP TABLE IF EXISTS user_word_progress');
+        await db.execute('DROP TABLE IF EXISTS words');
         await _createWordsTable(db);
         await _createUserWordProgressTable(db);
         await _seedWords(db);
@@ -54,7 +74,7 @@ class DatabaseService {
         grammatical_number TEXT,
         cefr_level TEXT NOT NULL,
         category TEXT NOT NULL,
-        subcategory TEXT NOT NULL,
+        variant TEXT NOT NULL DEFAULT 'shared',
         example_fr TEXT,
         example_en TEXT,
         gender TEXT
@@ -72,13 +92,88 @@ class DatabaseService {
   }
 
   Future<void> _seedWords(Database db) async {
-    final words = _starterWords;
+    final words = await _loadSeedWordsFromCsv();
     final batch = db.batch();
 
     for (final word in words) {
-      batch.insert('words', word.toMap());
+      batch.insert(
+        'words',
+        word.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
     }
     await batch.commit(noResult: true);
+  }
+
+  Future<List<Word>> _loadSeedWordsFromCsv() async {
+    final words = <Word>[];
+
+    for (final assetPath in _seedCsvAssets) {
+      final csvText = await rootBundle.loadString(assetPath);
+      final rows = const CsvToListConverter(
+        shouldParseNumbers: false,
+        eol: '\n',
+      ).convert(csvText);
+
+      if (rows.length <= 1) {
+        continue;
+      }
+
+      final headers = rows.first
+          .map((h) => h.toString())
+          .toList(growable: false);
+
+      for (final row in rows.skip(1)) {
+        if (row.every((cell) => cell.toString().trim().isEmpty)) {
+          continue;
+        }
+
+        final record = <String, String>{
+          for (var i = 0; i < headers.length; i++)
+            headers[i]: i < row.length ? row[i].toString().trim() : '',
+        };
+
+        String requiredField(String key) {
+          final value = record[key];
+          if (value == null || value.isEmpty) {
+            throw FormatException(
+              'Missing required CSV field "$key" in $assetPath',
+            );
+          }
+          return value;
+        }
+
+        String? optionalField(String key) {
+          final value = record[key];
+          if (value == null || value.isEmpty) {
+            return null;
+          }
+          return value;
+        }
+
+        words.add(
+          Word(
+            id: requiredField('id'),
+            french: requiredField('french'),
+            pronunciation: optionalField('pronunciation'),
+            english: requiredField('english'),
+            partOfSpeech: requiredField('part_of_speech'),
+            lemmaId: optionalField('lemma_id'),
+            formType: optionalField('form_type'),
+            tense: optionalField('tense'),
+            mood: optionalField('mood'),
+            person: optionalField('person'),
+            grammaticalNumber: optionalField('grammatical_number'),
+            cefrLevel: requiredField('cefr_level'),
+            category: requiredField('category'),
+            variant: optionalField('variant') ?? 'shared',
+            gender: optionalField('gender'),
+          ),
+        );
+      }
+    }
+
+    return words;
   }
 
   // --- Queries ---
@@ -95,7 +190,7 @@ class DatabaseService {
       'words',
       where: 'category = ?',
       whereArgs: [category],
-      orderBy: 'subcategory, french',
+      orderBy: 'category, french',
     );
 
     return rows.map(Word.fromMap).toList();
@@ -221,312 +316,3 @@ class DatabaseService {
     );
   }
 }
-
-// Example seed data
-
-const _starterWords = [
-  Word(
-    id: 'bonjour',
-    french: 'bonjour',
-    pronunciation: 'bon-zhoor',
-    english: 'hello',
-    partOfSpeech: 'interjection',
-    cefrLevel: 'A1',
-    category: 'Social',
-    subcategory: 'Greetings',
-    exampleFr: 'Bonjour, comment ça va?',
-    exampleEn: 'Hello, how are you?',
-  ),
-  Word(
-    id: 'au_revoir',
-    french: 'au revoir',
-    pronunciation: 'oh-ruh-vwar',
-    english: 'goodbye',
-    partOfSpeech: 'interjection',
-    cefrLevel: 'A1',
-    category: 'Social',
-    subcategory: 'Greetings',
-    exampleFr: 'Au revoir, à demain!',
-    exampleEn: 'Goodbye, see you tomorrow!',
-  ),
-  Word(
-    id: 'merci',
-    french: 'merci',
-    pronunciation: 'mehr-see',
-    english: 'thank you',
-    partOfSpeech: 'interjection',
-    cefrLevel: 'A1',
-    category: 'Social',
-    subcategory: 'Politeness',
-    exampleFr: 'Merci beaucoup!',
-    exampleEn: 'Thank you very much!',
-  ),
-  Word(
-    id: 'sil_vous_plait',
-    french: "s'il vous plaît",
-    pronunciation: 'seel-voo-pleh',
-    english: 'please',
-    partOfSpeech: 'expression',
-    cefrLevel: 'A1',
-    category: 'Social',
-    subcategory: 'Politeness',
-    exampleFr: "Un café, s'il vous plaît.",
-    exampleEn: 'A coffee, please.',
-  ),
-  Word(
-    id: 'oui',
-    french: 'oui',
-    pronunciation: 'wee',
-    english: 'yes',
-    partOfSpeech: 'adverb',
-    cefrLevel: 'A1',
-    category: 'Social',
-    subcategory: 'Responses',
-  ),
-  Word(
-    id: 'non',
-    french: 'non',
-    pronunciation: 'nohn',
-    english: 'no',
-    partOfSpeech: 'adverb',
-    cefrLevel: 'A1',
-    category: 'Social',
-    subcategory: 'Responses',
-  ),
-  Word(
-    id: 'chat',
-    french: 'chat',
-    pronunciation: 'shah',
-    english: 'cat',
-    partOfSpeech: 'noun',
-    cefrLevel: 'A1',
-    category: 'Animals',
-    subcategory: 'Pets',
-    gender: 'masculine',
-    exampleFr: 'Le chat dort sur le canapé.',
-    exampleEn: 'The cat is sleeping on the sofa.',
-  ),
-  Word(
-    id: 'chien',
-    french: 'chien',
-    pronunciation: 'shee-ehn',
-    english: 'dog',
-    partOfSpeech: 'noun',
-    cefrLevel: 'A1',
-    category: 'Animals',
-    subcategory: 'Pets',
-    gender: 'masculine',
-    exampleFr: 'Mon chien aime courir.',
-    exampleEn: 'My dog loves to run.',
-  ),
-  Word(
-    id: 'maison',
-    french: 'maison',
-    pronunciation: 'may-zohn',
-    english: 'house',
-    partOfSpeech: 'noun',
-    cefrLevel: 'A1',
-    category: 'Home',
-    subcategory: 'Buildings',
-    gender: 'feminine',
-    exampleFr: 'La maison est grande.',
-    exampleEn: 'The house is big.',
-  ),
-  Word(
-    id: 'eau',
-    french: 'eau',
-    pronunciation: 'oh',
-    english: 'water',
-    partOfSpeech: 'noun',
-    cefrLevel: 'A1',
-    category: 'Food & Drink',
-    subcategory: 'Drinks',
-    gender: 'feminine',
-    exampleFr: "J'ai besoin d'eau.",
-    exampleEn: 'I need water.',
-  ),
-  Word(
-    id: 'manger',
-    french: 'manger',
-    pronunciation: 'mahn-zhay',
-    english: 'to eat',
-    partOfSpeech: 'verb',
-    lemmaId: 'manger',
-    formType: 'infinitive',
-    cefrLevel: 'A1',
-    category: 'Food & Drink',
-    subcategory: 'Actions',
-    exampleFr: "J'aime manger des crêpes.",
-    exampleEn: 'I love eating crêpes.',
-  ),
-  Word(
-    id: 'mange_present_1s',
-    french: 'mange',
-    pronunciation: 'mahnzh',
-    english: 'I eat',
-    partOfSpeech: 'verb',
-    lemmaId: 'manger',
-    formType: 'conjugated',
-    tense: 'present',
-    mood: 'indicative',
-    person: 'first',
-    grammaticalNumber: 'singular',
-    cefrLevel: 'A1',
-    category: 'Food & Drink',
-    subcategory: 'Actions',
-    exampleFr: 'Je mange une pomme.',
-    exampleEn: 'I eat an apple.',
-  ),
-  Word(
-    id: 'mangerai_future_1s',
-    french: 'mangerai',
-    pronunciation: 'mahn-zhuh-ray',
-    english: 'I will eat',
-    partOfSpeech: 'verb',
-    lemmaId: 'manger',
-    formType: 'conjugated',
-    tense: 'future',
-    mood: 'indicative',
-    person: 'first',
-    grammaticalNumber: 'singular',
-    cefrLevel: 'A2',
-    category: 'Food & Drink',
-    subcategory: 'Actions',
-    exampleFr: 'Je mangerai plus tard.',
-    exampleEn: 'I will eat later.',
-  ),
-  Word(
-    id: 'boire',
-    french: 'boire',
-    pronunciation: 'bwar',
-    english: 'to drink',
-    partOfSpeech: 'verb',
-    lemmaId: 'boire',
-    formType: 'infinitive',
-    cefrLevel: 'A1',
-    category: 'Food & Drink',
-    subcategory: 'Actions',
-    exampleFr: 'Il aime boire du café.',
-    exampleEn: 'He likes to drink coffee.',
-  ),
-  Word(
-    id: 'bois_present_1s',
-    french: 'bois',
-    pronunciation: 'bwah',
-    english: 'I drink',
-    partOfSpeech: 'verb',
-    lemmaId: 'boire',
-    formType: 'conjugated',
-    tense: 'present',
-    mood: 'indicative',
-    person: 'first',
-    grammaticalNumber: 'singular',
-    cefrLevel: 'A1',
-    category: 'Food & Drink',
-    subcategory: 'Actions',
-    exampleFr: 'Je bois de l’eau.',
-    exampleEn: 'I drink water.',
-  ),
-  Word(
-    id: 'rouge',
-    french: 'rouge',
-    pronunciation: 'roozh',
-    english: 'red',
-    partOfSpeech: 'adjective',
-    cefrLevel: 'A1',
-    category: 'Colors',
-    subcategory: 'Basic Colors',
-    exampleFr: 'La rose est rouge.',
-    exampleEn: 'The rose is red.',
-  ),
-  Word(
-    id: 'bleu',
-    french: 'bleu',
-    pronunciation: 'bluh',
-    english: 'blue',
-    partOfSpeech: 'adjective',
-    cefrLevel: 'A1',
-    category: 'Colors',
-    subcategory: 'Basic Colors',
-    exampleFr: 'Le ciel est bleu.',
-    exampleEn: 'The sky is blue.',
-  ),
-  Word(
-    id: 'grand',
-    french: 'grand',
-    pronunciation: 'grahn',
-    english: 'big / tall / large',
-    partOfSpeech: 'adjective',
-    cefrLevel: 'A1',
-    category: 'Descriptions',
-    subcategory: 'Size',
-    exampleFr: "C'est un grand homme.",
-    exampleEn: 'He is a tall man.',
-  ),
-  Word(
-    id: 'petit',
-    french: 'petit',
-    pronunciation: 'puh-tee',
-    english: 'small / little',
-    partOfSpeech: 'adjective',
-    cefrLevel: 'A1',
-    category: 'Descriptions',
-    subcategory: 'Size',
-    exampleFr: 'Elle a un petit chien.',
-    exampleEn: 'She has a small dog.',
-  ),
-  Word(
-    id: 'ami',
-    french: 'ami',
-    pronunciation: 'ah-mee',
-    english: 'friend',
-    partOfSpeech: 'noun',
-    cefrLevel: 'A1',
-    category: 'People',
-    subcategory: 'Relationships',
-    gender: 'masculine',
-    exampleFr: "C'est mon meilleur ami.",
-    exampleEn: 'He is my best friend.',
-  ),
-  Word(
-    id: 'ville',
-    french: 'ville',
-    pronunciation: 'veel',
-    english: 'city / town',
-    partOfSpeech: 'noun',
-    cefrLevel: 'A1',
-    category: 'Places',
-    subcategory: 'Urban',
-    gender: 'feminine',
-    exampleFr: 'Paris est une belle ville.',
-    exampleEn: 'Paris is a beautiful city.',
-  ),
-  Word(
-    id: 'travailler',
-    french: 'travailler',
-    pronunciation: 'trah-vai-yay',
-    english: 'to work',
-    partOfSpeech: 'verb',
-    lemmaId: 'travailler',
-    formType: 'infinitive',
-    cefrLevel: 'A1',
-    category: 'Work',
-    subcategory: 'Actions',
-    exampleFr: 'Je travaille tous les jours.',
-    exampleEn: 'I work every day.',
-  ),
-  Word(
-    id: 'apprendre',
-    french: 'apprendre',
-    pronunciation: 'ah-prahn-druh',
-    english: 'to learn',
-    partOfSpeech: 'verb',
-    lemmaId: 'apprendre',
-    formType: 'infinitive',
-    cefrLevel: 'A2',
-    category: 'Education',
-    subcategory: 'Actions',
-    exampleFr: "J'apprends le français.",
-    exampleEn: 'I am learning French.',
-  ),
-];

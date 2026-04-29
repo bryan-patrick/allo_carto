@@ -1,0 +1,4 @@
+id,french,pronunciation,english,part_of_speech,lemma_id,form_type,tense,mood,person,grammatical_number,cefr_level,category,gender,variant
+mangerai,mangerai,mahn-zhuh-ray,I will eat,verb,manger,conjugated,future,indicative,first,singular,A2,Food & Drink,,shared
+apprendre,apprendre,ah-prahn-druh,to learn,verb,apprendre,infinitive,,,,,A2,Education,,shared
+depanneur,dépanneur,day-pan-nuhr,convenience store,noun,,,,,,,A2,Shopping,masculine,quebecois
