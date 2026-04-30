@@ -26,9 +26,9 @@ class AlloCartoAppState extends State<AlloCartoApp> {
       label: 'Home',
     ),
     NavigationDestination(
-      icon: Icon(Icons.star_outline),
-      selectedIcon: Icon(Icons.star),
-      label: 'Stats',
+      icon: Icon(Icons.format_list_numbered_rtl_sharp),
+      selectedIcon: Icon(Icons.format_list_numbered_rtl_sharp),
+      label: 'Totals',
     ),
     NavigationDestination(
       icon: Icon(Icons.settings_outlined),

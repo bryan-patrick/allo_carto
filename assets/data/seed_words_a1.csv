@@ -4,21 +4,57 @@ au_revoir,au revoir,oh-ruh-vwar,goodbye,interjection,,,,,,,A1,Social,,shared
 merci,merci,mehr-see,thank you,interjection,,,,,,,A1,Social,,shared
 sil_vous_plait,s'il vous plaît,seel-voo-pleh,please,expression,,,,,,,A1,Social,,shared
 oui,oui,wee,yes,adverb,,,,,,,A1,Social,,shared
+ouais,ouais,weh,yeah,adverb,,,,,,,A1,Social,,shared
 non,non,nohn,no,adverb,,,,,,,A1,Social,,shared
 chat,chat,shah,cat,noun,,,,,,,A1,Animals,masculine,shared
+chat_pl,chats,shah,cats,noun,chat,plural,,,,plural,A1,Animals,masculine,shared
 chien,chien,shee-ehn,dog,noun,,,,,,,A1,Animals,masculine,shared
+chien_pl,chiens,shee-ehn,dogs,noun,chien,plural,,,,plural,A1,Animals,masculine,shared
 maison,maison,may-zohn,house,noun,,,,,,,A1,Home,feminine,shared
+maison_pl,maisons,may-zohn,houses,noun,maison,plural,,,,plural,A1,Home,feminine,shared
 eau,eau,oh,water,noun,,,,,,,A1,Food & Drink,feminine,shared
+eau_pl,eaux,oh,waters,noun,eau,plural,,,,plural,A1,Food & Drink,feminine,shared
 manger,manger,mahn-zhay,to eat,verb,manger,infinitive,,,,,A1,Food & Drink,,shared
-mange,mange,mahnzh,I eat,verb,manger,conjugated,present,indicative,first,singular,A1,Food & Drink,,shared
+manger_je,mange,mahnzh,I eat,verb,manger,conjugated,present,indicative,first,singular,A1,Food & Drink,,shared
+manger_tu,manges,mahnzh,you eat,verb,manger,conjugated,present,indicative,second,singular,A1,Food & Drink,,shared
+manger_il,mange,mahnzh,he/she eats,verb,manger,conjugated,present,indicative,third,singular,A1,Food & Drink,,shared
+manger_nous,mangeons,mahn-zhohn,we eat,verb,manger,conjugated,present,indicative,first,plural,A1,Food & Drink,,shared
+manger_vous,mangez,mahn-zhay,you eat (formal/plural),verb,manger,conjugated,present,indicative,second,plural,A1,Food & Drink,,shared
+manger_ils,mangent,mahnzh,they eat,verb,manger,conjugated,present,indicative,third,plural,A1,Food & Drink,,shared
 boire,boire,bwar,to drink,verb,boire,infinitive,,,,,A1,Food & Drink,,shared
-bois,bois,bwah,I drink,verb,boire,conjugated,present,indicative,first,singular,A1,Food & Drink,,shared
+boire_je,bois,bwah,I drink,verb,boire,conjugated,present,indicative,first,singular,A1,Food & Drink,,shared
+boire_tu,bois,bwah,you drink,verb,boire,conjugated,present,indicative,second,singular,A1,Food & Drink,,shared
+boire_il,boit,bwah,he/she drinks,verb,boire,conjugated,present,indicative,third,singular,A1,Food & Drink,,shared
+boire_nous,buvons,bew-vohn,we drink,verb,boire,conjugated,present,indicative,first,plural,A1,Food & Drink,,shared
+boire_vous,buvez,bew-vay,you drink (formal/plural),verb,boire,conjugated,present,indicative,second,plural,A1,Food & Drink,,shared
+boire_ils,boivent,bwav,they drink,verb,boire,conjugated,present,indicative,third,plural,A1,Food & Drink,,shared
 rouge,rouge,roozh,red,adjective,,,,,,,A1,Colors,,shared
+rouge_f,rouge,roozh,red (feminine),adjective,rouge,inflected,,,,singular,A1,Colors,feminine,shared
+rouge_m_pl,rouges,roozh,red (masculine plural),adjective,rouge,inflected,,,,plural,A1,Colors,masculine,shared
+rouge_f_pl,rouges,roozh,red (feminine plural),adjective,rouge,inflected,,,,plural,A1,Colors,feminine,shared
 bleu,bleu,bluh,blue,adjective,,,,,,,A1,Colors,,shared
+bleu_f,bleue,bluh,blue (feminine),adjective,bleu,inflected,,,,singular,A1,Colors,feminine,shared
+bleu_m_pl,bleus,bluh,blue (masculine plural),adjective,bleu,inflected,,,,plural,A1,Colors,masculine,shared
+bleu_f_pl,bleues,bluh,blue (feminine plural),adjective,bleu,inflected,,,,plural,A1,Colors,feminine,shared
 grand,grand,grahn,big / tall / large,adjective,,,,,,,A1,Descriptions,,shared
+grand_f,grande,grahnd,big / tall / large (feminine),adjective,grand,inflected,,,,singular,A1,Descriptions,feminine,shared
+grand_m_pl,grands,grahn,big / tall / large (masculine plural),adjective,grand,inflected,,,,plural,A1,Descriptions,masculine,shared
+grand_f_pl,grandes,grahnd,big / tall / large (feminine plural),adjective,grand,inflected,,,,plural,A1,Descriptions,feminine,shared
 petit,petit,puh-tee,small / little,adjective,,,,,,,A1,Descriptions,,shared
+petit_f,petite,puh-teet,small / little (feminine),adjective,petit,inflected,,,,singular,A1,Descriptions,feminine,shared
+petit_m_pl,petits,puh-tee,small / little (masculine plural),adjective,petit,inflected,,,,plural,A1,Descriptions,masculine,shared
+petit_f_pl,petites,puh-teet,small / little (feminine plural),adjective,petit,inflected,,,,plural,A1,Descriptions,feminine,shared
 ami,ami,ah-mee,friend,noun,,,,,,,A1,People,masculine,shared
+ami_pl,amis,ah-mee,friends,noun,ami,plural,,,,plural,A1,People,masculine,shared
 ville,ville,veel,city / town,noun,,,,,,,A1,Places,feminine,shared
+ville_pl,villes,veel,cities / towns,noun,ville,plural,,,,plural,A1,Places,feminine,shared
 travailler,travailler,trah-vai-yay,to work,verb,travailler,infinitive,,,,,A1,Work,,shared
+travailler_je,travaille,trah-vai,I work,verb,travailler,conjugated,present,indicative,first,singular,A1,Work,,shared
+travailler_tu,travailles,trah-vai,you work,verb,travailler,conjugated,present,indicative,second,singular,A1,Work,,shared
+travailler_il,travaille,trah-vai,he/she works,verb,travailler,conjugated,present,indicative,third,singular,A1,Work,,shared
+travailler_nous,travaillons,trah-vai-yohn,we work,verb,travailler,conjugated,present,indicative,first,plural,A1,Work,,shared
+travailler_vous,travaillez,trah-vai-yay,you work (formal/plural),verb,travailler,conjugated,present,indicative,second,plural,A1,Work,,shared
+travailler_ils,travaillent,trah-vai,they work,verb,travailler,conjugated,present,indicative,third,plural,A1,Work,,shared
 char,char,shar,car,noun,,,,,,,A1,Transport,masculine,quebecois
+char_pl,chars,shar,cars,noun,char,plural,,,,plural,A1,Transport,masculine,quebecois
 bienvenue,bienvenue,bee-ehn-vuh-new,you're welcome,expression,,,,,,,A1,Social,,quebecois
