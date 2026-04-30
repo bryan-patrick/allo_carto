@@ -245,6 +245,7 @@ class DeckPageState extends State<DeckPage> {
                           deckSize: data.words.length,
                           flipped: isCardFlipped,
                           isSkipping: isSkipping,
+                          lastWasCorrect: lastWasCorrect,
                         ),
                       ),
                       IntrinsicHeight(

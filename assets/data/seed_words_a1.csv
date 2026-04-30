@@ -17,14 +17,14 @@ eau_pl,eaux,oh,waters,noun,eau,plural,,,,plural,A1,Food & Drink,feminine,shared
 manger,manger,mahn-zhay,to eat,verb,manger,infinitive,,,,,A1,Food & Drink,,shared
 manger_je,mange,mahnzh,I eat,verb,manger,conjugated,present,indicative,first,singular,A1,Food & Drink,,shared
 manger_tu,manges,mahnzh,you eat,verb,manger,conjugated,present,indicative,second,singular,A1,Food & Drink,,shared
-manger_il,mange,mahnzh,he/she eats,verb,manger,conjugated,present,indicative,third,singular,A1,Food & Drink,,shared
+manger_il,mange,mahnzh,eats,verb,manger,conjugated,present,indicative,third,singular,A1,Food & Drink,,shared
 manger_nous,mangeons,mahn-zhohn,we eat,verb,manger,conjugated,present,indicative,first,plural,A1,Food & Drink,,shared
 manger_vous,mangez,mahn-zhay,you eat (formal/plural),verb,manger,conjugated,present,indicative,second,plural,A1,Food & Drink,,shared
 manger_ils,mangent,mahnzh,they eat,verb,manger,conjugated,present,indicative,third,plural,A1,Food & Drink,,shared
 boire,boire,bwar,to drink,verb,boire,infinitive,,,,,A1,Food & Drink,,shared
 boire_je,bois,bwah,I drink,verb,boire,conjugated,present,indicative,first,singular,A1,Food & Drink,,shared
 boire_tu,bois,bwah,you drink,verb,boire,conjugated,present,indicative,second,singular,A1,Food & Drink,,shared
-boire_il,boit,bwah,he/she drinks,verb,boire,conjugated,present,indicative,third,singular,A1,Food & Drink,,shared
+boire_il,boit,bwah,drinks,verb,boire,conjugated,present,indicative,third,singular,A1,Food & Drink,,shared
 boire_nous,buvons,bew-vohn,we drink,verb,boire,conjugated,present,indicative,first,plural,A1,Food & Drink,,shared
 boire_vous,buvez,bew-vay,you drink (formal/plural),verb,boire,conjugated,present,indicative,second,plural,A1,Food & Drink,,shared
 boire_ils,boivent,bwav,they drink,verb,boire,conjugated,present,indicative,third,plural,A1,Food & Drink,,shared
@@ -51,10 +51,10 @@ ville_pl,villes,veel,cities / towns,noun,ville,plural,,,,plural,A1,Places,femini
 travailler,travailler,trah-vai-yay,to work,verb,travailler,infinitive,,,,,A1,Work,,shared
 travailler_je,travaille,trah-vai,I work,verb,travailler,conjugated,present,indicative,first,singular,A1,Work,,shared
 travailler_tu,travailles,trah-vai,you work,verb,travailler,conjugated,present,indicative,second,singular,A1,Work,,shared
-travailler_il,travaille,trah-vai,he/she works,verb,travailler,conjugated,present,indicative,third,singular,A1,Work,,shared
+travailler_il,travaille,trah-vai,works,verb,travailler,conjugated,present,indicative,third,singular,A1,Work,,shared
 travailler_nous,travaillons,trah-vai-yohn,we work,verb,travailler,conjugated,present,indicative,first,plural,A1,Work,,shared
 travailler_vous,travaillez,trah-vai-yay,you work (formal/plural),verb,travailler,conjugated,present,indicative,second,plural,A1,Work,,shared
 travailler_ils,travaillent,trah-vai,they work,verb,travailler,conjugated,present,indicative,third,plural,A1,Work,,shared
 char,char,shar,car,noun,,,,,,,A1,Transport,masculine,quebecois
 char_pl,chars,shar,cars,noun,char,plural,,,,plural,A1,Transport,masculine,quebecois
-bienvenue,bienvenue,bee-ehn-vuh-new,you're welcome,expression,,,,,,,A1,Social,,quebecois
+bienvenue,bienvenue,bee-ehn-vuh-new,welcome,expression,,,,,,,A1,Social,,quebecois

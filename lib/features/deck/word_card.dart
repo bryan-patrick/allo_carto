@@ -16,6 +16,7 @@ class WordCard extends StatefulWidget {
     required this.deckSize,
     required this.flipped,
     required this.isSkipping,
+    required this.lastWasCorrect,
   });
 
   final Word word;
@@ -25,6 +26,7 @@ class WordCard extends StatefulWidget {
   final int deckSize;
   final bool flipped;
   final bool isSkipping;
+  final bool lastWasCorrect;
 
   @override
   State<WordCard> createState() => WordCardState();
@@ -103,6 +105,8 @@ class CardFace extends StatelessWidget {
   final WordCard widget;
   final bool isBack;
 
+  bool get _wasWrong => !widget.lastWasCorrect && !widget.isSkipping;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -167,11 +171,15 @@ class CardFace extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: widget.isSkipping
                         ? Colors.grey.withAlpha(12)
+                        : _wasWrong
+                        ? Colors.red.withAlpha(24)
                         : Colors.green.withAlpha(24),
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
                       color: widget.isSkipping
                           ? Colors.grey.withAlpha(24)
+                          : _wasWrong
+                          ? Colors.red.withAlpha(48)
                           : Colors.green.withAlpha(24),
                       width: 1,
                     ),
@@ -181,6 +189,8 @@ class CardFace extends StatelessWidget {
                     style: theme.textTheme.headlineSmall?.copyWith(
                       color: widget.isSkipping
                           ? Colors.grey.shade400
+                          : _wasWrong
+                          ? Colors.red.shade700
                           : Colors.green.shade700,
                       fontSize: 18,
                     ),

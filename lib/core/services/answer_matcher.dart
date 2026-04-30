@@ -249,7 +249,11 @@ class AnswerMatcher {
   }
 
   static List<String> extractAcceptedAnswers(String expected) {
-    final rawParts = expected.split(
+    // Strip parenthetical qualifiers (e.g. "(feminine)", "(formal/plural)")
+    // before splitting so the slash inside parens isn't treated as a separator.
+    final withoutQualifiers = expected.replaceAll(RegExp(r'\s*\([^)]*\)'), '');
+
+    final rawParts = withoutQualifiers.split(
       RegExp(r'\s*(?:/|;|,|\bor\b)\s*', caseSensitive: false),
     );
 
