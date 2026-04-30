@@ -20,6 +20,27 @@ import 'card_feedback.dart';
 import 'check_answer.dart';
 
 // Types
+
+// French special characters
+const frenchSpecialChars = {
+  'à': 'à',
+  'â': 'â',
+  'ä': 'ä',
+  'é': 'é',
+  'è': 'è',
+  'ê': 'ê',
+  'ë': 'ë',
+  'î': 'î',
+  'ï': 'ï',
+  'ô': 'ô',
+  'ö': 'ö',
+  'ù': 'ù',
+  'û': 'û',
+  'ü': 'ü',
+  'ç': 'ç',
+  'œ': 'œ',
+  'æ': 'æ',
+};
 typedef DeckData = ({
   List<Word> words,
   Map<String, MasteryProgress> progressMap,
@@ -33,10 +54,10 @@ class DeckPage extends StatefulWidget {
   State<DeckPage> createState() => DeckPageState();
 }
 
-// Controller for DeskPageState
 class DeckPageState extends State<DeckPage> {
   late Future<DeckData> deck;
   final TextEditingController answerController = TextEditingController();
+  final FocusNode answerFocusNode = FocusNode();
   static const int maxAttemptsPerCard = 3;
   final cardFeedback = CardFeedback();
   String? feedback;
@@ -44,6 +65,7 @@ class DeckPageState extends State<DeckPage> {
   bool isCheckingAnswer = true;
   bool isCardFlipped = false;
   bool isSkipping = false;
+  bool charsIsOpen = false;
   int currentIndex = 0;
   int attemptsUsed = 0;
 
@@ -71,6 +93,7 @@ class DeckPageState extends State<DeckPage> {
   void dispose() {
     confettiController.dispose();
     answerController.dispose();
+    answerFocusNode.dispose();
     super.dispose();
   }
 
@@ -140,6 +163,22 @@ class DeckPageState extends State<DeckPage> {
     });
   }
 
+  void insertCharacter(String char) {
+    final text = answerController.text;
+    final newText = '$text$char';
+
+    answerController.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+
+    setState(() {
+      charsIsOpen = false;
+    });
+
+    answerFocusNode.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -183,6 +222,14 @@ class DeckPageState extends State<DeckPage> {
           return SafeArea(
             child: Stack(
               children: [
+                if (charsIsOpen)
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => setState(() => charsIsOpen = false),
+                      child: const SizedBox.shrink(),
+                    ),
+                  ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
@@ -199,14 +246,45 @@ class DeckPageState extends State<DeckPage> {
                           isSkipping: isSkipping,
                         ),
                       ),
-                      TextField(
-                        controller: answerController,
-                        enabled: isCheckingAnswer,
-                        textInputAction: TextInputAction.done,
-                        onSubmitted: (_) => checkAnswer(data),
-                        decoration: const InputDecoration(
-                          labelText: 'Type the meaning in English',
-                          border: OutlineInputBorder(),
+                      IntrinsicHeight(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: answerController,
+                                focusNode: answerFocusNode,
+                                enabled: isCheckingAnswer,
+                                textInputAction: TextInputAction.done,
+                                onSubmitted: (_) => checkAnswer(data),
+                                decoration: const InputDecoration(
+                                  labelText: 'Type the meaning in English',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            OutlinedButton(
+                              onPressed: () {
+                                setState(() => charsIsOpen = !charsIsOpen);
+                                answerFocusNode.requestFocus();
+                              },
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.keyboard_alt_outlined),
+                                  Text('Chars'),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -230,28 +308,38 @@ class DeckPageState extends State<DeckPage> {
                           Expanded(
                             child: FilledButton(
                               onPressed: () => checkAnswer(data),
-                              style: !isCheckingAnswer && lastWasCorrect
-                                  ? FilledButton.styleFrom(
-                                      backgroundColor: ColorScheme.fromSeed(
+                              style: FilledButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                backgroundColor:
+                                    !isCheckingAnswer && lastWasCorrect
+                                    ? ColorScheme.fromSeed(
                                         seedColor: isSkipping
                                             ? Colors.orange
                                             : Colors.green,
                                         brightness: Theme.of(
                                           context,
                                         ).brightness,
-                                      ).primary,
-                                    )
-                                  : null,
+                                      ).primary
+                                    : null,
+                              ),
                               child: Text(
                                 isCheckingAnswer ? 'Check answer' : 'Next',
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 8),
                           OutlinedButton(
                             onPressed: isCheckingAnswer
                                 ? () => checkAnswer(data, skip: true)
                                 : null,
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.all(4),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
                             child: Text('Skip'),
                           ),
                         ],
@@ -260,6 +348,52 @@ class DeckPageState extends State<DeckPage> {
                     ],
                   ),
                 ),
+                if (charsIsOpen)
+                  Positioned(
+                    bottom: 140,
+                    left: 16,
+                    right: 16,
+                    child: Material(
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                          ),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          children: frenchSpecialChars.entries
+                              .map(
+                                (entry) => SizedBox(
+                                  width: 42,
+                                  height: 42,
+                                  child: OutlinedButton(
+                                    onPressed: () =>
+                                        insertCharacter(entry.value),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      entry.value,
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ),
                 ConfettiSection(confettiController: confettiController),
               ],
             ),
