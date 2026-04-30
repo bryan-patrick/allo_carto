@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 import '../../core/services/database_service.dart';
 import '../../core/models/user_word_progress.dart';
 
-typedef Stats = Map<String, Map<MasteryTier, int>>;
+typedef Totals = Map<String, Map<MasteryTier, int>>;
 
-class StatsPage extends StatefulWidget {
-  const StatsPage({super.key});
+class TotalsPage extends StatefulWidget {
+  const TotalsPage({super.key});
 
   @override
-  State<StatsPage> createState() => StatsPageState();
+  State<TotalsPage> createState() => TotalsPageState();
 }
 
-class StatsPageState extends State<StatsPage> {
+class TotalsPageState extends State<TotalsPage> {
   final DatabaseService database = DatabaseService.instance;
 
   /*
@@ -34,9 +34,9 @@ class StatsPageState extends State<StatsPage> {
    */
   static const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-  Stats stats = buildEmptyStats();
+  Totals stats = buildEmptyStats();
 
-  static Stats buildEmptyStats() => {
+  static Totals buildEmptyStats() => {
     for (final level in cefrLevels)
       level: {for (final tier in MasteryTier.values) tier: 0},
   };

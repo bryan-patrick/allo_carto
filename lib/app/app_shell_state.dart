@@ -7,7 +7,7 @@ import 'app_shell.dart';
 // Features
 import '../features/home/home_page.dart';
 import '../features/profile/profile_page.dart';
-import '../features/stats/stats_page.dart';
+import '../features/totals/totals_page.dart';
 
 // State for the containing shell of our app.
 // For now it just keeps track of deck index.
@@ -19,7 +19,7 @@ class AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final pages = [
       const HomePage(),
-      const StatsPage(),
+      const TotalsPage(),
       ProfilePage(
         themeMode: widget.themeMode,
         onThemeModeChanged: widget.onThemeModeChanged,
@@ -49,7 +49,7 @@ class AppShellState extends State<AppShell> {
           NavigationDestination(
             icon: Icon(Icons.auto_graph),
             selectedIcon: Icon(Icons.auto_awesome),
-            label: 'Stats',
+            label: 'Totals',
           ),
         ],
       ),

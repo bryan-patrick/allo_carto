@@ -1,6 +1,3 @@
-// Core
-import 'dart:math' as math;
-
 // Packages
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +7,17 @@ import '../../core/models/user_word_progress.dart';
 import '../../core/models/word.dart';
 
 // Services
-import '../../core/services/answer_matcher.dart';
 import '../../core/services/database_service.dart';
 import '../../core/services/deck_service.dart';
 
 // Widgets
 import 'word_card.dart';
+import 'deck_is_completed.dart';
+import 'confetti_section.dart';
+
+// Feedback
+import 'card_feedback.dart';
+import 'check_answer.dart';
 
 // Types
 typedef DeckData = ({
@@ -23,6 +25,7 @@ typedef DeckData = ({
   Map<String, MasteryProgress> progressMap,
 });
 
+// Init the DeckPage widget
 class DeckPage extends StatefulWidget {
   const DeckPage({super.key});
 
@@ -30,14 +33,16 @@ class DeckPage extends StatefulWidget {
   State<DeckPage> createState() => DeckPageState();
 }
 
+// Controller for DeskPageState
 class DeckPageState extends State<DeckPage> {
-  final TextEditingController answerController = TextEditingController();
   late Future<DeckData> deck;
+  final TextEditingController answerController = TextEditingController();
   static const int maxAttemptsPerCard = 3;
+  final cardFeedback = CardFeedback();
   String? feedback;
+  bool lastWasCorrect = false;
   bool isCheckingAnswer = true;
   bool isCardFlipped = false;
-  bool lastWasCorrect = false;
   bool isSkipping = false;
   int currentIndex = 0;
   int attemptsUsed = 0;
@@ -69,7 +74,7 @@ class DeckPageState extends State<DeckPage> {
     super.dispose();
   }
 
-  // Check or Advance
+  // Check Answer
   //
   // Correct answer path:
   // 1. Get "previousTier"" and "nextTier" and see if we leveled up.
@@ -77,89 +82,49 @@ class DeckPageState extends State<DeckPage> {
   // 3. Confetti if the answer is in a new mastery tier.
   Future<void> checkAnswer(DeckData data, {bool skip = false}) async {
     final currentWord = data.words[currentIndex];
-    int attemptsRemaining = maxAttemptsPerCard - attemptsUsed;
+    final previousCorrectCount =
+        (data.progressMap[currentWord.id]?.correctCount ?? 0) +
+        (sessionCorrects[currentWord.id] ?? 0);
 
-    if (skip) {
-      setState(() {
-        isCheckingAnswer = false;
-        isCardFlipped = true;
-        lastWasCorrect = false;
-        feedback = null;
-        isSkipping = true;
-      });
+    final answerResult = CheckAnswer.evaluate(
+      skip: skip,
+      isCheckingAnswer: isCheckingAnswer,
+      answer: answerController.text,
+      expectedMeaning: currentWord.english,
+      attemptsUsed: attemptsUsed,
+      maxAttemptsPerCard: maxAttemptsPerCard,
+      previousCorrectCount: previousCorrectCount,
+      wordId: currentWord.id,
+      feedback: cardFeedback,
+    );
+
+    if (answerResult.persistCorrectIncrement) {
+      await DatabaseService.instance.incrementCorrectCount(currentWord.id);
+    }
+
+    if (answerResult.shouldPlayConfetti) {
+      confettiController.play();
+    }
+
+    if (answerResult.shouldAdvanceToNextCard) {
+      advanceToNextCard();
+      confettiController.stop();
       return;
     }
 
-    // Check the answer
-    // Evaluate user's answer against the current card's expected meaning.
-    if (isCheckingAnswer) {
-      bool shouldCelebrateLevelUp = false;
-      final answer = answerController.text;
-      final matchResult = AnswerMatcher.match(
-        userAnswer: answer,
-        expected: currentWord.english,
-      );
-      final correct = matchResult.isCorrect;
-
-      // See if the next tier is going to level up
-      if (correct) {
-        final previousCorrectCount =
-            (data.progressMap[currentWord.id]?.correctCount ?? 0) +
-            (sessionCorrects[currentWord.id] ?? 0);
-        final previousTier = MasteryProgress(
-          wordId: currentWord.id,
-          correctCount: previousCorrectCount,
-        ).masteryTier;
-        final nextTier = MasteryProgress(
-          wordId: currentWord.id,
-          correctCount: previousCorrectCount + 1,
-        ).masteryTier;
-
-        shouldCelebrateLevelUp = nextTier.index > previousTier.index;
-
-        await DatabaseService.instance.incrementCorrectCount(currentWord.id);
-
-        if (shouldCelebrateLevelUp) {
-          confettiController.play();
-        }
+    setState(() {
+      if (answerResult.sessionCorrectIncrement == 1) {
+        sessionCorrects[currentWord.id] =
+            (sessionCorrects[currentWord.id] ?? 0) + 1;
       }
 
-      // Update local UI state for this card attempt.
-      // On success, increment with a local var (so it happens instantly)
-      setState(() {
-        lastWasCorrect = correct;
-
-        if (correct) {
-          sessionCorrects[currentWord.id] =
-              (sessionCorrects[currentWord.id] ?? 0) + 1;
-          isCheckingAnswer = false;
-          isCardFlipped = true;
-          feedback = successFeedback(matchResult.feedbackType);
-
-          return;
-        }
-
-        attemptsUsed += 1;
-        attemptsRemaining = maxAttemptsPerCard - attemptsUsed;
-
-        if (attemptsRemaining > 0) {
-          isCheckingAnswer = true;
-          isCardFlipped = false;
-          feedback = retryFeedback(matchResult);
-        } else {
-          isCheckingAnswer = false;
-          isCardFlipped = true;
-          feedback = finalFeedback(matchResult, currentWord.english);
-        }
-      });
-
-      return;
-    }
-
-    // The current card is done increment the index and reset the state
-    advanceToNextCard();
-
-    confettiController.stop();
+      lastWasCorrect = answerResult.lastWasCorrect;
+      isCheckingAnswer = answerResult.isCheckingAnswer;
+      isCardFlipped = answerResult.isCardFlipped;
+      feedback = answerResult.feedback;
+      isSkipping = answerResult.isSkipping;
+      attemptsUsed = answerResult.attemptsUsed;
+    });
   }
 
   void advanceToNextCard() {
@@ -173,38 +138,6 @@ class DeckPageState extends State<DeckPage> {
       feedback = null;
       isSkipping = false;
     });
-  }
-
-  static const successMessages = {
-    AnswerFeedbackType.closeEnough: 'Close enough. I counted that as correct.',
-  };
-
-  static const retryMessages = {
-    AnswerFeedbackType.missingArticle: 'Close! Remember the article!',
-    AnswerFeedbackType.wrongArticle: "Close! That's the wrong article.",
-    AnswerFeedbackType.missingInfinitive: 'Close! You forgot the infinitive.',
-    AnswerFeedbackType.wrongInfinitive:
-        'Close! That infinitive marker is not right. Try again.',
-  };
-
-  static const finalMessagePrefixes = {
-    AnswerFeedbackType.missingArticle: 'Close! You forgot the article.',
-    AnswerFeedbackType.wrongArticle: 'Close! The article is not right.',
-    AnswerFeedbackType.missingInfinitive:
-        'Close! You forgot the infinitive marker.',
-    AnswerFeedbackType.wrongInfinitive:
-        'Close! The infinitive marker is not right.',
-  };
-
-  String successFeedback(AnswerFeedbackType feedbackType) =>
-      successMessages[feedbackType] ?? 'Nice. Correct answer.';
-
-  String retryFeedback(AnswerMatchResult result) =>
-      retryMessages[result.feedbackType] ?? 'Not quite. Try again.';
-
-  String finalFeedback(AnswerMatchResult result, String expectedMeaning) {
-    final prefix = finalMessagePrefixes[result.feedbackType] ?? 'Not quite.';
-    return '$prefix Expected: $expectedMeaning';
   }
 
   @override
@@ -232,7 +165,7 @@ class DeckPageState extends State<DeckPage> {
           final data = snapshot.data!;
 
           if (currentIndex >= data.words.length) {
-            return DeckCompleteView(
+            return DeckIsCompleted(
               totalCards: data.words.length,
               onClose: () => Navigator.of(context).pop(),
             );
@@ -327,96 +260,11 @@ class DeckPageState extends State<DeckPage> {
                     ],
                   ),
                 ),
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: ConfettiWidget(
-                            confettiController: confettiController,
-                            blastDirection: -math.pi / 2 + 0.16,
-                            blastDirectionality:
-                                BlastDirectionality.directional,
-                            emissionFrequency: 0.03,
-                            numberOfParticles: 5,
-                            shouldLoop: false,
-                            gravity: 0.20,
-                            maxBlastForce: 90,
-                            minBlastForce: 45,
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: ConfettiWidget(
-                            confettiController: confettiController,
-                            blastDirection: -math.pi / 2,
-                            blastDirectionality:
-                                BlastDirectionality.directional,
-                            emissionFrequency: 0.03,
-                            numberOfParticles: 6,
-                            shouldLoop: false,
-                            gravity: 0.20,
-                            maxBlastForce: 90,
-                            minBlastForce: 45,
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: ConfettiWidget(
-                            confettiController: confettiController,
-                            blastDirection: -math.pi / 2 - 0.16,
-                            blastDirectionality:
-                                BlastDirectionality.directional,
-                            emissionFrequency: 0.03,
-                            numberOfParticles: 5,
-                            shouldLoop: false,
-                            gravity: 0.20,
-                            maxBlastForce: 90,
-                            minBlastForce: 45,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                ConfettiSection(confettiController: confettiController),
               ],
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class DeckCompleteView extends StatelessWidget {
-  const DeckCompleteView({
-    super.key,
-    required this.totalCards,
-    required this.onClose,
-  });
-
-  final int totalCards;
-  final VoidCallback onClose;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Deck complete',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text('You reviewed $totalCards cards.'),
-            const SizedBox(height: 8),
-            FilledButton(onPressed: onClose, child: const Text('Close deck')),
-          ],
-        ),
       ),
     );
   }

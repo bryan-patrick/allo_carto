@@ -8,7 +8,7 @@ import 'theme/ac_dark_theme.dart';
 // Features
 import '../features/home/home_page.dart';
 import '../features/profile/profile_page.dart';
-import '../features/stats/stats_page.dart';
+import '../features/totals/totals_page.dart';
 
 // App
 import 'app.dart';
@@ -41,7 +41,7 @@ class AlloCartoAppState extends State<AlloCartoApp> {
   Widget build(BuildContext context) {
     final pages = [
       const HomePage(),
-      const StatsPage(),
+      const TotalsPage(),
       ProfilePage(
         themeMode: themeMode,
         onThemeModeChanged: (mode) {
