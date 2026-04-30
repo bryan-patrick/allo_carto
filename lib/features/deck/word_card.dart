@@ -172,15 +172,15 @@ class CardFace extends StatelessWidget {
                     color: widget.isSkipping
                         ? Colors.grey.withAlpha(12)
                         : _wasWrong
-                        ? Colors.red.withAlpha(24)
+                        ? Colors.orange.withAlpha(24)
                         : Colors.green.withAlpha(24),
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
                       color: widget.isSkipping
-                          ? Colors.grey.withAlpha(24)
+                          ? Colors.grey.shade400
                           : _wasWrong
-                          ? Colors.red.withAlpha(48)
-                          : Colors.green.withAlpha(24),
+                          ? Colors.orange.shade400
+                          : Colors.green.shade200,
                       width: 1,
                     ),
                   ),
@@ -188,9 +188,9 @@ class CardFace extends StatelessWidget {
                     widget.word.english,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       color: widget.isSkipping
-                          ? Colors.grey.shade400
+                          ? Colors.grey.shade800
                           : _wasWrong
-                          ? Colors.red.shade700
+                          ? Colors.orange.shade700
                           : Colors.green.shade700,
                       fontSize: 18,
                     ),
