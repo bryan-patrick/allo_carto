@@ -41,6 +41,7 @@ const frenchSpecialChars = {
   'œ': 'œ',
   'æ': 'æ',
 };
+
 typedef DeckData = ({
   List<Word> words,
   Map<String, MasteryProgress> progressMap,
