@@ -1,3 +1,6 @@
+// TODO: This is a mess, lets just rewrite this whole thing
+// Id like a simpler typo checker and accepted answer array anyway
+
 // Dart
 import 'dart:math' as math;
 
