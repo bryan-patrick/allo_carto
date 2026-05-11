@@ -1,3 +1,6 @@
+// TODO: This is a mess, lets just rewrite this whole thing
+// Id like a simpler typo checker and accepted answer array anyway
+
 // Dart
 import 'dart:math' as math;
 
@@ -117,6 +120,7 @@ class AnswerMatcher {
         normalizedInput: normalizedInput,
         acceptedAnswer: acceptedAnswer,
       );
+
       if (result != null) {
         return result;
       }
@@ -141,6 +145,7 @@ class AnswerMatcher {
         missingType: AnswerFeedbackType.missingArticle,
         wrongType: AnswerFeedbackType.wrongArticle,
       );
+
       if (articleResult != null) {
         bestIncorrectResult ??= articleResult;
       }
@@ -152,6 +157,7 @@ class AnswerMatcher {
         missingType: AnswerFeedbackType.missingInfinitive,
         wrongType: AnswerFeedbackType.wrongInfinitive,
       );
+
       if (infinitiveResult != null) {
         bestIncorrectResult ??= infinitiveResult;
       }
@@ -192,6 +198,7 @@ class AnswerMatcher {
     }
 
     final inputWords = normalizedInput.split(' ');
+
     for (final word in inputWords) {
       if (letterDistance(word, acceptedAnswer) <= 1) {
         return (
