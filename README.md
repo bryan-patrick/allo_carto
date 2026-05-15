@@ -10,11 +10,11 @@ It's a French learning app. Open it, jump right in to reviewing some flashcards 
 
 Fast, simple, and helps you retain new French words every day.
 
+![App preview](preview.jpg)
+
 ## Dev Notes
 
 - May 15, 2026 | Started rebuilding in React Native. This is much easier than trying to use it as a flutter learning project. I'd like to get this done, I actually want to use it! I preserved the flutter version under branch `v1-flutter`.
-
-![App preview](preview.jpg)
 
 ## Style Guide
 
