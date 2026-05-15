@@ -9,7 +9,6 @@ interface Classes {
 	cardText: TextStyle;
 	linkButton: ViewStyle;
 	hoveredLinkButton: ViewStyle;
-	pressedLinkButton: ViewStyle;
 	linkText: TextStyle;
 	hoveredLinkText: TextStyle;
 	pressedLinkText: TextStyle;
@@ -73,15 +72,10 @@ const styles = StyleSheet.create<Classes>({
 		borderWidth: 2,
 		padding: 14,
 		gap: 16,
-		boxShadow: `8px 8px 0 0 ${colors.dark.border}`,
 	},
 	hoveredLinkButton: {
 		borderRadius: 4,
 		borderWidth: 2,
-	},
-	pressedLinkButton: {
-		borderColor: colors.light.border,
-		backgroundColor: colors.light.primary,
 	},
 	linkText: {
 		color: colors.light.text,
@@ -92,7 +86,7 @@ const styles = StyleSheet.create<Classes>({
 		color: colors.light.text,
 	},
 	pressedLinkText: {
-		color: colors.dark.text,
+		color: colors.light.primary,
 	},
 });
 
