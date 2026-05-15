@@ -16,20 +16,27 @@ interface LinkButtonProps {
 /**
  * A link that looks like a button
  */
-export default function LinkButton({ screen, params, action, href, children, SVGElement, ...moreProps }: LinkButtonProps) {
+export default function LinkButton({
+  screen,
+  params,
+  action,
+  href,
+  children,
+  SVGElement,
+  ...moreProps }: LinkButtonProps) {
   /**
    * Style vars
    */
   const {
-    linkButtonStyles,
-    linkTextStyles,
-    hoveredLinkButtonStyles,
-    hoveredLinkTextStyles,
-    pressedLinkButtonStyles,
-    pressedLinkTextStyles
+    linkButton,
+    linkText,
+    hoveredLinkButton,
+    hoveredLinkText,
+    pressedLinkButton,
+    pressedLinkText
   } = styles;
-  let currentLinkButtonStyles = linkButtonStyles;
-  let currentLinkTextStyles = linkTextStyles;
+  let currentLinkButtonStyles = linkButton;
+  let currentLinkTextStyles = linkText;
 
   /**
    * State/prop vars
@@ -43,11 +50,11 @@ export default function LinkButton({ screen, params, action, href, children, SVG
    * Pressed styles before hovered styles
    */
   if (isPressed) {
-    currentLinkButtonStyles = { ...linkButtonStyles, ...pressedLinkButtonStyles };
-    currentLinkTextStyles = { ...linkTextStyles, ...pressedLinkTextStyles };
+    currentLinkButtonStyles = { ...linkButton, ...pressedLinkButton };
+    currentLinkTextStyles = { ...linkText, ...pressedLinkText };
   } else if (isHovered) {
-    currentLinkButtonStyles = { ...linkButtonStyles, ...hoveredLinkButtonStyles };
-    currentLinkTextStyles = { ...linkTextStyles, ...hoveredLinkTextStyles };
+    currentLinkButtonStyles = { ...linkButton, ...hoveredLinkButton };
+    currentLinkTextStyles = { ...linkText, ...hoveredLinkText };
   }
 
   return (

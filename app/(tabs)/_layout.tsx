@@ -1,5 +1,6 @@
 import MaterialIcons from '@/node_modules/@expo/vector-icons/MaterialIcons';
 import { Tabs } from "@/node_modules/expo-router";
+import { colors } from '../styles';
 
 /**
  * Icon dir here
@@ -7,7 +8,12 @@ import { Tabs } from "@/node_modules/expo-router";
  */
 export default function TabsLayout({ size = 28 }) {
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: colors.light.secondary,
+        tabBarInactiveTintColor: colors.light.background,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{

@@ -6,10 +6,6 @@ import alloTheme from './alloTheme';
 /*
  * Stack navigator
  * https://docs.expo.dev/router/advanced/stack/
- * 
- * Note: 
- * Showing the header literally shows "(tabs)" in the header, 
- * read about the stack component.
  */
 const debug = true;
 

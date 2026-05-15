@@ -4,11 +4,7 @@ A flashcard language learning app made to help drill words into your brain with 
 
 The idea is to help users track how many new words they're learning a day and how well they know them.
 
-<img src="preview_apprendre.gif" width="400" alt="description">
-
 ![App preview](preview.jpg)
-
-![Stats](stats.jpg)
 
 ## Style Guide
 
@@ -36,7 +32,7 @@ The idea is to help users track how many new words they're learning a day and ho
 
 - Text: `#F7F7F7`
 
-- Background: `#DBFBF0`
+- Background: `#8CABA0`
 
 - Border: `#465B5D`
 

@@ -1,4 +1,19 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
+
+interface Classes {
+	container: ViewStyle;
+	h2: TextStyle;
+	rowBetween: ViewStyle;
+	colBetween: ViewStyle;
+	cardView: ViewStyle;
+	cardText: TextStyle;
+	linkButton: ViewStyle;
+	hoveredLinkButton: ViewStyle;
+	pressedLinkButton: ViewStyle;
+	linkText: TextStyle;
+	hoveredLinkText: TextStyle;
+	pressedLinkText: TextStyle;
+}
 
 export const colors = {
 	dark: {
@@ -13,49 +28,70 @@ export const colors = {
 		primary: '#7BADA6',
 		secondary: '#E09FAD',
 		text: '#F7F7F7',
-		background: '#DBFBF0',
+		background: '#8CABA0',
 		border: '#465B5D',
 		secondaryBorder: '#6B474B',
 	},
 };
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<Classes>({
 	container: {
-		flex: 1,
-		backgroundColor: colors.dark.background,
-		alignItems: 'center',
-		justifyContent: 'center',
+		margin: 24,
+		gap: 24,
 	},
-	linkButtonStyles: {
+	h2: {
+		fontSize: 20,
+		fontWeight: 700,
+		color: colors.light.text,
+	},
+	rowBetween: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		gap: 12,
+	},
+	colBetween: {
+		gap: 12,
+	},
+	cardView: {
+		backgroundColor: colors.light.background,
+		padding: 16,
+		borderRadius: 8,
+		gap: 16,
+	},
+	cardText: {
+		color: colors.dark.text,
+		fontWeight: 500,
+		fontSize: 16,
+	},
+	linkButton: {
 		alignItems: 'center',
 		justifyContent: 'center',
 		borderColor: colors.dark.border,
 		backgroundColor: colors.dark.primary,
 		borderRadius: 8,
 		borderWidth: 2,
-		padding: 24,
-		margin: 24,
+		padding: 14,
 		gap: 16,
 		boxShadow: `8px 8px 0 0 ${colors.dark.border}`,
 	},
-	hoveredLinkButtonStyles: {
+	hoveredLinkButton: {
 		borderRadius: 4,
 		borderWidth: 2,
 	},
-	pressedLinkButtonStyles: {
+	pressedLinkButton: {
 		borderColor: colors.light.border,
 		backgroundColor: colors.light.primary,
-		color: '#ff0000',
 	},
-	linkTextStyles: {
+	linkText: {
 		color: colors.light.text,
 		fontWeight: '800',
-		fontSize: 18,
+		fontSize: 16,
 	},
-	hoveredLinkTextStyles: {
+	hoveredLinkText: {
 		color: colors.light.text,
 	},
-	pressedLinkTextStyles: {
+	pressedLinkText: {
 		color: colors.dark.text,
 	},
 });
