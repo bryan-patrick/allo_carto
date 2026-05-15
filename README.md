@@ -4,11 +4,11 @@
 
 Have you ever caught yourself doomscrolling while waiting for food to cook, the shower to heat up, a bus to arrive, or waiting for someone to stop talking to you on the phone and think "damn man, I could be practicing my French right now"?
 
-Yeah me too! That's why I built this.
+Yeah me too! That's why I'm building this.
 
-It's a French learning app. Open it, jump right in to reviewing some flashcards (decks are created based on adaptive scoring so you always get words and phrases you actually need to work on) then close it and move on.
+It's a Quebecqois focused French learning app. Open it, jump right in to reviewing some flashcards (decks are created based on adaptive scoring so you always get words and phrases you actually need to work on) then close it and move on.
 
-Fast, simple, and helps you retain new French words every day.
+Fast, simple, and helps you retain new French words and phrases every day.
 
 ![App preview](preview.jpg)
 
