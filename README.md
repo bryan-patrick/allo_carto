@@ -6,7 +6,7 @@ Have you ever caught yourself doomscrolling while waiting for food to cook, the 
 
 Yeah me too! That's why I'm building this.
 
-It's a Quebecqois focused French learning app. Open it, jump right in to reviewing some flashcards (decks are created based on adaptive scoring so you always get words and phrases you actually need to work on) then close it and move on.
+It's a Quebecois focused French learning app. Open it, jump right in to reviewing some flashcards (decks are created based on adaptive scoring so you always get words and phrases you actually need to work on) then close it and move on.
 
 Fast, simple, and helps you retain new French words and phrases every day.
 
