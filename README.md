@@ -1,8 +1,18 @@
 # Allô Cartô
 
-A flashcard language learning app made to help drill words into your brain with flashcards, games, and exercises.
+**_Work in progress!_**
 
-The idea is to help users track how many new words they're learning a day and how well they know them.
+Have you ever caught yourself doomscrolling while waiting for food to cook, the shower to heat up, a bus to arrive, or waiting for someone to stop talking to you on the phone and think "damn man, I could be practicing my French right now"?
+
+Yeah me too! That's why I built this.
+
+It's a French learning app. Open it, jump right in to reviewing some flashcards (decks are created based on adaptive scoring so you always get words and phrases you actually need to work on) then close it and move on.
+
+Fast, simple, and helps you retain new French words every day.
+
+## Dev Notes
+
+- May 15, 2026 | Started rebuilding in React Native. This is much easier than trying to use it as a flutter learning project. I'd like to get this done, I actually want to use it! I preserved the flutter version under branch `v1-flutter`.
 
 ![App preview](preview.jpg)
 
