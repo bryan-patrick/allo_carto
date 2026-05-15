@@ -1,3 +1,5 @@
+node_modules
+
 # SQLite databases (generated at runtime, not committed)
 *.db
 *.sqlite
