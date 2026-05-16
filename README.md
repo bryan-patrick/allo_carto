@@ -2,9 +2,9 @@
 
 **_Work in progress!_**
 
-Have you ever caught yourself doomscrolling while waiting for food to cook, the shower to heat up, a bus to arrive, or waiting for someone to stop talking to you on the phone and think "damn man, I could be practicing my French right now"?
+Have you ever been doomscrolling and thought "damn man, I could be learning French right now"?
 
-Yeah me too! That's why I'm building this.
+Yeah me too. That's why I'm building this.
 
 It's a Quebecois focused French learning app. Open it, jump right in to reviewing some flashcards (decks are created based on adaptive scoring so you always get words and phrases you actually need to work on) then close it and move on.
 
