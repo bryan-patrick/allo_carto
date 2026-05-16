@@ -27,7 +27,7 @@ export const colors = {
 		primary: '#7BADA6',
 		secondary: '#E09FAD',
 		text: '#F7F7F7',
-		background: '#8CABA0',
+		background: '#ACC3BB',
 		border: '#465B5D',
 		secondaryBorder: '#6B474B',
 	},
