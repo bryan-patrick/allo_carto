@@ -190,6 +190,7 @@ const wordCardStyles = StyleSheet.create({
     fontWeight: '700',
   },
   wordPronunciation: {
+    fontSize: 18,
     color: colors.dark.text
   },
   answerSlotContainer: {

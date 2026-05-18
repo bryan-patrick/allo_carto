@@ -27,7 +27,7 @@ function MappedButton({
   activeWord,
   handler,
 }: MappedButtonProps) {
-  const { wcsButton, wcsText } = mappedWordsStyles;
+  const { wcsButtonContainer, wcsButton, wcsText } = mappedWordsStyles;
   const buttonY = useSharedValue(0);
   const buttonBackgroundColor = useSharedValue(colors.light.background);
   const buttonBoxShadow = useSharedValue(`0 4px 0 0 ${colors.light.border}`);
@@ -57,10 +57,14 @@ function MappedButton({
 
   return (
     <Animated.View
-      style={[wcsButton, wcsButtonActive]}
+      style={[wcsButtonContainer, wcsButtonActive]}
       key={word}
     >
-      <Pressable onPress={() => handler(word)}>
+      <Pressable
+        style={wcsButton}
+        onPress={() => handler(word)}
+        hitSlop={10}
+      >
         <Text style={wcsText}>{word}</Text>
       </Pressable>
     </Animated.View>
@@ -87,15 +91,23 @@ export default function MappedWords({ words, activeWord, handler }: MappedWordsP
  * Styles
  */
 const mappedWordsStyles = StyleSheet.create({
-  wcsButton: {
-    backgroundColor: colors.light.background,
+  wcsButtonContainer: {
+    display: 'flex',
+    flexGrow: 1,
     borderRadius: 8,
-    padding: 10,
+    backgroundColor: colors.light.background,
+    boxShadow: `0 4px 0 0 ${colors.light.border}`,
+    maxWidth: 100
+  },
+  wcsButton: {
+    borderRadius: 8,
+    padding: 12,
     paddingRight: 16,
     paddingLeft: 16,
-    boxShadow: `0 4px 0 0 ${colors.light.border}`,
   },
   wcsText: {
-    color: colors.dark.text
+    textAlign: 'center',
+    color: colors.dark.text,
+    fontWeight: 500
   }
 });

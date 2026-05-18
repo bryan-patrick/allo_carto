@@ -32,7 +32,11 @@ export default function AppLayout() {
     <ThemeProvider value={alloTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="deck" options={{ headerShown: true, headerBackTitle: 'Home' }} />
+        <Stack.Screen name="deck" options={{
+          headerShown: true,
+          headerBackTitle: 'Home',
+          headerTitle: 'Review a deck'
+        }} />
       </Stack>
     </ThemeProvider>
   )
