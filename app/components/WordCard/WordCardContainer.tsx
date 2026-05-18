@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { englishArticles } from "../../util/filterFillerWords";
 import getFillerWords from "../../util/getFillerWords";
-import ActionButton from "../ActionButton";
 import { CardContext, type CardStateProps, initialCardState } from "./cardContext";
 import WordCard, { WordProps } from "./WordCard";
+import WordCardButton from "./WordCardButton";
 import WordCardSelection from "./WordCardSelection";
 
 /**
@@ -18,15 +18,32 @@ interface CardContainerProps {
  * WordCardContainer Component
  */
 export default function WordCardContainer({ word }: CardContainerProps) {
+  const { container, nextBtn } = wordCardContainerStyles;
+
+  /**
+   * State
+   */
   const [fillerWords, setFillerWords] = useState<string[]>([]);
   const [articleWords, setArticleWords] = useState<string[]>([]);
-  const [cardState, setCardState] = useState<CardStateProps>(initialCardState);
-  const { nextBtn } = wordCardContainerStyles;
+  const [cardState, setCardState] = useState<CardStateProps>({
+    ...initialCardState,
+    correctArticle: word.englishArticle ?? null,
+    correctWord: word.translation ?? null,
+  });
 
+  /**
+   * Side effects
+   */
   useEffect(() => {
+    setCardState({
+      ...initialCardState,
+      correctArticle: word.englishArticle ?? null,
+      correctWord: word.translation ?? null,
+    });
+
     async function loadWords() {
       setFillerWords(await getFillerWords({
-        correctWord: word.id
+        correctWord: word.translation
       }));
 
       if (word.englishArticle) {
@@ -38,23 +55,31 @@ export default function WordCardContainer({ word }: CardContainerProps) {
     }
 
     loadWords();
-  }, [word.id, word.englishArticle]);
+  }, [word.translation, word.englishArticle]);
 
   return (
     <CardContext.Provider value={{ cardState, setCardState }}>
-      <View>
+      <View style={container}>
         <WordCard word={word} />
         <WordCardSelection
           articleWords={articleWords}
           fillerWords={fillerWords}
         />
-        <ActionButton style={nextBtn}>Next Card</ActionButton>
+        <WordCardButton style={nextBtn}>
+          {cardState.isCorrect ? 'Next card' : 'Check'}
+        </WordCardButton>
       </View>
     </CardContext.Provider >
   )
 }
 
 const wordCardContainerStyles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'stretch',
+    height: '100%',
+  },
   nextBtn: {
     margin: 24
   }

@@ -67,6 +67,7 @@ export default function WordCard({ word }: WordCardProps) {
    */
   const articleWidth = useSharedValue(0);
   const wordWidth = useSharedValue(0);
+
   const timing = useMemo(() => ({
     duration: 120,
     easing: Easing.inOut(Easing.ease)
@@ -75,6 +76,7 @@ export default function WordCard({ word }: WordCardProps) {
   const articleWidthStyle = useAnimatedStyle(() => ({
     width: articleWidth.value
   }));
+
   const wordWidthStyle = useAnimatedStyle(() => ({
     width: wordWidth.value
   }));

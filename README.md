@@ -48,6 +48,24 @@ Fast, simple, and helps you retain new French words and phrases every day.
 
 - Secondary Border: `#6B474B`
 
+### Alerts
+
+#### Dark
+
+- Success: #032B1C
+
+- Warning: #332105
+
+- Error: #3E0E14
+
+#### Light
+
+- Success: #DDFFD6
+
+- Warning: #FFC670
+
+- Error: #FF7081
+
 ### Fonts
 
 **Lexend** is used throughout the application. The font is included in `app/assets/fonts/lexend-variable.ttf` and loaded asychonously via the `useFonts` hook via expo.

@@ -22,6 +22,9 @@ export const colors = {
 		background: '#131A1B',
 		border: '#1B2B31',
 		secondaryBorder: '#382326',
+		success: '#032B1C',
+		warning: '#332105',
+		error: '#3E0E14',
 	},
 	light: {
 		primary: '#7BADA6',
@@ -30,6 +33,9 @@ export const colors = {
 		background: '#ACC3BB',
 		border: '#465B5D',
 		secondaryBorder: '#6B474B',
+		success: '#DDFFD6',
+		warning: '#FFC670',
+		error: '#FF7081',
 	},
 };
 

@@ -16,7 +16,7 @@ const tapAudio = require('../assets/sounds/tap.wav');
 /**
  * Typing
  */
-interface ActionButtonProps extends PressableProps {
+interface LinkButtonProps extends PressableProps {
   SVGElement?: ReactElement;
   handler?: Function;
   children?: ReactNode;
@@ -33,7 +33,7 @@ interface ActionButtonProps extends PressableProps {
  * https://reactnative.dev/docs/components-and-apis
  */
 
-export default function ActionButton({
+export default function LinkButton({
   handler = () => { },
   action,
   screen,
@@ -43,7 +43,7 @@ export default function ActionButton({
   SVGElement,
   style,
   props,
-}: ActionButtonProps) {
+}: LinkButtonProps) {
   /**
    * Sound effect
    */

@@ -8,13 +8,23 @@
 import { createContext, type Dispatch, type SetStateAction } from 'react';
 
 export interface CardStateProps {
+	isCompleted: boolean;
+	isCorrect: boolean;
+	isIncorrect: boolean;
 	selectedArticle: string | null;
 	selectedWord: string | null;
+	correctArticle: string | null;
+	correctWord: string | null;
 }
 
 export const initialCardState: CardStateProps = {
+	isCompleted: false,
+	isCorrect: false,
+	isIncorrect: false,
 	selectedArticle: null,
 	selectedWord: null,
+	correctArticle: null,
+	correctWord: null,
 };
 
 interface CardContextType {
