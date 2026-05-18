@@ -14,7 +14,7 @@ const mockWord: WordProps = {
   partOfSpeech: 'noun',
   CEFRLevel: 'A1',
   gender: 'masculine',
-  pronunciation: 'lay shaw',
+  pronunciation: 'luh shah',
   userScore: 12
 }
 
