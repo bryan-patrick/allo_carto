@@ -1,6 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from "react-native";
+import { useContext, useMemo } from 'react';
+import { type LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated';
 import { colors } from "../../styles";
 import { CardContext } from './cardContext';
 
@@ -48,18 +54,42 @@ export default function WordCard({ word }: WordCardProps) {
     cardMain,
     answerSlotContainer,
     answerSlot,
+    hiddenMeasureText,
   } = wordCardStyles;
   const { cardState } = useContext(CardContext);
-  const [articleClass, setArticleClass] = useState({});
-  const [wordClass, setWordClass] = useState({});
+  const displayedArticle = cardState.selectedArticle ?? englishArticle ?? '';
+  const displayedWord = cardState.selectedWord ?? translation ?? '';
+  const articleClass = { color: cardState.selectedArticle ? colors.dark.text : 'transparent' };
+  const wordClass = { color: cardState.selectedWord ? colors.dark.text : 'transparent' };
 
   /**
-   * When the selected article/word changes, display that
+   * Animation vars
    */
-  useEffect(() => {
-    setArticleClass({ color: cardState.selectedArticle ? colors.dark.text : 'transparent' });
-    setWordClass({ color: cardState.selectedWord ? colors.dark.text : 'transparent' });
-  }, [cardState.selectedArticle, cardState.selectedWord]);
+  const articleWidth = useSharedValue(0);
+  const wordWidth = useSharedValue(0);
+  const timing = useMemo(() => ({
+    duration: 120,
+    easing: Easing.inOut(Easing.ease)
+  }), []);
+
+  const articleWidthStyle = useAnimatedStyle(() => ({
+    width: articleWidth.value
+  }));
+  const wordWidthStyle = useAnimatedStyle(() => ({
+    width: wordWidth.value
+  }));
+
+
+  /**
+   * Handle setting the animated width of the selected word/article
+   */
+  const handleArticleWidth = (event: LayoutChangeEvent) => {
+    articleWidth.value = withTiming(event.nativeEvent.layout.width, timing);
+  };
+
+  const handleWordWidth = (event: LayoutChangeEvent) => {
+    wordWidth.value = withTiming(event.nativeEvent.layout.width, timing);
+  };
 
   return (
     <View style={wordCard}>
@@ -78,13 +108,35 @@ export default function WordCard({ word }: WordCardProps) {
       </View>
       <View style={answerSlotContainer}>
         {englishArticle && (
-          <Text style={[answerSlot, articleClass]}>
-            {cardState.selectedArticle ?? englishArticle ?? ''}
-          </Text>
+          <>
+            <Text
+              numberOfLines={1}
+              onLayout={handleArticleWidth}
+              style={[answerSlot, hiddenMeasureText]}
+            >
+              {displayedArticle}
+            </Text>
+            <Animated.Text
+              numberOfLines={1}
+              style={[answerSlot, articleClass, articleWidthStyle]}
+            >
+              {displayedArticle}
+            </Animated.Text>
+          </>
         )}
-        <Text style={[answerSlot, wordClass]}>
-          {cardState.selectedWord ?? translation ?? ''}
+        <Text
+          numberOfLines={1}
+          onLayout={handleWordWidth}
+          style={[answerSlot, hiddenMeasureText]}
+        >
+          {displayedWord}
         </Text>
+        <Animated.Text
+          numberOfLines={1}
+          style={[answerSlot, wordClass, wordWidthStyle]}
+        >
+          {displayedWord}
+        </Animated.Text>
       </View>
     </View>
   )
@@ -153,5 +205,10 @@ const wordCardStyles = StyleSheet.create({
     paddingLeft: 8,
     fontWeight: 500,
     fontSize: 18
+  },
+  hiddenMeasureText: {
+    position: 'absolute',
+    opacity: 0,
+    borderBottomWidth: 0
   }
 });

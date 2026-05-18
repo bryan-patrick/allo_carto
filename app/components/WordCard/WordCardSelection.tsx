@@ -40,16 +40,16 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
 
   return (
     <View style={wcsContainer}>
-      {MappedWords({
-        words: articleWords,
-        activeWord: cardState.selectedArticle,
-        handler: handleArticlePressToggle
-      })}
-      {MappedWords({
-        words: fillerWords,
-        activeWord: cardState.selectedWord,
-        handler: handleWordPressToggle
-      })}
+      <MappedWords
+        words={articleWords}
+        activeWord={cardState.selectedArticle}
+        handler={handleArticlePressToggle}
+      />
+      <MappedWords
+        words={fillerWords}
+        activeWord={cardState.selectedWord}
+        handler={handleWordPressToggle}
+      />
     </View>
   )
 }
