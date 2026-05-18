@@ -1,13 +1,27 @@
 import filterFillerWords from './filterFillerWords';
 
-interface GetFillerWordsProps {
+export interface GetFillerWordsProps {
 	language?: 'french' | 'english';
 	amount?: number;
 	cefrLevel?: string;
 	correctWord: string;
+	words?: string[];
 }
 
-function sleep(ms: number) {
+const mockWords = [
+	'hello',
+	'thank you',
+	'yes',
+	'no',
+	'water',
+	'bread',
+	'house',
+	'work',
+	'friend',
+	'eat',
+];
+
+export function sleep(ms: number) {
 	return new Promise(_ => setTimeout(_, ms));
 }
 
@@ -17,26 +31,14 @@ function sleep(ms: number) {
  * This function gets filler words for the
  * user to select from when doing flash cards
  */
-export default async function getEnglishWords({
+export default async function getFillerWords({
 	language = 'english',
 	cefrLevel = 'A1',
-	amount = 4,
+	amount = 6,
 	correctWord,
+	words = mockWords,
 }: GetFillerWordsProps) {
-	const mockWords = [
-		'bonjour',
-		'merci',
-		'oui',
-		'non',
-		'eau',
-		'pain',
-		'maison',
-		'travail',
-		'ami',
-		'manger',
-	];
+	await sleep(10);
 
-	await sleep(500);
-
-	return filterFillerWords({ amount, correctWord });
+	return filterFillerWords({ amount, correctWord, words });
 }

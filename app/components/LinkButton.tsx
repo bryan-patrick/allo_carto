@@ -6,6 +6,15 @@ import { Pressable, Text } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import styles, { colors } from '../styles';
 
+
+/**
+ * Audio Import
+ */
+const tapAudio = require('../assets/sounds/tap.wav');
+
+/**
+ * Typing
+ */
 interface LinkButtonProps {
   screen: string;
   params: LinkProps;
@@ -15,10 +24,10 @@ interface LinkButtonProps {
   children?: ReactNode;
 }
 
-const tapAudio = require('../assets/sounds/tap.wav');
-
 /**
+ * LinkButton Component
  * A link that looks like a button
+ * https://reactnative.dev/docs/components-and-apis
  */
 export default function LinkButton({
   screen,
@@ -59,7 +68,7 @@ export default function LinkButton({
    * Animation vars
    */
   const top = useSharedValue(0);
-  const boxShadow = useSharedValue(`8px 8px 0 0 ${colors.dark.border}`);
+  const boxShadow = useSharedValue(`0 8px 0 0 ${colors.dark.border}`);
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
     top: top.value,
@@ -71,14 +80,14 @@ export default function LinkButton({
    * Action handlers
    */
   function handlePressIn() {
-    top.value = withTiming(4, {
+    top.value = withTiming(6, {
       duration: 120,
       easing: Easing.inOut(Easing.quad),
     });
 
     boxShadow.value = withTiming(`0px 0px 0 0 ${colors.dark.border}`, {
-      duration: 60,
-      easing: Easing.out(Easing.quad),
+      duration: 120,
+      easing: Easing.inOut(Easing.quad),
     });
 
     setIsPressed(true);
@@ -88,7 +97,7 @@ export default function LinkButton({
 
   function handlePressOut() {
     top.value = 0;
-    boxShadow.value = `8px 8px 0 0 ${colors.dark.border}`;
+    boxShadow.value = `0 8px 0 0 ${colors.dark.border}`;
     setIsPressed(false);
   }
 
@@ -104,7 +113,6 @@ export default function LinkButton({
 
   return (
     <Animated.View style={animatedButtonStyle}>
-
       <Pressable
         {...allTheProps}
         onHoverIn={() => setIsHovered(true)}

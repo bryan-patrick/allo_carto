@@ -1,10 +1,11 @@
-import { Text, View } from "react-native";
-import WordCard, { WordProps } from "./components/WordCard";
+import { View } from 'react-native';
+import type { WordProps } from './components/WordCard/WordCard';
+import WordCardContainer from "./components/WordCard/WordCardContainer";
 
 /**
  * TODO remove
  */
-const exampleWord: WordProps = {
+const mockWord: WordProps = {
   id: 'chat',
   translation: 'cat',
   lemmaId: 'chat',
@@ -20,9 +21,7 @@ const exampleWord: WordProps = {
 export default function DeckView() {
   return (
     <View>
-      <Text>Learn new words</Text>
-      <WordCard word={exampleWord} />
-
+      <WordCardContainer word={mockWord} />
     </View>
   )
 }

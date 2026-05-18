@@ -1,8 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../styles";
-import filterFillerWords from './util/filterFillerWords';
+import { colors } from "../../styles";
+import { CardContext } from './cardContext';
 
+/**
+ * Typing
+ */
 export interface WordProps {
   id: string;
   translation: string;
@@ -22,7 +26,7 @@ interface WordCardProps {
 }
 
 /**
- * Component
+ * WordCard Component
  */
 export default function WordCard({ word }: WordCardProps) {
   const {
@@ -45,9 +49,17 @@ export default function WordCard({ word }: WordCardProps) {
     answerSlotContainer,
     answerSlot,
   } = wordCardStyles;
+  const { cardState } = useContext(CardContext);
+  const [articleClass, setArticleClass] = useState({});
+  const [wordClass, setWordClass] = useState({});
 
-  console.log('getting articles!')
-  console.log(filterFillerWords({ amount: 4, correctWord: 'les' }))
+  /**
+   * When the selected article/word changes, display that
+   */
+  useEffect(() => {
+    setArticleClass({ color: cardState.selectedArticle ? colors.dark.text : 'transparent' });
+    setWordClass({ color: cardState.selectedWord ? colors.dark.text : 'transparent' });
+  }, [cardState.selectedArticle, cardState.selectedWord]);
 
   return (
     <View style={wordCard}>
@@ -66,9 +78,13 @@ export default function WordCard({ word }: WordCardProps) {
       </View>
       <View style={answerSlotContainer}>
         {englishArticle && (
-          <Text style={answerSlot}>{englishArticle}</Text>
+          <Text style={[answerSlot, articleClass]}>
+            {cardState.selectedArticle ?? englishArticle ?? ''}
+          </Text>
         )}
-        <Text style={answerSlot}>{translation}</Text>
+        <Text style={[answerSlot, wordClass]}>
+          {cardState.selectedWord ?? translation ?? ''}
+        </Text>
       </View>
     </View>
   )

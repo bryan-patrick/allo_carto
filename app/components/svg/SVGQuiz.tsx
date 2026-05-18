@@ -2,6 +2,9 @@ import { G, Path, Rect } from "react-native-svg";
 import type { SVGProps } from "./SVG";
 import SVG from "./SVG";
 
+/**
+ * SVGQuiz Component
+ */
 export default function SVGQuiz({
   color = "#ffffff",
   height = '32px',

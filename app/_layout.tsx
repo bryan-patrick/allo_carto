@@ -3,7 +3,7 @@ import { ThemeProvider } from "@react-navigation/native";
 import { useFonts } from 'expo-font';
 import alloTheme from './alloTheme';
 
-/*
+/**
  * Stack navigator
  * https://docs.expo.dev/router/advanced/stack/
  */
@@ -13,6 +13,12 @@ if (debug) {
   console.log(alloTheme);
 }
 
+/**
+ * AppLayout Component
+ * 
+ * "Off we go again."
+ * - Vladimir, Waiting for Godot
+ */
 export default function AppLayout() {
   const [loaded, error] = useFonts({
     'lexend-variable': require('./assets/fonts/lexend-variable.ttf')

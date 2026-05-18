@@ -2,6 +2,9 @@ import { Circle, Path } from "react-native-svg";
 import type { SVGProps } from "./SVG";
 import SVG from "./SVG";
 
+/**
+ * SVGCards Component
+ */
 export default function SVGCards({
   color = "#ffffff",
   height = '32px',

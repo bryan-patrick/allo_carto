@@ -1,17 +1,30 @@
-export const articles = ['le', 'la', "l\'", 'les', 'un', 'une', 'des'];
+export const frenchArticles = ['le', 'la', "l\'", 'les', 'un', 'une', 'des'];
+export const englishArticles = ['the', 'a', 'an'];
 
+/**
+ * Typing
+ */
 interface FilterFillerWordsProps {
 	amount: number;
 	words?: string[];
 	correctWord: string;
 }
 
+/**
+ * This is a helper function for
+ * use with the buttons on flashcards.
+ *
+ * It returns a shuffled array of words that
+ * includes the correct word.
+ */
 export default function filterFillerWords({
 	amount,
-	words = articles,
+	words = englishArticles,
 	correctWord,
 }: FilterFillerWordsProps) {
-	let wordsCopy = [...words].filter(word => !(word === correctWord));
+	let wordsCopy = [...words].filter(
+		word => !(word.toLowerCase() === correctWord.toLowerCase()),
+	);
 
 	if (amount <= wordsCopy.length) {
 		let iterationCount = wordsCopy.length - amount + 1;

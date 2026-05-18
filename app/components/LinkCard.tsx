@@ -3,6 +3,9 @@ import { Text, View } from "react-native";
 import styles, { colors } from "../styles";
 import LinkButton from "./LinkButton";
 
+/**
+ * Typing
+ */
 interface CardProps {
   title: string;
   SVGElement?: ReactNode;
@@ -11,6 +14,9 @@ interface CardProps {
   linkText: string;
 }
 
+/**
+ * LinkCard Component
+ */
 export default function LinkCard({
   title,
   SVGElement,
