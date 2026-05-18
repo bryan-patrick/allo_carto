@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Text, View } from "react-native";
 import styles, { colors } from "../styles";
-import LinkButton from "./LinkButton";
+import ActionButton from "./ActionButton";
 
 /**
  * Typing
@@ -45,10 +45,10 @@ export default function LinkCard({
   return (
     <View style={styles.cardView}>
       {heading}
-      <LinkButton
+      <ActionButton
         screen={screen}
         params={{ href: '/' }}
-      >{linkText}</LinkButton>
+      >{linkText}</ActionButton>
     </View>
   );
 }

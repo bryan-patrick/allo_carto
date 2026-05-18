@@ -1,11 +1,12 @@
 import { useLinkProps } from '@react-navigation/native';
 import { useAudioPlayer } from 'expo-audio';
 import { LinkProps } from 'expo-router';
-import { ReactElement, ReactNode, useState } from 'react';
-import { Pressable, Text } from 'react-native';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
+import { Pressable, PressableProps, Text, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import styles, { colors } from '../styles';
+import styles from '../styles';
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /**
  * Audio Import
@@ -15,13 +16,15 @@ const tapAudio = require('../assets/sounds/tap.wav');
 /**
  * Typing
  */
-interface LinkButtonProps {
-  screen: string;
-  params: LinkProps;
+interface ActionButtonProps extends PressableProps {
   SVGElement?: ReactElement;
-  action?: Readonly<any>;
-  href?: string;
+  handler?: Function;
   children?: ReactNode;
+  action?: Readonly<any>;
+  params?: LinkProps;
+  screen?: string;
+  href?: string;
+  props?: any
 }
 
 /**
@@ -29,14 +32,18 @@ interface LinkButtonProps {
  * A link that looks like a button
  * https://reactnative.dev/docs/components-and-apis
  */
-export default function LinkButton({
+
+export default function ActionButton({
+  handler = () => { },
+  action,
   screen,
   params,
-  action,
   href,
   children,
   SVGElement,
-  ...moreProps }: LinkButtonProps) {
+  style,
+  props,
+}: ActionButtonProps) {
   /**
    * Sound effect
    */
@@ -59,8 +66,12 @@ export default function LinkButton({
   /**
    * State/prop vars
    */
-  const props = useLinkProps({ screen, params, action, href });
-  const allTheProps = { ...props, ...moreProps };
+  const linkProps = useLinkProps({
+    screen: screen ?? '',
+    params: params ?? {},
+    action,
+    href
+  });
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
 
@@ -68,36 +79,52 @@ export default function LinkButton({
    * Animation vars
    */
   const top = useSharedValue(0);
-  const boxShadow = useSharedValue(`0 8px 0 0 ${colors.dark.border}`);
+  const shadowOffsetHeight = useSharedValue(8);
 
-  const animatedButtonStyle = useAnimatedStyle(() => ({
+  const animatedContainerStyle = useAnimatedStyle(() => ({
     top: top.value,
-    boxShadow: boxShadow.value,
     borderRadius: 8
   }));
+
+  const animatedShadowStyle = useAnimatedStyle(() => ({
+    shadowOffset: {
+      width: 0,
+      height: shadowOffsetHeight.value
+    },
+  }));
+
+  /**
+   * Handle animations on pressed
+   */
+  useEffect(() => {
+    if (isPressed) {
+      top.value = withTiming(6, {
+        duration: 100,
+        easing: Easing.inOut(Easing.ease),
+      });
+
+      shadowOffsetHeight.value = withTiming(0, {
+        duration: 100,
+        easing: Easing.inOut(Easing.ease),
+      });
+    } else {
+      top.value = 0;
+      shadowOffsetHeight.value = 8;
+    }
+
+  }, [isPressed, shadowOffsetHeight, top])
 
   /**
    * Action handlers
    */
   function handlePressIn() {
-    top.value = withTiming(6, {
-      duration: 120,
-      easing: Easing.inOut(Easing.quad),
-    });
-
-    boxShadow.value = withTiming(`0px 0px 0 0 ${colors.dark.border}`, {
-      duration: 120,
-      easing: Easing.inOut(Easing.quad),
-    });
-
     setIsPressed(true);
     tapPlayer.seekTo(0);
     tapPlayer.play();
+    handler();
   }
 
   function handlePressOut() {
-    top.value = 0;
-    boxShadow.value = `0 8px 0 0 ${colors.dark.border}`;
     setIsPressed(false);
   }
 
@@ -111,19 +138,29 @@ export default function LinkButton({
     currentLinkTextStyles = { ...linkText, ...hoveredLinkText };
   }
 
+  /**
+   * Pull in props when used as a link button
+   */
+  let allTheProps = props;
+
+  if (screen) {
+    allTheProps = { ...props, ...linkProps };
+  }
+
   return (
-    <Animated.View style={animatedButtonStyle}>
-      <Pressable
+    <Animated.View style={[style as ViewStyle, animatedContainerStyle]}>
+      <AnimatedPressable
         {...allTheProps}
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={currentLinkButtonStyles}
+        style={[currentLinkButtonStyles, animatedShadowStyle]}
       >
         {SVGElement}
         <Text style={currentLinkTextStyles}>{children}</Text>
-      </Pressable>
+      </AnimatedPressable>
     </Animated.View>
   );
 };
+

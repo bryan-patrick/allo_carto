@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { englishArticles } from "../../util/filterFillerWords";
 import getFillerWords from "../../util/getFillerWords";
+import ActionButton from "../ActionButton";
 import { CardContext, type CardStateProps, initialCardState } from "./cardContext";
 import WordCard, { WordProps } from "./WordCard";
 import WordCardSelection from "./WordCardSelection";
@@ -20,6 +21,7 @@ export default function WordCardContainer({ word }: CardContainerProps) {
   const [fillerWords, setFillerWords] = useState<string[]>([]);
   const [articleWords, setArticleWords] = useState<string[]>([]);
   const [cardState, setCardState] = useState<CardStateProps>(initialCardState);
+  const { nextBtn } = wordCardContainerStyles;
 
   useEffect(() => {
     async function loadWords() {
@@ -46,10 +48,14 @@ export default function WordCardContainer({ word }: CardContainerProps) {
           articleWords={articleWords}
           fillerWords={fillerWords}
         />
-        <Pressable>
-          <Text>Next Card</Text>
-        </Pressable>
+        <ActionButton style={nextBtn}>Next Card</ActionButton>
       </View>
-    </CardContext.Provider>
+    </CardContext.Provider >
   )
 }
+
+const wordCardContainerStyles = StyleSheet.create({
+  nextBtn: {
+    margin: 24
+  }
+});
