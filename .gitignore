@@ -5,6 +5,13 @@ node_modules
 *.sqlite
 *.sqlite3
 
+.dart_tool
+.idea
+build
+macos
+.flutter-plugins-dependencies
+allo_carto.iml
+
 .expo/
 app-example
 expo-env.d.ts
