@@ -34,7 +34,7 @@ export function sleep(ms: number) {
 export default async function getFillerWords({
 	language = 'english',
 	cefrLevel = 'A1',
-	amount = 6,
+	amount = 8,
 	correctWord,
 	words = mockWords,
 }: GetFillerWordsProps) {

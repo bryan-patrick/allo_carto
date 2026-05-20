@@ -37,7 +37,8 @@ export default function WordCardButton({
     containerStyles,
     pressableStyles,
     successPressable,
-    textStyles
+    textStyles,
+    successText
   } = wordCardButtonStyles;
   /**
    * State/prop vars
@@ -132,7 +133,10 @@ export default function WordCardButton({
         ]}
       >
         {SVGElement}
-        <Text style={textStyles}>{children}</Text>
+        <Text style={[
+          textStyles,
+          cardState.isCorrect ? successText : ''
+        ]}>{children}</Text>
       </AnimatedPressable>
     </Animated.View>
   );
@@ -162,6 +166,10 @@ const wordCardButtonStyles = StyleSheet.create({
     fontSize: 16,
   },
   successPressable: {
-    backgroundColor: colors.dark.success,
+    backgroundColor: colors.light.success,
+    shadowColor: colors.light.border,
+  },
+  successText: {
+    color: colors.dark.text
   }
 })
