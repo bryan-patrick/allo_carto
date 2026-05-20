@@ -2,19 +2,11 @@
 
 **_Work in progress!_**
 
-Have you ever been doomscrolling and thought "damn man, I could be learning French right now"?
-
-Yeah me too. That's why I'm building this.
-
-It's a Quebecois focused French learning app. Open it, jump right in to reviewing some flashcards (decks are created based on adaptive scoring so you always get words and phrases you actually need to work on) then close it and move on.
-
-Fast, simple, and helps you retain new French words and phrases every day.
-
 ![App preview](preview.jpg)
 
 ## Dev Notes
 
-- May 15, 2026 | Started rebuilding in React Native. This is much easier than trying to use it as a flutter learning project. I'd like to get this done, I actually want to use it! I preserved the flutter version under branch `v1-flutter`.
+- May 15, 2026 | Started rebuilding in React Native. I preserved the flutter version under branch `v1-flutter`.
 
 ## Style Guide
 
