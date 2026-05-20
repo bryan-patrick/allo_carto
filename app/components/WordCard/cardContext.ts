@@ -32,13 +32,15 @@ export interface CardStateProps {
 	correctWord: string | null;
 }
 
+export const initialWordState: WordProps = {
+	id: '',
+	translation: '',
+	pronunciation: '',
+	CEFRLevel: '',
+};
+
 export const initialCardState: CardStateProps = {
-	word: {
-		id: '',
-		translation: '',
-		pronunciation: '',
-		CEFRLevel: '',
-	},
+	word: initialWordState,
 	isCompleted: false,
 	isCorrect: false,
 	isIncorrect: false,

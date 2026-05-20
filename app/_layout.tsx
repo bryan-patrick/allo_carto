@@ -28,11 +28,18 @@ export default function AppLayout() {
     console.log(`Loaded: ${loaded ?? 'Error:'}, ${error ?? 'No font error.'}`);
   }
 
+  /**
+   * The (tabs) dir are navigable routes on the bottom bar
+   * All other routes go in dir (routes)
+   */
   return (
     <ThemeProvider value={alloTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="deck" options={{
+        <Stack.Screen name="(tabs)" options={{
+          headerShown: false,
+          headerTitle: 'Home'
+        }} />
+        <Stack.Screen name="(routes)/deck" options={{
           headerShown: true,
           headerBackTitle: 'Home',
           headerTitle: 'Review a deck'

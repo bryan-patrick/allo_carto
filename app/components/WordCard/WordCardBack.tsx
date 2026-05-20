@@ -2,8 +2,8 @@ import { colors } from "@/app/styles";
 import { useContext } from "react";
 import { type ViewStyle, StyleSheet, Text } from "react-native";
 import Animated, { type AnimatedStyle } from "react-native-reanimated";
-import { sharedWordCardStyles } from "./WordCard";
 import { CardContext } from "./cardContext";
+import { sharedWordCardStyles } from "./WordCard";
 
 /**
  * Typing

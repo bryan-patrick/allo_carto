@@ -2,6 +2,7 @@ import { colors } from '@/app/styles';
 import { ReactElement, ReactNode, useContext, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { DeckContext } from '../Deck/deckContext';
 import { CardContext } from './cardContext';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -10,24 +11,22 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
  * Typing
  */
 interface WordCardButtonProps extends PressableProps {
-  handler?: Function;
   SVGElement?: ReactElement;
   children?: ReactNode;
 }
 
 /**
- * LinkButton Component
- * A link that looks like a button
+ * WordCardButton Component
+ * Handles checking/next card actions
  * https://reactnative.dev/docs/components-and-apis
  */
-
 export default function WordCardButton({
-  handler = () => { },
   children,
   SVGElement,
   style,
   ...props
 }: WordCardButtonProps) {
+  const { deckDispatch } = useContext(DeckContext);
   const { cardState, setCardState } = useContext(CardContext);
 
   /**
@@ -40,6 +39,7 @@ export default function WordCardButton({
     textStyles,
     successText
   } = wordCardButtonStyles;
+
   /**
    * State/prop vars
    */
@@ -85,6 +85,11 @@ export default function WordCardButton({
   }, [isPressed, shadowOffsetHeight, top])
 
   const checkAnswer = () => {
+    if (cardState.isCompleted) {
+      deckDispatch({ type: 'next_card' });
+      return;
+    }
+
     let isCorrect = true;
 
     if (cardState.correctArticle && (cardState.correctArticle !== cardState.selectedArticle)) {
@@ -99,7 +104,8 @@ export default function WordCardButton({
       return ({
         ...prev, ...{
           isCorrect,
-          isIncorrect: !isCorrect
+          isIncorrect: !isCorrect,
+          isCompleted: isCorrect
         }
       })
     })
@@ -112,12 +118,11 @@ export default function WordCardButton({
    */
   function handlePressIn() {
     setIsPressed(true);
-    handler();
+    checkAnswer();
   }
 
   function handlePressOut() {
     setIsPressed(false);
-    checkAnswer();
   }
 
   return (
