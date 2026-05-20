@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { englishArticles } from "../../util/filterFillerWords";
 import getFillerWords from "../../util/getFillerWords";
-import { CardContext, type CardStateProps, initialCardState } from "./cardContext";
-import WordCard, { WordProps } from "./WordCard";
+import { CardContext, type CardStateProps, initialCardState, WordProps } from "./cardContext";
+import WordCard from "./WordCard";
 import WordCardButton from "./WordCardButton";
 import WordCardSelection from "./WordCardSelection";
 
@@ -11,7 +11,7 @@ import WordCardSelection from "./WordCardSelection";
  * Typing
  */
 interface CardContainerProps {
-  word: WordProps
+  word: WordProps;
 }
 
 /**
@@ -32,11 +32,12 @@ export default function WordCardContainer({ word }: CardContainerProps) {
   });
 
   /**
-   * Side effects
+   * Side effects - Load the card and its state
    */
   useEffect(() => {
     setCardState({
       ...initialCardState,
+      word,
       correctArticle: word.englishArticle ?? null,
       correctWord: word.translation ?? null,
     });
@@ -55,12 +56,12 @@ export default function WordCardContainer({ word }: CardContainerProps) {
     }
 
     loadWords();
-  }, [word.translation, word.englishArticle]);
+  }, [word.translation, word.englishArticle, word]);
 
   return (
     <CardContext.Provider value={{ cardState, setCardState }}>
       <View style={container}>
-        <WordCard word={word} />
+        <WordCard />
         <WordCardSelection
           articleWords={articleWords}
           fillerWords={fillerWords}

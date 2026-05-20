@@ -4,12 +4,13 @@ import { useContext } from "react";
 import { type LayoutChangeEvent, StyleSheet, Text, type TextStyle, View, type ViewStyle } from "react-native";
 import type { AnimatedStyle } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
-import { WordProps, wordCardInnerStyles } from "./WordCard";
+import { sharedWordCardStyles } from "./WordCard";
 import { CardContext } from "./cardContext";
 
-
+/**
+ * Typing
+ */
 interface WordCardFrontProps {
-  word: WordProps;
   wordWidthStyle: AnimatedStyle<TextStyle>;
   articleWidthStyle: AnimatedStyle<TextStyle>;
   wordCardFrontFlippedStyle: AnimatedStyle<ViewStyle>;
@@ -17,14 +18,21 @@ interface WordCardFrontProps {
   handleWordWidth: (event: LayoutChangeEvent) => void;
 }
 
+/**
+ * WordCardFront component
+ */
 export default function WordCardFront({
-  word,
   handleWordWidth,
   handleArticleWidth,
   articleWidthStyle,
   wordCardFrontFlippedStyle,
   wordWidthStyle
 }: WordCardFrontProps) {
+  const { cardState } = useContext(CardContext);
+
+  /**
+   * Destructure Styles
+   */
   const {
     wordId,
     wordPronunciation,
@@ -37,6 +45,10 @@ export default function WordCardFront({
     answerSlot,
     hiddenMeasureText,
   } = wordCardFrontStyles;
+
+  /**
+   * Word data
+   */
   const {
     id,
     pronunciation,
@@ -45,17 +57,22 @@ export default function WordCardFront({
     frenchArticle,
     englishArticle,
     translation
-  } = word;
-  const { cardState } = useContext(CardContext);
+  } = cardState.word;
 
+  /**
+   * User selected rendering
+   */
   const displayedArticle = cardState.selectedArticle ?? englishArticle ?? '';
   const displayedWord = cardState.selectedWord ?? translation ?? '';
   const articleClass = { color: cardState.selectedArticle ? colors.dark.text : 'transparent' };
   const wordClass = { color: cardState.selectedWord ? colors.dark.text : 'transparent' };
 
+  /**
+   * Render the front of the WordCard
+   */
   return (
     <Animated.View style={[
-      wordCardInnerStyles.wordCardInner,
+      sharedWordCardStyles.wordCardInner,
       cardFront,
       wordCardFrontFlippedStyle
     ]}>

@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import type { WordProps } from './components/WordCard/WordCard';
+import type { WordProps } from './components/WordCard/cardContext';
 import WordCardContainer from "./components/WordCard/WordCardContainer";
 
 /**

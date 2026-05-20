@@ -1,30 +1,54 @@
 import { colors } from "@/app/styles";
+import { useContext } from "react";
 import { type ViewStyle, StyleSheet, Text } from "react-native";
 import Animated, { type AnimatedStyle } from "react-native-reanimated";
-import { WordProps, wordCardInnerStyles } from "./WordCard";
+import { sharedWordCardStyles } from "./WordCard";
+import { CardContext } from "./cardContext";
 
+/**
+ * Typing
+ */
 interface WordCardBackProps {
-  word: WordProps;
   wordCardBackFlippedStyle: AnimatedStyle<ViewStyle>
 }
 
+/**
+ * WordCardBack Component
+ */
 export default function WordCardBack({
-  word,
   wordCardBackFlippedStyle
 }: WordCardBackProps) {
+  const { cardState } = useContext(CardContext);
+
+  /**
+   * Destructure Styles
+   */
   const { cardBack } = wordCardBackStyles;
 
+  /**
+   * Word data
+   */
+  const {
+    translation
+  } = cardState.word;
+
+  /**
+   * Render the front of the WordCard
+   */
   return (
     <Animated.View style={[
-      wordCardInnerStyles.wordCardInner,
+      sharedWordCardStyles.wordCardInner,
       cardBack,
       wordCardBackFlippedStyle
     ]}>
-      <Text>CARD BACK</Text>
+      <Text>{translation}</Text>
     </Animated.View>
   )
 }
 
+/**
+ * Styles
+ */
 const wordCardBackStyles = StyleSheet.create({
   cardBack: {
     ...StyleSheet.absoluteFillObject,

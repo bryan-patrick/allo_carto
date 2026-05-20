@@ -12,35 +12,14 @@ import WordCardBack from './WordCardBack';
 import WordCardFront from './WordCardFront';
 
 /**
- * Typing
- */
-export interface WordProps {
-  id: string;
-  translation: string;
-  pronunciation: string;
-  CEFRLevel: string;
-  lemmaId?: string;
-  frenchArticle?: string;
-  englishArticle?: string;
-  tense?: string;
-  gender?: 'feminine' | 'masculine';
-  partOfSpeech?: string;
-  userScore?: number;
-}
-
-interface WordCardProps {
-  word: WordProps;
-}
-
-/**
  * WordCard Component
  * 
- * I couldn't get the container to flip on its
+ * Note: I couldn't get the parent to flip on its
  * own to do both front and back at the same time,
- * so these are done individually on a correct
- * answer.
+ * so these are done individually to create the
+ * card flip effect.
  */
-export default function WordCard({ word }: WordCardProps) {
+export default function WordCard() {
   const { wordCardContainer } = wordCardStyles;
   const { cardState } = useContext(CardContext);
 
@@ -51,6 +30,9 @@ export default function WordCard({ word }: WordCardProps) {
   const wordWidth = useSharedValue(0);
   const flipDegrees = useSharedValue(0);
 
+  /**
+   * Animation timing functions
+   */
   const timing = useMemo(() => ({
     duration: 120,
     easing: Easing.inOut(Easing.ease)
@@ -61,6 +43,9 @@ export default function WordCard({ word }: WordCardProps) {
     easing: Easing.inOut(Easing.cubic)
   }), []);
 
+  /**
+   * Animation styles
+   */
   const articleWidthStyle = useAnimatedStyle(() => ({
     width: articleWidth.value
   }));
@@ -85,7 +70,7 @@ export default function WordCard({ word }: WordCardProps) {
 
   /**
    * Handle setting the animated width of the selected word/article
-   * And the flip. (These are side effects)
+   * And the flip (These are side effects).
    */
   const handleArticleWidth = (event: LayoutChangeEvent) => {
     articleWidth.value = withTiming(event.nativeEvent.layout.width, timing);
@@ -99,10 +84,12 @@ export default function WordCard({ word }: WordCardProps) {
     flipDegrees.value = withTiming(cardState.isCorrect ? 180 : 0, flipTiming);
   }, [cardState.isCorrect, flipDegrees, flipTiming])
 
+  /**
+   * Render the card
+   */
   return (
     <View style={wordCardContainer}>
       <WordCardFront
-        word={word}
         handleWordWidth={handleWordWidth}
         handleArticleWidth={handleArticleWidth}
         articleWidthStyle={articleWidthStyle}
@@ -110,7 +97,6 @@ export default function WordCard({ word }: WordCardProps) {
         wordCardFrontFlippedStyle={wordCardFrontFlippedStyle}
       />
       <WordCardBack
-        word={word}
         wordCardBackFlippedStyle={wordCardBackFlippedStyle}
       />
     </View>
@@ -143,10 +129,8 @@ const wordCardStyles = StyleSheet.create({
 
 /**
  * Shared style - front and back of cards
- * 
- * Shared child styles will always live on the first shared parent
  */
-export const wordCardInnerStyles = StyleSheet.create({
+export const sharedWordCardStyles = StyleSheet.create({
   wordCardInner: {
     display: 'flex',
     alignContent: 'center',

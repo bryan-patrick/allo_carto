@@ -7,7 +7,22 @@
  */
 import { createContext, type Dispatch, type SetStateAction } from 'react';
 
+export interface WordProps {
+	id: string;
+	translation: string;
+	pronunciation: string;
+	CEFRLevel: string;
+	lemmaId?: string;
+	frenchArticle?: string;
+	englishArticle?: string;
+	tense?: string;
+	gender?: 'feminine' | 'masculine';
+	partOfSpeech?: string;
+	userScore?: number;
+}
+
 export interface CardStateProps {
+	word: WordProps;
 	isCompleted: boolean;
 	isCorrect: boolean;
 	isIncorrect: boolean;
@@ -18,6 +33,12 @@ export interface CardStateProps {
 }
 
 export const initialCardState: CardStateProps = {
+	word: {
+		id: '',
+		translation: '',
+		pronunciation: '',
+		CEFRLevel: '',
+	},
 	isCompleted: false,
 	isCorrect: false,
 	isIncorrect: false,
