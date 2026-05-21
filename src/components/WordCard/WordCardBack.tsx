@@ -1,7 +1,7 @@
 import { colors } from "@/src/app/styles";
 import { LinearGradient } from "expo-linear-gradient";
 import { useContext } from "react";
-import { type ViewStyle, StyleSheet, Text, View } from "react-native";
+import { type ViewStyle, StyleSheet, Text, TextStyle, View } from "react-native";
 import Animated, { type AnimatedStyle } from "react-native-reanimated";
 import { sharedWordCardStyles } from "./WordCard";
 import { FEEDBACK_TEXT_BACK, WordCardContext } from "./wordCardContext";
@@ -11,23 +11,26 @@ import { FEEDBACK_TEXT_BACK, WordCardContext } from "./wordCardContext";
  */
 interface WordCardBackProps {
   wordCardBackFlippedStyle: AnimatedStyle<ViewStyle>
+  feedbackStyle: TextStyle;
+  articleSlotStyle: TextStyle;
+  wordSlotStyle: TextStyle;
 }
 
 /**
  * WordCardBack Component
  */
 export default function WordCardBack({
-  wordCardBackFlippedStyle
+  wordCardBackFlippedStyle,
+  feedbackStyle,
+  articleSlotStyle,
+  wordSlotStyle
 }: WordCardBackProps) {
   const { cardState } = useContext(WordCardContext);
 
   /**
    * Destructure Styles
    */
-  const {
-    cardBack,
-    answerSlotBack
-  } = wordCardBackStyles;
+  const { cardBack } = wordCardBackStyles;
 
   const {
     wordId,
@@ -37,6 +40,7 @@ export default function WordCardBack({
     cardUserScore,
     cardMain,
     answerSlotContainer,
+    answerSlotSuccess,
     answerSlot,
     feedbackText
   } = sharedWordCardStyles;
@@ -80,20 +84,30 @@ export default function WordCardBack({
         {englishArticle && (
           <Text
             numberOfLines={1}
-            style={[answerSlot, answerSlotBack]}
+            style={[
+              answerSlot,
+              answerSlotSuccess,
+              articleSlotStyle
+            ]}
           >
             {englishArticle}
           </Text>
         )}
         <Text
           numberOfLines={1}
-          style={[answerSlot, answerSlotBack]}
+          style={[
+            answerSlot,
+            answerSlotSuccess,
+            wordSlotStyle
+          ]}
         >
           {translation}
         </Text>
       </View>
       <View>
-        <Text style={feedbackText}>{FEEDBACK_TEXT_BACK[cardState.feedback]}</Text>
+        <Text style={[feedbackText, feedbackStyle]}>
+          {FEEDBACK_TEXT_BACK[cardState.feedback]}
+        </Text>
       </View>
     </Animated.View>
   )
@@ -115,12 +129,5 @@ const wordCardBackStyles = StyleSheet.create({
   },
   cardBackSuccess: {
     backgroundColor: colors.light.success,
-  },
-  answerSlotBack: {
-    color: colors.dark.success,
-    backgroundColor: colors.light.success,
-    boxShadow: `0 4px 4px 0 ${colors.light.border}`,
-    borderTopWidth: 2,
-    borderTopColor: colors.dark.success,
   }
 });

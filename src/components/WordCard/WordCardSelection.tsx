@@ -19,23 +19,43 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
   const { wcsContainer } = wordCardSelectionStyles;
 
   const handleArticlePressToggle = (word: string) => {
-    setCardState((cardState) => {
-      if (word !== cardState.selectedArticle) {
-        return ({ ...cardState, selectedArticle: word })
-      } else {
-        return ({ ...cardState, selectedArticle: null })
-      }
-    });
+    if (cardState.stage === 'READY') {
+      setCardState((cardState) => {
+        if (word !== cardState.selectedArticle) {
+          return ({
+            ...cardState,
+            selectedArticle: word,
+            mistake: 'NONE',
+            progress: 'PENDING'
+          })
+        } else {
+          return ({
+            ...cardState,
+            selectedArticle: null,
+          })
+        }
+      });
+    }
   }
 
   const handleWordPressToggle = (word: string) => {
-    setCardState((cardState) => {
-      if (word !== cardState.selectedWord) {
-        return ({ ...cardState, selectedWord: word })
-      } else {
-        return ({ ...cardState, selectedWord: null })
-      }
-    });
+    if (cardState.stage === 'READY') {
+      setCardState((cardState) => {
+        if (word !== cardState.selectedWord) {
+          return ({
+            ...cardState,
+            selectedWord: word,
+            mistake: 'NONE',
+            progress: 'PENDING'
+          })
+        } else {
+          return ({
+            ...cardState,
+            selectedWord: null,
+          })
+        }
+      });
+    }
   }
 
   return (

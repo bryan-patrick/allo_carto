@@ -22,24 +22,24 @@ export interface WordProps {
  */
 export const FEEDBACK_TEXT_FRONT = {
 	READY_PENDING_NONE: '',
-	READY_PENDING_ARTICLE: 'The article is incorrect!',
-	READY_PENDING_WORD: 'The word is incorrect!',
-	READY_PENDING_BOTH: 'Both are incorrect!',
+	READY_WARNING_ARTICLE: 'The article is incorrect!',
+	READY_WARNING_WORD: 'The word is incorrect!',
+	READY_WARNING_BOTH: 'Both are incorrect!',
 	CORRECT_SUCCESS_NONE: '',
-	COMPLETED_FAILED_ARTICLE: '',
-	COMPLETED_FAILED_WORD: '',
-	COMPLETED_FAILED_BOTH: '',
+	COMPLETED_ERROR_ARTICLE: '',
+	COMPLETED_ERROR_WORD: '',
+	COMPLETED_ERROR_BOTH: '',
 };
 
 export const FEEDBACK_TEXT_BACK = {
 	READY_PENDING_NONE: '',
 	CORRECT_SUCCESS_NONE: 'Correct! Great Job!',
-	COMPLETED_FAILED_ARTICLE: 'That is the wrong article!',
-	COMPLETED_FAILED_WORD: 'That is the wrong word!',
-	COMPLETED_FAILED_BOTH: 'Both are wrong!',
-	READY_PENDING_ARTICLE: '',
-	READY_PENDING_WORD: '',
-	READY_PENDING_BOTH: '',
+	COMPLETED_ERROR_ARTICLE: 'That is the wrong article!',
+	COMPLETED_ERROR_WORD: 'That is the wrong word!',
+	COMPLETED_ERROR_BOTH: 'Both are wrong!',
+	READY_WARNING_ARTICLE: '',
+	READY_WARNING_WORD: '',
+	READY_WARNING_BOTH: '',
 };
 
 type FeedbackText =
@@ -52,8 +52,16 @@ export function getFeedbackKey(
 	return `${state.stage}_${state.progress}_${state.mistake}` as FeedbackText;
 }
 
+/**
+ * It might seem redundant to have both stage and
+ * progress, BUT they are two separate moving pieces
+ * of state and CAN move independently of each other.
+ *
+ * It also allows us to expand the state machine
+ * later if we need to.
+ */
 export type CardStage = 'READY' | 'CORRECT' | 'COMPLETED';
-export type CardProgress = 'PENDING' | 'SUCCESS' | 'FAILED';
+export type CardProgress = 'PENDING' | 'SUCCESS' | 'WARNING' | 'ERROR';
 export type CardMistake = 'NONE' | 'ARTICLE' | 'WORD' | 'BOTH';
 
 export interface WordCardStateProps {

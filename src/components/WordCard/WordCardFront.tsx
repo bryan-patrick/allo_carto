@@ -14,6 +14,9 @@ interface WordCardFrontProps {
   wordWidthStyle: AnimatedStyle<TextStyle>;
   articleWidthStyle: AnimatedStyle<TextStyle>;
   wordCardFrontFlippedStyle: AnimatedStyle<ViewStyle>;
+  feedbackStyle: TextStyle;
+  articleSlotStyle: TextStyle;
+  wordSlotStyle: TextStyle;
   handleArticleWidth: (event: LayoutChangeEvent) => void;
   handleWordWidth: (event: LayoutChangeEvent) => void;
 }
@@ -26,10 +29,12 @@ export default function WordCardFront({
   handleArticleWidth,
   articleWidthStyle,
   wordCardFrontFlippedStyle,
-  wordWidthStyle
+  wordWidthStyle,
+  feedbackStyle,
+  articleSlotStyle,
+  wordSlotStyle
 }: WordCardFrontProps) {
   const { cardState } = useContext(WordCardContext);
-
   /**
    * Destructure Styles
    */
@@ -105,9 +110,14 @@ export default function WordCardFront({
             </Text>
             <Animated.Text
               numberOfLines={1}
-              style={[answerSlot, articleClass, articleWidthStyle]}
+              style={[
+                answerSlot,
+                articleClass,
+                articleWidthStyle,
+                articleSlotStyle
+              ]}
             >
-              {displayedArticle}
+              {cardState.selectedArticle && displayedArticle}
             </Animated.Text>
           </>
         )}
@@ -120,13 +130,18 @@ export default function WordCardFront({
         </Text>
         <Animated.Text
           numberOfLines={1}
-          style={[answerSlot, wordClass, wordWidthStyle]}
+          style={[
+            answerSlot,
+            wordClass,
+            wordWidthStyle,
+            wordSlotStyle
+          ]}
         >
-          {displayedWord}
+          {cardState.selectedWord && displayedWord}
         </Animated.Text>
       </View>
       <View>
-        <Text style={feedbackText}>{FEEDBACK_TEXT_FRONT[cardState.feedback]}</Text>
+        <Text style={[feedbackText, feedbackStyle]}>{FEEDBACK_TEXT_FRONT[cardState.feedback]}</Text>
       </View>
     </Animated.View>
   )

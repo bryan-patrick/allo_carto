@@ -1,5 +1,5 @@
-import { useContext, useEffect, useLayoutEffect, useMemo } from 'react';
-import { type LayoutChangeEvent, StyleSheet, View } from "react-native";
+import { useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { type LayoutChangeEvent, StyleSheet, TextStyle, View } from 'react-native';
 import {
   Easing,
   useAnimatedStyle,
@@ -28,6 +28,15 @@ export default function WordCard({ isCurrent }: WordCardProps) {
   const { wordCard } = wordCardStyles;
   const { cardState, setCardState } = useContext(WordCardContext);
   const { cardDeckDispatch } = useContext(CardDeckContext);
+  const {
+    feedbackWarning,
+    feedbackError,
+    answerSlotWarning,
+    answerSlotError
+  } = sharedWordCardStyles;
+  const [feedbackStyle, setFeedbackStyle] = useState({});
+  const [articleSlotStyle, setArticleSlotStyle] = useState<TextStyle>({});
+  const [wordSlotStyle, setWordSlotStyle] = useState<TextStyle>({});
 
   /**
    * Animation vars
@@ -111,14 +120,55 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 
   /**
    * When state changes, update the feedback text
+   * and answer slot styles
    */
   useLayoutEffect(() => {
+    /**
+     * Handle slot and feedback styles
+     */
+    let slotStyle: TextStyle | null = null;
+
+    const hasArticleMistake =
+      (cardState.mistake === 'ARTICLE') ||
+      (cardState.mistake === 'BOTH');
+
+    const hasWordMistake =
+      (cardState.mistake === 'WORD') ||
+      (cardState.mistake === 'BOTH');
+
+    if (cardState.progress === 'WARNING') {
+      setFeedbackStyle(feedbackWarning);
+      slotStyle = answerSlotWarning;
+    } else if (cardState.progress === 'ERROR') {
+      setFeedbackStyle(feedbackError);
+      slotStyle = answerSlotError;
+    }
+
+    if (slotStyle && hasArticleMistake) {
+      setArticleSlotStyle(slotStyle);
+    } else {
+      setArticleSlotStyle({});
+    }
+
+    if (slotStyle && hasWordMistake) {
+      setWordSlotStyle(slotStyle);
+    } else {
+      setWordSlotStyle({});
+    }
+
+    /**
+     * Handle the feedback text
+     */
     setCardState((prev) => ({ ...prev, ...{ feedback: getFeedbackKey(prev) } }))
   }, [
     setCardState,
     cardState.stage,
     cardState.progress,
-    cardState.mistake
+    cardState.mistake,
+    answerSlotError,
+    answerSlotWarning,
+    feedbackError,
+    feedbackWarning,
   ])
 
   /**
@@ -132,9 +182,15 @@ export default function WordCard({ isCurrent }: WordCardProps) {
         articleWidthStyle={articleWidthStyle}
         wordWidthStyle={wordWidthStyle}
         wordCardFrontFlippedStyle={wordCardFrontFlippedStyle}
+        feedbackStyle={feedbackStyle}
+        articleSlotStyle={articleSlotStyle}
+        wordSlotStyle={wordSlotStyle}
       />
       <WordCardBack
         wordCardBackFlippedStyle={wordCardBackFlippedStyle}
+        feedbackStyle={feedbackStyle}
+        articleSlotStyle={articleSlotStyle}
+        wordSlotStyle={wordSlotStyle}
       />
     </View>
   )
@@ -202,10 +258,10 @@ export const sharedWordCardStyles = StyleSheet.create({
   cardMain: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 24,
+    padding: 18,
     paddingRight: 8,
     paddingLeft: 8,
-    marginTop: 8,
+    marginTop: 16,
     gap: 8,
   },
   wordId: {
@@ -229,14 +285,35 @@ export const sharedWordCardStyles = StyleSheet.create({
     paddingRight: 12,
     paddingLeft: 12,
     fontWeight: 500,
+    borderTopWidth: 2,
+    borderTopColor: 'transparent',
     fontSize: 18,
+  },
+  answerSlotSuccess: {
+    color: colors.dark.success,
+    backgroundColor: colors.light.success,
+    boxShadow: `0 8px 8px 0 ${colors.light.border}`,
+    borderTopColor: colors.dark.success,
+  },
+  answerSlotWarning: {
+    color: colors.dark.warning,
+    backgroundColor: colors.light.warning,
+  },
+  answerSlotError: {
+    color: colors.dark.error,
+    backgroundColor: colors.light.error,
   },
   feedbackText: {
     padding: 4,
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 600,
-    marginTop: 8,
-    marginBottom: 8,
+    margin: 14,
     color: colors.dark.success
+  },
+  feedbackWarning: {
+    color: colors.dark.warning
+  },
+  feedbackError: {
+    color: colors.dark.error
   }
 })

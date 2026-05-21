@@ -37,38 +37,45 @@ export default function WordCardButton({
     pressableStyles,
     successPressable,
     warningPressable,
+    errorPressable,
     warningText,
+    errorText,
     textStyles,
-    successText
+    successText,
   } = wordCardButtonStyles;
 
   /**
-  * Eval current style
-  */
+   * Eval current style
+   */
   useLayoutEffect(() => {
-    if (cardState.progress !== 'PENDING') {
-      switch (cardState.progress) {
-        case 'SUCCESS': {
-          setPressableStateStyle(successPressable);
-          setTextStateStyle(successText);
-          break;
-        }
-        case 'FAILED':
-          setPressableStateStyle({}); // TODO set failed style
-          setTextStateStyle({});
-          break;
+    switch (cardState.progress) {
+      case 'SUCCESS': {
+        setPressableStateStyle(successPressable);
+        setTextStateStyle(successText);
+        break;
       }
-    } else if (cardState.mistake !== 'NONE') {
-      setPressableStateStyle(warningPressable);
-      setTextStateStyle(warningText);
+      case 'WARNING': {
+        setPressableStateStyle(warningPressable);
+        setTextStateStyle(warningText);
+        break;
+      }
+      case 'ERROR':
+        setPressableStateStyle(errorPressable);
+        setTextStateStyle(errorText);
+        break;
+      case 'PENDING':
+        setPressableStateStyle({});
+        setTextStateStyle({});
+        break;
     }
   }, [
     successText,
     warningText,
+    errorText,
     successPressable,
     warningPressable,
+    errorPressable,
     cardState.progress,
-    cardState.mistake,
   ]);
 
   /**
@@ -99,11 +106,11 @@ export default function WordCardButton({
    */
   const checkAnswer = useCallback(() => {
     if (cardState.stage === 'READY') {
-      let mistake: CardMistake = 'NONE';
-
       /**
        * Determine if there was a mistake
        */
+      let mistake: CardMistake = 'NONE';
+
       if (
         (cardState.correctArticle) &&
         (cardState.correctArticle !== cardState.selectedArticle)
@@ -121,21 +128,23 @@ export default function WordCardButton({
       if (mistake !== 'NONE') {
         setCardState(prev => ({
           ...prev, ...{
+            progress: 'WARNING',
             mistake,
           }
         }));
       } else {
         setCardState(prev => ({
           ...prev, ...{
+            progress: 'SUCCESS',
             stage: 'CORRECT',
-            progress: 'SUCCESS'
           }
         }));
       }
     } else if (cardState.stage === 'CORRECT') {
       setCardState(prev => ({
         ...prev, ...{
-          stage: 'COMPLETED'
+          progress: 'SUCCESS',
+          stage: 'COMPLETED',
         }
       }));
     }
@@ -190,6 +199,7 @@ export default function WordCardButton({
     <Animated.View style={[containerStyles, animatedContainerStyle]}>
       <AnimatedPressable
         {...props}
+        disabled={cardState.progress === 'WARNING' || cardState.progress === 'ERROR'}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         style={[
@@ -199,10 +209,13 @@ export default function WordCardButton({
         ]}
       >
         {SVGElement}
-        <Text style={[
-          textStyles,
-          textStateStyle,
-        ]}>{children}</Text>
+        <Text
+          style={[
+            textStyles,
+            textStateStyle,
+          ]}>
+          {children}
+        </Text>
       </AnimatedPressable>
     </Animated.View>
   );
@@ -243,10 +256,18 @@ const wordCardButtonStyles = StyleSheet.create({
     borderColor: colors.light.warning,
     shadowColor: colors.dark.warning,
   },
+  errorPressable: {
+    backgroundColor: colors.light.error,
+    borderColor: colors.light.error,
+    shadowColor: colors.dark.error,
+  },
   successText: {
     color: colors.dark.text
   },
   warningText: {
     color: colors.dark.warning,
   },
-})
+  errorText: {
+    color: colors.dark.error,
+  },
+});
