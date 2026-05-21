@@ -1,3 +1,5 @@
+import shuffleArray from './shuffleArray';
+
 export const frenchArticles = ['le', 'la', "l\'", 'les', 'un', 'une', 'des'];
 export const englishArticles = ['the', 'a', 'an'];
 
@@ -46,5 +48,8 @@ export default function filterFillerWords({
 		}
 	}
 
-	return [...wordsCopy.filter(article => article !== 'DELETE'), correctWord];
+	return shuffleArray([
+		...wordsCopy.filter(article => article !== 'DELETE'),
+		correctWord,
+	]);
 }
