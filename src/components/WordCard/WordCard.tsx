@@ -9,7 +9,7 @@ import {
 import { colors } from "../../app/styles";
 import { CardDeckContext } from '../CardDeck/cardDeckContext';
 import WordCardBack from './WordCardBack';
-import { WordCardContext } from './wordCardContext';
+import { getFeedbackKey, WordCardContext } from './wordCardContext';
 import WordCardFront from './WordCardFront';
 
 /**
@@ -26,7 +26,7 @@ interface WordCardProps {
 
 export default function WordCard({ isCurrent }: WordCardProps) {
   const { wordCard } = wordCardStyles;
-  const { cardState } = useContext(WordCardContext);
+  const { cardState, setCardState } = useContext(WordCardContext);
   const { cardDeckDispatch } = useContext(CardDeckContext);
 
   /**
@@ -110,6 +110,18 @@ export default function WordCard({ isCurrent }: WordCardProps) {
   ])
 
   /**
+   * When state changes, update the feedback text
+   */
+  useLayoutEffect(() => {
+    setCardState((prev) => ({ ...prev, ...{ feedback: getFeedbackKey(prev) } }))
+  }, [
+    setCardState,
+    cardState.stage,
+    cardState.progress,
+    cardState.mistake
+  ])
+
+  /**
    * Render the card
    */
   return (
@@ -164,4 +176,67 @@ export const sharedWordCardStyles = StyleSheet.create({
     backgroundColor: colors.light.background,
     borderRadius: 8,
   },
+  cardGradient: {
+    alignContent: 'space-between',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    width: '100%',
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    padding: 4,
+    paddingRight: 8,
+    paddingLeft: 8,
+    gap: 4,
+  },
+  cardCEFRLevel: {
+    color: colors.dark.text,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  cardUserScore: {
+    color: colors.light.text,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  cardMain: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 24,
+    paddingRight: 8,
+    paddingLeft: 8,
+    marginTop: 8,
+    gap: 8,
+  },
+  wordId: {
+    color: colors.dark.text,
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  wordPronunciation: {
+    fontSize: 18,
+    color: colors.dark.text
+  },
+  answerSlotContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  answerSlot: {
+    borderBottomWidth: 2,
+    color: 'transparent',
+    padding: 4,
+    paddingRight: 12,
+    paddingLeft: 12,
+    fontWeight: 500,
+    fontSize: 18,
+  },
+  feedbackText: {
+    padding: 4,
+    fontSize: 18,
+    fontWeight: 600,
+    marginTop: 8,
+    marginBottom: 8,
+    color: colors.dark.success
+  }
 })

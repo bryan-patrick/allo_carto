@@ -115,8 +115,15 @@ export default function WordCardButton({
         mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
       }
 
+      /**
+       * Set card state
+       */
       if (mistake !== 'NONE') {
-        setCardState(prev => ({ ...prev, ...{ mistake } }));
+        setCardState(prev => ({
+          ...prev, ...{
+            mistake,
+          }
+        }));
       } else {
         setCardState(prev => ({
           ...prev, ...{
@@ -132,6 +139,8 @@ export default function WordCardButton({
         }
       }));
     }
+
+
   }, [
     cardState.stage,
     cardState.correctArticle,
