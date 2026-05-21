@@ -76,17 +76,17 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   useLayoutEffect(() => {
     if (isCurrent) {
       currentPosition.value = withTiming(0, {
-        duration: 500
+        duration: 250
       });
       currentOpacity.value = withTiming(1.0, {
-        duration: 200
+        duration: 100
       });
     } else {
       currentPosition.value = withTiming(500, {
-        duration: 800
+        duration: 500
       });
       currentOpacity.value = withTiming(0, {
-        duration: 400
+        duration: 250
       });
     }
   }, [isCurrent, currentPosition, currentOpacity]);
