@@ -83,17 +83,31 @@ export default function WordCard({ isCurrent }: WordCardProps) {
   };
 
   useLayoutEffect(() => {
-    flipDegrees.value = withTiming(cardState.isCorrect ? 180 : 0, {
-      duration: cardState.isCompleted ? 0 : flipDuration.value,
+    flipDegrees.value = withTiming(
+      cardState.progress === 'SUCCESS' ? 180 : 0, {
+      duration: cardState.progress === 'SUCCESS' ? flipDuration.value : 0,
       easing: Easing.inOut(Easing.cubic)
     });
-  }, [cardState.isCorrect, flipDegrees, cardState.isCompleted, flipDuration]);
+  }, [
+    flipDegrees,
+    flipDuration,
+    cardState.progress
+  ]);
 
+  /**
+   * Trigger the next card on completed
+   * This fires when we have the correct state
+   * and the user hits the button.
+   */
   useEffect(() => {
-    if (isCurrent && cardState.isCompleted) {
+    if (isCurrent && cardState.stage === 'COMPLETED') {
       cardDeckDispatch({ type: 'next_card' });
     }
-  }, [isCurrent, cardState.isCompleted, cardDeckDispatch])
+  }, [
+    isCurrent,
+    cardState.stage,
+    cardDeckDispatch
+  ])
 
   /**
    * Render the card

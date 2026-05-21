@@ -104,7 +104,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
           fillerWords={fillerWords}
         />
         <WordCardButton style={nextBtn}>
-          {cardState.isCorrect ? 'Next card' : 'Check'}
+          {cardState.stage === 'CORRECT' ? 'Next card →' : 'Check'}
         </WordCardButton>
       </Animated.View>
     </WordCardContext.Provider >

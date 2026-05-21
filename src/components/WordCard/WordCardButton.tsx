@@ -1,8 +1,8 @@
 import { colors } from '@/src/app/styles';
-import { ReactElement, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
-import { Pressable, PressableProps, StyleSheet, Text } from 'react-native';
+import { ReactElement, ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { WordCardContext } from './wordCardContext';
+import { CardMistake, WordCardContext } from './wordCardContext';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -26,6 +26,8 @@ export default function WordCardButton({
   ...props
 }: WordCardButtonProps) {
   const { cardState, setCardState } = useContext(WordCardContext);
+  const [pressableStateStyle, setPressableStateStyle] = useState<ViewStyle | null>({});
+  const [textStateStyle, setTextStateStyle] = useState<TextStyle | null>({});
 
   /**
    * Style vars
@@ -34,9 +36,40 @@ export default function WordCardButton({
     containerStyles,
     pressableStyles,
     successPressable,
+    warningPressable,
+    warningText,
     textStyles,
     successText
   } = wordCardButtonStyles;
+
+  /**
+  * Eval current style
+  */
+  useLayoutEffect(() => {
+    if (cardState.progress !== 'PENDING') {
+      switch (cardState.progress) {
+        case 'SUCCESS': {
+          setPressableStateStyle(successPressable);
+          setTextStateStyle(successText);
+          break;
+        }
+        case 'FAILED':
+          setPressableStateStyle({}); // TODO set failed style
+          setTextStateStyle({});
+          break;
+      }
+    } else if (cardState.mistake !== 'NONE') {
+      setPressableStateStyle(warningPressable);
+      setTextStateStyle(warningText);
+    }
+  }, [
+    successText,
+    warningText,
+    successPressable,
+    warningPressable,
+    cardState.progress,
+    cardState.mistake,
+  ]);
 
   /**
    * State/prop vars
@@ -65,21 +98,42 @@ export default function WordCardButton({
    * Check the user's answer
    */
   const checkAnswer = useCallback(() => {
-    let isCorrect = true;
+    if (cardState.stage === 'READY') {
+      let mistake: CardMistake = 'NONE';
 
-    if (
-      cardState.correctArticle &&
-      (cardState.correctArticle !== cardState.selectedArticle)
-    ) {
-      isCorrect = false;
+      /**
+       * Determine if there was a mistake
+       */
+      if (
+        (cardState.correctArticle) &&
+        (cardState.correctArticle !== cardState.selectedArticle)
+      ) {
+        mistake = 'ARTICLE';
+      }
+
+      if (cardState.correctWord !== cardState.selectedWord) {
+        mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
+      }
+
+      if (mistake !== 'NONE') {
+        setCardState(prev => ({ ...prev, ...{ mistake } }));
+      } else {
+        setCardState(prev => ({
+          ...prev, ...{
+            stage: 'CORRECT',
+            progress: 'SUCCESS'
+          }
+        }));
+      }
+    } else if (cardState.stage === 'CORRECT') {
+      setCardState(prev => ({
+        ...prev, ...{
+          stage: 'COMPLETED'
+        }
+      }));
     }
-
-    if (cardState.correctWord !== cardState.selectedWord) {
-      isCorrect = false;
-    }
-
-    setCardState(prev => ({ ...prev, ...{ isCorrect } }));
   }, [
+    cardState.stage,
     cardState.correctArticle,
     cardState.selectedArticle,
     cardState.selectedWord,
@@ -96,17 +150,8 @@ export default function WordCardButton({
 
   const handlePressOut = useCallback(() => {
     setIsPressed(false);
-
-    if (!cardState.isCorrect) {
-      checkAnswer();
-    } else {
-      setCardState(prev => ({ ...prev, ...{ isCompleted: true } }));
-    }
-  }, [
-    cardState.isCorrect,
-    setCardState,
-    checkAnswer
-  ]);
+    checkAnswer();
+  }, [checkAnswer]);
 
   /**
    * Handle pressed button style only side effects
@@ -140,14 +185,14 @@ export default function WordCardButton({
         onPressOut={handlePressOut}
         style={[
           pressableStyles,
+          pressableStateStyle,
           animatedShadowStyle,
-          cardState.isCorrect ? successPressable : ''
         ]}
       >
         {SVGElement}
         <Text style={[
           textStyles,
-          cardState.isCorrect ? successText : ''
+          textStateStyle,
         ]}>{children}</Text>
       </AnimatedPressable>
     </Animated.View>
@@ -184,7 +229,15 @@ const wordCardButtonStyles = StyleSheet.create({
     backgroundColor: colors.light.success,
     shadowColor: colors.light.border,
   },
+  warningPressable: {
+    backgroundColor: colors.light.warning,
+    borderColor: colors.light.warning,
+    shadowColor: colors.dark.warning,
+  },
   successText: {
     color: colors.dark.text
-  }
+  },
+  warningText: {
+    color: colors.dark.warning,
+  },
 })

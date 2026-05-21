@@ -17,16 +17,20 @@ export interface WordProps {
 	userScore?: number;
 }
 
+export type CardStage = 'READY' | 'CORRECT' | 'COMPLETED';
+export type CardProgress = 'PENDING' | 'SUCCESS' | 'FAILED';
+export type CardMistake = 'NONE' | 'ARTICLE' | 'WORD' | 'BOTH';
+
 export interface WordCardStateProps {
 	word: WordProps;
-	isCorrect: boolean;
 	isFlipped: boolean;
-	isCompleted: boolean;
-	isIncorrect: boolean;
 	selectedArticle: string | null;
 	selectedWord: string | null;
 	correctArticle: string | null;
 	correctWord: string | null;
+	stage: CardStage;
+	progress: CardProgress;
+	mistake: CardMistake;
 }
 
 export const initialWordState: WordProps = {
@@ -38,14 +42,14 @@ export const initialWordState: WordProps = {
 
 export const initialWordCardState: WordCardStateProps = {
 	word: initialWordState,
-	isCorrect: false,
 	isFlipped: false,
-	isCompleted: false,
-	isIncorrect: false,
 	selectedArticle: null,
 	selectedWord: null,
 	correctArticle: null,
 	correctWord: null,
+	stage: 'READY',
+	progress: 'PENDING',
+	mistake: 'NONE',
 };
 
 interface WordCardContextType {
