@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { englishArticles } from "../../util/filterFillerWords";
 import getFillerWords from "../../util/getFillerWords";
-import { CardContext, type CardStateProps, initialCardState, WordProps } from "./cardContext";
 import WordCard from "./WordCard";
 import WordCardButton from "./WordCardButton";
+import { initialWordCardState, WordCardContext, WordProps, type WordCardStateProps } from "./wordCardContext";
 import WordCardSelection from "./WordCardSelection";
 
 /**
@@ -12,12 +13,13 @@ import WordCardSelection from "./WordCardSelection";
  */
 interface CardContainerProps {
   word: WordProps;
+  isCurrent: boolean;
 }
 
 /**
  * WordCardContainer Component
  */
-export default function WordCardContainer({ word }: CardContainerProps) {
+export default function WordCardContainer({ word, isCurrent }: CardContainerProps) {
   const { container, nextBtn } = wordCardContainerStyles;
 
   /**
@@ -25,8 +27,8 @@ export default function WordCardContainer({ word }: CardContainerProps) {
    */
   const [fillerWords, setFillerWords] = useState<string[]>([]);
   const [articleWords, setArticleWords] = useState<string[]>([]);
-  const [cardState, setCardState] = useState<CardStateProps>({
-    ...initialCardState,
+  const [cardState, setCardState] = useState<WordCardStateProps>({
+    ...initialWordCardState,
     correctArticle: word.englishArticle ?? null,
     correctWord: word.translation ?? null,
   });
@@ -36,7 +38,7 @@ export default function WordCardContainer({ word }: CardContainerProps) {
    */
   useEffect(() => {
     setCardState({
-      ...initialCardState,
+      ...initialWordCardState,
       word,
       correctArticle: word.englishArticle ?? null,
       correctWord: word.translation ?? null,
@@ -58,10 +60,45 @@ export default function WordCardContainer({ word }: CardContainerProps) {
     loadWords();
   }, [word.translation, word.englishArticle, word]);
 
+  /**
+   * Handle current card styles
+   */
+  const currentPosition = useSharedValue(isCurrent ? 0 : 1000);
+  const currentOpacity = useSharedValue(isCurrent ? 1 : 0);
+  const positionStyle = useAnimatedStyle(() => ({
+    left: currentPosition.value,
+    opacity: currentOpacity.value
+  }));
+
+  /**
+   * Kind of a shuffle animation effect
+   */
+  useLayoutEffect(() => {
+    if (isCurrent) {
+      currentPosition.value = withTiming(0, {
+        duration: 500
+      });
+      currentOpacity.value = withTiming(1.0, {
+        duration: 200
+      });
+    } else {
+      currentPosition.value = withTiming(500, {
+        duration: 800
+      });
+      currentOpacity.value = withTiming(0, {
+        duration: 400
+      });
+    }
+  }, [isCurrent, currentPosition, currentOpacity]);
+
   return (
-    <CardContext.Provider value={{ cardState, setCardState }}>
-      <View style={container}>
-        <WordCard />
+    <WordCardContext.Provider value={{ cardState, setCardState }}>
+      <Animated.View style={[
+        container,
+        positionStyle
+      ]
+      }>
+        <WordCard isCurrent={isCurrent} />
         <WordCardSelection
           articleWords={articleWords}
           fillerWords={fillerWords}
@@ -69,13 +106,18 @@ export default function WordCardContainer({ word }: CardContainerProps) {
         <WordCardButton style={nextBtn}>
           {cardState.isCorrect ? 'Next card' : 'Check'}
         </WordCardButton>
-      </View>
-    </CardContext.Provider >
+      </Animated.View>
+    </WordCardContext.Provider >
   )
 }
 
+/**
+ * Styles
+ */
 const wordCardContainerStyles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    left: 500,
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'stretch',

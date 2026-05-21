@@ -1,9 +1,8 @@
-import { colors } from '@/app/styles';
-import { ReactElement, ReactNode, useContext, useEffect, useState } from 'react';
+import { colors } from '@/src/app/styles';
+import { ReactElement, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { DeckContext } from '../Deck/deckContext';
-import { CardContext } from './cardContext';
+import { WordCardContext } from './wordCardContext';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -26,8 +25,7 @@ export default function WordCardButton({
   style,
   ...props
 }: WordCardButtonProps) {
-  const { deckDispatch } = useContext(DeckContext);
-  const { cardState, setCardState } = useContext(CardContext);
+  const { cardState, setCardState } = useContext(WordCardContext);
 
   /**
    * Style vars
@@ -64,7 +62,54 @@ export default function WordCardButton({
   }));
 
   /**
-   * Handle animations on pressed
+   * Check the user's answer
+   */
+  const checkAnswer = useCallback(() => {
+    let isCorrect = true;
+
+    if (
+      cardState.correctArticle &&
+      (cardState.correctArticle !== cardState.selectedArticle)
+    ) {
+      isCorrect = false;
+    }
+
+    if (cardState.correctWord !== cardState.selectedWord) {
+      isCorrect = false;
+    }
+
+    setCardState(prev => ({ ...prev, ...{ isCorrect } }));
+  }, [
+    cardState.correctArticle,
+    cardState.selectedArticle,
+    cardState.selectedWord,
+    cardState.correctWord,
+    setCardState,
+  ]);
+
+  /**
+   * Action handlers
+   */
+  const handlePressIn = useCallback(() => {
+    setIsPressed(true);
+  }, []);
+
+  const handlePressOut = useCallback(() => {
+    setIsPressed(false);
+
+    if (!cardState.isCorrect) {
+      checkAnswer();
+    } else {
+      setCardState(prev => ({ ...prev, ...{ isCompleted: true } }));
+    }
+  }, [
+    cardState.isCorrect,
+    setCardState,
+    checkAnswer
+  ]);
+
+  /**
+   * Handle pressed button style only side effects
    */
   useEffect(() => {
     if (isPressed) {
@@ -82,49 +127,11 @@ export default function WordCardButton({
       shadowOffsetHeight.value = 8;
     }
 
-  }, [isPressed, shadowOffsetHeight, top])
-
-  const checkAnswer = () => {
-    if (cardState.isCompleted) {
-      deckDispatch({ type: 'next_card' });
-      return;
-    }
-
-    let isCorrect = true;
-
-    if (cardState.correctArticle && (cardState.correctArticle !== cardState.selectedArticle)) {
-      isCorrect = false;
-    }
-
-    if (cardState.correctWord !== cardState.selectedWord) {
-      isCorrect = false;
-    }
-
-    setCardState(prev => {
-      return ({
-        ...prev, ...{
-          isCorrect,
-          isIncorrect: !isCorrect,
-          isCompleted: isCorrect
-        }
-      })
-    })
-
-    console.log('answered', cardState);
-  }
+  }, [isPressed, shadowOffsetHeight, top]);
 
   /**
-   * Action handlers
+   * Render the WordCard
    */
-  function handlePressIn() {
-    setIsPressed(true);
-    checkAnswer();
-  }
-
-  function handlePressOut() {
-    setIsPressed(false);
-  }
-
   return (
     <Animated.View style={[containerStyles, animatedContainerStyle]}>
       <AnimatedPressable
@@ -147,6 +154,9 @@ export default function WordCardButton({
   );
 };
 
+/**
+ * Styles
+ */
 const wordCardButtonStyles = StyleSheet.create({
   containerStyles: {
     margin: 24

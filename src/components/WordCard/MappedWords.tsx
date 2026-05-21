@@ -1,4 +1,4 @@
-import { colors } from "@/app/styles";
+import { colors } from "@/src/app/styles";
 import { Dispatch, useEffect, useMemo } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useLayoutEffect, useMemo } from 'react';
 import { type LayoutChangeEvent, StyleSheet, View } from "react-native";
 import {
   Easing,
@@ -6,9 +6,10 @@ import {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import { colors } from "../../styles";
-import { CardContext } from './cardContext';
+import { colors } from "../../app/styles";
+import { CardDeckContext } from '../CardDeck/cardDeckContext';
 import WordCardBack from './WordCardBack';
+import { WordCardContext } from './wordCardContext';
 import WordCardFront from './WordCardFront';
 
 /**
@@ -19,9 +20,14 @@ import WordCardFront from './WordCardFront';
  * so these are done individually to create the
  * card flip effect.
  */
-export default function WordCard() {
-  const { wordCardContainer } = wordCardStyles;
-  const { cardState } = useContext(CardContext);
+interface WordCardProps {
+  isCurrent: boolean;
+}
+
+export default function WordCard({ isCurrent }: WordCardProps) {
+  const { wordCard } = wordCardStyles;
+  const { cardState } = useContext(WordCardContext);
+  const { cardDeckDispatch } = useContext(CardDeckContext);
 
   /**
    * Animation vars
@@ -29,6 +35,7 @@ export default function WordCard() {
   const articleWidth = useSharedValue(0);
   const wordWidth = useSharedValue(0);
   const flipDegrees = useSharedValue(0);
+  const flipDuration = useSharedValue(500);
 
   /**
    * Animation timing functions
@@ -36,11 +43,6 @@ export default function WordCard() {
   const timing = useMemo(() => ({
     duration: 120,
     easing: Easing.inOut(Easing.ease)
-  }), []);
-
-  const flipTiming = useMemo(() => ({
-    duration: 450,
-    easing: Easing.inOut(Easing.cubic)
   }), []);
 
   /**
@@ -80,15 +82,24 @@ export default function WordCard() {
     wordWidth.value = withTiming(event.nativeEvent.layout.width, timing);
   };
 
+  useLayoutEffect(() => {
+    flipDegrees.value = withTiming(cardState.isCorrect ? 180 : 0, {
+      duration: cardState.isCompleted ? 0 : flipDuration.value,
+      easing: Easing.inOut(Easing.cubic)
+    });
+  }, [cardState.isCorrect, flipDegrees, cardState.isCompleted, flipDuration]);
+
   useEffect(() => {
-    flipDegrees.value = withTiming(cardState.isCorrect ? 180 : 0, flipTiming);
-  }, [cardState.isCorrect, flipDegrees, flipTiming])
+    if (isCurrent && cardState.isCompleted) {
+      cardDeckDispatch({ type: 'next_card' });
+    }
+  }, [isCurrent, cardState.isCompleted, cardDeckDispatch])
 
   /**
    * Render the card
    */
   return (
-    <View style={wordCardContainer}>
+    <View style={wordCard}>
       <WordCardFront
         handleWordWidth={handleWordWidth}
         handleArticleWidth={handleArticleWidth}
@@ -107,7 +118,7 @@ export default function WordCard() {
  * Styles
  */
 const wordCardStyles = StyleSheet.create({
-  wordCardContainer: {
+  wordCard: {
     margin: 24,
     borderRadius: 8,
     alignContent: 'center',

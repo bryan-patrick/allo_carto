@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Text, View } from "react-native";
-import styles, { colors } from "../styles";
+import styles, { colors } from "../app/styles";
 import LinkButton from "./LinkButton";
 
 /**

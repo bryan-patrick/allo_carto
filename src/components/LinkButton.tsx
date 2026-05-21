@@ -4,14 +4,14 @@ import { LinkProps } from 'expo-router';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, Text, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import styles from '../styles';
+import styles from '../app/styles';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /**
  * Audio Import
  */
-const tapAudio = require('../assets/sounds/tap.wav');
+const tapAudio = require('@/src/app/assets/sounds/tap.wav');
 
 /**
  * Typing

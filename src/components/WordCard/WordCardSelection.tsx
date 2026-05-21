@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CardContext } from './cardContext';
 import MappedWords from './MappedWords';
+import { WordCardContext } from './wordCardContext';
 
 /**
  * Typing
@@ -15,7 +15,7 @@ interface WordCardSelectionProps {
  * WordCardSelection Component
  */
 export default function WordCardSelection({ articleWords, fillerWords }: WordCardSelectionProps) {
-  const { cardState, setCardState } = useContext(CardContext);
+  const { cardState, setCardState } = useContext(WordCardContext);
   const { wcsContainer } = wordCardSelectionStyles;
 
   const handleArticlePressToggle = (word: string) => {

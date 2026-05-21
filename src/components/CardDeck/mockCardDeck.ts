@@ -1,4 +1,4 @@
-import { WordProps } from '../WordCard/cardContext';
+import { WordProps } from '../WordCard/wordCardContext';
 
 /**
  * TODO remove.

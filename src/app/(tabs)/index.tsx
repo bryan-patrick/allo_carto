@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
-import LinkCard from '../components/LinkCard';
-import SVGCards from '../components/SVG/SVGCards';
+import LinkCard from '../../components/LinkCard';
+import SVGCards from '../../components/SVG/SVGCards';
 import styles, { colors } from '../styles';
 
 /**

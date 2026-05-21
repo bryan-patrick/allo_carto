@@ -1,11 +1,11 @@
-import { colors } from "@/app/styles";
+import { colors } from "@/src/app/styles";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useContext } from "react";
 import { type LayoutChangeEvent, StyleSheet, Text, type TextStyle, View, type ViewStyle } from "react-native";
 import type { AnimatedStyle } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
-import { CardContext } from "./cardContext";
 import { sharedWordCardStyles } from "./WordCard";
+import { WordCardContext } from "./wordCardContext";
 
 /**
  * Typing
@@ -28,7 +28,7 @@ export default function WordCardFront({
   wordCardFrontFlippedStyle,
   wordWidthStyle
 }: WordCardFrontProps) {
-  const { cardState } = useContext(CardContext);
+  const { cardState } = useContext(WordCardContext);
 
   /**
    * Destructure Styles

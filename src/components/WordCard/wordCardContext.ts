@@ -1,9 +1,5 @@
 /**
- * Context for each individual card in a deck.
- * We may refactor this to be a deck context...not sure yet...
- * Might make more sense when the DB is up.
- *
- * TODO: Refactor?
+ * State for each individual card in a deck
  */
 import { createContext, type Dispatch, type SetStateAction } from 'react';
 
@@ -21,10 +17,11 @@ export interface WordProps {
 	userScore?: number;
 }
 
-export interface CardStateProps {
+export interface WordCardStateProps {
 	word: WordProps;
-	isCompleted: boolean;
 	isCorrect: boolean;
+	isFlipped: boolean;
+	isCompleted: boolean;
 	isIncorrect: boolean;
 	selectedArticle: string | null;
 	selectedWord: string | null;
@@ -39,10 +36,11 @@ export const initialWordState: WordProps = {
 	CEFRLevel: '',
 };
 
-export const initialCardState: CardStateProps = {
+export const initialWordCardState: WordCardStateProps = {
 	word: initialWordState,
-	isCompleted: false,
 	isCorrect: false,
+	isFlipped: false,
+	isCompleted: false,
 	isIncorrect: false,
 	selectedArticle: null,
 	selectedWord: null,
@@ -50,12 +48,12 @@ export const initialCardState: CardStateProps = {
 	correctWord: null,
 };
 
-interface CardContextType {
-	cardState: CardStateProps;
-	setCardState: Dispatch<SetStateAction<CardStateProps>>;
+interface WordCardContextType {
+	cardState: WordCardStateProps;
+	setCardState: Dispatch<SetStateAction<WordCardStateProps>>;
 }
 
-export const CardContext = createContext<CardContextType>({
-	cardState: initialCardState,
+export const WordCardContext = createContext<WordCardContextType>({
+	cardState: initialWordCardState,
 	setCardState: () => {},
 });

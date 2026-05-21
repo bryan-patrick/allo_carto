@@ -1,3 +1,4 @@
+import { SharedValue } from 'react-native-reanimated';
 import filterFillerWords from './filterFillerWords';
 
 export interface GetFillerWordsProps {
@@ -21,8 +22,8 @@ const mockWords = [
 	'eat',
 ];
 
-export function sleep(ms: number) {
-	return new Promise(_ => setTimeout(_, ms));
+export function sleep(ms: number | SharedValue<number>) {
+	return new Promise(_ => setTimeout(_, ms as number));
 }
 
 /**

@@ -1,9 +1,9 @@
-import { colors } from "@/app/styles";
+import { colors } from "@/src/app/styles";
 import { useContext } from "react";
 import { type ViewStyle, StyleSheet, Text } from "react-native";
 import Animated, { type AnimatedStyle } from "react-native-reanimated";
-import { CardContext } from "./cardContext";
 import { sharedWordCardStyles } from "./WordCard";
+import { WordCardContext } from "./wordCardContext";
 
 /**
  * Typing
@@ -18,7 +18,7 @@ interface WordCardBackProps {
 export default function WordCardBack({
   wordCardBackFlippedStyle
 }: WordCardBackProps) {
-  const { cardState } = useContext(CardContext);
+  const { cardState } = useContext(WordCardContext);
 
   /**
    * Destructure Styles
@@ -33,7 +33,7 @@ export default function WordCardBack({
   } = cardState.word;
 
   /**
-   * Render the front of the WordCard
+   * Render the back of the WordCard
    */
   return (
     <Animated.View style={[
