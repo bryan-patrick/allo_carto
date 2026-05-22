@@ -2,7 +2,7 @@
 
 **_Work in progress!_**
 
-![App preview](preview.jpg)
+![App preview](preview.gif)
 
 ## Dev Notes
 
