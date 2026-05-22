@@ -1,4 +1,4 @@
-# Allô Cartô
+# Allô Carto
 
 **_Work in progress!_**
 
