@@ -2,8 +2,12 @@ import { colors } from '@/src/app/styles';
 import { ReactElement, ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { CardMistake, WordCardContext } from './wordCardContext';
+import { CardMistake, WordCardContext, WordCardStateProps } from './wordCardContext';
 
+/**
+ * I guess there's no Animated.Pressable?
+ * I don't know the rules. This works though.
+ */
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /**
@@ -17,7 +21,6 @@ interface WordCardButtonProps extends PressableProps {
 /**
  * WordCardButton Component
  * Handles checking/next card actions
- * https://reactnative.dev/docs/components-and-apis
  */
 export default function WordCardButton({
   children,
@@ -28,7 +31,6 @@ export default function WordCardButton({
   const { cardState, setCardState } = useContext(WordCardContext);
   const [pressableStateStyle, setPressableStateStyle] = useState<ViewStyle | null>({});
   const [textStateStyle, setTextStateStyle] = useState<TextStyle | null>({});
-
   /**
    * Style vars
    */
@@ -49,6 +51,10 @@ export default function WordCardButton({
    */
   useLayoutEffect(() => {
     switch (cardState.progress) {
+      case 'PENDING':
+        setPressableStateStyle({});
+        setTextStateStyle({});
+        break;
       case 'SUCCESS': {
         setPressableStateStyle(successPressable);
         setTextStateStyle(successText);
@@ -59,13 +65,9 @@ export default function WordCardButton({
         setTextStateStyle(warningText);
         break;
       }
-      case 'ERROR':
+      case 'DANGER':
         setPressableStateStyle(errorPressable);
         setTextStateStyle(errorText);
-        break;
-      case 'PENDING':
-        setPressableStateStyle({});
-        setTextStateStyle({});
         break;
     }
   }, [
@@ -105,52 +107,78 @@ export default function WordCardButton({
    * Check the user's answer
    */
   const checkAnswer = useCallback(() => {
-    if (cardState.stage === 'READY') {
+    let updates: Partial<WordCardStateProps> | null = null;
+    let mistake: CardMistake = 'NONE';
+
+    /**
+     * What we do depends on what stage the card is in.
+     */
+    switch (cardState.stage) {
       /**
-       * Determine if there was a mistake
+       * READY is initial value, so this is the first time
+       * the user hit the 'Check' button. Check if the user 
+       * got the right answer or made a mistake.
        */
-      let mistake: CardMistake = 'NONE';
+      case 'READY':
+        if (
+          cardState.correctArticle &&
+          cardState.correctArticle !== cardState.selectedArticle
+        ) mistake = 'ARTICLE';
 
-      if (
-        (cardState.correctArticle) &&
-        (cardState.correctArticle !== cardState.selectedArticle)
-      ) {
-        mistake = 'ARTICLE';
-      }
-
-      if (cardState.correctWord !== cardState.selectedWord) {
-        mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
-      }
-
-      /**
-       * Set card state
-       */
-      if (mistake !== 'NONE') {
-        setCardState(prev => ({
-          ...prev, ...{
-            progress: 'WARNING',
-            mistake,
-          }
-        }));
-      } else {
-        setCardState(prev => ({
-          ...prev, ...{
-            progress: 'SUCCESS',
-            stage: 'CORRECT',
-          }
-        }));
-      }
-    } else if (cardState.stage === 'CORRECT') {
-      setCardState(prev => ({
-        ...prev, ...{
-          progress: 'SUCCESS',
-          stage: 'COMPLETED',
+        if (cardState.correctWord !== cardState.selectedWord) {
+          mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
         }
-      }));
+
+        if (mistake !== 'NONE')
+          updates = { progress: 'WARNING', mistake };
+        else
+          updates = { progress: 'SUCCESS', stage: 'CORRECT' };
+        break;
+
+      /**
+       * CORRECT means We were already showing the user 
+       * the other side of the card (with correct answers). 
+       * Mark this one completed.
+       */
+      case 'CORRECT':
+        updates = { progress: 'SUCCESS', stage: 'COMPLETED' };
+        break;
+
+      /**
+       * INCORRECT means the user got it wrong and
+       * ran out of attempts. Progress the card 
+       * without upping the word score. TODO
+       */
+      case 'INCORRECT':
+        updates = { progress: 'DANGER', stage: 'COMPLETED' }
+        break;
     }
 
+    /**
+     * Check if the user has reached
+     * the max allowed attempts.
+     */
+    if (
+      cardState.attempts + 1 >= cardState.maxAttempts &&
+      mistake !== 'NONE'
+    ) {
+      updates = { progress: 'DANGER', stage: 'INCORRECT', mistake }
+    }
 
+    /**
+     * Update the card's state and 
+     * increment the user's attempts.
+     */
+    if (updates) {
+      setCardState(prev => ({
+        ...prev,
+        ...updates,
+        attempts: prev.attempts + 1,
+      }));
+    }
   }, [
+    cardState.maxAttempts,
+    cardState.attempts,
     cardState.stage,
     cardState.correctArticle,
     cardState.selectedArticle,
@@ -172,7 +200,8 @@ export default function WordCardButton({
   }, [checkAnswer]);
 
   /**
-   * Handle pressed button style only side effects
+   * Side effect that sets the styles 
+   * when a user presses the button.
    */
   useEffect(() => {
     if (isPressed) {
@@ -199,7 +228,7 @@ export default function WordCardButton({
     <Animated.View style={[containerStyles, animatedContainerStyle]}>
       <AnimatedPressable
         {...props}
-        disabled={cardState.progress === 'WARNING' || cardState.progress === 'ERROR'}
+        disabled={cardState.progress === 'WARNING'}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         style={[
@@ -257,9 +286,9 @@ const wordCardButtonStyles = StyleSheet.create({
     shadowColor: colors.dark.warning,
   },
   errorPressable: {
-    backgroundColor: colors.light.error,
-    borderColor: colors.light.error,
-    shadowColor: colors.dark.error,
+    backgroundColor: colors.light.danger,
+    borderColor: colors.light.danger,
+    shadowColor: colors.dark.danger,
   },
   successText: {
     color: colors.dark.text
@@ -268,6 +297,6 @@ const wordCardButtonStyles = StyleSheet.create({
     color: colors.dark.warning,
   },
   errorText: {
-    color: colors.dark.error,
+    color: colors.dark.danger,
   },
 });

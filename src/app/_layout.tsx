@@ -2,17 +2,6 @@ import { Stack } from "@/node_modules/expo-router";
 import { ThemeProvider } from "@react-navigation/native";
 import { useFonts } from 'expo-font';
 import alloTheme from './alloTheme';
-
-/**
- * Stack navigator
- * https://docs.expo.dev/router/advanced/stack/
- */
-const debug = true;
-
-if (debug) {
-  console.log(alloTheme);
-}
-
 /**
  * AppLayout Component
  * 
@@ -20,13 +9,9 @@ if (debug) {
  * - Vladimir, Waiting for Godot
  */
 export default function AppLayout() {
-  const [loaded, error] = useFonts({
+  useFonts({
     'lexend-variable': require('./assets/fonts/lexend-variable.ttf')
   })
-
-  if (debug) {
-    console.log(`Loaded: ${loaded ?? 'Error:'}, ${error ?? 'No font error.'}`);
-  }
 
   /**
    * The (tabs) dir are navigable routes on the bottom bar

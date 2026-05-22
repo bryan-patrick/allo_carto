@@ -30,9 +30,7 @@ interface LinkButtonProps extends PressableProps {
 /**
  * LinkButton Component
  * A link that looks like a button
- * https://reactnative.dev/docs/components-and-apis
  */
-
 export default function LinkButton({
   handler = () => { },
   action,
@@ -147,6 +145,9 @@ export default function LinkButton({
     allTheProps = { ...props, ...linkProps };
   }
 
+  /**
+   * Render the thing
+   */
   return (
     <Animated.View style={[style as ViewStyle, animatedContainerStyle]}>
       <AnimatedPressable

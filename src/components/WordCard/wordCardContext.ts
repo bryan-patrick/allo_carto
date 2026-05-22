@@ -20,36 +20,33 @@ export interface WordProps {
 /**
  * Concatenation of stage + progress + mistake
  */
-export const FEEDBACK_TEXT_FRONT = {
+export const FEEDBACK_TEXT_FRONT: Partial<Record<FeedbackKey, string>> = {
 	READY_PENDING_NONE: '',
-	READY_WARNING_ARTICLE: 'The article is incorrect!',
-	READY_WARNING_WORD: 'The word is incorrect!',
-	READY_WARNING_BOTH: 'Both are incorrect!',
-	CORRECT_SUCCESS_NONE: '',
-	COMPLETED_ERROR_ARTICLE: '',
-	COMPLETED_ERROR_WORD: '',
-	COMPLETED_ERROR_BOTH: '',
+	READY_WARNING_ARTICLE: 'The article is incorrect! Try again.',
+	READY_WARNING_WORD: 'The word is incorrect! Try again.',
+	READY_WARNING_BOTH: 'Both are incorrect! Try again.',
+	INCORRECT_WARNING_ARTICLE: 'The article is incorrect! Try again.',
+	INCORRECT_WARNING_WORD: 'The word is incorrect! Try again.',
+	INCORRECT_WARNING_BOTH: 'Both are incorrect! Try again.',
 };
 
-export const FEEDBACK_TEXT_BACK = {
+export const FEEDBACK_TEXT_BACK: Partial<Record<FeedbackKey, string>> = {
 	READY_PENDING_NONE: '',
 	CORRECT_SUCCESS_NONE: 'Correct! Great Job!',
-	COMPLETED_ERROR_ARTICLE: 'That is the wrong article!',
-	COMPLETED_ERROR_WORD: 'That is the wrong word!',
-	COMPLETED_ERROR_BOTH: 'Both are wrong!',
-	READY_WARNING_ARTICLE: '',
-	READY_WARNING_WORD: '',
-	READY_WARNING_BOTH: '',
+	COMPLETED_DANGER_ARTICLE: 'That is the wrong article!',
+	COMPLETED_DANGER_WORD: 'That is the wrong word!',
+	COMPLETED_DANGER_BOTH: 'Both are wrong!',
+	INCORRECT_DANGER_BOTH: 'Both are incorrect! Try again next time.',
+	INCORRECT_DANGER_WORD: 'That is the wrong word!',
+	INCORRECT_DANGER_ARTICLE: 'That is the wrong article!',
 };
 
-type FeedbackText =
-	| keyof typeof FEEDBACK_TEXT_FRONT
-	| keyof typeof FEEDBACK_TEXT_BACK;
+export type FeedbackKey = `${CardStage}_${CardProgress}_${CardMistake}`;
 
 export function getFeedbackKey(
 	state: Pick<WordCardStateProps, 'stage' | 'progress' | 'mistake'>,
-): FeedbackText {
-	return `${state.stage}_${state.progress}_${state.mistake}` as FeedbackText;
+): FeedbackKey {
+	return `${state.stage}_${state.progress}_${state.mistake}`;
 }
 
 /**
@@ -60,8 +57,8 @@ export function getFeedbackKey(
  * It also allows us to expand the state machine
  * later if we need to.
  */
-export type CardStage = 'READY' | 'CORRECT' | 'COMPLETED';
-export type CardProgress = 'PENDING' | 'SUCCESS' | 'WARNING' | 'ERROR';
+export type CardStage = 'READY' | 'CORRECT' | 'INCORRECT' | 'COMPLETED';
+export type CardProgress = 'PENDING' | 'SUCCESS' | 'WARNING' | 'DANGER';
 export type CardMistake = 'NONE' | 'ARTICLE' | 'WORD' | 'BOTH';
 
 export interface WordCardStateProps {
@@ -74,7 +71,9 @@ export interface WordCardStateProps {
 	stage: CardStage;
 	progress: CardProgress;
 	mistake: CardMistake;
-	feedback: FeedbackText;
+	feedbackKey: FeedbackKey;
+	attempts: number;
+	maxAttempts: number;
 }
 
 export const initialWordState: WordProps = {
@@ -94,7 +93,9 @@ export const initialWordCardState: WordCardStateProps = {
 	stage: 'READY',
 	progress: 'PENDING',
 	mistake: 'NONE',
-	feedback: 'READY_PENDING_NONE',
+	feedbackKey: 'READY_PENDING_NONE',
+	attempts: 0,
+	maxAttempts: 2,
 };
 
 interface WordCardContextType {

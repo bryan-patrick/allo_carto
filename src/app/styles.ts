@@ -24,7 +24,7 @@ export const colors = {
 		secondaryBorder: '#382326',
 		success: '#032B1C',
 		warning: '#332105',
-		error: '#3E0E14',
+		danger: '#3E0E14',
 	},
 	light: {
 		primary: '#7BADA6',
@@ -35,7 +35,7 @@ export const colors = {
 		secondaryBorder: '#6B474B',
 		success: '#DDFFD6',
 		warning: '#FFC670',
-		error: '#FF7081',
+		danger: '#FF7081',
 	},
 };
 

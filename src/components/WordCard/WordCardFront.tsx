@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { type LayoutChangeEvent, StyleSheet, Text, type TextStyle, View, type ViewStyle } from "react-native";
 import type { AnimatedStyle } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
-import { sharedWordCardStyles } from "./WordCard";
+import { sharedWordCardStyles } from "./sharedWordCardStyles";
 import { FEEDBACK_TEXT_FRONT, WordCardContext } from "./wordCardContext";
 
 /**
@@ -69,7 +69,8 @@ export default function WordCardFront({
   } = cardState.word;
 
   /**
-   * User selected rendering
+   * Render the articlea and word the user has selected.
+   * These will animated when changing size, which is cool.
    */
   const displayedArticle = cardState.selectedArticle ?? englishArticle ?? '';
   const displayedWord = cardState.selectedWord ?? translation ?? '';
@@ -114,7 +115,10 @@ export default function WordCardFront({
                 answerSlot,
                 articleClass,
                 articleWidthStyle,
-                articleSlotStyle
+                (
+                  cardState.progress !== 'SUCCESS' &&
+                  cardState.progress !== 'DANGER' && articleSlotStyle
+                )
               ]}
             >
               {cardState.selectedArticle && displayedArticle}
@@ -134,14 +138,19 @@ export default function WordCardFront({
             answerSlot,
             wordClass,
             wordWidthStyle,
-            wordSlotStyle
+            (
+              cardState.progress !== 'SUCCESS' &&
+              cardState.progress !== 'DANGER' && wordSlotStyle
+            )
           ]}
         >
           {cardState.selectedWord && displayedWord}
         </Animated.Text>
       </View>
       <View>
-        <Text style={[feedbackText, feedbackStyle]}>{FEEDBACK_TEXT_FRONT[cardState.feedback]}</Text>
+        <Text style={[feedbackText, feedbackStyle]}>
+          {FEEDBACK_TEXT_FRONT[cardState.feedbackKey] ?? ''}
+        </Text>
       </View>
     </Animated.View>
   )

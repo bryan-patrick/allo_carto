@@ -8,9 +8,17 @@ import {
 } from 'react-native-reanimated';
 import { colors } from "../../app/styles";
 import { CardDeckContext } from '../CardDeck/cardDeckContext';
+import { sharedWordCardStyles } from './sharedWordCardStyles';
 import WordCardBack from './WordCardBack';
 import { getFeedbackKey, WordCardContext } from './wordCardContext';
 import WordCardFront from './WordCardFront';
+
+/**
+ * Typing
+ */
+interface WordCardProps {
+  isCurrent: boolean;
+}
 
 /**
  * WordCard Component
@@ -20,23 +28,27 @@ import WordCardFront from './WordCardFront';
  * so these are done individually to create the
  * card flip effect.
  */
-interface WordCardProps {
-  isCurrent: boolean;
-}
-
 export default function WordCard({ isCurrent }: WordCardProps) {
-  const { wordCard } = wordCardStyles;
+  /**
+   * State
+   */
   const { cardState, setCardState } = useContext(WordCardContext);
   const { cardDeckDispatch } = useContext(CardDeckContext);
-  const {
-    feedbackWarning,
-    feedbackError,
-    answerSlotWarning,
-    answerSlotError
-  } = sharedWordCardStyles;
   const [feedbackStyle, setFeedbackStyle] = useState({});
   const [articleSlotStyle, setArticleSlotStyle] = useState<TextStyle>({});
   const [wordSlotStyle, setWordSlotStyle] = useState<TextStyle>({});
+
+  /**
+   * Styles
+  */
+  const {
+    feedbackWarning,
+    feedbackError,
+    answerSlotSuccess,
+    answerSlotWarning,
+    answerSlotError
+  } = sharedWordCardStyles;
+  const { wordCard } = wordCardStyles;
 
   /**
    * Animation vars
@@ -91,10 +103,17 @@ export default function WordCard({ isCurrent }: WordCardProps) {
     wordWidth.value = withTiming(event.nativeEvent.layout.width, timing);
   };
 
+  /**
+   * Handle the card flip
+   */
   useLayoutEffect(() => {
+    const shouldFlip =
+      cardState.progress === 'SUCCESS' ||
+      cardState.progress === 'DANGER'
+
     flipDegrees.value = withTiming(
-      cardState.progress === 'SUCCESS' ? 180 : 0, {
-      duration: cardState.progress === 'SUCCESS' ? flipDuration.value : 0,
+      shouldFlip ? 180 : 0, {
+      duration: shouldFlip ? flipDuration.value : 0,
       easing: Easing.inOut(Easing.cubic)
     });
   }, [
@@ -104,9 +123,9 @@ export default function WordCard({ isCurrent }: WordCardProps) {
   ]);
 
   /**
-   * Trigger the next card on completed
+   * Trigger the next card on 'COMPLETED'.
    * This fires when we have the correct state
-   * and the user hits the button.
+   * and the user hits the 'Next Card ->' button.
    */
   useEffect(() => {
     if (isCurrent && cardState.stage === 'COMPLETED') {
@@ -119,15 +138,14 @@ export default function WordCard({ isCurrent }: WordCardProps) {
   ])
 
   /**
-   * When state changes, update the feedback text
-   * and answer slot styles
+   * Handle slots and feedback styles.
+   * Then update our card state.
+   * 
+   * (The slots are the things on the
+   * front of the card with a border 
+   * bottom where the words go)
    */
   useLayoutEffect(() => {
-    /**
-     * Handle slot and feedback styles
-     */
-    let slotStyle: TextStyle | null = null;
-
     const hasArticleMistake =
       (cardState.mistake === 'ARTICLE') ||
       (cardState.mistake === 'BOTH');
@@ -136,33 +154,39 @@ export default function WordCard({ isCurrent }: WordCardProps) {
       (cardState.mistake === 'WORD') ||
       (cardState.mistake === 'BOTH');
 
-    if (cardState.progress === 'WARNING') {
-      setFeedbackStyle(feedbackWarning);
-      slotStyle = answerSlotWarning;
-    } else if (cardState.progress === 'ERROR') {
-      setFeedbackStyle(feedbackError);
-      slotStyle = answerSlotError;
+    switch (cardState.progress) {
+      case 'PENDING':
+        setArticleSlotStyle({});
+        setWordSlotStyle({});
+        setFeedbackStyle({});
+        break;
+      case 'SUCCESS':
+        setArticleSlotStyle(answerSlotSuccess);
+        setWordSlotStyle(answerSlotSuccess);
+        setFeedbackStyle({}); // It defaults to success already
+        break;
+      case 'WARNING':
+        setFeedbackStyle(feedbackWarning);
+        if (hasArticleMistake) setArticleSlotStyle(answerSlotWarning);
+        if (hasWordMistake) setWordSlotStyle(answerSlotWarning)
+        break;
+      case 'DANGER':
+        setFeedbackStyle(feedbackError);
+        setArticleSlotStyle(answerSlotSuccess);
+        setWordSlotStyle(answerSlotSuccess);
+        if (hasArticleMistake) setArticleSlotStyle(answerSlotError);
+        if (hasWordMistake) setWordSlotStyle(answerSlotError)
+        break;
     }
 
-    if (slotStyle && hasArticleMistake) {
-      setArticleSlotStyle(slotStyle);
-    } else {
-      setArticleSlotStyle({});
-    }
-
-    if (slotStyle && hasWordMistake) {
-      setWordSlotStyle(slotStyle);
-    } else {
-      setWordSlotStyle({});
-    }
-
-    /**
-     * Handle the feedback text
-     */
-    setCardState((prev) => ({ ...prev, ...{ feedback: getFeedbackKey(prev) } }))
+    setCardState((prev) => ({
+      ...prev,
+      ...{ feedbackKey: getFeedbackKey(prev) }
+    })
+    )
   }, [
+    answerSlotSuccess,
     setCardState,
-    cardState.stage,
     cardState.progress,
     cardState.mistake,
     answerSlotError,
@@ -219,101 +243,3 @@ const wordCardStyles = StyleSheet.create({
     ]
   },
 });
-
-/**
- * Shared style - front and back of cards
- */
-export const sharedWordCardStyles = StyleSheet.create({
-  wordCardInner: {
-    display: 'flex',
-    alignContent: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.light.background,
-    borderRadius: 8,
-  },
-  cardGradient: {
-    alignContent: 'space-between',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    width: '100%',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    padding: 4,
-    paddingRight: 8,
-    paddingLeft: 8,
-    gap: 4,
-  },
-  cardCEFRLevel: {
-    color: colors.dark.text,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  cardUserScore: {
-    color: colors.light.text,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  cardMain: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 18,
-    paddingRight: 8,
-    paddingLeft: 8,
-    marginTop: 16,
-    gap: 8,
-  },
-  wordId: {
-    color: colors.dark.text,
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  wordPronunciation: {
-    fontSize: 18,
-    color: colors.dark.text
-  },
-  answerSlotContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  answerSlot: {
-    borderBottomWidth: 2,
-    color: 'transparent',
-    padding: 4,
-    paddingRight: 12,
-    paddingLeft: 12,
-    fontWeight: 500,
-    borderTopWidth: 2,
-    borderTopColor: 'transparent',
-    fontSize: 18,
-  },
-  answerSlotSuccess: {
-    color: colors.dark.success,
-    backgroundColor: colors.light.success,
-    boxShadow: `0 8px 8px 0 ${colors.light.border}`,
-    borderTopColor: colors.dark.success,
-  },
-  answerSlotWarning: {
-    color: colors.dark.warning,
-    backgroundColor: colors.light.warning,
-  },
-  answerSlotError: {
-    color: colors.dark.error,
-    backgroundColor: colors.light.error,
-  },
-  feedbackText: {
-    padding: 4,
-    fontSize: 16,
-    fontWeight: 600,
-    margin: 14,
-    color: colors.dark.success
-  },
-  feedbackWarning: {
-    color: colors.dark.warning
-  },
-  feedbackError: {
-    color: colors.dark.error
-  }
-})

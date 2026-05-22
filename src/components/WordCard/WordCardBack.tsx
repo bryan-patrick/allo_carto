@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useContext } from "react";
 import { type ViewStyle, StyleSheet, Text, TextStyle, View } from "react-native";
 import Animated, { type AnimatedStyle } from "react-native-reanimated";
-import { sharedWordCardStyles } from "./WordCard";
+import { sharedWordCardStyles } from "./sharedWordCardStyles";
 import { FEEDBACK_TEXT_BACK, WordCardContext } from "./wordCardContext";
 
 /**
@@ -40,7 +40,6 @@ export default function WordCardBack({
     cardUserScore,
     cardMain,
     answerSlotContainer,
-    answerSlotSuccess,
     answerSlot,
     feedbackText
   } = sharedWordCardStyles;
@@ -86,7 +85,6 @@ export default function WordCardBack({
             numberOfLines={1}
             style={[
               answerSlot,
-              answerSlotSuccess,
               articleSlotStyle
             ]}
           >
@@ -97,7 +95,6 @@ export default function WordCardBack({
           numberOfLines={1}
           style={[
             answerSlot,
-            answerSlotSuccess,
             wordSlotStyle
           ]}
         >
@@ -106,7 +103,7 @@ export default function WordCardBack({
       </View>
       <View>
         <Text style={[feedbackText, feedbackStyle]}>
-          {FEEDBACK_TEXT_BACK[cardState.feedback]}
+          {FEEDBACK_TEXT_BACK[cardState.feedbackKey] ?? ''}
         </Text>
       </View>
     </Animated.View>

@@ -48,7 +48,7 @@
 
 - Warning: #332105
 
-- Error: #3E0E14
+- Danger: #3E0E14
 
 #### Light
 
@@ -56,7 +56,7 @@
 
 - Warning: #FFC670
 
-- Error: #FF7081
+- Danger: #FF7081
 
 ### Fonts
 
