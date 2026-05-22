@@ -52,6 +52,7 @@ export default function WordCardFront({
     cardMain,
     answerSlotContainer,
     answerSlot,
+    feedbackContainer,
     feedbackText
   } = sharedWordCardStyles;
 
@@ -117,7 +118,8 @@ export default function WordCardFront({
                 articleWidthStyle,
                 (
                   cardState.progress !== 'SUCCESS' &&
-                  cardState.progress !== 'DANGER' && articleSlotStyle
+                  cardState.selectedArticle &&
+                  articleSlotStyle
                 )
               ]}
             >
@@ -140,15 +142,22 @@ export default function WordCardFront({
             wordWidthStyle,
             (
               cardState.progress !== 'SUCCESS' &&
-              cardState.progress !== 'DANGER' && wordSlotStyle
+              cardState.selectedWord &&
+              wordSlotStyle
             )
           ]}
         >
           {cardState.selectedWord && displayedWord}
         </Animated.Text>
       </View>
-      <View>
-        <Text style={[feedbackText, feedbackStyle]}>
+      <View style={feedbackContainer}>
+        <Text style={[
+          feedbackText,
+          (
+            cardState.progress !== 'SUCCESS' &&
+            feedbackStyle
+          )
+        ]}>
           {FEEDBACK_TEXT_FRONT[cardState.feedbackKey] ?? ''}
         </Text>
       </View>
@@ -161,8 +170,8 @@ export default function WordCardFront({
  */
 export const wordCardFrontStyles = StyleSheet.create({
   cardFront: {
-    zIndex: 1,
     backfaceVisibility: 'hidden',
+    width: '100%',
     transform: [
       { perspective: 1000 },
       { rotateY: '0deg' }

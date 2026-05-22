@@ -17,6 +17,7 @@ interface Classes {
 export const colors = {
 	dark: {
 		primary: '#1C5B5E',
+		primaryActive: '#6C8384',
 		secondary: '#762D3D',
 		text: '#121212',
 		background: '#131A1B',

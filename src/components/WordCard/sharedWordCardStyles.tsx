@@ -62,35 +62,51 @@ export const sharedWordCardStyles = StyleSheet.create({
   answerSlot: {
     color: 'transparent',
     borderBottomWidth: 2,
+    fontWeight: 700,
+    fontSize: 18,
     padding: 8,
     paddingRight: 16,
     paddingLeft: 16,
-    fontWeight: 500,
-    fontSize: 18,
   },
   answerSlotSuccess: {
-    color: colors.dark.success,
-    backgroundColor: colors.light.success,
+    color: colors.dark.text,
   },
   answerSlotWarning: {
-    color: colors.dark.warning,
     backgroundColor: colors.light.warning,
   },
   answerSlotError: {
-    color: colors.dark.danger,
-    backgroundColor: colors.light.danger,
+    backgroundColor: colors.light.danger
+  },
+  feedbackContainer: {
+    position: 'relative',
+    width: '100%',
+    height: 'auto',
+    marginTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: colors.light.border,
   },
   feedbackText: {
-    padding: 4,
+    textAlign: 'center',
     fontSize: 16,
     fontWeight: 600,
-    margin: 14,
-    color: colors.dark.success
+    paddingTop: 8,
+    paddingLeft: 4,
+    paddingRight: 4,
+    paddingBottom: 8,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    color: colors.dark.success,
+  },
+  feedbackSuccess: {
+    color: colors.dark.success,
+    backgroundColor: colors.light.success
   },
   feedbackWarning: {
-    color: colors.dark.warning
+    color: colors.dark.warning,
+    backgroundColor: colors.light.warning
   },
   feedbackError: {
-    color: colors.dark.danger
+    color: colors.dark.danger,
+    backgroundColor: colors.light.danger
   }
 })

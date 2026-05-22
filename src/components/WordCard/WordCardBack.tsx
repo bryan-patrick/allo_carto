@@ -41,7 +41,8 @@ export default function WordCardBack({
     cardMain,
     answerSlotContainer,
     answerSlot,
-    feedbackText
+    feedbackContainer,
+    feedbackText,
   } = sharedWordCardStyles;
 
   /**
@@ -101,7 +102,7 @@ export default function WordCardBack({
           {translation}
         </Text>
       </View>
-      <View>
+      <View style={feedbackContainer}>
         <Text style={[feedbackText, feedbackStyle]}>
           {FEEDBACK_TEXT_BACK[cardState.feedbackKey] ?? ''}
         </Text>

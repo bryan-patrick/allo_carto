@@ -38,10 +38,6 @@ export default function WordCardButton({
     containerStyles,
     pressableStyles,
     successPressable,
-    warningPressable,
-    errorPressable,
-    warningText,
-    errorText,
     textStyles,
     successText,
   } = wordCardButtonStyles;
@@ -60,23 +56,10 @@ export default function WordCardButton({
         setTextStateStyle(successText);
         break;
       }
-      case 'WARNING': {
-        setPressableStateStyle(warningPressable);
-        setTextStateStyle(warningText);
-        break;
-      }
-      case 'DANGER':
-        setPressableStateStyle(errorPressable);
-        setTextStateStyle(errorText);
-        break;
     }
   }, [
     successText,
-    warningText,
-    errorText,
     successPressable,
-    warningPressable,
-    errorPressable,
     cardState.progress,
   ]);
 
@@ -280,23 +263,7 @@ const wordCardButtonStyles = StyleSheet.create({
     backgroundColor: colors.light.success,
     shadowColor: colors.light.border,
   },
-  warningPressable: {
-    backgroundColor: colors.light.warning,
-    borderColor: colors.light.warning,
-    shadowColor: colors.dark.warning,
-  },
-  errorPressable: {
-    backgroundColor: colors.light.danger,
-    borderColor: colors.light.danger,
-    shadowColor: colors.dark.danger,
-  },
   successText: {
     color: colors.dark.text
-  },
-  warningText: {
-    color: colors.dark.warning,
-  },
-  errorText: {
-    color: colors.dark.danger,
   },
 });
