@@ -56,7 +56,6 @@ function MappedButton({
    */
   const buttonBackgroundColor = useSharedValue(colors.light.background);
   const buttonBoxShadow = useSharedValue(`0 4px 0 0 ${colors.light.border}`);
-  const borderColor = useSharedValue(colors.dark.border);
   const textColor = useSharedValue(colors.dark.text);
   const buttonY = useSharedValue(0);
 
@@ -76,27 +75,55 @@ function MappedButton({
    */
   useEffect(() => {
 
-    // TODO Raise the buttons
+    switch (cardState.progress) {
+      case 'SUCCESS':
+      case 'DANGER':
+        if (
+          word === cardState.correctWord ||
+          word === cardState.correctArticle
+        ) {
+          buttonY.value = withTiming(-6, timing);
+          buttonBackgroundColor.value = withTiming(colors.light.success, timing);
+        } else {
+          buttonBackgroundColor.value = withTiming(colors.light.border, timing);
+          buttonY.value = withTiming(0, timing);
+        }
 
-    if (activeWord !== word) {
-      buttonY.value = withTiming(0, timing);
-      buttonBackgroundColor.value = withTiming(colors.light.background, timing);
-      buttonBoxShadow.value = `0 6px 0 0 ${colors.light.border}`
-      textColor.value = colors.dark.text;
-    } else {
-      if (cardState.progress === 'SUCCESS') {
-        buttonY.value = withTiming(-6, timing);
-        buttonBackgroundColor.value = withTiming(colors.light.success, timing);
-        buttonBoxShadow.value = `0 0px 8px 0 ${colors.light.border}`
-      } else {
-        buttonY.value = withTiming(6, timing);
-        buttonBoxShadow.value = '';
-      }
+        if (
+          (cardState.selectedArticle === word &&
+            word !== cardState.correctArticle) ||
+          (cardState.selectedWord === word &&
+            word !== cardState.correctWord)
+        ) {
+          buttonY.value = withTiming(0, timing);
+          buttonBackgroundColor.value = withTiming(colors.light.background, timing);
+          buttonBoxShadow.value = `0 6px 0 0 ${colors.light.border}`
+          textColor.value = colors.dark.text;
+        } else {
 
+        }
+
+        buttonBoxShadow.value = `0 6px 0 0 ${colors.dark.border}`
+        break;
+      default:
+        if (activeWord === word) {
+          buttonBackgroundColor.value = colors.dark.primaryActive;
+          buttonY.value = withTiming(6, timing);
+          buttonBoxShadow.value = '';
+        } else {
+          buttonY.value = withTiming(0, timing);
+          buttonBackgroundColor.value = withTiming(colors.light.background, timing);
+          buttonBoxShadow.value = `0 6px 0 0 ${colors.light.border}`
+          textColor.value = colors.dark.text;
+        }
+        break;
     }
   }, [
+    cardState.correctArticle,
+    cardState.correctWord,
+    cardState.selectedArticle,
+    cardState.selectedWord,
     cardState.progress,
-    borderColor,
     textColor,
     activeWord,
     timing,
@@ -247,7 +274,7 @@ const mappedWordsStyles = StyleSheet.create({
     backgroundColor: colors.light.success,
   },
   highlightWarning: {
-    borderBottomColor: colors.light.warning,
+    //borderBottomColor: colors.light.warning,
   },
   highlightDanger: {
     borderBottomColor: colors.dark.success,
@@ -256,7 +283,7 @@ const mappedWordsStyles = StyleSheet.create({
     color: colors.dark.success
   },
   highlightTextWarning: {
-    color: colors.dark.warning
+    //color: colors.dark.warning
   },
   highlightTextDanger: {
 

@@ -38,8 +38,10 @@ export default function WordCardButton({
     containerStyles,
     pressableStyles,
     successPressable,
+    disabledPressable,
     textStyles,
     successText,
+    disabledText,
   } = wordCardButtonStyles;
 
   /**
@@ -218,6 +220,7 @@ export default function WordCardButton({
           pressableStyles,
           pressableStateStyle,
           animatedShadowStyle,
+          cardState.progress === 'WARNING' && disabledPressable
         ]}
       >
         {SVGElement}
@@ -225,6 +228,7 @@ export default function WordCardButton({
           style={[
             textStyles,
             textStateStyle,
+            cardState.progress === 'WARNING' && disabledText
           ]}>
           {children}
         </Text>
@@ -245,7 +249,7 @@ const wordCardButtonStyles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: colors.dark.border,
     backgroundColor: colors.dark.primary,
-    borderRadius: 16,
+    borderRadius: 12,
     borderWidth: 2,
     padding: 14,
     gap: 16,
@@ -263,7 +267,15 @@ const wordCardButtonStyles = StyleSheet.create({
     backgroundColor: colors.light.success,
     shadowColor: colors.light.border,
   },
+  disabledPressable: {
+    backgroundColor: colors.dark.border,
+    top: 6,
+    shadowColor: 'transparent',
+  },
   successText: {
     color: colors.dark.text
   },
+  disabledText: {
+    color: colors.light.border,
+  }
 });

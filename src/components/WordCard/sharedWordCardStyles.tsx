@@ -72,9 +72,11 @@ export const sharedWordCardStyles = StyleSheet.create({
     color: colors.dark.text,
   },
   answerSlotWarning: {
+    color: colors.dark.warning,
     backgroundColor: colors.light.warning,
   },
   answerSlotError: {
+    color: colors.dark.danger,
     backgroundColor: colors.light.danger
   },
   feedbackContainer: {
