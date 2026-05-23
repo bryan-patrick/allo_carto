@@ -6,7 +6,10 @@ import { mockDeck as mockCardDeck } from './mockCardDeck';
 /**
  * Typing
  */
-type CardDeckAction = { type: 'GET_DECK' } | { type: 'NEXT_CARD' };
+type CardDeckAction =
+	| { type: 'GET_DECK' }
+	| { type: 'NEXT_CARD' }
+	| { type: 'INCREMENT_WORD_SCORE' };
 
 interface CardDeckStateProps {
 	currentIndex: number;
@@ -43,6 +46,18 @@ export function cardDeckReducer(
 				currentIndex: nextIndex,
 				currentId: nextWord?.id ?? state.currentId,
 			};
+		case 'INCREMENT_WORD_SCORE': {
+			if (!state.cardDeck[state.currentIndex]) return state;
+
+			return {
+				...state,
+				cardDeck: state.cardDeck.map((word, index) => {
+					if (index === state.currentIndex)
+						return { ...word, userScore: word.userScore + 1 };
+					return word;
+				}),
+			};
+		}
 		default:
 			return state;
 	}

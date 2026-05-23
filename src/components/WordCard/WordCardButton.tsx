@@ -2,6 +2,7 @@ import { colors } from '@/src/app/styles';
 import { ReactElement, ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { CardDeckContext } from '../CardDeck/cardDeckContext';
 import { CardMistake, WordCardContext, WordCardStateProps } from './wordCardContext';
 
 /**
@@ -29,6 +30,7 @@ export default function WordCardButton({
   ...props
 }: WordCardButtonProps) {
   const { cardState, setCardState } = useContext(WordCardContext);
+  const { cardDeckDispatch } = useContext(CardDeckContext);
   const [pressableStateStyle, setPressableStateStyle] = useState<ViewStyle | null>({});
   const [textStateStyle, setTextStateStyle] = useState<TextStyle | null>({});
   /**
@@ -129,8 +131,14 @@ export default function WordCardButton({
 
         if (mistake !== 'NONE')
           updates = { progress: 'WARNING', mistake };
-        else
+        /**
+         * User got the answer correct ↓ 
+         * (that's a down arrow but it' wittle - it's a thing today...)
+         */
+        else {
           updates = { progress: 'SUCCESS', stage: 'CORRECT' };
+          cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
+        }
         break;
 
       /**
@@ -182,6 +190,7 @@ export default function WordCardButton({
     cardState.selectedArticle,
     cardState.selectedWord,
     cardState.correctWord,
+    cardDeckDispatch,
     setCardState,
   ]);
 

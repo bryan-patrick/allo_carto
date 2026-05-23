@@ -34,31 +34,57 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   });
 
   /**
-   * Side effects - Load the card and its state
+    * Side effects
+    * Load the new card and its state.
+    * Note that we use the id to check for a new card.
+    */
+  useEffect(() => {
+    if (cardState.word.id !== word.id) {
+      setCardState({
+        ...initialWordCardState,
+        word,
+        correctArticle: word.englishArticle ?? null,
+        correctWord: word.translation ?? null,
+      });
+
+      async function loadWords() {
+        setFillerWords(await getFillerWords({
+          correctWord: word.translation
+        }));
+
+        if (word.englishArticle) {
+          setArticleWords(await getFillerWords({
+            words: englishArticles,
+            correctWord: word.englishArticle
+          }))
+        }
+
+      }
+
+      loadWords();
+    }
+  }, [cardState.word.id, word]);
+
+  /**
+   * I'm not crazy about this...
+   * 
+   * ...but this is here for when our 
+   * deck reducer updates our current card,
+   * it needs to be in sync with the current
+   * cardContext.
+   * 
+   * TODO: Is there another way? A better funnel down to our card context?
    */
   useEffect(() => {
-    setCardState({
-      ...initialWordCardState,
-      word,
-      correctArticle: word.englishArticle ?? null,
-      correctWord: word.translation ?? null,
+    setCardState((prev) => {
+      if (prev.word.id !== word.id) return prev;
+
+      return {
+        ...prev,
+        word,
+      };
     });
-
-    async function loadWords() {
-      setFillerWords(await getFillerWords({
-        correctWord: word.translation
-      }));
-
-      if (word.englishArticle) {
-        setArticleWords(await getFillerWords({
-          words: englishArticles,
-          correctWord: word.englishArticle
-        }))
-      }
-    }
-
-    loadWords();
-  }, [word.translation, word.englishArticle, word]);
+  }, [word]);
 
   /**
    * Handle current card styles

@@ -14,7 +14,7 @@ export interface WordProps {
 	tense?: string;
 	gender?: 'feminine' | 'masculine';
 	partOfSpeech?: string;
-	userScore?: number;
+	userScore: number;
 }
 
 /**
@@ -81,6 +81,7 @@ export const initialWordState: WordProps = {
 	translation: '',
 	pronunciation: '',
 	CEFRLevel: '',
+	userScore: 0,
 };
 
 export const initialWordCardState: WordCardStateProps = {

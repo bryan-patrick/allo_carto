@@ -1,6 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useContext, useMemo } from "react";
-import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
+import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import Animated from "react-native-reanimated";
 import { colors } from "../app/styles";
 import { WordCardContext } from "./WordCard/wordCardContext";
 
@@ -13,24 +14,35 @@ interface RankIconProps {
 }
 
 /**
+ * Static colors
+ */
+const {
+  fnew,
+  bronze,
+  silver,
+  gold,
+  diamond,
+  memorized
+} = colors.rank;
+
+/**
  * Helpers
+ * Yes, I did put a period next to the "5" so the ifs would line up.
  */
 function getRankColor(score: number = 0) {
-  if (score < 5) return colors.rank.fnew;
-  if (score < 15) return colors.rank.bronze;
-  if (score < 30) return colors.rank.silver;
-  if (score < 60) return colors.rank.gold;
-  if (score < 80) return colors.rank.diamond;
-  else return colors.rank.memorized;
+  if (score < 5.) return fnew;
+  if (score < 15) return bronze;
+  if (score < 30) return silver;
+  if (score < 60) return gold;
+  if (score < 80) return diamond;
+  else return memorized;
 }
 
 /**
  * RankIcon Component
  */
 export function RankIcon({ score = 0, size = 12 }: RankIconProps) {
-  const { fnew, bronze, silver, gold, diamond, memorized } = colors.rank;
-
-  if (score < 5) return <MaterialIcons color={fnew} size={size} name="fiber-new" />
+  if (score < 5.) return <MaterialIcons color={fnew} size={size} name="fiber-new" />
   if (score < 15) return <MaterialIcons color={bronze} size={size} name="stars" />
   if (score < 30) return <MaterialIcons color={silver} size={size} name="military-tech" />
   if (score < 60) return <MaterialIcons color={gold} size={size} name="emoji-events" />
@@ -58,12 +70,12 @@ export default function WordRank() {
 
   return (
     <View style={wordRankContainer}>
-      <Text style={[
+      <Animated.Text style={[
         userScoreText,
         rankColor
       ]}>
         {cardState.word.userScore}
-      </Text>
+      </Animated.Text>
       <RankIcon
         score={cardState.word.userScore}
         size={22}
