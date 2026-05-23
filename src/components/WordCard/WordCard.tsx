@@ -129,7 +129,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
    */
   useEffect(() => {
     if (isCurrent && cardState.stage === 'COMPLETED') {
-      cardDeckDispatch({ type: 'next_card' });
+      cardDeckDispatch({ type: 'NEXT_CARD' });
     }
   }, [
     isCurrent,

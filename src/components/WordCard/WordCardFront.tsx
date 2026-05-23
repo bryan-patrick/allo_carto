@@ -1,11 +1,11 @@
 import { colors } from "@/src/app/styles";
-import { LinearGradient } from 'expo-linear-gradient';
-import { useContext } from "react";
+import { memo, useContext } from "react";
 import { type LayoutChangeEvent, StyleSheet, Text, type TextStyle, View, type ViewStyle } from "react-native";
 import type { AnimatedStyle } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
 import { sharedWordCardStyles } from "./sharedWordCardStyles";
 import { FEEDBACK_TEXT_FRONT, WordCardContext } from "./wordCardContext";
+import WordCardHeader from "./WordCardHeader";
 
 /**
  * Typing
@@ -24,7 +24,7 @@ interface WordCardFrontProps {
 /**
  * WordCardFront component
  */
-export default function WordCardFront({
+const WordCardFront = memo(function WordCardFrontMemo({
   handleWordWidth,
   handleArticleWidth,
   articleWidthStyle,
@@ -46,9 +46,6 @@ export default function WordCardFront({
   const {
     wordId,
     wordPronunciation,
-    cardGradient,
-    cardCEFRLevel,
-    cardUserScore,
     cardMain,
     answerSlotContainer,
     answerSlot,
@@ -62,8 +59,6 @@ export default function WordCardFront({
   const {
     id,
     pronunciation,
-    CEFRLevel,
-    userScore,
     frenchArticle,
     englishArticle,
     translation
@@ -87,15 +82,7 @@ export default function WordCardFront({
       cardFront,
       wordCardFrontFlippedStyle
     ]}>
-      <LinearGradient
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        colors={[colors.light.primary, colors.dark.border]}
-        style={cardGradient}
-      >
-        <Text style={cardCEFRLevel}>{CEFRLevel}</Text>
-        <Text style={cardUserScore}>{userScore}</Text>
-      </LinearGradient>
+      <WordCardHeader />
       <View style={cardMain}>
         <Text style={wordId}>{frenchArticle}&nbsp;{id}</Text>
         <Text style={wordPronunciation}>({pronunciation})</Text>
@@ -163,7 +150,7 @@ export default function WordCardFront({
       </View>
     </Animated.View>
   )
-}
+});
 
 /**
  * Styles
@@ -183,3 +170,5 @@ export const wordCardFrontStyles = StyleSheet.create({
     borderBottomWidth: 0
   }
 });
+
+export default WordCardFront;

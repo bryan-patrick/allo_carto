@@ -1,10 +1,10 @@
 import { colors } from "@/src/app/styles";
-import { LinearGradient } from "expo-linear-gradient";
-import { useContext } from "react";
+import { memo, useContext } from "react";
 import { type ViewStyle, StyleSheet, Text, TextStyle, View } from "react-native";
 import Animated, { type AnimatedStyle } from "react-native-reanimated";
 import { sharedWordCardStyles } from "./sharedWordCardStyles";
 import { FEEDBACK_TEXT_BACK, WordCardContext } from "./wordCardContext";
+import WordCardHeader from "./WordCardHeader";
 
 /**
  * Typing
@@ -19,7 +19,7 @@ interface WordCardBackProps {
 /**
  * WordCardBack Component
  */
-export default function WordCardBack({
+const WordCardBack = memo(function WordCardBackMemo({
   wordCardBackFlippedStyle,
   feedbackStyle,
   articleSlotStyle,
@@ -35,9 +35,6 @@ export default function WordCardBack({
   const {
     wordId,
     wordPronunciation,
-    cardGradient,
-    cardCEFRLevel,
-    cardUserScore,
     cardMain,
     answerSlotContainer,
     answerSlot,
@@ -52,8 +49,6 @@ export default function WordCardBack({
     id,
     translation,
     pronunciation,
-    CEFRLevel,
-    userScore,
     englishArticle,
     frenchArticle,
   } = cardState.word;
@@ -67,15 +62,7 @@ export default function WordCardBack({
       cardBack,
       wordCardBackFlippedStyle
     ]}>
-      <LinearGradient
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        colors={[colors.light.primary, colors.dark.border]}
-        style={cardGradient}
-      >
-        <Text style={cardCEFRLevel}>{CEFRLevel}</Text>
-        <Text style={cardUserScore}>{userScore}</Text>
-      </LinearGradient>
+      <WordCardHeader />
       <View style={cardMain}>
         <Text style={wordId}>{frenchArticle}&nbsp;{id}</Text>
         <Text style={wordPronunciation}>({pronunciation})</Text>
@@ -109,7 +96,12 @@ export default function WordCardBack({
       </View>
     </Animated.View>
   )
-}
+});
+
+/**
+ * Export memoized
+ */
+export default WordCardBack;
 
 /**
  * Styles

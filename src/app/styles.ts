@@ -38,6 +38,14 @@ export const colors = {
 		warning: '#FFC670',
 		danger: '#FF7081',
 	},
+	rank: {
+		fnew: '#b7b7b7',
+		bronze: '#f4d2b1d4',
+		silver: '#e1e7ef',
+		gold: '#ffd196',
+		diamond: '#c6e9ff',
+		memorized: '#00ffcf',
+	},
 };
 
 const styles = StyleSheet.create<Classes>({

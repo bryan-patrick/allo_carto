@@ -6,7 +6,7 @@ import { mockDeck as mockCardDeck } from './mockCardDeck';
 /**
  * Typing
  */
-type CardDeckAction = { type: 'get_a_deck' } | { type: 'next_card' };
+type CardDeckAction = { type: 'GET_DECK' } | { type: 'NEXT_CARD' };
 
 interface CardDeckStateProps {
 	currentIndex: number;
@@ -26,27 +26,26 @@ export function cardDeckReducer(
 	state: CardDeckStateProps,
 	action: CardDeckAction,
 ): CardDeckStateProps {
-	if (action.type === 'get_a_deck') {
-		return {
-			...state,
-			cardDeck: mockCardDeck,
-			currentIndex: 0,
-			currentId: mockCardDeck[0]?.id ?? '',
-		};
+	switch (action.type) {
+		case 'GET_DECK':
+			return {
+				...state,
+				cardDeck: mockCardDeck,
+				currentIndex: 0,
+				currentId: mockCardDeck[0]?.id ?? '',
+			};
+		case 'NEXT_CARD':
+			const nextIndex = state.currentIndex + 1;
+			const nextWord = state.cardDeck[nextIndex];
+
+			return {
+				...state,
+				currentIndex: nextIndex,
+				currentId: nextWord?.id ?? state.currentId,
+			};
+		default:
+			return state;
 	}
-
-	if (action.type === 'next_card') {
-		const nextIndex = state.currentIndex + 1;
-		const nextWord = state.cardDeck[nextIndex];
-
-		return {
-			...state,
-			currentIndex: nextIndex,
-			currentId: nextWord?.id ?? state.currentId,
-		};
-	}
-
-	return state;
 }
 
 /**

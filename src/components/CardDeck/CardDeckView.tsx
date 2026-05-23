@@ -1,4 +1,6 @@
 import { useEffect, useReducer } from 'react';
+import { StyleSheet } from 'react-native';
+import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import WordCardContainer from '../WordCard/WordCardContainer';
 import { CardDeckContext, cardDeckReducer, initialCardDeckState } from './cardDeckContext';
 
@@ -7,17 +9,22 @@ import { CardDeckContext, cardDeckReducer, initialCardDeckState } from './cardDe
  */
 export default function CardDeckView() {
   const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
+  const currentCard = cardDeckState.cardDeck[cardDeckState.currentIndex];
+
+  /**
+   * Destructure styles
+   */
+  const { wordCardAnimatedView } = cardDeckViewStyles;
 
   /**
    * Get a card deck (async)
    */
   useEffect(() => {
-    cardDeckDispatch({ type: 'get_a_deck' });
+    cardDeckDispatch({ type: 'GET_DECK' });
   }, []);
 
   /**
    * Render the card deck
-   * 
    */
   return (
     <CardDeckContext.Provider value={{
@@ -25,18 +32,30 @@ export default function CardDeckView() {
       cardDeckDispatch: cardDeckDispatch
     }}>
       {
-        cardDeckState.cardDeck.map(wordCard => {
-          const currentCard = cardDeckState.cardDeck[cardDeckState.currentIndex];
-
-          return (
+        currentCard && (
+          <Animated.View
+            key={currentCard.id}
+            entering={SlideInRight.duration(200)}
+            exiting={SlideOutLeft.duration(200)}
+            style={wordCardAnimatedView}
+          >
             <WordCardContainer
-              key={wordCard.id}
-              word={wordCard}
-              isCurrent={wordCard.id === currentCard.id}
+              word={currentCard}
+              isCurrent={true}
             />
-          )
-        })
+          </Animated.View>
+        )
       }
     </CardDeckContext.Provider>
   );
 }
+
+/**
+ * Styles
+ */
+const cardDeckViewStyles = StyleSheet.create({
+  wordCardAnimatedView: {
+    flex: 1,
+    position: 'relative',
+  },
+});

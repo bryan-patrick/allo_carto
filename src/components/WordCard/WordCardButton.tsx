@@ -1,5 +1,5 @@
 import { colors } from '@/src/app/styles';
-import { ReactElement, ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { ReactElement, ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { CardMistake, WordCardContext, WordCardStateProps } from './wordCardContext';
@@ -69,6 +69,19 @@ export default function WordCardButton({
    * State/prop vars
    */
   const [isPressed, setIsPressed] = useState(false);
+
+  const isDisabled = useMemo(() => {
+    if (
+      cardState.progress === 'WARNING' ||
+      !cardState.selectedArticle ||
+      !cardState.selectedWord) {
+      return true;
+    } return false;
+  }, [
+    cardState.progress,
+    cardState.selectedArticle,
+    cardState.selectedWord
+  ]);
 
   /**
    * Animation vars
@@ -213,14 +226,14 @@ export default function WordCardButton({
     <Animated.View style={[containerStyles, animatedContainerStyle]}>
       <AnimatedPressable
         {...props}
-        disabled={cardState.progress === 'WARNING'}
+        disabled={isDisabled}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         style={[
           pressableStyles,
           pressableStateStyle,
           animatedShadowStyle,
-          cardState.progress === 'WARNING' && disabledPressable
+          isDisabled && disabledPressable
         ]}
       >
         {SVGElement}
@@ -228,7 +241,7 @@ export default function WordCardButton({
           style={[
             textStyles,
             textStateStyle,
-            cardState.progress === 'WARNING' && disabledText
+            isDisabled && disabledText
           ]}>
           {children}
         </Text>

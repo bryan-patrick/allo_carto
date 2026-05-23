@@ -14,7 +14,7 @@ export const mockDeck: WordProps[] = [
 		CEFRLevel: 'A1',
 		gender: 'masculine',
 		pronunciation: 'luh shee-ehn',
-		userScore: 9,
+		userScore: 60,
 	},
 	{
 		id: 'maison',

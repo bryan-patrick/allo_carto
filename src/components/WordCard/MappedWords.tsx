@@ -1,5 +1,5 @@
 import { colors } from "@/src/app/styles";
-import { Dispatch, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { Dispatch, memo, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextStyle, ViewStyle } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { WordCardContext } from "./wordCardContext";
@@ -74,7 +74,6 @@ function MappedButton({
    * Handle animation side effects
    */
   useEffect(() => {
-
     switch (cardState.progress) {
       case 'SUCCESS':
       case 'DANGER':
@@ -233,19 +232,28 @@ function MappedButton({
 /**
  * MappedWords Component
  * Map the word buttons
+ * Just a cute wittle memo
  */
-export default function MappedWords({ words, activeWord, handler }: MappedWordsProps) {
-  return words.map((word: string) => {
-    return (
+const MappedWords = memo(
+  function MappedWordsMemo({
+    words,
+    activeWord,
+    handler
+  }: MappedWordsProps) {
+    return words.map((word: string) => (
       <MappedButton
         key={word}
         word={word}
         activeWord={activeWord}
         handler={handler}
       />
-    )
-  })
-}
+    ))
+  });
+
+/**
+ * Export the memoized function
+ */
+export default MappedWords;
 
 /**
  * Styles
