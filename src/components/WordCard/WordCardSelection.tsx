@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MappedWords from './MappedWords';
 import { WordCardContext } from './wordCardContext';
@@ -18,7 +18,7 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
   const { cardState, setCardState } = useContext(WordCardContext);
   const { wcsContainer } = wordCardSelectionStyles;
 
-  const handleArticlePressToggle = (word: string) => {
+  const handleArticlePressToggle = useCallback((word: string) => {
     if (cardState.stage === 'READY') {
       setCardState((cardState) => ({
         ...cardState,
@@ -27,9 +27,12 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
         progress: 'PENDING'
       }));
     }
-  }
+  }, [
+    cardState.stage,
+    setCardState
+  ]);
 
-  const handleWordPressToggle = (word: string) => {
+  const handleWordPressToggle = useCallback((word: string) => {
     if (cardState.stage === 'READY') {
       setCardState((cardState) => ({
         ...cardState,
@@ -38,7 +41,10 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
         progress: 'PENDING'
       }));
     }
-  }
+  }, [
+    cardState.stage,
+    setCardState
+  ]);
 
   return (
     <View style={wcsContainer}>
