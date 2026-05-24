@@ -1,8 +1,10 @@
 import { colors } from "@/src/app/styles";
-import { Dispatch, memo, useContext, useEffect, useMemo } from "react";
+import { Dispatch, memo, useEffect, useMemo } from "react";
 import { Pressable, StyleSheet, Text, TextStyle, ViewStyle } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { type CardProgress, WordCardContext } from "./wordCardContext";
+import { useCardDeck } from "../CardDeck/useCardDeck";
+import { useWordCardUI } from "./useWordCardUI";
+import { type CardProgress } from "./wordCardContext";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -157,7 +159,8 @@ const MappedWords = memo(
     activeWord,
     handler
   }: MappedWordsProps) {
-    const { cardState } = useContext(WordCardContext);
+    const { currentCard } = useCardDeck();
+    const { cardState } = useWordCardUI();
     const {
       highlightSuccess,
       highlightWarning,
@@ -167,6 +170,9 @@ const MappedWords = memo(
       highlightTextDanger
     } = mappedWordsStyles;
 
+    /**
+     * Current card data
+     */
     const {
       highlightArticle,
       highlightWord,
@@ -198,8 +204,8 @@ const MappedWords = memo(
           };
         case 'DANGER':
           return {
-            highlightArticle: hasArticleMistake ? (cardState.word.englishArticle ?? '') : null,
-            highlightWord: hasWordMistake ? (cardState.word.translation ?? '') : null,
+            highlightArticle: hasArticleMistake ? (currentCard.englishArticle ?? '') : null,
+            highlightWord: hasWordMistake ? (currentCard.translation ?? '') : null,
             highlightStyles: highlightDanger,
             highlightTextStyles: highlightTextDanger,
           };
@@ -212,12 +218,12 @@ const MappedWords = memo(
           };
       }
     }, [
-      cardState.progress,
       cardState.mistake,
-      cardState.selectedArticle,
+      cardState.progress,
       cardState.selectedWord,
-      cardState.word.englishArticle,
-      cardState.word.translation,
+      cardState.selectedArticle,
+      currentCard.englishArticle,
+      currentCard.translation,
       highlightSuccess,
       highlightWarning,
       highlightDanger,
@@ -232,12 +238,12 @@ const MappedWords = memo(
         word={word}
         isActive={word === activeWord}
         isCorrectWord={
-          word === cardState.correctWord ||
-          word === cardState.correctArticle
+          word === currentCard.translation ||
+          word === currentCard.englishArticle
         }
         isSelectedWrong={
-          (cardState.selectedArticle === word && word !== cardState.correctArticle) ||
-          (cardState.selectedWord === word && word !== cardState.correctWord)
+          (cardState.selectedArticle === word && word !== currentCard.englishArticle) ||
+          (cardState.selectedWord === word && word !== currentCard.translation)
         }
         isHighlighted={
           word === highlightArticle ||

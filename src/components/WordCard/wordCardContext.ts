@@ -1,21 +1,8 @@
 /**
- * State for each individual card in a deck
+ * UI State for each individual card in a deck
+ * This context handles UI updates and layout
  */
 import { createContext, type Dispatch, type SetStateAction } from 'react';
-
-export interface WordProps {
-	id: string;
-	translation: string;
-	pronunciation: string;
-	CEFRLevel: string;
-	lemmaId?: string;
-	frenchArticle?: string;
-	englishArticle?: string;
-	tense?: string;
-	gender?: 'feminine' | 'masculine';
-	partOfSpeech?: string;
-	userScore: number;
-}
 
 /**
  * Concatenation of stage + progress + mistake
@@ -62,12 +49,9 @@ export type CardProgress = 'PENDING' | 'SUCCESS' | 'WARNING' | 'DANGER';
 export type CardMistake = 'NONE' | 'ARTICLE' | 'WORD' | 'BOTH';
 
 export interface WordCardStateProps {
-	word: WordProps;
 	isFlipped: boolean;
 	selectedArticle: string | null;
 	selectedWord: string | null;
-	correctArticle: string | null;
-	correctWord: string | null;
 	stage: CardStage;
 	progress: CardProgress;
 	mistake: CardMistake;
@@ -76,21 +60,10 @@ export interface WordCardStateProps {
 	maxAttempts: number;
 }
 
-export const initialWordState: WordProps = {
-	id: '',
-	translation: '',
-	pronunciation: '',
-	CEFRLevel: '',
-	userScore: 0,
-};
-
 export const initialWordCardState: WordCardStateProps = {
-	word: initialWordState,
 	isFlipped: false,
 	selectedArticle: null,
 	selectedWord: null,
-	correctArticle: null,
-	correctWord: null,
 	stage: 'READY',
 	progress: 'PENDING',
 	mistake: 'NONE',
@@ -104,7 +77,7 @@ interface WordCardContextType {
 	setCardState: Dispatch<SetStateAction<WordCardStateProps>>;
 }
 
-export const WordCardContext = createContext<WordCardContextType>({
+export const WordCardUIContext = createContext<WordCardContextType>({
 	cardState: initialWordCardState,
 	setCardState: () => {},
 });

@@ -1,4 +1,4 @@
-import { WordProps } from '../WordCard/wordCardContext';
+import { WordProps } from './CardDeckView';
 
 /**
  * TODO remove.

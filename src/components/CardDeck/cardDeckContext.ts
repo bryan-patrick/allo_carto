@@ -1,6 +1,5 @@
 import { createContext, type Dispatch } from 'react';
-import type { WordProps } from '../WordCard/wordCardContext';
-import { initialWordState } from '../WordCard/wordCardContext';
+import { WordProps, initialWordState } from './CardDeckView';
 import { mockDeck as mockCardDeck } from './mockCardDeck';
 
 /**

@@ -1,9 +1,11 @@
 import { colors } from "@/src/app/styles";
-import { memo, useContext } from "react";
+import { memo } from "react";
 import { type ViewStyle, StyleSheet, Text, TextStyle, View } from "react-native";
 import Animated, { type AnimatedStyle } from "react-native-reanimated";
+import { useCardDeck } from "../CardDeck/useCardDeck";
 import { sharedWordCardStyles } from "./sharedWordCardStyles";
-import { FEEDBACK_TEXT_BACK, WordCardContext } from "./wordCardContext";
+import { useWordCardUI } from "./useWordCardUI";
+import { FEEDBACK_TEXT_BACK } from "./wordCardContext";
 import WordCardHeader from "./WordCardHeader";
 
 /**
@@ -25,7 +27,8 @@ const WordCardBack = memo(function WordCardBackMemo({
   articleSlotStyle,
   wordSlotStyle
 }: WordCardBackProps) {
-  const { cardState } = useContext(WordCardContext);
+  const { cardState } = useWordCardUI();
+  const { currentCard } = useCardDeck();
 
   /**
    * Destructure Styles
@@ -51,7 +54,7 @@ const WordCardBack = memo(function WordCardBackMemo({
     pronunciation,
     englishArticle,
     frenchArticle,
-  } = cardState.word;
+  } = currentCard;
 
   /**
    * Render the back of the WordCard

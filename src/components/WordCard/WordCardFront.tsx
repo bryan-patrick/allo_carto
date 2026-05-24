@@ -1,10 +1,12 @@
 import { colors } from "@/src/app/styles";
-import { memo, useContext } from "react";
+import { memo } from "react";
 import { type LayoutChangeEvent, StyleSheet, Text, type TextStyle, View, type ViewStyle } from "react-native";
 import type { AnimatedStyle } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
+import { useCardDeck } from "../CardDeck/useCardDeck";
 import { sharedWordCardStyles } from "./sharedWordCardStyles";
-import { FEEDBACK_TEXT_FRONT, WordCardContext } from "./wordCardContext";
+import { useWordCardUI } from "./useWordCardUI";
+import { FEEDBACK_TEXT_FRONT } from "./wordCardContext";
 import WordCardHeader from "./WordCardHeader";
 
 /**
@@ -34,7 +36,8 @@ const WordCardFront = memo(function WordCardFrontMemo({
   articleSlotStyle,
   wordSlotStyle
 }: WordCardFrontProps) {
-  const { cardState } = useContext(WordCardContext);
+  const { cardState } = useWordCardUI();
+  const { currentCard } = useCardDeck();
   /**
    * Destructure Styles
    */
@@ -62,7 +65,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
     frenchArticle,
     englishArticle,
     translation
-  } = cardState.word;
+  } = currentCard;
 
   /**
    * Render the articlea and word the user has selected.

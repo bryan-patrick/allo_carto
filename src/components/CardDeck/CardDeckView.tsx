@@ -1,3 +1,7 @@
+/**
+ * This is the canonical deck (and card) data 
+ * This context handles card data
+ */
 import { useEffect, useReducer } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
@@ -7,6 +11,28 @@ import { CardDeckContext, cardDeckReducer, initialCardDeckState } from './cardDe
 /**
  * CardDeckView component
  */
+export interface WordProps {
+  id: string;
+  translation: string;
+  pronunciation: string;
+  CEFRLevel: string;
+  lemmaId?: string;
+  frenchArticle?: string;
+  englishArticle?: string;
+  tense?: string;
+  gender?: 'feminine' | 'masculine';
+  partOfSpeech?: string;
+  userScore: number;
+}
+
+export const initialWordState: WordProps = {
+  id: '',
+  translation: '',
+  pronunciation: '',
+  CEFRLevel: '',
+  userScore: 0,
+};
+
 export default function CardDeckView() {
   const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
   const currentCard = cardDeckState.cardDeck[cardDeckState.currentIndex];
@@ -28,8 +54,8 @@ export default function CardDeckView() {
    */
   return (
     <CardDeckContext.Provider value={{
-      cardDeckState: cardDeckState,
-      cardDeckDispatch: cardDeckDispatch
+      cardDeckState,
+      cardDeckDispatch
     }}>
       {
         currentCard && (

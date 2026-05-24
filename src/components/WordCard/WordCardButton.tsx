@@ -1,9 +1,10 @@
 import { colors } from '@/src/app/styles';
-import { ReactElement, ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { CardDeckContext } from '../CardDeck/cardDeckContext';
-import { CardMistake, WordCardContext, WordCardStateProps } from './wordCardContext';
+import { useCardDeck } from '../CardDeck/useCardDeck';
+import { useWordCardUI } from './useWordCardUI';
+import { CardMistake, WordCardStateProps } from './wordCardContext';
 
 /**
  * I guess there's no Animated.Pressable?
@@ -29,8 +30,8 @@ export default function WordCardButton({
   style,
   ...props
 }: WordCardButtonProps) {
-  const { cardState, setCardState } = useContext(WordCardContext);
-  const { cardDeckDispatch } = useContext(CardDeckContext);
+  const { cardState, setCardState } = useWordCardUI();
+  const { cardDeckDispatch, currentCard } = useCardDeck();
   const [pressableStateStyle, setPressableStateStyle] = useState<ViewStyle | null>({});
   const [textStateStyle, setTextStateStyle] = useState<TextStyle | null>({});
   /**
@@ -121,11 +122,11 @@ export default function WordCardButton({
        */
       case 'READY':
         if (
-          cardState.correctArticle &&
-          cardState.correctArticle !== cardState.selectedArticle
+          currentCard?.englishArticle &&
+          currentCard.englishArticle !== cardState.selectedArticle
         ) mistake = 'ARTICLE';
 
-        if (cardState.correctWord !== cardState.selectedWord) {
+        if (currentCard?.translation !== cardState.selectedWord) {
           mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
         }
 
@@ -184,12 +185,12 @@ export default function WordCardButton({
     }
   }, [
     cardState.maxAttempts,
+    currentCard.englishArticle,
+    currentCard.translation,
     cardState.attempts,
     cardState.stage,
-    cardState.correctArticle,
     cardState.selectedArticle,
     cardState.selectedWord,
-    cardState.correctWord,
     cardDeckDispatch,
     setCardState,
   ]);

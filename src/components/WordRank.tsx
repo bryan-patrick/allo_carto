@@ -1,9 +1,9 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import Animated from "react-native-reanimated";
 import { colors } from "../app/styles";
-import { WordCardContext } from "./WordCard/wordCardContext";
+import { useCardDeck } from "./CardDeck/useCardDeck";
 
 /**
  * Typing
@@ -54,11 +54,12 @@ export function RankIcon({ score = 0, size = 12 }: RankIconProps) {
  * WordRank Component
  */
 export default function WordRank() {
-  const { cardState } = useContext(WordCardContext);
+  const { currentCard } = useCardDeck();
+  const score = currentCard.userScore;
 
   const rankColor = useMemo(() =>
-    ({ color: getRankColor(cardState.word.userScore) }),
-    [cardState.word.userScore]);
+    ({ color: getRankColor(score) }),
+    [score]);
 
   /**
    * Destructure styles
@@ -74,10 +75,10 @@ export default function WordRank() {
         userScoreText,
         rankColor
       ]}>
-        {cardState.word.userScore}
+        {score}
       </Animated.Text>
       <RankIcon
-        score={cardState.word.userScore}
+        score={score}
         size={22}
       />
     </View>
