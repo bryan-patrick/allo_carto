@@ -1,18 +1,16 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useMemo } from "react";
-import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
-import Animated from "react-native-reanimated";
+import { ComponentProps, useEffect, useMemo, useState } from "react";
+import { StyleSheet, TextStyle, ViewStyle } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from "react-native-reanimated";
 import { colors } from "../app/styles";
 import { useCardDeck } from "./CardDeck/useCardDeck";
 
 /**
  * Typing
  */
-interface RankIconProps {
+type RankIconProps = Omit<ComponentProps<typeof MaterialIcons>, "name"> & {
   score?: number;
-  size?: number;
-}
-
+};
 /**
  * Static colors
  */
@@ -41,13 +39,13 @@ function getRankColor(score: number = 0) {
 /**
  * RankIcon Component
  */
-export function RankIcon({ score = 0, size = 12 }: RankIconProps) {
-  if (score < 5.) return <MaterialIcons color={fnew} size={size} name="fiber-new" />
-  if (score < 15) return <MaterialIcons color={bronze} size={size} name="stars" />
-  if (score < 30) return <MaterialIcons color={silver} size={size} name="military-tech" />
-  if (score < 60) return <MaterialIcons color={gold} size={size} name="emoji-events" />
-  if (score < 80) return <MaterialIcons color={diamond} size={size} name="diamond" />
-  else return <MaterialIcons color={memorized} size={size} name="psychology" />
+export function RankIcon({ score = 0, size = 12, ...props }: RankIconProps) {
+  if (score < 5.) return <MaterialIcons {...props} color={fnew} size={size} name="fiber-new" />
+  if (score < 15) return <MaterialIcons {...props} color={bronze} size={size} name="stars" />
+  if (score < 30) return <MaterialIcons {...props} color={silver} size={size} name="military-tech" />
+  if (score < 60) return <MaterialIcons {...props} color={gold} size={size} name="emoji-events" />
+  if (score < 80) return <MaterialIcons {...props} color={diamond} size={size} name="diamond" />
+  else return <MaterialIcons {...props} color={memorized} size={size} name="psychology" />
 }
 
 /**
@@ -55,33 +53,90 @@ export function RankIcon({ score = 0, size = 12 }: RankIconProps) {
  */
 export default function WordRank() {
   const { currentCard } = useCardDeck();
-  const score = currentCard.userScore;
 
-  const rankColor = useMemo(() =>
-    ({ color: getRankColor(score) }),
-    [score]);
+  /**
+   * State
+   */
+  const [currentScore] = useState(currentCard.userScore);
+  const [nextScore] = useState(currentCard.userScore + 1);
+
+  const currentRankColor = useMemo(() =>
+    ({ color: getRankColor(currentScore) }),
+    [currentScore]);
+
+  const nextRankColor = useMemo(() =>
+    ({ color: getRankColor(nextScore) }),
+    [nextScore]);
+
+  /**
+   * Animation vars
+   */
+  const translateY = useSharedValue(22);
+
+  const containerY = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }]
+  }));
 
   /**
    * Destructure styles
    */
   const {
-    wordRankContainer,
-    userScoreText
+    container,
+    textContainer,
+    iconContainer,
+    score,
+    icon,
   } = wordRankStyles;
 
+  useEffect(() => {
+    if (currentCard.userScore !== currentScore) {
+      translateY.value = withDelay(600,
+        withSpring(-20, {
+          stiffness: 360,
+          damping: 40,
+          mass: 4,
+        })
+      );
+    }
+  }, [
+    currentScore,
+    currentCard.userScore,
+    translateY
+  ]);
+
   return (
-    <View style={wordRankContainer}>
-      <Animated.Text style={[
-        userScoreText,
-        rankColor
-      ]}>
-        {score}
-      </Animated.Text>
-      <RankIcon
-        score={score}
-        size={22}
-      />
-    </View>
+    <Animated.View style={[container, containerY]}>
+      <Animated.View style={textContainer}>
+        <Animated.Text
+          style={[
+            score,
+            currentRankColor,
+          ]}
+        >
+          {currentScore}
+        </Animated.Text>
+        <Animated.Text
+          style={[
+            score,
+            nextRankColor,
+          ]}
+        >
+          {nextScore}
+        </Animated.Text>
+      </Animated.View>
+      <Animated.View style={iconContainer}>
+        <RankIcon
+          style={icon}
+          score={currentScore}
+          size={22}
+        />
+        <RankIcon
+          style={icon}
+          score={nextScore}
+          size={22}
+        />
+      </Animated.View>
+    </Animated.View>
   )
 }
 
@@ -89,15 +144,28 @@ export default function WordRank() {
  * Styles
  */
 const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>(({
-  wordRankContainer: {
+  container: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
     gap: 4,
-    margin: 2
+    height: 25
   },
-  userScoreText: {
+  textContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 20,
+  },
+  iconContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 20
+  },
+  score: {
     fontSize: 16,
     fontWeight: 700,
-  }
+    height: 22
+  },
+  icon: {
+    height: 22
+  },
 })); 

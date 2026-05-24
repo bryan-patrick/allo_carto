@@ -11,28 +11,6 @@ import { CardDeckContext, cardDeckReducer, initialCardDeckState } from './cardDe
 /**
  * CardDeckView component
  */
-export interface WordProps {
-  id: string;
-  translation: string;
-  pronunciation: string;
-  CEFRLevel: string;
-  lemmaId?: string;
-  frenchArticle?: string;
-  englishArticle?: string;
-  tense?: string;
-  gender?: 'feminine' | 'masculine';
-  partOfSpeech?: string;
-  userScore: number;
-}
-
-export const initialWordState: WordProps = {
-  id: '',
-  translation: '',
-  pronunciation: '',
-  CEFRLevel: '',
-  userScore: 0,
-};
-
 export default function CardDeckView() {
   const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
   const currentCard = cardDeckState.cardDeck[cardDeckState.currentIndex];

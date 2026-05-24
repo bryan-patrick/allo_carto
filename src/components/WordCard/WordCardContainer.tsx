@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { englishArticles } from "../../util/filterFillerWords";
 import getFillerWords from "../../util/getFillerWords";
-import { WordProps } from "../CardDeck/CardDeckView";
+import { type WordProps } from "../CardDeck/cardDeckTypes";
 import WordCard from "./WordCard";
 import WordCardButton from "./WordCardButton";
 import { initialWordCardState, WordCardUIContext, type WordCardStateProps } from "./wordCardContext";

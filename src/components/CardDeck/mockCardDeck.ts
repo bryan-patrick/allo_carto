@@ -1,4 +1,4 @@
-import { WordProps } from './CardDeckView';
+import { type WordProps } from './cardDeckTypes';
 
 /**
  * TODO remove.
