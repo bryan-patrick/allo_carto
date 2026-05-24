@@ -14,6 +14,9 @@ interface Classes {
 	pressedLinkText: TextStyle;
 }
 
+/**
+ * Aiming for WCAG AAA Dark | Light & Text
+ */
 export const colors = {
 	dark: {
 		primary: '#1C5B5E',
@@ -23,7 +26,7 @@ export const colors = {
 		background: '#131A1B',
 		border: '#1B2B31',
 		secondaryBorder: '#382326',
-		success: '#032B1C',
+		success: '#054C3E',
 		warning: '#332105',
 		danger: '#3E0E14',
 	},

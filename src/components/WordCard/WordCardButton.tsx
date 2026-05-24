@@ -1,4 +1,5 @@
 import { colors } from '@/src/app/styles';
+import * as Haptics from 'expo-haptics';
 import { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -130,8 +131,12 @@ export default function WordCardButton({
           mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
         }
 
-        if (mistake !== 'NONE')
+        if (mistake !== 'NONE') {
+          Haptics.notificationAsync(
+            Haptics.NotificationFeedbackType.Warning
+          )
           updates = { progress: 'WARNING', mistake };
+        }
         /**
          * User got the answer correct ↓ 
          * (that's a down arrow but it' wittle - it's a thing today...)
@@ -139,6 +144,9 @@ export default function WordCardButton({
         else {
           updates = { progress: 'SUCCESS', stage: 'CORRECT' };
           cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
+          Haptics.notificationAsync(
+            Haptics.NotificationFeedbackType.Success,
+          );
         }
         break;
 
@@ -157,6 +165,9 @@ export default function WordCardButton({
        * without upping the word score. TODO
        */
       case 'INCORRECT':
+        Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Error
+        )
         updates = { progress: 'DANGER', stage: 'COMPLETED' }
         break;
     }

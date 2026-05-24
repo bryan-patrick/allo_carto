@@ -1,9 +1,80 @@
-import { Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function Settings() {
+  const { container, pressable, text } = styles;
+
   return (
-    <View>
-      <Text>SALUT MONDE (settings)</Text>
+    <View style={container}>
+      <Pressable
+        style={pressable}
+        onPress={
+          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+        }
+      >
+        <Text style={text}>
+          Light
+        </Text>
+      </Pressable>
+      <Pressable
+        style={pressable}
+        onPress={
+          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+        }
+      >
+        <Text style={text}>
+          Medium
+        </Text>
+      </Pressable>
+      <Pressable
+        style={pressable}
+        onPress={
+          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+        }
+      >
+        <Text style={text}>
+          Heavy
+        </Text>
+      </Pressable>
+      <Pressable
+        style={pressable}
+        onPress={
+          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid)
+        }
+      >
+        <Text style={text}>
+          Rigid
+        </Text>
+      </Pressable>
+      <Pressable
+        style={pressable}
+        onPress={
+          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+        }
+      >
+        <Text style={text}>
+          Soft
+        </Text>
+      </Pressable>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    gap: 8,
+  },
+  pressable: {
+    padding: 32,
+    margin: 4,
+    borderWidth: 2,
+    borderColor: '#FFAABB'
+  },
+  text: {
+    color: '#ffffff'
+  }
+})

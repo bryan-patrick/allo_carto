@@ -284,7 +284,7 @@ const mappedWordsStyles = StyleSheet.create({
   wcsText: {
     textAlign: 'center',
     color: colors.dark.text,
-    fontWeight: 500
+    fontWeight: 700
   },
   highlightSuccess: {
     backgroundColor: colors.light.success,

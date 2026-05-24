@@ -162,7 +162,7 @@ const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>(
   },
   score: {
     fontSize: 16,
-    fontWeight: 700,
+    fontWeight: 600,
     height: 22
   },
   icon: {
