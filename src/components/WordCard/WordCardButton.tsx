@@ -7,8 +7,7 @@ import { useCardDeck } from '../CardDeck/useCardDeck';
 import { useWordCardUI } from './useWordCardUI';
 
 /**
- * I guess there's no Animated.Pressable?
- * I don't know the rules. This works though.
+ * Essentially Animated.Pressable
  */
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
