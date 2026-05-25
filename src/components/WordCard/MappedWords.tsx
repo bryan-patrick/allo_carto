@@ -161,6 +161,7 @@ const MappedWords = memo(
   }: MappedWordsProps) {
     const { currentCard } = useCardDeck();
     const { cardState } = useWordCardUI();
+
     const {
       highlightSuccess,
       highlightWarning,
@@ -205,7 +206,7 @@ const MappedWords = memo(
         case 'DANGER':
           return {
             highlightArticle: hasArticleMistake ? (currentCard.englishArticle ?? '') : null,
-            highlightWord: hasWordMistake ? (currentCard.englishWord ?? '') : null,
+            highlightWord: hasWordMistake ? currentCard.englishWords[0] : null,
             highlightStyles: highlightDanger,
             highlightTextStyles: highlightTextDanger,
           };
@@ -218,12 +219,12 @@ const MappedWords = memo(
           };
       }
     }, [
+      currentCard.englishWords,
       cardState.mistake,
       cardState.progress,
       cardState.selectedWord,
       cardState.selectedArticle,
       currentCard.englishArticle,
-      currentCard.englishWord,
       highlightSuccess,
       highlightWarning,
       highlightDanger,
@@ -238,12 +239,12 @@ const MappedWords = memo(
         word={word}
         isActive={word === activeWord}
         isCorrectWord={
-          word === currentCard.englishWord ||
+          currentCard.englishWords.includes(word) ||
           word === currentCard.englishArticle
         }
         isSelectedWrong={
           (cardState.selectedArticle === word && word !== currentCard.englishArticle) ||
-          (cardState.selectedWord === word && word !== currentCard.englishWord)
+          (cardState.selectedWord === word && !currentCard.englishWords.includes(word))
         }
         isHighlighted={
           word === highlightArticle ||

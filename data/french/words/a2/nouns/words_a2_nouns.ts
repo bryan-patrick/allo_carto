@@ -4,7 +4,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_cafetiere',
 		frenchWord: 'cafetière',
-		englishWord: 'coffee-maker',
+		englishWords: ['coffee-maker'],
 		isVulgar: false,
 		lemmaId: 'cafetiere',
 		frenchArticle: 'la',
@@ -19,7 +19,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_ordinateur_portable',
 		frenchWord: 'ordinateur portable',
-		englishWord: 'laptop',
+		englishWords: ['laptop'],
 		isVulgar: false,
 		lemmaId: 'ordinateur_portable',
 		frenchArticle: "l'",
@@ -34,7 +34,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_sac_a_dos',
 		frenchWord: 'sac à dos',
-		englishWord: 'backpack',
+		englishWords: ['backpack'],
 		isVulgar: false,
 		lemmaId: 'sac_a_dos',
 		frenchArticle: 'le',
@@ -49,7 +49,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_addition',
 		frenchWord: 'addition',
-		englishWord: 'check',
+		englishWords: ['check'],
 		isVulgar: false,
 		lemmaId: 'addition',
 		frenchArticle: "l'",
@@ -64,7 +64,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_wifi',
 		frenchWord: 'wifi',
-		englishWord: 'wifi',
+		englishWords: ['wifi'],
 		isVulgar: false,
 		lemmaId: 'wifi',
 		frenchArticle: 'le',
@@ -79,7 +79,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_mot_de_passe',
 		frenchWord: 'mot de passe',
-		englishWord: 'password',
+		englishWords: ['password'],
 		isVulgar: false,
 		lemmaId: 'mot_de_passe',
 		frenchArticle: 'le',
@@ -94,7 +94,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_parapluie',
 		frenchWord: 'parapluie',
-		englishWord: 'umbrella',
+		englishWords: ['umbrella'],
 		isVulgar: false,
 		lemmaId: 'parapluie',
 		frenchArticle: 'le',
@@ -109,7 +109,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_chargeur',
 		frenchWord: 'chargeur',
-		englishWord: 'charger',
+		englishWords: ['charger'],
 		isVulgar: false,
 		lemmaId: 'chargeur',
 		frenchArticle: 'le',
@@ -124,7 +124,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_lecture',
 		frenchWord: 'lecture',
-		englishWord: 'reading',
+		englishWords: ['reading'],
 		isVulgar: false,
 		lemmaId: 'lecture',
 		frenchArticle: 'la',
@@ -139,7 +139,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_poubelle',
 		frenchWord: 'poubelle',
-		englishWord: 'trash can',
+		englishWords: ['trash can'],
 		isVulgar: false,
 		lemmaId: 'poubelle',
 		frenchArticle: 'la',

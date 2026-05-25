@@ -4,7 +4,7 @@ export const words_c1_interjections: Word[] = [
 	{
 		id: 'word_interjection_tabarnak',
 		frenchWord: 'tabarnak',
-		englishWord: 'tabarnak',
+		englishWords: ['tabarnak'],
 		isVulgar: true,
 		lemmaId: 'tabarnak',
 		partOfSpeech: 'interjection',

@@ -43,13 +43,13 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   useEffect(() => {
     async function loadWords() {
       setFillerWords(await getFillerWords({
-        correctWord: word.englishWord
+        correctWords: word.englishWords
       }));
 
       if (word.englishArticle) {
         setArticleWords(await getFillerWords({
           words: englishArticles,
-          correctWord: word.englishArticle
+          correctWords: [word.englishArticle]
         }));
       } else {
         setArticleWords([]);
@@ -59,7 +59,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
     loadWords();
   }, [
     word.frenchWord,
-    word.englishWord,
+    word.englishWords,
     word.englishArticle,
   ]);
 

@@ -9,7 +9,7 @@ export const englishArticles = ['the', 'a', 'an'];
 interface FilterFillerWordsProps {
 	amount: number;
 	words?: string[];
-	correctWord: string;
+	correctWords: string[];
 }
 
 /**
@@ -22,11 +22,15 @@ interface FilterFillerWordsProps {
 export default function filterFillerWords({
 	amount,
 	words = englishArticles,
-	correctWord,
+	correctWords,
 }: FilterFillerWordsProps) {
-	let wordsCopy = [...words].filter(
-		word => !(word.toLowerCase() === correctWord.toLowerCase()),
+	let lowerCaseCorrectWords = correctWords.map((word: string) =>
+		word.toLowerCase(),
 	);
+
+	let wordsCopy = [...words].filter(word => {
+		return !lowerCaseCorrectWords.includes(word.toLowerCase());
+	});
 
 	if (amount <= wordsCopy.length) {
 		let iterationCount = wordsCopy.length - amount + 1;
@@ -50,6 +54,6 @@ export default function filterFillerWords({
 
 	return shuffleArray([
 		...wordsCopy.filter(article => article !== 'DELETE'),
-		correctWord,
+		...correctWords,
 	]);
 }

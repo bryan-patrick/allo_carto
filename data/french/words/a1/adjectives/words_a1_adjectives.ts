@@ -4,7 +4,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_chaud',
 		frenchWord: 'chaud',
-		englishWord: 'hot',
+		englishWords: ['hot'],
 		isVulgar: false,
 		lemmaId: 'chaud',
 		partOfSpeech: 'adjective',
@@ -17,7 +17,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_froid',
 		frenchWord: 'froid',
-		englishWord: 'cold',
+		englishWords: ['cold'],
 		isVulgar: false,
 		lemmaId: 'froid',
 		partOfSpeech: 'adjective',
@@ -30,7 +30,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_heureux',
 		frenchWord: 'heureux',
-		englishWord: 'happy',
+		englishWords: ['happy'],
 		isVulgar: false,
 		lemmaId: 'heureux',
 		partOfSpeech: 'adjective',
@@ -43,7 +43,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_heureuse',
 		frenchWord: 'heureuse',
-		englishWord: 'happy',
+		englishWords: ['happy'],
 		isVulgar: false,
 		lemmaId: 'heureux',
 		partOfSpeech: 'adjective',
@@ -56,7 +56,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_triste',
 		frenchWord: 'triste',
-		englishWord: 'sad',
+		englishWords: ['sad'],
 		isVulgar: false,
 		lemmaId: 'triste',
 		partOfSpeech: 'adjective',
@@ -68,7 +68,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_petit',
 		frenchWord: 'petit',
-		englishWord: 'small',
+		englishWords: ['small'],
 		isVulgar: false,
 		lemmaId: 'petit',
 		partOfSpeech: 'adjective',
@@ -81,7 +81,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_petite',
 		frenchWord: 'petite',
-		englishWord: 'small',
+		englishWords: ['small'],
 		isVulgar: false,
 		lemmaId: 'petit',
 		partOfSpeech: 'adjective',
@@ -94,7 +94,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_moyen',
 		frenchWord: 'moyen',
-		englishWord: 'medium',
+		englishWords: ['medium'],
 		isVulgar: false,
 		lemmaId: 'moyen',
 		partOfSpeech: 'adjective',
@@ -107,7 +107,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_moyenne',
 		frenchWord: 'moyenne',
-		englishWord: 'medium',
+		englishWords: ['medium'],
 		isVulgar: false,
 		lemmaId: 'moyen',
 		partOfSpeech: 'adjective',
@@ -120,7 +120,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_grand',
 		frenchWord: 'grand',
-		englishWord: 'large',
+		englishWords: ['large'],
 		isVulgar: false,
 		lemmaId: 'grand',
 		partOfSpeech: 'adjective',
@@ -133,7 +133,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_grande',
 		frenchWord: 'grande',
-		englishWord: 'large',
+		englishWords: ['large'],
 		isVulgar: false,
 		lemmaId: 'grand',
 		partOfSpeech: 'adjective',

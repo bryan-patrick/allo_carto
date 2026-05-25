@@ -4,7 +4,7 @@ export const words_a1_expressions: Word[] = [
 	{
 		id: 'word_expression_avoir_faim',
 		frenchWord: 'avoir faim',
-		englishWord: 'hungry',
+		englishWords: ['hungry'],
 		isVulgar: false,
 		lemmaId: 'avoir_faim',
 		partOfSpeech: 'expression',
@@ -16,7 +16,7 @@ export const words_a1_expressions: Word[] = [
 	{
 		id: 'word_expression_avoir_soif',
 		frenchWord: 'avoir soif',
-		englishWord: 'thirsty',
+		englishWords: ['thirsty'],
 		isVulgar: false,
 		lemmaId: 'avoir_soif',
 		partOfSpeech: 'expression',
@@ -28,7 +28,7 @@ export const words_a1_expressions: Word[] = [
 	{
 		id: 'word_expression_combien',
 		frenchWord: 'combien',
-		englishWord: 'how much',
+		englishWords: ['how much'],
 		isVulgar: false,
 		lemmaId: 'combien',
 		partOfSpeech: 'expression',
@@ -40,7 +40,7 @@ export const words_a1_expressions: Word[] = [
 	{
 		id: 'word_expression_bonne_journee',
 		frenchWord: 'bonne journée',
-		englishWord: 'good day',
+		englishWords: ['good day'],
 		isVulgar: false,
 		lemmaId: 'bonne_journee',
 		partOfSpeech: 'expression',
@@ -52,7 +52,7 @@ export const words_a1_expressions: Word[] = [
 	{
 		id: 'word_expression_sil_vous_plait',
 		frenchWord: "s'il vous plaît",
-		englishWord: 'please',
+		englishWords: ['please'],
 		isVulgar: false,
 		lemmaId: 'sil_vous_plait',
 		partOfSpeech: 'expression',

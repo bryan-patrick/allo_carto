@@ -4,7 +4,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_cafe',
 		frenchWord: 'café',
-		englishWord: 'coffee',
+		englishWords: ['coffee'],
 		isVulgar: false,
 		lemmaId: 'cafe',
 		frenchArticle: 'le',
@@ -19,7 +19,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_divan',
 		frenchWord: 'divan',
-		englishWord: 'couch',
+		englishWords: ['couch'],
 		isVulgar: false,
 		lemmaId: 'divan',
 		frenchArticle: 'le',
@@ -34,7 +34,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_table',
 		frenchWord: 'table',
-		englishWord: 'table',
+		englishWords: ['table'],
 		isVulgar: false,
 		lemmaId: 'table',
 		frenchArticle: 'la',
@@ -49,7 +49,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_chaise',
 		frenchWord: 'chaise',
-		englishWord: 'chair',
+		englishWords: ['chair'],
 		isVulgar: false,
 		lemmaId: 'chaise',
 		frenchArticle: 'la',
@@ -64,7 +64,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_tasse',
 		frenchWord: 'tasse',
-		englishWord: 'cup',
+		englishWords: ['cup'],
 		isVulgar: false,
 		lemmaId: 'tasse',
 		frenchArticle: 'la',
@@ -79,7 +79,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_velo',
 		frenchWord: 'vélo',
-		englishWord: 'bicycle',
+		englishWords: ['bicycle'],
 		isVulgar: false,
 		lemmaId: 'velo',
 		frenchArticle: 'le',
@@ -94,7 +94,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_glace',
 		frenchWord: 'glace',
-		englishWord: 'ice',
+		englishWords: ['ice'],
 		isVulgar: false,
 		lemmaId: 'glace',
 		frenchArticle: 'la',
@@ -109,7 +109,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_fenetre',
 		frenchWord: 'fenêtre',
-		englishWord: 'window',
+		englishWords: ['window'],
 		isVulgar: false,
 		lemmaId: 'fenetre',
 		frenchArticle: 'la',
@@ -124,7 +124,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_ami',
 		frenchWord: 'ami',
-		englishWord: 'friend',
+		englishWords: ['friend'],
 		isVulgar: false,
 		lemmaId: 'ami',
 		frenchArticle: "l'",
@@ -139,7 +139,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_amie',
 		frenchWord: 'amie',
-		englishWord: 'friend',
+		englishWords: ['friend'],
 		isVulgar: false,
 		lemmaId: 'amie',
 		frenchArticle: "l'",
@@ -154,7 +154,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_travail',
 		frenchWord: 'travail',
-		englishWord: 'work',
+		englishWords: ['work'],
 		isVulgar: false,
 		lemmaId: 'travail',
 		frenchArticle: 'le',
@@ -169,7 +169,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_pain',
 		frenchWord: 'pain',
-		englishWord: 'bread',
+		englishWords: ['bread'],
 		isVulgar: false,
 		lemmaId: 'pain',
 		frenchArticle: 'le',
@@ -184,7 +184,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_toilette',
 		frenchWord: 'toilette',
-		englishWord: 'bathroom',
+		englishWords: ['bathroom'],
 		isVulgar: false,
 		lemmaId: 'toilette',
 		frenchArticle: 'la',
@@ -199,7 +199,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_cle',
 		frenchWord: 'clé',
-		englishWord: 'key',
+		englishWords: ['key'],
 		isVulgar: false,
 		lemmaId: 'cle',
 		frenchArticle: 'la',
@@ -214,7 +214,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_eau',
 		frenchWord: 'eau',
-		englishWord: 'water',
+		englishWords: ['water'],
 		isVulgar: false,
 		lemmaId: 'eau',
 		frenchArticle: "l'",
@@ -229,7 +229,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_menu',
 		frenchWord: 'menu',
-		englishWord: 'menu',
+		englishWords: ['menu'],
 		isVulgar: false,
 		lemmaId: 'menu',
 		frenchArticle: 'le',
@@ -244,7 +244,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_musique',
 		frenchWord: 'musique',
-		englishWord: 'music',
+		englishWords: ['music'],
 		isVulgar: false,
 		lemmaId: 'musique',
 		frenchArticle: 'la',
@@ -259,7 +259,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_livre',
 		frenchWord: 'livre',
-		englishWord: 'book',
+		englishWords: ['book'],
 		isVulgar: false,
 		lemmaId: 'livre',
 		frenchArticle: 'le',
@@ -274,7 +274,7 @@ export const words_a1_nouns: Word[] = [
 	{
 		id: 'word_noun_lait',
 		frenchWord: 'lait',
-		englishWord: 'milk',
+		englishWords: ['milk'],
 		isVulgar: false,
 		lemmaId: 'lait',
 		frenchArticle: 'le',

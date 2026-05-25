@@ -44,7 +44,7 @@ const DeckCoffeeShop: CardDeck = {
 		'word_adjective_triste',
 		'word_noun_odeur',
 		'word_noun_parapluie',
-		'word_adjective_confortable',
+		'word_adjective_chaleureux',
 		'word_noun_menu',
 		'word_noun_chargeur',
 		'word_expression_combien',

@@ -4,7 +4,7 @@ export const words_b1_nouns: Word[] = [
 	{
 		id: 'word_noun_odeur',
 		frenchWord: 'odeur',
-		englishWord: 'smell',
+		englishWords: ['smell'],
 		isVulgar: false,
 		lemmaId: 'odeur',
 		frenchArticle: "l'",
@@ -19,7 +19,7 @@ export const words_b1_nouns: Word[] = [
 	{
 		id: 'word_noun_blonde',
 		frenchWord: 'blonde',
-		englishWord: 'girlfriend',
+		englishWords: ['girlfriend'],
 		isVulgar: false,
 		lemmaId: 'blonde',
 		frenchArticle: 'la',
@@ -34,7 +34,7 @@ export const words_b1_nouns: Word[] = [
 	{
 		id: 'word_noun_chum',
 		frenchWord: 'chum',
-		englishWord: 'boyfriend',
+		englishWords: ['boyfriend'],
 		isVulgar: false,
 		lemmaId: 'chum',
 		frenchArticle: 'le',

@@ -5,10 +5,13 @@ export interface GetFillerWordsProps {
 	language?: 'french' | 'english';
 	amount?: number;
 	cefrLevel?: string;
-	correctWord: string;
+	correctWords: string[];
 	words?: string[];
 }
 
+/**
+ * TODO: Remove mockwords
+ */
 const mockWords = [
 	'hello',
 	'thank you',
@@ -33,13 +36,11 @@ export function sleep(ms: number | SharedValue<number>) {
  * user to select from when doing flash cards
  */
 export default async function getFillerWords({
-	language = 'english',
-	cefrLevel = 'A1',
 	amount = 8,
-	correctWord,
+	correctWords,
 	words = mockWords,
 }: GetFillerWordsProps) {
 	await sleep(10);
 
-	return filterFillerWords({ amount, correctWord, words });
+	return filterFillerWords({ amount, correctWords, words });
 }

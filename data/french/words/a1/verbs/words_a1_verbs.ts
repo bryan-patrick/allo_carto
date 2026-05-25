@@ -4,7 +4,7 @@ export const words_a1_verbs: Word[] = [
 	{
 		id: 'word_verb_ouvrir',
 		frenchWord: 'ouvrir',
-		englishWord: 'open',
+		englishWords: ['open'],
 		isVulgar: false,
 		lemmaId: 'ouvrir',
 		partOfSpeech: 'verb',
@@ -16,7 +16,7 @@ export const words_a1_verbs: Word[] = [
 	{
 		id: 'word_verb_fermer',
 		frenchWord: 'fermer',
-		englishWord: 'close',
+		englishWords: ['close'],
 		isVulgar: false,
 		lemmaId: 'fermer',
 		partOfSpeech: 'verb',
@@ -28,7 +28,7 @@ export const words_a1_verbs: Word[] = [
 	{
 		id: 'word_verb_etudier',
 		frenchWord: 'étudier',
-		englishWord: 'study',
+		englishWords: ['study'],
 		isVulgar: false,
 		lemmaId: 'etudier',
 		partOfSpeech: 'verb',
@@ -40,7 +40,7 @@ export const words_a1_verbs: Word[] = [
 	{
 		id: 'word_verb_ecrire',
 		frenchWord: 'écrire',
-		englishWord: 'write',
+		englishWords: ['write'],
 		isVulgar: false,
 		lemmaId: 'ecrire',
 		partOfSpeech: 'verb',
@@ -52,7 +52,7 @@ export const words_a1_verbs: Word[] = [
 	{
 		id: 'word_verb_dessiner',
 		frenchWord: 'dessiner',
-		englishWord: 'draw',
+		englishWords: ['draw'],
 		isVulgar: false,
 		lemmaId: 'dessiner',
 		partOfSpeech: 'verb',

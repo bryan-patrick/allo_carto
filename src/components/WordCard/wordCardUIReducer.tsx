@@ -38,7 +38,10 @@ function getMistake(
     mistake = 'ARTICLE';
   }
 
-  if (currentCard.englishWord !== state.selectedWord) {
+  if (
+    !state.selectedWord ||
+    !currentCard.englishWords.includes(state.selectedWord)
+  ) {
     mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
   }
 

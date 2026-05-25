@@ -63,16 +63,16 @@ const WordCardFront = memo(function WordCardFrontMemo({
     pronunciation,
     frenchArticle,
     englishArticle,
-    englishWord,
+    englishWords,
     frenchWord
   } = currentCard;
 
   /**
    * Render the articlea and word the user has selected.
    * These will animated when changing size, which is cool.
-   */
-  const displayedArticle = cardState.selectedArticle ?? englishArticle ?? '';
-  const displayedWord = cardState.selectedWord ?? englishWord ?? '';
+  */
+  const displayedArticle = cardState.selectedArticle ?? englishArticle;
+  const displayedWord = cardState.selectedWord ?? englishWords[0];
   const articleClass = { color: cardState.selectedArticle ? colors.dark.text : 'transparent' };
   const wordClass = { color: cardState.selectedWord ? colors.dark.text : 'transparent' };
 

@@ -11,15 +11,11 @@ export type CEFR = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
  * E.G. "word_noun_apres" (note the lack of the accent over the é)
  *
  * Important: prop frenchWord ALWAYS gets its special characters.
- *
- * TODO: REALLY big todo!
- * english word will need to be refactored to an array.
- * This is a serious issue, some logic will need to be fixed to
  */
 export interface Word {
 	id: string;
 	frenchWord: string;
-	englishWord: string;
+	englishWords: string[];
 	frenchArticle?: string;
 	englishArticle?: string;
 	pronunciation: string;
@@ -36,7 +32,7 @@ export interface Word {
 export const initialWordState: Word = {
 	id: '',
 	frenchWord: '',
-	englishWord: '',
+	englishWords: [''],
 	pronunciation: '',
 	isVulgar: false,
 	CEFR: 'A1',

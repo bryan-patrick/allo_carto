@@ -4,7 +4,7 @@ export const words_a1_interjections: Word[] = [
 	{
 		id: 'word_interjection_salut',
 		frenchWord: 'salut',
-		englishWord: 'hello',
+		englishWords: ['hello'],
 		isVulgar: false,
 		lemmaId: 'salut',
 		partOfSpeech: 'interjection',
