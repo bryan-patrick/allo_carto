@@ -20,7 +20,7 @@ export default function WordCardHeader() {
       colors={[colors.light.primary, colors.dark.border]}
       style={cardGradient}
     >
-      <Text style={cardCEFRLevel}>{currentCard.CEFRLevel}</Text>
+      <Text style={cardCEFRLevel}>{currentCard.CEFR}</Text>
       <WordRank />
     </LinearGradient>
   )

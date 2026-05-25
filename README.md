@@ -63,3 +63,9 @@
 **Lexend** is used throughout the application. The font is included in `app/assets/fonts/lexend-variable.ttf` and loaded asychonously via the `useFonts` hook via expo.
 
 https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
+
+## Roadmap
+
+- DB sqlite? Nous besoin quelque chose sur le frontend. Ce sera cree avec decks premiere et les words apre.
+- Rarate et styles des cartes. Les cartes plus rares ont des styles plus cool.
+- Idea pour deck du rare, quand un personne besoin mots nouveaux, cest bonne pour mots le personne ne trouve pa

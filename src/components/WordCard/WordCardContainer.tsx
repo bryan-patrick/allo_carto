@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { englishArticles } from "../../util/filterFillerWords";
 import getFillerWords from "../../util/getFillerWords";
-import { type WordProps } from "../CardDeck/cardDeckTypes";
+import { type Word } from "../CardDeck/cardDeckTypes";
 import WordCard from "./WordCard";
 import WordCardButton from "./WordCardButton";
 import { initialWordCardState, WordCardUIContext } from "./wordCardContext";
@@ -14,7 +14,7 @@ import { wordCardUIReducer } from "./wordCardUIReducer";
  * Typing
  */
 interface CardContainerProps {
-  word: WordProps;
+  word: Word;
   isCurrent: boolean;
 }
 
@@ -43,7 +43,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   useEffect(() => {
     async function loadWords() {
       setFillerWords(await getFillerWords({
-        correctWord: word.translation
+        correctWord: word.englishWord
       }));
 
       if (word.englishArticle) {
@@ -58,8 +58,8 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 
     loadWords();
   }, [
-    word.id,
-    word.translation,
+    word.frenchWord,
+    word.englishWord,
     word.englishArticle,
   ]);
 

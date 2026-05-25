@@ -1,0 +1,41 @@
+import { Word } from '@/src/components/CardDeck/cardDeckTypes';
+
+export const words_a2_adjectives: Word[] = [
+	{
+		id: 'word_adjective_pluvieux',
+		frenchWord: 'pluvieux',
+		englishWord: 'rainy',
+		isVulgar: false,
+		lemmaId: 'pluvieux',
+		partOfSpeech: 'adjective',
+		CEFR: 'A2',
+		gender: 'Masculine',
+		pronunciation: 'ploo-vyuh',
+		userScore: 0,
+		rarity: 'Common',
+	},
+	{
+		id: 'word_adjective_chaleureux',
+		frenchWord: 'chaleureux',
+		englishWord: 'cozy / warm / welcoming',
+		isVulgar: false,
+		lemmaId: 'chaleureux',
+		partOfSpeech: 'adjective',
+		CEFR: 'A2',
+		pronunciation: 'sha-luh-ruh',
+		userScore: 0,
+		rarity: 'Rare',
+	},
+	{
+		id: 'word_adjective_tranquille',
+		frenchWord: 'tranquille',
+		englishWord: 'quiet / calm',
+		isVulgar: false,
+		lemmaId: 'tranquille',
+		partOfSpeech: 'adjective',
+		CEFR: 'A2',
+		pronunciation: 'trahn-keel',
+		userScore: 0,
+		rarity: 'Common',
+	},
+];

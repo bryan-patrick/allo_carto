@@ -49,8 +49,7 @@ const WordCardBack = memo(function WordCardBackMemo({
    * Word data
    */
   const {
-    id,
-    translation,
+    englishWord,
     pronunciation,
     englishArticle,
     frenchArticle,
@@ -67,7 +66,7 @@ const WordCardBack = memo(function WordCardBackMemo({
     ]}>
       <WordCardHeader />
       <View style={cardMain}>
-        <Text style={wordId}>{frenchArticle}&nbsp;{id}</Text>
+        <Text style={wordId}>{frenchArticle}&nbsp;{englishWord}</Text>
         <Text style={wordPronunciation}>({pronunciation})</Text>
       </View>
       <View style={answerSlotContainer}>
@@ -89,7 +88,7 @@ const WordCardBack = memo(function WordCardBackMemo({
             wordSlotStyle
           ]}
         >
-          {translation}
+          {englishWord}
         </Text>
       </View>
       <View style={feedbackContainer}>

@@ -1,4 +1,4 @@
-import { type WordProps } from '../CardDeck/cardDeckTypes';
+import { type Word } from '../CardDeck/cardDeckTypes';
 import {
   type CardMistake,
   getFeedbackKey,
@@ -19,7 +19,7 @@ export type WordCardUIAction =
   }
   | {
     type: 'CHECK_ANSWER';
-    currentCard: WordProps | undefined
+    currentCard: Word | undefined
   };
 
 /**
@@ -27,7 +27,7 @@ export type WordCardUIAction =
  */
 function getMistake(
   state: WordCardStateProps,
-  currentCard: WordProps,
+  currentCard: Word,
 ): CardMistake {
   let mistake: CardMistake = 'NONE';
 
@@ -38,7 +38,7 @@ function getMistake(
     mistake = 'ARTICLE';
   }
 
-  if (currentCard.translation !== state.selectedWord) {
+  if (currentCard.englishWord !== state.selectedWord) {
     mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
   }
 

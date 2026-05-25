@@ -60,11 +60,11 @@ const WordCardFront = memo(function WordCardFrontMemo({
    * Word data
    */
   const {
-    id,
     pronunciation,
     frenchArticle,
     englishArticle,
-    translation
+    englishWord,
+    frenchWord
   } = currentCard;
 
   /**
@@ -72,7 +72,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
    * These will animated when changing size, which is cool.
    */
   const displayedArticle = cardState.selectedArticle ?? englishArticle ?? '';
-  const displayedWord = cardState.selectedWord ?? translation ?? '';
+  const displayedWord = cardState.selectedWord ?? englishWord ?? '';
   const articleClass = { color: cardState.selectedArticle ? colors.dark.text : 'transparent' };
   const wordClass = { color: cardState.selectedWord ? colors.dark.text : 'transparent' };
 
@@ -87,7 +87,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
     ]}>
       <WordCardHeader />
       <View style={cardMain}>
-        <Text style={wordId}>{frenchArticle}&nbsp;{id}</Text>
+        <Text style={wordId}>{frenchArticle}&nbsp;{frenchWord}</Text>
         <Text style={wordPronunciation}>({pronunciation})</Text>
       </View>
       <View style={answerSlotContainer}>

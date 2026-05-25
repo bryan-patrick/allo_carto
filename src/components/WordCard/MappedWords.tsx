@@ -205,7 +205,7 @@ const MappedWords = memo(
         case 'DANGER':
           return {
             highlightArticle: hasArticleMistake ? (currentCard.englishArticle ?? '') : null,
-            highlightWord: hasWordMistake ? (currentCard.translation ?? '') : null,
+            highlightWord: hasWordMistake ? (currentCard.englishWord ?? '') : null,
             highlightStyles: highlightDanger,
             highlightTextStyles: highlightTextDanger,
           };
@@ -223,7 +223,7 @@ const MappedWords = memo(
       cardState.selectedWord,
       cardState.selectedArticle,
       currentCard.englishArticle,
-      currentCard.translation,
+      currentCard.englishWord,
       highlightSuccess,
       highlightWarning,
       highlightDanger,
@@ -238,12 +238,12 @@ const MappedWords = memo(
         word={word}
         isActive={word === activeWord}
         isCorrectWord={
-          word === currentCard.translation ||
+          word === currentCard.englishWord ||
           word === currentCard.englishArticle
         }
         isSelectedWrong={
           (cardState.selectedArticle === word && word !== currentCard.englishArticle) ||
-          (cardState.selectedWord === word && word !== currentCard.translation)
+          (cardState.selectedWord === word && word !== currentCard.englishWord)
         }
         isHighlighted={
           word === highlightArticle ||

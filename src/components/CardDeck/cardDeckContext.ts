@@ -3,7 +3,7 @@
  */
 import { createContext, type Dispatch } from 'react';
 import { CardDeckAction } from './cardDeckReducer';
-import { initialWordState, WordProps } from './cardDeckTypes';
+import { initialWordState, Word } from './cardDeckTypes';
 
 /**
  * Typing
@@ -16,7 +16,7 @@ export interface CardDeckContextType {
 export interface CardDeckStateProps {
 	currentIndex: number;
 	currentId: string;
-	cardDeck: WordProps[];
+	cardDeck: Word[];
 }
 
 /**
