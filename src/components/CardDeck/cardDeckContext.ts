@@ -1,3 +1,6 @@
+/**
+ * The context for handling canonical card data and state
+ */
 import { createContext, type Dispatch } from 'react';
 import { CardDeckAction } from './cardDeckReducer';
 import { initialWordState, WordProps } from './cardDeckTypes';
