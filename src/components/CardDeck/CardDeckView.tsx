@@ -1,7 +1,3 @@
-/**
- * This is the canonical deck (and card) data 
- * This context handles card data
- */
 import { useEffect, useReducer } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
