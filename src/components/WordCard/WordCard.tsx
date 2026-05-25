@@ -11,7 +11,6 @@ import { CardDeckContext } from '../CardDeck/cardDeckContext';
 import { sharedWordCardStyles } from './sharedWordCardStyles';
 import { useWordCardUI } from './useWordCardUI';
 import WordCardBack from './WordCardBack';
-import { getFeedbackKey } from './wordCardContext';
 import WordCardFront from './WordCardFront';
 
 /**
@@ -33,7 +32,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
   /**
    * State
    */
-  const { cardState, setCardState } = useWordCardUI();
+  const { cardState } = useWordCardUI();
   const { cardDeckDispatch } = useContext(CardDeckContext);
   const [feedbackStyle, setFeedbackStyle] = useState({});
   const [articleSlotStyle, setArticleSlotStyle] = useState<TextStyle>({});
@@ -179,16 +178,9 @@ export default function WordCard({ isCurrent }: WordCardProps) {
         if (hasWordMistake) setWordSlotStyle(answerSlotError)
         break;
     }
-
-    setCardState((prev) => ({
-      ...prev,
-      ...{ feedbackKey: getFeedbackKey(prev) }
-    })
-    )
   }, [
     feedbackSuccess,
     answerSlotSuccess,
-    setCardState,
     cardState.progress,
     cardState.mistake,
     answerSlotError,

@@ -5,7 +5,6 @@ import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } fro
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import { useWordCardUI } from './useWordCardUI';
-import { CardMistake, WordCardStateProps } from './wordCardContext';
 
 /**
  * I guess there's no Animated.Pressable?
@@ -31,10 +30,11 @@ export default function WordCardButton({
   style,
   ...props
 }: WordCardButtonProps) {
-  const { cardState, setCardState } = useWordCardUI();
+  const { cardState, wordCardUIDispatch } = useWordCardUI();
   const { cardDeckDispatch, currentCard } = useCardDeck();
   const [pressableStateStyle, setPressableStateStyle] = useState<ViewStyle | null>({});
   const [textStateStyle, setTextStateStyle] = useState<TextStyle | null>({});
+
   /**
    * Style vars
    */
@@ -109,101 +109,42 @@ export default function WordCardButton({
    * Check the user's answer
    */
   const checkAnswer = useCallback(() => {
-    let updates: Partial<WordCardStateProps> | null = null;
-    let mistake: CardMistake = 'NONE';
+    wordCardUIDispatch({ type: 'CHECK_ANSWER', currentCard });
+  }, [
+    currentCard,
+    wordCardUIDispatch,
+  ]);
 
-    /**
-     * What we do depends on what stage the card is in.
-     */
-    switch (cardState.stage) {
-      /**
-       * READY is initial value, so this is the first time
-       * the user hit the 'Check' button. Check if the user 
-       * got the right answer or made a mistake.
-       */
-      case 'READY':
-        if (
-          currentCard?.englishArticle &&
-          currentCard.englishArticle !== cardState.selectedArticle
-        ) mistake = 'ARTICLE';
-
-        if (currentCard?.translation !== cardState.selectedWord) {
-          mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
-        }
-
-        if (mistake !== 'NONE') {
-          Haptics.notificationAsync(
-            Haptics.NotificationFeedbackType.Warning
-          )
-          updates = { progress: 'WARNING', mistake };
-        }
-        /**
-         * User got the answer correct ↓ 
-         * (that's a down arrow but it' wittle - it's a thing today...)
-         */
-        else {
-          updates = { progress: 'SUCCESS', stage: 'CORRECT' };
+  /**
+   * Side effects (haptics) for dispatching check answer
+   */
+  useEffect(() => {
+    if (cardState.attempts !== 0) {
+      switch (`${cardState.stage}_${cardState.progress}`) {
+        case 'CORRECT_SUCCESS':
           cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
           Haptics.notificationAsync(
             Haptics.NotificationFeedbackType.Success,
           );
-        }
-        break;
-
-      /**
-       * CORRECT means We were already showing the user 
-       * the other side of the card (with correct answers). 
-       * Mark this one completed.
-       */
-      case 'CORRECT':
-        updates = { progress: 'SUCCESS', stage: 'COMPLETED' };
-        break;
-
-      /**
-       * INCORRECT means the user got it wrong and
-       * ran out of attempts. Progress the card 
-       * without upping the word score. TODO
-       */
-      case 'INCORRECT':
-        Haptics.notificationAsync(
-          Haptics.NotificationFeedbackType.Error
-        )
-        updates = { progress: 'DANGER', stage: 'COMPLETED' }
-        break;
-    }
-
-    /**
-     * Check if the user has reached
-     * the max allowed attempts.
-     */
-    if (
-      cardState.attempts + 1 >= cardState.maxAttempts &&
-      mistake !== 'NONE'
-    ) {
-      updates = { progress: 'DANGER', stage: 'INCORRECT', mistake }
-    }
-
-    /**
-     * Update the card's state and 
-     * increment the user's attempts.
-     */
-    if (updates) {
-      setCardState(prev => ({
-        ...prev,
-        ...updates,
-        attempts: prev.attempts + 1,
-      }));
+          break;
+        case 'READY_WARNING':
+        case 'INCORRECT_DANGER':
+          Haptics.notificationAsync(
+            Haptics.NotificationFeedbackType.Warning,
+          );
+          break;
+        case 'COMPLETED_DANGER':
+          Haptics.notificationAsync(
+            Haptics.NotificationFeedbackType.Error,
+          );
+          break;
+      }
     }
   }, [
-    cardState.maxAttempts,
-    currentCard.englishArticle,
-    currentCard.translation,
     cardState.attempts,
+    cardState.progress,
     cardState.stage,
-    cardState.selectedArticle,
-    cardState.selectedWord,
     cardDeckDispatch,
-    setCardState,
   ]);
 
   /**

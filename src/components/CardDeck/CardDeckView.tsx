@@ -6,7 +6,8 @@ import { useEffect, useReducer } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import WordCardContainer from '../WordCard/WordCardContainer';
-import { CardDeckContext, cardDeckReducer, initialCardDeckState } from './cardDeckContext';
+import { CardDeckContext, initialCardDeckState } from './cardDeckContext';
+import { cardDeckReducer } from './cardDeckReducer';
 
 /**
  * CardDeckView component

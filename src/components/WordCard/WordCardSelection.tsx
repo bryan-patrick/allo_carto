@@ -15,35 +15,19 @@ interface WordCardSelectionProps {
  * WordCardSelection Component
  */
 export default function WordCardSelection({ articleWords, fillerWords }: WordCardSelectionProps) {
-  const { cardState, setCardState } = useWordCardUI();
+  const { cardState, wordCardUIDispatch } = useWordCardUI();
   const { wcsContainer } = wordCardSelectionStyles;
 
   const handleArticlePressToggle = useCallback((word: string) => {
-    if (cardState.stage === 'READY') {
-      setCardState((cardState) => ({
-        ...cardState,
-        selectedArticle: word !== cardState.selectedArticle ? word : null,
-        mistake: 'NONE',
-        progress: 'PENDING'
-      }));
-    }
+    wordCardUIDispatch({ type: 'SELECT_ARTICLE', word });
   }, [
-    cardState.stage,
-    setCardState
+    wordCardUIDispatch
   ]);
 
   const handleWordPressToggle = useCallback((word: string) => {
-    if (cardState.stage === 'READY') {
-      setCardState((cardState) => ({
-        ...cardState,
-        selectedWord: word !== cardState.selectedWord ? word : null,
-        mistake: 'NONE',
-        progress: 'PENDING'
-      }));
-    }
+    wordCardUIDispatch({ type: 'SELECT_WORD', word });
   }, [
-    cardState.stage,
-    setCardState
+    wordCardUIDispatch
   ]);
 
   return (

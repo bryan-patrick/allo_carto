@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useReducer, useState } from "react";
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { englishArticles } from "../../util/filterFillerWords";
@@ -6,8 +6,9 @@ import getFillerWords from "../../util/getFillerWords";
 import { type WordProps } from "../CardDeck/cardDeckTypes";
 import WordCard from "./WordCard";
 import WordCardButton from "./WordCardButton";
-import { initialWordCardState, WordCardUIContext, type WordCardStateProps } from "./wordCardContext";
+import { initialWordCardState, WordCardUIContext } from "./wordCardContext";
 import WordCardSelection from "./WordCardSelection";
+import { wordCardUIReducer } from "./wordCardUIReducer";
 
 /**
  * Typing
@@ -28,9 +29,10 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
    */
   const [fillerWords, setFillerWords] = useState<string[]>([]);
   const [articleWords, setArticleWords] = useState<string[]>([]);
-  const [cardState, setCardState] = useState<WordCardStateProps>({
-    ...initialWordCardState,
-  });
+  const [cardState, wordCardUIDispatch] = useReducer(
+    wordCardUIReducer,
+    initialWordCardState,
+  );
 
 
   /**
@@ -93,7 +95,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   }, [isCurrent, currentPosition, currentOpacity]);
 
   return (
-    <WordCardUIContext.Provider value={{ cardState, setCardState }}>
+    <WordCardUIContext.Provider value={{ cardState, wordCardUIDispatch }}>
       <Animated.View style={[
         container,
         positionStyle

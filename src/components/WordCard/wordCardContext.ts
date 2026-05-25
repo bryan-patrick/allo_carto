@@ -2,7 +2,8 @@
  * UI State for each individual card in a deck
  * This context handles UI updates and layout
  */
-import { createContext, type Dispatch, type SetStateAction } from 'react';
+import { createContext, type Dispatch } from 'react';
+import { type WordCardUIAction } from './wordCardUIReducer';
 
 /**
  * Concatenation of stage + progress + mistake
@@ -74,10 +75,10 @@ export const initialWordCardState: WordCardStateProps = {
 
 interface WordCardContextType {
 	cardState: WordCardStateProps;
-	setCardState: Dispatch<SetStateAction<WordCardStateProps>>;
+	wordCardUIDispatch: Dispatch<WordCardUIAction>;
 }
 
 export const WordCardUIContext = createContext<WordCardContextType>({
 	cardState: initialWordCardState,
-	setCardState: () => {},
+	wordCardUIDispatch: () => {},
 });
