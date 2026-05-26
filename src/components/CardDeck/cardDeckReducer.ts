@@ -1,13 +1,13 @@
+import { CardDeck } from '@/data/french/decks/deckTyps';
 import { CardDeckStateProps } from './cardDeckContext';
-import { mockDeck } from './mockCardDeck';
 
 /**
  * Typing
  */
 export type CardDeckAction =
-	| { type: 'GET_DECK' }
 	| { type: 'NEXT_CARD' }
-	| { type: 'INCREMENT_WORD_SCORE' };
+	| { type: 'INCREMENT_WORD_SCORE' }
+	| { type: 'SET_DECK'; payload: CardDeck };
 
 /**
  * A reducer for deck state
@@ -17,32 +17,41 @@ export function cardDeckReducer(
 	action: CardDeckAction,
 ): CardDeckStateProps {
 	switch (action.type) {
-		case 'GET_DECK':
-			return {
-				...state,
-				cardDeck: mockDeck,
-				currentIndex: 0,
-				currentId: mockDeck[0]?.id ?? '',
-			};
-		case 'NEXT_CARD':
+		case 'NEXT_CARD': {
 			const nextIndex = state.currentIndex + 1;
-			const nextWord = state.cardDeck[nextIndex];
+			const nextWord = state.cardDeck.words[nextIndex];
 
 			return {
 				...state,
 				currentIndex: nextIndex,
 				currentId: nextWord?.id ?? state.currentId,
 			};
+		}
 		case 'INCREMENT_WORD_SCORE': {
-			if (!state.cardDeck[state.currentIndex]) return state;
+			const words = [...state.cardDeck.words];
+			const currentWord = words[state.currentIndex];
+
+			words[state.currentIndex] = {
+				...currentWord,
+				userScore: currentWord.userScore + 1,
+			};
 
 			return {
 				...state,
-				cardDeck: state.cardDeck.map((word, index) => {
-					if (index === state.currentIndex)
-						return { ...word, userScore: word.userScore + 1 };
-					return word;
-				}),
+				cardDeck: {
+					...state.cardDeck,
+					words,
+				},
+			};
+		}
+		case 'SET_DECK': {
+			const nextCurrentId = action.payload.words[0]?.id ?? '';
+
+			return {
+				...state,
+				cardDeck: action.payload,
+				currentIndex: 0,
+				currentId: nextCurrentId,
 			};
 		}
 		default:

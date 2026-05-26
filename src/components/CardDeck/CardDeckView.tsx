@@ -1,54 +1,36 @@
-import { useEffect, useReducer } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import WordCardContainer from '../WordCard/WordCardContainer';
-import { CardDeckContext, initialCardDeckState } from './cardDeckContext';
-import { cardDeckReducer } from './cardDeckReducer';
+import { Word } from './cardDeckTypes';
+
+interface CardDeckViewProps {
+  currentCard: Word;
+}
 
 /**
  * CardDeckView component
  */
-export default function CardDeckView() {
-  const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
-  const currentCard = cardDeckState.cardDeck[cardDeckState.currentIndex];
-
+export default function CardDeckView({ currentCard }: CardDeckViewProps) {
   /**
    * Destructure styles
    */
   const { wordCardAnimatedView } = cardDeckViewStyles;
-
-  /**
-   * Get a card deck (async)
-   */
-  useEffect(() => {
-    cardDeckDispatch({ type: 'GET_DECK' });
-  }, []);
-
   /**
    * Render the card deck
    */
-  return (
-    <CardDeckContext.Provider value={{
-      cardDeckState,
-      cardDeckDispatch
-    }}>
-      {
-        currentCard && (
-          <Animated.View
-            key={currentCard.id}
-            entering={SlideInRight.duration(200)}
-            exiting={SlideOutLeft.duration(200)}
-            style={wordCardAnimatedView}
-          >
-            <WordCardContainer
-              word={currentCard}
-              isCurrent={true}
-            />
-          </Animated.View>
-        )
-      }
-    </CardDeckContext.Provider>
-  );
+  return ((
+    <Animated.View
+      key={currentCard.id}
+      entering={SlideInRight.duration(200)}
+      exiting={SlideOutLeft.duration(200)}
+      style={wordCardAnimatedView}
+    >
+      <WordCardContainer
+        word={currentCard}
+        isCurrent={true}
+      />
+    </Animated.View>
+  ));
 }
 
 /**

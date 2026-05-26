@@ -7,8 +7,9 @@ import { CardDeck } from './deckTyps';
  * it seemed appropriate for the theme
  * to be about a coffee shop.
  */
-const DeckCoffeeShop: CardDeck = {
+export const DeckCoffeeShop: CardDeck = {
 	CEFR: ['A1'],
+	words: [],
 	wordIds: [
 		'word_interjection_salut',
 		'word_noun_cafe',

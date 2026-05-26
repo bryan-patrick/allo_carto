@@ -1,9 +1,10 @@
 /**
  * The context for handling canonical card data and state
  */
+import { CardDeck } from '@/data/french/decks/deckTyps';
 import { createContext, type Dispatch } from 'react';
 import { CardDeckAction } from './cardDeckReducer';
-import { initialWordState, Word } from './cardDeckTypes';
+import { initialWordState } from './cardDeckTypes';
 
 /**
  * Typing
@@ -16,7 +17,7 @@ export interface CardDeckContextType {
 export interface CardDeckStateProps {
 	currentIndex: number;
 	currentId: string;
-	cardDeck: Word[];
+	cardDeck: CardDeck;
 }
 
 /**
@@ -25,7 +26,11 @@ export interface CardDeckStateProps {
 export const initialCardDeckState: CardDeckStateProps = {
 	currentIndex: 0,
 	currentId: '',
-	cardDeck: [initialWordState],
+	cardDeck: {
+		CEFR: [],
+		wordIds: [],
+		words: [initialWordState],
+	},
 };
 
 export const CardDeckContext = createContext<CardDeckContextType>({
