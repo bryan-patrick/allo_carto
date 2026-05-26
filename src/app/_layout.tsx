@@ -2,9 +2,10 @@ import { ThemeProvider } from "@react-navigation/native";
 import { useFonts } from 'expo-font';
 import { Stack } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
-import { useReducer } from "react";
+import { Suspense, useReducer } from "react";
 import { CardDeckContext, initialCardDeckState } from "../components/CardDeck/cardDeckContext";
 import { cardDeckReducer } from "../components/CardDeck/cardDeckReducer";
+import Loader from "../components/Loader";
 import { getDB, getTables } from "../db/interface";
 import alloTheme from './alloTheme';
 
@@ -43,24 +44,30 @@ export default function AppLayout() {
         cardDeckState,
         cardDeckDispatch
       }}>
-        <SQLiteProvider databaseName="allo_carto.db" onInit={initDB}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{
-              headerShown: false,
-              headerTitle: 'Home'
-            }} />
-            <Stack.Screen name="(routes)/CardDeck" options={{
-              headerShown: true,
-              headerBackTitle: 'Home',
-              headerTitle: 'Review a deck'
-            }} />
-            <Stack.Screen name="(routes)/ChooseCardDeck" options={{
-              headerShown: true,
-              headerBackTitle: 'Home',
-              headerTitle: 'Choose a Deck'
-            }} />
-          </Stack>
-        </SQLiteProvider>
+        <Suspense fallback={<Loader />}>
+          <SQLiteProvider
+            databaseName="allo_carto.db"
+            onInit={initDB}
+            useSuspense
+          >
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{
+                headerShown: false,
+                headerTitle: 'Home'
+              }} />
+              <Stack.Screen name="(routes)/CardDeck" options={{
+                headerShown: true,
+                headerBackTitle: 'Choose',
+                headerTitle: 'Review a deck'
+              }} />
+              <Stack.Screen name="(routes)/ChooseCardDeck" options={{
+                headerShown: true,
+                headerBackTitle: 'Home',
+                headerTitle: 'Choose a Deck'
+              }} />
+            </Stack>
+          </SQLiteProvider>
+        </Suspense>
       </CardDeckContext.Provider>
     </ThemeProvider>
   )
