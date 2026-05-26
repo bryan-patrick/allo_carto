@@ -69,3 +69,12 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 - DB sqlite? Nous besoin quelque chose sur le frontend. Ce sera cree avec decks premiere et les words apre.
 - Rarate et styles des cartes. Les cartes plus rares ont des styles plus cool.
 - Idea pour deck du rare, quand un personne besoin mots nouveaux, cest bonne pour mots le personne ne trouve pa
+
+## TODO
+
+Real quick so I don't forget...
+
+- React suspense
+- Loaders
+- Style the choosedeck page
+- testing lib
