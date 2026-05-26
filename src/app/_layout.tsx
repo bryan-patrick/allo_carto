@@ -1,6 +1,8 @@
 import { Stack } from "@/node_modules/expo-router";
 import { ThemeProvider } from "@react-navigation/native";
 import { useFonts } from 'expo-font';
+import { useEffect } from "react";
+import getDB from "../db/getDB";
 import alloTheme from './alloTheme';
 /**
  * AppLayout Component
@@ -11,7 +13,11 @@ import alloTheme from './alloTheme';
 export default function AppLayout() {
   useFonts({
     'lexend-variable': require('./assets/fonts/lexend-variable.ttf')
-  })
+  });
+
+  useEffect(() => {
+    getDB();
+  }, [])
 
   /**
    * The (tabs) dir are navigable routes on the bottom bar
