@@ -12,7 +12,7 @@ import { Pressable, Text, View } from "react-native";
  * Grid - Card grid
  * Card - Need a card component with all of this...probably just that actually...idk yet.
  */
-export default function ChooseDeck() {
+export default function ChooseCardDeck() {
   const { currentCard, cardDeckDispatch } = useCardDeck();
   const [hasDeck, setHasDeck] = useState<boolean>(false);
 
@@ -38,7 +38,7 @@ export default function ChooseDeck() {
       </View>
       {hasDeck && (
         <LinkButton
-          screen="(routes)/Deck"
+          screen="(routes)/CardDeck"
           disabled={!currentCard}
         >
           Do the deck!

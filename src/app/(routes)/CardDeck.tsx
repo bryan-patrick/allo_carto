@@ -4,7 +4,7 @@ import { useCardDeck } from "@/src/components/CardDeck/useCardDeck";
 /**
  * Deck view - A route wrapper in (routes)
  */
-export default function Deck() {
+export default function CardDeck() {
   const { currentCard } = useCardDeck();
 
   return (

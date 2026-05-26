@@ -139,6 +139,11 @@ export async function deleteDB() {
 
 /**
  * Get a deck
+ *
+ * TODO:
+ * Need to shuffle
+ * Need to include lemma's that are unique
+ * Need to limit amount
  */
 export async function getDeck(deck: CardDeck): Promise<CardDeck | undefined> {
 	const quests: string = deck.wordIds.map(() => '?').join(',');

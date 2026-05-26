@@ -76,11 +76,12 @@ export default function WordCardButton({
   const isDisabled = useMemo(() => {
     if (
       cardState.progress === 'WARNING' ||
-      !cardState.selectedArticle ||
+      (currentCard.englishArticle && !cardState.selectedArticle) ||
       !cardState.selectedWord) {
       return true;
     } return false;
   }, [
+    currentCard.englishArticle,
     cardState.progress,
     cardState.selectedArticle,
     cardState.selectedWord
