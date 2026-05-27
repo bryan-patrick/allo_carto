@@ -119,11 +119,11 @@ export default function LinkButton({
     setIsPressed(true);
     tapPlayer.seekTo(0);
     tapPlayer.play();
-    handler();
   }
 
   function handlePressOut() {
     setIsPressed(false);
+    handler();
   }
 
   /**

@@ -1,6 +1,6 @@
 import { DeckCoffeeShop } from "@/data/french/decks/deck_a1__coffee_shop";
 import DeckBox from "@/src/components/DeckBox";
-import { StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 
 /**
  * Add more decks here
@@ -23,11 +23,12 @@ export default function ChooseCardDeck() {
    * Render the card grid
    */
   return (
-    <View style={cardGridStyle}>
-      {decks.length > 0 && (
-        decks.map(deck => <DeckBox key={deck.title} deck={deck} />)
-      )}
-    </View>
+    <FlatList
+      contentContainerStyle={cardGridStyle}
+      data={decks}
+      renderItem={({ item }) => <DeckBox deck={item} />}
+      keyExtractor={(deck, index) => `${deck.title}-${index}`}
+    />
   );
 }
 

@@ -2,6 +2,7 @@ import { CardDeck } from '@/data/french/decks/deckTyps';
 import { seedWords } from '@/data/french/words';
 import * as SQLite from 'expo-sqlite';
 import { CardRarity, CEFR, Word } from '../components/CardDeck/cardDeckTypes';
+import shuffleArray from '../util/shuffleArray';
 
 /**
  * Typing
@@ -100,21 +101,35 @@ export async function getTables() {
 						id,
 						frenchWord,
 						englishWords,
+						frenchArticle,
+						englishArticle,
 						pronunciation,
 						isVulgar,
 						CEFR,
-						userScore
+						lemmaId,
+						tense,
+						gender,
+						partOfSpeech,
+						userScore,
+						rarity
 					)
-					VALUES (?, ?, ?, ?, ?, ?, ?)
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				`,
 				[
 					word.id,
 					word.frenchWord,
 					JSON.stringify(word.englishWords),
+					word.frenchArticle ?? null,
+					word.englishArticle ?? null,
 					word.pronunciation,
 					word.isVulgar ? 1 : 0,
 					word.CEFR,
+					word.lemmaId ?? null,
+					word.tense ?? null,
+					word.gender ?? null,
+					word.partOfSpeech ?? null,
 					word.userScore,
+					word.rarity ?? null,
 				],
 			);
 		}
@@ -145,13 +160,15 @@ export async function deleteDB() {
  * Need to include lemma's that are unique
  * Need to limit amount
  */
-export async function getDeck(deck: CardDeck): Promise<CardDeck | undefined> {
+export async function getDeck(
+	deck: CardDeck,
+	amount: number = 8,
+): Promise<CardDeck | undefined> {
 	const quests: string = deck.wordIds.map(() => '?').join(',');
 
 	try {
 		await getTables();
 		const database = await getDB();
-
 		const rows = await database.getAllAsync<WordRow>(
 			`
 			SELECT *
@@ -173,9 +190,25 @@ export async function getDeck(deck: CardDeck): Promise<CardDeck | undefined> {
 				isVulgar: Boolean(row.isVulgar),
 			})) ?? [];
 
+		/**
+		 * Let's build decks with only one card per lemma (infinitives, etc.)
+		 * E.G. we don't want both manger and mange
+		 */
+		const seenLemmaIds = new Set<string>();
+
+		const uniqueLemmaWords = words.filter(word => {
+			if (seenLemmaIds.has(word.lemmaId ?? word.id)) return false;
+			return Boolean(seenLemmaIds.add(word.lemmaId ?? word.id));
+		});
+
+		/**
+		 * Shuffle!
+		 */
+		const shuffledUniqueLemmaWords = shuffleArray(uniqueLemmaWords);
+
 		return {
 			...deck,
-			words,
+			words: shuffledUniqueLemmaWords.slice(0, amount),
 		};
 	} catch (error) {
 		console.error('Could not retrieve deck:', error);

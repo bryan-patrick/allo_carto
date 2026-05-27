@@ -40,7 +40,5 @@ export default async function getFillerWords({
 	correctWords,
 	words = mockWords,
 }: GetFillerWordsProps) {
-	await sleep(10);
-
 	return filterFillerWords({ amount, correctWords, words });
 }

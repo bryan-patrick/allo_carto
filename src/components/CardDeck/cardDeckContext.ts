@@ -27,6 +27,8 @@ export const initialCardDeckState: CardDeckStateProps = {
 	currentIndex: 0,
 	currentId: '',
 	cardDeck: {
+		title: '',
+		description: '',
 		CEFR: [],
 		wordIds: [],
 		words: [initialWordState],
