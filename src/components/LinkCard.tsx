@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import { Text, View } from "react-native";
-import styles, { colors } from "../app/styles";
+import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../app/styles";
 import LinkButton from "./LinkButton";
 
 /**
@@ -52,3 +52,31 @@ export default function LinkCard({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  h2: {
+    fontSize: 20,
+    fontWeight: 700,
+    color: colors.light.text,
+  },
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+  },
+  colBetween: {
+    gap: 12,
+  },
+  cardView: {
+    backgroundColor: colors.light.background,
+    padding: 16,
+    borderRadius: 8,
+    gap: 16,
+  },
+  cardText: {
+    color: colors.dark.text,
+    fontWeight: 500,
+    fontSize: 16,
+  },
+})

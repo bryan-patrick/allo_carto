@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import LinkCard from '../../components/LinkCard';
 import SVGCards from '../../components/SVG/SVGCards';
-import styles, { colors } from '../styles';
+import { colors } from '../styles';
 
 /**
  * HomeScreen view - Index of the (tabs) dir routes
@@ -22,3 +22,12 @@ export default function HomeScreen() {
   );
 }
 
+/**
+ * Styles
+ */
+const styles = StyleSheet.create({
+  container: {
+    margin: 24,
+    gap: 24,
+  },
+});
