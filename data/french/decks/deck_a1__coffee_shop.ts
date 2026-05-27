@@ -8,7 +8,10 @@ import { CardDeck } from './deckTyps';
  * to be about a coffee shop.
  */
 export const DeckCoffeeShop: CardDeck = {
-	CEFR: ['A1'],
+	title: 'Coffee Shop',
+	description:
+		'Explore french where water meets beans. Words related to everything in a coffee house.',
+	CEFR: ['A1', 'A2'],
 	words: [],
 	wordIds: [
 		'word_interjection_salut',

@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: colors.light.text,
-    fontWeight: '800',
+    fontWeight: 800,
     fontSize: 16,
   },
   hoveredLinkButton: {

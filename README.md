@@ -78,3 +78,9 @@ Real quick so I don't forget...
 - deck results route
 - user/stats table
 - testing lib
+
+## Free art and assets credits
+
+### Images
+
+- Barista Coffee (https://pixabay.com/vectors/barista-coffee-coffee-art-9926554/) by tanrica
