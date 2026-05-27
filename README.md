@@ -74,5 +74,7 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 
 Real quick so I don't forget...
 
-- Style the choosedeck page
+- deck size, filtering
+- deck results route
+- user/stats table
 - testing lib
