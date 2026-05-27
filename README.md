@@ -81,7 +81,3 @@ Real quick so I don't forget...
 - !!!! refactor article system to be answer/slot system
 
 ## Free art and assets credits
-
-### Images
-
-- Barista Coffee (https://pixabay.com/vectors/barista-coffee-coffee-art-9926554/) by tanrica
