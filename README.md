@@ -74,10 +74,10 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 
 Real quick so I don't forget...
 
-- deck size, filtering
 - deck results route
 - user/stats table
 - testing lib
+- App icon and cleaning out the images dir
 
 ## Free art and assets credits
 

@@ -273,6 +273,10 @@ const mappedWordsStyles = StyleSheet.create({
   },
   wcsButton: {
     flexGrow: 1,
+    display: 'flex',
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'transparent',
