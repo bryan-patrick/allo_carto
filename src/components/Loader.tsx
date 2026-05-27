@@ -81,6 +81,9 @@ function animateCard(
     );
 }
 
+/**
+ * Loader Component
+ */
 export default function Loader() {
   const {
     container,

@@ -74,7 +74,5 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 
 Real quick so I don't forget...
 
-- React suspense
-- Loaders
 - Style the choosedeck page
 - testing lib
