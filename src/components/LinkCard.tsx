@@ -48,7 +48,9 @@ export default function LinkCard({
       <LinkButton
         screen={screen}
         params={{ href: '/' }}
-      >{linkText}</LinkButton>
+      >
+        {linkText}
+      </LinkButton>
     </View>
   );
 }

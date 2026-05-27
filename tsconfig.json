@@ -2,6 +2,7 @@
 	"extends": "expo/tsconfig.base",
 	"compilerOptions": {
 		"strict": true,
+		"types": ["jest"],
 		"paths": {
 			"@/*": ["./*"]
 		}
@@ -11,6 +12,6 @@
 		"**/*.tsx",
 		".expo/types/**/*.ts",
 		"expo-env.d.ts",
-		"data/french/decks/deck_a1__coffee_shopts"
+		"data/french/decks/deck_a1__coffee_shops"
 	]
 }
