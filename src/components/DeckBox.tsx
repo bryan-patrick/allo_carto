@@ -81,8 +81,8 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
                 fontSize={20}
                 style={titleStyle}
                 colors={[
-                  colors.dark.text,
                   colors.dark.primary,
+                  colors.dark.text,
                 ]}
               />
             </View>
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   gradientTextContainer: {
-    paddingTop: 4,
+    paddingTop: 8,
     flexShrink: 1,
     paddingLeft: 12,
     display: 'flex',

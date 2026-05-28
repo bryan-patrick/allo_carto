@@ -3,6 +3,9 @@ import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import WordCardContainer from '../WordCard/WordCardContainer';
 import { Word } from './cardDeckTypes';
 
+/**
+ * Typing
+ */
 interface CardDeckViewProps {
   currentCard: Word;
 }
