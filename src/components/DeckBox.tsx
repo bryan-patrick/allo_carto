@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { useCallback } from "react";
 import { ColorValue, ImageBackground, StyleSheet, Text, View } from "react-native";
 import { colors } from "../app/styles";
+import GradientText from "./GradientText";
 
 /**
  * Image src
@@ -44,6 +45,7 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
     cardInnerStyle,
     cardHeaderStyle,
     titleContainer,
+    gradientTextContainer,
     titleStyle,
     CEFRGradientStyle,
     CEFRLabelStyle,
@@ -73,7 +75,17 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
       <View style={cardInnerStyle}>
         <View style={cardHeaderStyle}>
           <View style={titleContainer}>
-            <Text style={titleStyle}>{title}</Text>
+            <View style={gradientTextContainer}>
+              <GradientText
+                text={title}
+                fontSize={20}
+                style={titleStyle}
+                colors={[
+                  colors.dark.text,
+                  colors.dark.primary,
+                ]}
+              />
+            </View>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -108,7 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.background,
     overflow: 'hidden',
     borderRadius: 16,
-    borderWidth: 4,
+    borderWidth: 6,
     borderColor: colors.light.border,
     boxShadow: `0 16px 0 ${colors.dark.border}`
   },
@@ -124,14 +136,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     maxWidth: '100%',
   },
+  gradientTextContainer: {
+    paddingTop: 4,
+    flexShrink: 1,
+    paddingLeft: 12,
+    display: 'flex',
+    justifyContent: 'center'
+  },
   titleStyle: {
     color: colors.dark.text,
     fontSize: 20,
     fontWeight: 800,
-    paddingLeft: 12,
     wordWrap: 'wrap',
-    flexShrink: 1,
-    paddingTop: 8,
   },
   CEFRGradientStyle: {
     overflow: 'hidden',
