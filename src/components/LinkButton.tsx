@@ -20,7 +20,6 @@ interface LinkButtonProps extends PressableProps {
   SVGElement?: ReactElement;
   handler?: Function;
   children?: ReactNode;
-  action?: Readonly<any>;
   params?: LinkProps;
   screen?: string;
   href?: string;
@@ -33,7 +32,6 @@ interface LinkButtonProps extends PressableProps {
  */
 export default function LinkButton({
   handler = () => { },
-  action,
   screen,
   params,
   href,
@@ -67,7 +65,6 @@ export default function LinkButton({
   const linkProps = useLinkProps({
     screen: screen ?? '',
     params: params ?? {},
-    action,
     href
   });
   const [isHovered, setIsHovered] = useState(false);

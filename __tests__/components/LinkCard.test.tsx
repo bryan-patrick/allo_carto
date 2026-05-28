@@ -8,13 +8,15 @@ import { render } from '@testing-library/react-native';
  */
 describe('<LinkCard />', () => {
   test('The loader is rendering the correct text', () => {
-    const { getByText } = render(<LinkCard
-      title="Testing title"
-      description="Testing description"
-      screen="Testing screen"
-      linkText="Testing link text"
-      SVGElement={<SVGBarista />}
-    />);
+    const { getByText } = render(
+      <LinkCard
+        title="Testing title"
+        description="Testing description"
+        screen="Testing screen"
+        linkText="Testing link text"
+        SVGElement={<SVGBarista />}
+      />
+    );
 
     /**
      * Rendered by LinkCard
