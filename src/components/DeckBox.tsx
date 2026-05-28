@@ -11,7 +11,7 @@ import { colors } from "../app/styles";
 /**
  * Image src
  */
-const coffeeItems = require("@/src/app/assets/images/decks/coffee-items.jpg");
+const coffeeHouse = require("@/src/app/assets/images/decks/coffee-house.jpg");
 
 /**
  * Typing
@@ -86,7 +86,7 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
           </View>
           <Text style={descriptionStyle}>{description}</Text>
         </View>
-        <ImageBackground source={coffeeItems} style={imageBackgroundStyle} />
+        <ImageBackground source={coffeeHouse} style={imageBackgroundStyle} />
         <View style={cardFooterStyle}>
           <LinkButton handler={() => handleDeckSelect(deck)}>
             <Text>Review this deck →</Text>
