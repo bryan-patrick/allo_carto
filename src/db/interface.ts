@@ -1,6 +1,6 @@
-import { CardDeck } from '@/data/french/decks/deckTyps';
 import { seedWords } from '@/data/french/words';
 import * as SQLite from 'expo-sqlite';
+import type { CardDeck } from '../components/CardDeck/cardDeckTypes';
 import { CardRarity, CEFR, Word } from '../components/CardDeck/cardDeckTypes';
 import shuffleArray from '../util/shuffleArray';
 
@@ -162,7 +162,7 @@ export async function deleteDB() {
  */
 export async function getDeck(
 	deck: CardDeck,
-	amount: number = 8,
+	amount: number = 2,
 ): Promise<CardDeck | undefined> {
 	const quests: string = deck.wordIds.map(() => '?').join(',');
 

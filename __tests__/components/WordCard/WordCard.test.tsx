@@ -8,12 +8,22 @@ import WordCardFront from '@/src/components/WordCard/WordCardFront';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
 import { render, waitFor } from '@testing-library/react-native';
+import { router } from 'expo-router';
 import { ReactNode } from 'react';
 
 /**
  * Mock the context
  */
 jest.mock('@/src/components/WordCard/useWordCardUI');
+
+/**
+ * Mock the router
+ */
+jest.mock('expo-router', () => ({
+  router: {
+    push: jest.fn(),
+  },
+}));
 
 /**
  * Mock front face.
@@ -41,6 +51,7 @@ jest.mock('@/src/components/WordCard/WordCardBack', () => {
 const mockUseWordCardUI = jest.mocked(useWordCardUI);
 const mockWordCardFront = jest.mocked(WordCardFront);
 const mockWordCardBack = jest.mocked(WordCardBack);
+const mockRouterPush = jest.mocked(router.push);
 
 function renderWithAFakeDispatchSoWeCanDoActions(
   children: ReactNode,
@@ -65,6 +76,7 @@ describe('<WordCard />', () => {
   beforeEach(() => {
     mockWordCardFront.mockClear();
     mockWordCardBack.mockClear();
+    mockRouterPush.mockClear();
     mockUseWordCardUI.mockReset();
   });
 
@@ -104,7 +116,7 @@ describe('<WordCard />', () => {
   /**
    * Test completion
    */
-  test('moves on to the next card when the current one completes', async () => {
+  test('routes to the finished deck when the last card completes', async () => {
     mockUseWordCardUI.mockReturnValue({
       cardState: {
         ...initialWordCardState,
@@ -113,15 +125,13 @@ describe('<WordCard />', () => {
       wordCardUIDispatch: jest.fn(),
     });
 
-    const { cardDeckDispatch } = renderWithAFakeDispatchSoWeCanDoActions(
-      <WordCard isCurrent={true} />,
-    );
+    renderWithAFakeDispatchSoWeCanDoActions(<WordCard isCurrent={true} />);
 
     /**
-     * Make sure we dispatched the next card
+     * Make sure we go to the finished deck
      */
     await waitFor(() => {
-      expect(cardDeckDispatch).toHaveBeenCalledWith({ type: 'NEXT_CARD' });
+      expect(mockRouterPush).toHaveBeenCalledWith('/FinishedDeck');
     });
   });
 });

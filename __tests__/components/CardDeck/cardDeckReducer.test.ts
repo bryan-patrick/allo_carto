@@ -1,6 +1,6 @@
-import { CardDeck } from '@/data/french/decks/deckTyps';
 import { CardDeckStateProps } from '@/src/components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '@/src/components/CardDeck/cardDeckReducer';
+import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { Word } from '@/src/components/CardDeck/cardDeckTypes';
 
 /**

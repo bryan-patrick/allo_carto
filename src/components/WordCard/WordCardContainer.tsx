@@ -34,7 +34,6 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
     initialWordCardState,
   );
 
-
   /**
     * Side effects
     * Load the new card and its state.

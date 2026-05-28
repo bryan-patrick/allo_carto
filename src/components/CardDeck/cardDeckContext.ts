@@ -1,9 +1,9 @@
 /**
  * The context for handling canonical card data and state
  */
-import { CardDeck } from '@/data/french/decks/deckTyps';
 import { createContext, type Dispatch } from 'react';
 import { CardDeckAction } from './cardDeckReducer';
+import type { CardDeck } from './cardDeckTypes';
 import { initialWordState } from './cardDeckTypes';
 
 /**

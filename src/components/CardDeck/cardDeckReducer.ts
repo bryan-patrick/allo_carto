@@ -1,5 +1,5 @@
-import { CardDeck } from '@/data/french/decks/deckTyps';
 import { CardDeckStateProps } from './cardDeckContext';
+import type { CardDeck } from './cardDeckTypes';
 
 /**
  * Typing

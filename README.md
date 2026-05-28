@@ -78,6 +78,7 @@ Real quick so I don't forget...
 - user/stats table
 - testing lib
 - App icon and cleaning out the images dir
-- !!!! refactor article system to be answer/slot system
+- Deck progress
+- Word cards/decks and phrases will be separate
 
 ## Free art and assets credits

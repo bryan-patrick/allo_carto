@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { type LayoutChangeEvent, StyleSheet, TextStyle, View } from 'react-native';
 import {
@@ -33,7 +34,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
    * State
    */
   const { cardState } = useWordCardUI();
-  const { cardDeckDispatch } = useContext(CardDeckContext);
+  const { cardDeckState, cardDeckDispatch } = useContext(CardDeckContext);
   const [feedbackStyle, setFeedbackStyle] = useState({});
   const [articleSlotStyle, setArticleSlotStyle] = useState<TextStyle>({});
   const [wordSlotStyle, setWordSlotStyle] = useState<TextStyle>({});
@@ -129,9 +130,14 @@ export default function WordCard({ isCurrent }: WordCardProps) {
    */
   useEffect(() => {
     if (isCurrent && cardState.stage === 'COMPLETED') {
-      cardDeckDispatch({ type: 'NEXT_CARD' });
+      if (cardDeckState.currentIndex === cardDeckState.cardDeck.words.length - 1) {
+        router.push('/FinishedDeck');
+      } else {
+        cardDeckDispatch({ type: 'NEXT_CARD' });
+      }
     }
   }, [
+    cardDeckState,
     isCurrent,
     cardState.stage,
     cardDeckDispatch

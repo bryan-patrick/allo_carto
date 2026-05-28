@@ -4,6 +4,14 @@
 export type CardRarity = 'Common' | 'Rare' | 'Epic' | 'Legendary';
 export type CEFR = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
+export interface CardDeck {
+	title: string;
+	CEFR: CEFR[];
+	description: string;
+	wordIds: string[];
+	words: Word[];
+}
+
 /**
  * Word type
  * As a general rule, ids should always be slug-safe (no accents or anything)

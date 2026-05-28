@@ -1,8 +1,8 @@
-import { CardDeck } from '@/data/french/decks/deckTyps';
 import {
   CardDeckContext,
   CardDeckStateProps,
 } from '@/src/components/CardDeck/cardDeckContext';
+import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import { renderHook } from '@testing-library/react-native';

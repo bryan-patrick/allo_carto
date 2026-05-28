@@ -1,4 +1,4 @@
-import { CardDeck } from './deckTyps';
+import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 
 /**
  * Our first deck!

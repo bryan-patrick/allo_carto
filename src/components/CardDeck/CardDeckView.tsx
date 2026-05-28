@@ -18,6 +18,7 @@ export default function CardDeckView({ currentCard }: CardDeckViewProps) {
    * Destructure styles
    */
   const { wordCardAnimatedView } = cardDeckViewStyles;
+
   /**
    * Render the card deck
    */
