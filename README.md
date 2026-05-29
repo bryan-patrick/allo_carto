@@ -83,4 +83,5 @@ Real quick so I don't forget...
 
 ## Free art and assets credits
 
-<a href="https://storyset.com/people">People illustrations by Storyset</a>
+- [unDraw](https://undraw.co/)
+- [Fabnel LDN — Vibrant aisle in supermarket with drinks display (Pexels)](https://www.pexels.com/photo/vibrant-aisle-in-supermarket-with-drinks-display-33690927/) — Temporary artwork for the Grocery Store deck.

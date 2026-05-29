@@ -13,7 +13,7 @@ const coffeeHouse = require('@/src/app/assets/images/decks/coffee-house.jpg');
  * to be about a coffee shop.
  */
 export const DeckCoffeeShop: CardDeck = {
-	title: 'Coffee Shop in the world',
+	title: 'Coffee Shop',
 	description:
 		'Explore french where water meets beans. Words related to everything in a coffee house.',
 	CEFR: ['A1', 'B1'],
