@@ -1,7 +1,7 @@
 /**
  * Aiming for WCAG AAA Dark | Light & Text
  */
-export const colors = {
+const colors = {
 	dark: {
 		primary: '#1C5B5E',
 		primaryActive: '#6C8384',
@@ -50,3 +50,5 @@ export const colors = {
 		memorized: '#00ffcf',
 	},
 };
+
+export default colors;

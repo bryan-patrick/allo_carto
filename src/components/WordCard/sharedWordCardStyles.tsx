@@ -1,4 +1,4 @@
-import { colors } from "@/src/app/styles"
+import colors from "@/src/app/styles"
 import { StyleSheet } from "react-native"
 
 /**

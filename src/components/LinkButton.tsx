@@ -4,7 +4,7 @@ import { LinkProps } from 'expo-router';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { colors } from '../app/styles';
+import colors from '../app/styles';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -116,11 +116,11 @@ export default function LinkButton({
     setIsPressed(true);
     tapPlayer.seekTo(0);
     tapPlayer.play();
-    handler();
   }
 
   function handlePressOut() {
     setIsPressed(false);
+    handler();
   }
 
   /**

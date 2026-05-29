@@ -35,8 +35,9 @@ describe('<WordCardHeader />', () => {
         currentId: 'word_noun_cafe',
         cardDeck: {
           title: 'Testing deck',
-          description: 'A deck for tests',
           CEFR: ['A1'],
+          description: 'A deck for tests',
+          image: undefined,
           wordIds: ['word_noun_cafe'],
           words: [],
         },

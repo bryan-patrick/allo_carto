@@ -5,14 +5,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
 import { useCallback } from "react";
 import { ColorValue, ImageBackground, StyleSheet, Text, View } from "react-native";
-import { colors } from "../app/styles";
+import colors from "../app/styles";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import GradientText from "./GradientText";
-
-/**
- * Image src
- */
-const coffeeHouse = require("@/src/app/assets/images/decks/coffee-house.jpg");
 
 /**
  * Typing
@@ -30,6 +25,7 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
     title,
     description,
     CEFR,
+    image
   } = deck;
 
   const CEFRGradient: readonly [ColorValue, ColorValue] = [
@@ -80,10 +76,7 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
                 text={title}
                 fontSize={20}
                 style={titleStyle}
-                colors={[
-                  colors.dark.primary,
-                  colors.dark.text,
-                ]}
+                colors={[colors.dark.primary, colors.dark.text]}
               />
             </View>
             <LinearGradient
@@ -98,7 +91,7 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
           </View>
           <Text style={descriptionStyle}>{description}</Text>
         </View>
-        <ImageBackground source={coffeeHouse} style={imageBackgroundStyle} />
+        <ImageBackground source={image} style={imageBackgroundStyle} />
         <View style={cardFooterStyle}>
           <LinkButton handler={() => handleDeckSelect(deck)}>
             <Text>Review this deck →</Text>

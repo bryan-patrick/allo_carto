@@ -1,5 +1,5 @@
 import { DarkTheme, Theme } from '@react-navigation/native';
-import { colors } from './styles';
+import colors from './styles';
 
 /**
  * This file is meant to be used sparingly.

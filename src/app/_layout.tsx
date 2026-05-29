@@ -19,7 +19,8 @@ export default function AppLayout() {
   const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
 
   useFonts({
-    'lexend-variable': require('./assets/fonts/lexend-variable.ttf')
+    'lexend-variable': require('./assets/fonts/lexend-variable.ttf'),
+    'red-hat-variable': require('./assets/fonts/red-hat-variable.ttf'),
   });
 
   /**
@@ -53,21 +54,23 @@ export default function AppLayout() {
             <Stack>
               <Stack.Screen name="(tabs)" options={{
                 headerShown: false,
-                headerTitle: 'Home'
+                headerTitle: 'Home',
               }} />
               <Stack.Screen name="(routes)/CardDeck" options={{
                 headerShown: true,
-                headerBackTitle: 'Choose',
+                headerBackTitle: 'Back',
+                headerBackButtonDisplayMode: 'minimal',
                 headerTitle: 'Review a deck'
               }} />
               <Stack.Screen name="(routes)/ChooseCardDeck" options={{
                 headerShown: true,
                 headerBackTitle: 'Home',
-                headerTitle: 'Choose a Deck'
+                headerTitle: 'Choose a Deck',
+                headerBackButtonDisplayMode: 'minimal',
               }} />
-              <Stack.Screen name="(routes)/FinishedDeck" options={{
+              <Stack.Screen name="(routes)/DeckResults" options={{
                 headerShown: true,
-                headerTitle: 'Deck finished!',
+                headerTitle: 'Results',
                 headerBackVisible: false
               }} />
             </Stack>

@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native';
+
 /**
  * Typing
  */
@@ -10,6 +12,7 @@ export interface CardDeck {
 	description: string;
 	wordIds: string[];
 	words: Word[];
+	image: ImageSourcePropType | undefined;
 }
 
 /**

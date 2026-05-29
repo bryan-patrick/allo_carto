@@ -1,4 +1,4 @@
-import { colors } from '@/src/app/styles';
+import colors from '@/src/app/styles';
 import * as Haptics from 'expo-haptics';
 import { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';

@@ -10,7 +10,7 @@ import Animated, {
   withSequence,
   withTiming
 } from "react-native-reanimated";
-import { colors } from "../app/styles";
+import colors from "../app/styles";
 
 /**
  * Animation consts

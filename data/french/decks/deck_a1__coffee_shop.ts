@@ -1,6 +1,11 @@
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 
 /**
+ * Image src
+ */
+const coffeeHouse = require('@/src/app/assets/images/decks/coffee-house.jpg');
+
+/**
  * Our first deck!
  *
  * Since I'm in a coffee shop right now,
@@ -13,6 +18,7 @@ export const DeckCoffeeShop: CardDeck = {
 		'Explore french where water meets beans. Words related to everything in a coffee house.',
 	CEFR: ['A1', 'A2'],
 	words: [],
+	image: coffeeHouse,
 	wordIds: [
 		'word_interjection_salut',
 		'word_noun_cafe',

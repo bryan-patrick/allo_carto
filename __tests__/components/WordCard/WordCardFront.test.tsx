@@ -41,6 +41,7 @@ describe('<WordCardFront />', () => {
           title: 'Testing deck',
           CEFR: ['A1'],
           description: 'A deck for tests',
+          image: undefined,
           wordIds: ['word_noun_cafe'],
           words: [],
         },

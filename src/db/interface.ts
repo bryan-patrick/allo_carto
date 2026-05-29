@@ -162,7 +162,7 @@ export async function deleteDB() {
  */
 export async function getDeck(
 	deck: CardDeck,
-	amount: number = 2,
+	amount: number = 6,
 ): Promise<CardDeck | undefined> {
 	const quests: string = deck.wordIds.map(() => '?').join(',');
 

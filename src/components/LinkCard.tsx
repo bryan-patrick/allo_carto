@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../app/styles";
+import colors from "../app/styles";
 import LinkButton from "./LinkButton";
 
 /**
@@ -24,26 +24,44 @@ export default function LinkCard({
   screen,
   linkText,
 }: CardProps) {
-  let heading = <Text style={styles.h2}>{title}</Text>;
+
+  /**
+   * Destructure styles
+   */
+  const {
+    titleStyle,
+    rowBetweenStyle,
+    colBetweenStyle,
+    cardTextStyle,
+    cardViewStyle
+  } = styles;
+
+  /**
+   * Different headings for when using an SVG or not 
+   */
+  let heading = <Text style={titleStyle}>{title}</Text>;
 
   if (SVGElement) {
     heading = (
-      <View style={styles.rowBetween}>
-        <View style={{ ...styles.colBetween, flexShrink: 1, }}>
-          <Text style={{ ...styles.h2, color: colors.dark.text }}>{title}</Text>
+      <View style={rowBetweenStyle}>
+        <View style={colBetweenStyle}>
+          <Text style={titleStyle}>{title}</Text>
           {description && (
-            <Text style={styles.cardText}>{description}</Text>
+            <Text style={cardTextStyle}>{description}</Text>
           )}
         </View>
-        <View style={styles.colBetween}>
+        <View style={colBetweenStyle}>
           {SVGElement}
         </View>
       </View>
     );
   }
 
+  /**
+   * Render the LinkCard
+   */
   return (
-    <View style={styles.cardView}>
+    <View style={cardViewStyle}>
       {heading}
       <LinkButton
         screen={screen}
@@ -55,28 +73,32 @@ export default function LinkCard({
   );
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
-  h2: {
+  titleStyle: {
     fontSize: 20,
     fontWeight: 700,
-    color: colors.light.text,
+    color: colors.dark.text,
   },
-  rowBetween: {
+  rowBetweenStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 12,
   },
-  colBetween: {
+  colBetweenStyle: {
     gap: 12,
+    flexShrink: 1
   },
-  cardView: {
+  cardViewStyle: {
     backgroundColor: colors.light.background,
     padding: 16,
     borderRadius: 8,
     gap: 16,
   },
-  cardText: {
+  cardTextStyle: {
     color: colors.dark.text,
     fontWeight: 500,
     fontSize: 16,
