@@ -4,7 +4,7 @@ import { getDeck } from "@/src/db/interface";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
 import { useCallback } from "react";
-import { ColorValue, ImageBackground, StyleSheet, Text, View } from "react-native";
+import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import colors from "../app/styles";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import GradientText from "./GradientText";
@@ -28,9 +28,14 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
     image
   } = deck;
 
-  const CEFRGradient: readonly [ColorValue, ColorValue] = [
+  const CEFRGradientLight: readonly [string, string] = [
     colors.light.CEFR[CEFR[0]],
     colors.light.CEFR[CEFR.at(-1)!],
+  ];
+
+  const CEFRGradientDark: readonly [string, string] = [
+    colors.dark.CEFR[CEFR[0]],
+    colors.dark.CEFR[CEFR.at(-1)!],
   ];
 
   /**
@@ -76,13 +81,13 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
                 text={title}
                 fontSize={20}
                 style={titleStyle}
-                colors={[colors.dark.primary, colors.dark.text]}
+                colors={CEFRGradientDark}
               />
             </View>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              colors={CEFRGradient}
+              colors={CEFRGradientLight}
               style={CEFRGradientStyle}
             >
               <Text style={CEFRLabelStyle}>CEFR</Text>

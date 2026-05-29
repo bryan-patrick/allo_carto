@@ -16,7 +16,7 @@ export const DeckCoffeeShop: CardDeck = {
 	title: 'Coffee Shop',
 	description:
 		'Explore french where water meets beans. Words related to everything in a coffee house.',
-	CEFR: ['A1', 'A2'],
+	CEFR: ['A1', 'B1'],
 	words: [],
 	image: coffeeHouse,
 	wordIds: [

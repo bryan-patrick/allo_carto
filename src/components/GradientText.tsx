@@ -18,7 +18,7 @@ import Svg, {
  * Typing
  */
 interface GradientTextProps {
-  colors: string[],
+  colors: readonly string[],
   fontSize: number,
   fontWeight?: TextStyle['fontWeight'],
   style?: TextStyle,
@@ -26,7 +26,7 @@ interface GradientTextProps {
 }
 
 interface StopsMapProps {
-  colors: string[]
+  colors: readonly string[]
 }
 
 /**

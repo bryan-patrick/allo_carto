@@ -14,7 +14,7 @@ import ResultsList from './ResultsList';
  */
 export default function DeckResultsView() {
   const { cardDeckState } = useCardDeck();
-  const { words } = cardDeckState.cardDeck;
+  const { title, words } = cardDeckState.cardDeck;
   const correctWords = words.filter((word: Word) => word.userScore === 1);
   const incorrectWords = words.filter((word: Word) => word.userScore === 0);
 
@@ -43,7 +43,7 @@ export default function DeckResultsView() {
             <View style={titleRowStyle}>
               <Text style={titleStyle}>Good job! You completed a </Text>
               <GradientText
-                text='Coffee Shop'
+                text={title}
                 colors={[colors.dark.primary, colors.dark.text]}
                 fontSize={20}
                 fontWeight={700}
