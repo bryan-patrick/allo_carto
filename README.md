@@ -82,3 +82,5 @@ Real quick so I don't forget...
 - Word cards/decks and phrases will be separate
 
 ## Free art and assets credits
+
+<a href="https://storyset.com/people">People illustrations by Storyset</a>

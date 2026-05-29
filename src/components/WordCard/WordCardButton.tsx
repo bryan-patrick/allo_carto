@@ -191,6 +191,7 @@ export default function WordCardButton({
         disabled={isDisabled}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
+        hitSlop={10}
         style={[
           pressableStyles,
           pressableStateStyle,
@@ -226,7 +227,7 @@ const wordCardButtonStyles = StyleSheet.create({
     backgroundColor: colors.dark.primary,
     borderRadius: 12,
     borderWidth: 2,
-    padding: 14,
+    padding: 16,
     gap: 16,
     shadowColor: colors.dark.border,
     shadowOffset: { width: 0, height: 8 },

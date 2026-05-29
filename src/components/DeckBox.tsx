@@ -102,8 +102,8 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
             <Text>Review this deck →</Text>
           </LinkButton>
         </View>
-      </View>
-    </View>
+      </View >
+    </View >
   );
 }
 
@@ -148,11 +148,11 @@ const styles = StyleSheet.create({
     wordWrap: 'wrap',
   },
   CEFRGradientStyle: {
-    overflow: 'hidden',
+    display: 'flex',
     alignSelf: 'flex-start',
+    overflow: 'hidden',
     paddingLeft: 4,
     paddingRight: 4,
-    flexShrink: 1,
     borderBottomLeftRadius: 8,
     borderRadius: 8,
     borderTopWidth: 0,
