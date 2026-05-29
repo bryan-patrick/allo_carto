@@ -36,7 +36,7 @@ export default function TabsLayout({ size = 28 }) {
           tabBarIcon: ({ color }) => <MaterialIcons color={color} size={size} name="settings" />,
         }}
       />
-      <Tabs.Screen name="/TestLoader" options={{
+      <Tabs.Screen name="TestLoader" options={{
         headerShown: true,
         headerTitle: 'Test Loader'
       }} />
