@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 8
+    padding: 16
   },
   titleStyle: {
     fontSize: 20,
