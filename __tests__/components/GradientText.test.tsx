@@ -1,13 +1,15 @@
 import GradientText from '@/src/components/GradientText';
-import { fireEvent, render } from '@testing-library/react-native';
-import Svg, { LinearGradient, Stop, Text as SvgText } from 'react-native-svg';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { render } from '@testing-library/react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet, Text } from 'react-native';
 
 describe('<GradientText />', () => {
-  it('renders measured text with a left-to-right gradient', () => {
+  it('renders text through a masked linear gradient', () => {
     /**
      * Render the thing.
      */
-    const { UNSAFE_getAllByType, UNSAFE_getByType, getByText } = render(
+    const { UNSAFE_getAllByType, UNSAFE_getByType } = render(
       <GradientText
         colors={['#111111', '#eeeeee']}
         fontSize={20}
@@ -16,45 +18,31 @@ describe('<GradientText />', () => {
       />
     );
 
-    /**
-     * Fake the native text measurement because jest has no real layout.
-     */
-    fireEvent(getByText('Bonjour'), 'layout', {
-      nativeEvent: {
-        layout: {
-          height: 28,
-          width: 120,
-        },
-      },
-    });
+    const textNodes = UNSAFE_getAllByType(Text);
 
     /**
-     * Make sure the SVG uses size.
+     * Make sure the library pieces are wired together.
      */
-    expect(UNSAFE_getByType(Svg).props).toEqual(
-      expect.objectContaining({
-        height: 28,
-        viewBox: '0 0 120 28',
-        width: 120,
-      })
-    );
-
-    /**
-     * Make sure the gradient runs left to right.
-     */
+    expect(UNSAFE_getByType(MaskedView)).toBeTruthy();
     expect(UNSAFE_getByType(LinearGradient).props).toEqual(
       expect.objectContaining({
-        x1: '0%',
-        x2: '100%',
-        y1: '0%',
-        y2: '0%',
+        colors: ['#111111', '#eeeeee'],
+        end: { x: 1, y: 0 },
+        start: { x: 0, y: 0 },
       })
     );
 
     /**
-     * Make sure the boring props made it through.
+     * Make sure both the mask and measured gradient text share typography.
      */
-    expect(UNSAFE_getByType(SvgText).props.fontWeight).toBe('800');
-    expect(UNSAFE_getAllByType(Stop)).toHaveLength(2);
+    textNodes.forEach(textNode => {
+      expect(textNode.props.children).toBe('Bonjour');
+      expect(StyleSheet.flatten(textNode.props.style)).toEqual(
+        expect.objectContaining({
+          fontSize: 20,
+          fontWeight: '800',
+        })
+      );
+    });
   });
 });
