@@ -1,4 +1,4 @@
-import colors from '@/src/app/styles';
+import colors from '@/src/app/colors';
 import * as Haptics from 'expo-haptics';
 import { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
@@ -218,7 +218,7 @@ export default function WordCardButton({
  */
 const wordCardButtonStyles = StyleSheet.create({
   containerStyles: {
-    margin: 24
+
   },
   pressableStyles: {
     alignItems: 'center',

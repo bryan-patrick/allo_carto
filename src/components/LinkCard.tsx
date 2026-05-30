@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import colors from "../app/styles";
+import colors from "../app/colors";
 import LinkButton from "./LinkButton";
 
 /**
@@ -77,6 +77,12 @@ export default function LinkCard({
  * Styles
  */
 const styles = StyleSheet.create({
+  cardViewStyle: {
+    backgroundColor: colors.light.background,
+    padding: 16,
+    borderRadius: 8,
+    gap: 16,
+  },
   titleStyle: {
     fontSize: 20,
     fontWeight: 700,
@@ -91,12 +97,6 @@ const styles = StyleSheet.create({
   colBetweenStyle: {
     gap: 12,
     flexShrink: 1
-  },
-  cardViewStyle: {
-    backgroundColor: colors.light.background,
-    padding: 16,
-    borderRadius: 8,
-    gap: 16,
   },
   cardTextStyle: {
     color: colors.dark.text,

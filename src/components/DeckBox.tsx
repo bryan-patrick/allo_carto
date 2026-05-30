@@ -5,7 +5,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
 import { useCallback } from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
-import colors from "../app/styles";
+import colors from "../app/colors";
+import sharedStyles from "../app/sharedStyles";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import GradientText from "./GradientText";
 
@@ -108,11 +109,16 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
 }
 
 /**
+ * Destructure shared styles
+ */
+const { containerMargin } = sharedStyles;
+
+/**
  * Styles
  */
 const styles = StyleSheet.create({
   cardStyle: {
-    margin: 32
+    margin: containerMargin
   },
   cardInnerStyle: {
     backgroundColor: colors.light.background,
@@ -151,16 +157,16 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignSelf: 'flex-start',
     overflow: 'hidden',
-    paddingLeft: 4,
     paddingRight: 4,
-    borderBottomLeftRadius: 8,
+    paddingLeft: 4,
+    borderWidth: 1,
     borderRadius: 8,
     borderTopWidth: 0,
     borderRightWidth: 0,
     borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 8,
     borderBottomRightRadius: 0,
     borderColor: colors.dark.border,
-    borderWidth: 1,
   },
   CEFRLabelStyle: {
     fontSize: 10,

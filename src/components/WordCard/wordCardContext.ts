@@ -70,7 +70,7 @@ export const initialWordCardState: WordCardStateProps = {
 	mistake: 'NONE',
 	feedbackKey: 'READY_PENDING_NONE',
 	attempts: 0,
-	maxAttempts: 2,
+	maxAttempts: 1,
 };
 
 interface WordCardContextType {

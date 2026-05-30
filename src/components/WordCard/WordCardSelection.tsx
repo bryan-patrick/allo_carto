@@ -55,6 +55,5 @@ const wordCardSelectionStyles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     gap: 20,
-    margin: 24
   },
 });

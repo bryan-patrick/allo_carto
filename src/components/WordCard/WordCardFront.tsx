@@ -1,4 +1,4 @@
-import colors from "@/src/app/styles";
+import colors from "@/src/app/colors";
 import { memo } from "react";
 import { type LayoutChangeEvent, StyleSheet, Text, type TextStyle, View, type ViewStyle } from "react-native";
 import type { AnimatedStyle } from "react-native-reanimated";

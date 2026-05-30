@@ -1,6 +1,6 @@
 import MaterialIcons from '@/node_modules/@expo/vector-icons/MaterialIcons';
 import { Tabs } from "@/node_modules/expo-router";
-import colors from '../styles';
+import colors from '../colors';
 
 /**
  * Icon dir here

@@ -1,5 +1,6 @@
+import sharedStyles from '@/src/app/sharedStyles';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
-import colors from "../../app/styles";
+import colors from "../../app/colors";
 import type { Word } from "../CardDeck/cardDeckTypes";
 import { useCardDeck } from "../CardDeck/useCardDeck";
 import GradientText from '../GradientText';
@@ -75,22 +76,25 @@ export default function DeckResultsView() {
 }
 
 /**
+ * Destructure shared styles
+ */
+const { containerMargin } = sharedStyles;
+
+/**
  * Styles
  */
 const styles = StyleSheet.create({
   resultsContainerStyle: {
     display: 'flex',
     backgroundColor: colors.light.background,
-    margin: 32,
+    margin: containerMargin,
     borderRadius: 16,
     boxShadow: `0 16px 0 ${colors.dark.border}`,
     overflow: 'hidden',
     borderWidth: 6,
     borderColor: colors.light.border,
   },
-  deckDetailsContainerStyle: {
-
-  },
+  deckDetailsContainerStyle: {},
   titleRowStyle: {
     alignItems: 'baseline',
     flexDirection: 'row',

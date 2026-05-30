@@ -1,4 +1,4 @@
-import colors from "@/src/app/styles";
+import colors from "@/src/app/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "react-native";
 import { useCardDeck } from "../CardDeck/useCardDeck";

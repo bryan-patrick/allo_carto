@@ -1,4 +1,4 @@
-import colors from "@/src/app/styles"
+import colors from "@/src/app/colors"
 import { StyleSheet } from "react-native"
 
 /**
@@ -21,14 +21,14 @@ export const sharedWordCardStyles = StyleSheet.create({
     width: '100%',
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
-    padding: 4,
+    padding: 2,
     paddingRight: 8,
     paddingLeft: 8,
     gap: 4,
   },
   cardCEFRLevel: {
     color: colors.dark.text,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
   },
   cardUserScore: {
@@ -39,7 +39,7 @@ export const sharedWordCardStyles = StyleSheet.create({
   cardMain: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 18,
+    padding: 16,
     paddingRight: 8,
     paddingLeft: 8,
     marginTop: 16,
@@ -47,7 +47,7 @@ export const sharedWordCardStyles = StyleSheet.create({
   },
   wordId: {
     color: colors.dark.text,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700',
   },
   wordPronunciation: {
@@ -57,7 +57,7 @@ export const sharedWordCardStyles = StyleSheet.create({
   answerSlotContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 12,
+    gap: 8,
   },
   answerSlot: {
     color: 'transparent',
@@ -65,8 +65,8 @@ export const sharedWordCardStyles = StyleSheet.create({
     fontWeight: 700,
     fontSize: 18,
     padding: 8,
-    paddingRight: 16,
-    paddingLeft: 16,
+    paddingRight: 12,
+    paddingLeft: 12,
   },
   answerSlotSuccess: {
     color: colors.dark.success,

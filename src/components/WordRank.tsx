@@ -2,7 +2,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ComponentProps, useEffect, useMemo, useState } from "react";
 import { StyleSheet, TextStyle, ViewStyle } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from "react-native-reanimated";
-import colors from "../app/styles";
+import colors from "../app/colors";
 import { useCardDeck } from "./CardDeck/useCardDeck";
 
 /**

@@ -131,7 +131,7 @@ describe('<WordCard />', () => {
      * Make sure we go to the finished deck
      */
     await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith('/FinishedDeck');
+      expect(mockRouterPush).toHaveBeenCalledWith('/DeckResults');
     });
   });
 });

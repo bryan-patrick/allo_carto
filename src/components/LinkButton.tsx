@@ -4,7 +4,7 @@ import { LinkProps } from 'expo-router';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import colors from '../app/styles';
+import colors from '../app/colors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

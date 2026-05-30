@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import LinkCard from '../../components/LinkCard';
 import SVGCards from '../../components/SVG/SVGCards';
-import colors from '../styles';
+import colors from '../colors';
 
 /**
  * HomeScreen view - Index of the (tabs) dir routes

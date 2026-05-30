@@ -103,13 +103,15 @@ describe('<DeckResultsView />', () => {
    * Make sure the results render
    */
   test('renders the deck details and correct and incorrect words', () => {
-    const { UNSAFE_getByType, getByText } = render(<DeckResultsView />);
+    const { UNSAFE_getByType, getByText, getAllByText } = render(<DeckResultsView />);
 
     /**
      * Make sure the title row is rendering the selected deck.
+     * Note the GradientText component renders the title twice 
+     * (on purpose).
      */
     getByText('Good job! You completed a ');
-    getByText('Testing Coffee Deck');
+    expect(getAllByText('Testing Coffee Deck')).toHaveLength(2);
     getByText(' deck.');
 
     /**

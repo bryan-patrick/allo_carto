@@ -7,7 +7,7 @@ import {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import colors from "../../app/styles";
+import colors from "../../app/colors";
 import { CardDeckContext } from '../CardDeck/cardDeckContext';
 import { sharedWordCardStyles } from './sharedWordCardStyles';
 import { useWordCardUI } from './useWordCardUI';
@@ -225,7 +225,6 @@ export default function WordCard({ isCurrent }: WordCardProps) {
  */
 const wordCardStyles = StyleSheet.create({
   wordCard: {
-    margin: 24,
     borderRadius: 8,
     alignContent: 'center',
     alignItems: 'center',

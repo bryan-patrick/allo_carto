@@ -1,3 +1,4 @@
+import sharedStyles from "@/src/app/sharedStyles";
 import { useEffect, useLayoutEffect, useReducer, useState } from "react";
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
@@ -118,18 +119,24 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 }
 
 /**
+ * Destructure shared styles
+ */
+const { containerMargin } = sharedStyles;
+
+/**
  * Styles
  */
 const wordCardContainerStyles = StyleSheet.create({
   container: {
     position: 'absolute',
-    left: 500,
+    height: '100%',
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'stretch',
-    height: '100%',
+    gap: 16,
+    left: 500, // animation start
   },
   nextBtn: {
-    margin: 24
+    margin: containerMargin
   }
 });
