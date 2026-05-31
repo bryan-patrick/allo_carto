@@ -75,12 +75,15 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 Real quick so I don't forget...
 
 - ̶d̶e̶c̶k̶ ̶r̶e̶s̶u̶l̶t̶s̶ ̶r̶o̶u̶t̶e̶
-- user/stats table
+- -̶̶u̶s̶e̶r̶/̶s̶t̶a̶t̶s̶/̶w̶o̶r̶d̶s̶ ̶t̶a̶b̶l̶e̶
+- User table writes
+- Word table writes
 - ̶t̶e̶s̶t̶i̶n̶g̶ ̶l̶i̶b̶
 - App icon and cleaning out the images dir
 - Deck progress
 - Word cards/decks and phrases will be separate
 - accessibility roles
+- Deck categorization
 
 ## Free art and assets credits
 
