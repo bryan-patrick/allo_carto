@@ -1,4 +1,4 @@
-import { getDB, getTables } from '../interface';
+import { getDB } from '../interface';
 
 /**
  * Typing
@@ -17,8 +17,6 @@ export async function createUser({
 	name = '',
 	isMonHomme = 1,
 }: CreateUserProps) {
-	await getTables();
-
 	const database = await getDB();
 
 	await database.runAsync(

@@ -1,11 +1,9 @@
-import { getDB, getTables } from '../interface';
+import { getDB } from '../interface';
 
 /**
  * Increments the correct count row on the userWords table
  */
 export async function incrementCorrectCount(userId: string, wordId: string) {
-	await getTables();
-
 	const database = await getDB();
 
 	await database.runAsync(

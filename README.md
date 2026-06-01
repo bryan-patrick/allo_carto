@@ -84,6 +84,7 @@ Real quick so I don't forget...
 - Word cards/decks and phrases will be separate
 - accessibility roles
 - Deck categorization
+- ̶F̶i̶l̶l̶e̶r̶ ̶w̶o̶r̶d̶s̶ ̶n̶e̶e̶d̶s̶ ̶a̶ ̶n̶e̶w̶ ̶d̶b̶ ̶m̶e̶t̶h̶o̶d̶
 
 ## Free art and assets credits
 

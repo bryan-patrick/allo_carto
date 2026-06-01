@@ -1,4 +1,6 @@
 import colors from '@/src/app/colors';
+import { incrementCorrectCount } from '@/src/db/queries/incrementCorrectCount';
+import { useUserContext } from '@/src/db/useUserContext';
 import * as Haptics from 'expo-haptics';
 import { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
@@ -29,6 +31,7 @@ export default function WordCardButton({
   style,
   ...props
 }: WordCardButtonProps) {
+  const user = useUserContext();
   const { cardState, wordCardUIDispatch } = useWordCardUI();
   const { cardDeckDispatch, currentCard } = useCardDeck();
   const [pressableStateStyle, setPressableStateStyle] = useState<ViewStyle | null>({});
@@ -116,13 +119,21 @@ export default function WordCardButton({
   ]);
 
   /**
-   * Side effects (haptics) for dispatching check answer
+   * Side effects (and haptics) for dispatching check answer
    */
   useEffect(() => {
+    async function udateUserScore() {
+      if (user) {
+        await incrementCorrectCount(user.id, currentCard.id);
+      }
+
+    }
+
     if (cardState.attempts !== 0) {
       switch (`${cardState.stage}_${cardState.progress}`) {
         case 'CORRECT_SUCCESS':
           cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
+          udateUserScore();
           Haptics.notificationAsync(
             Haptics.NotificationFeedbackType.Success,
           );
@@ -141,6 +152,8 @@ export default function WordCardButton({
       }
     }
   }, [
+    user?.id,
+    currentCard.id,
     cardState.attempts,
     cardState.progress,
     cardState.stage,
