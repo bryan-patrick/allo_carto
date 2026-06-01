@@ -152,12 +152,12 @@ export default function WordCardButton({
    */
   const handlePressIn = useCallback(() => {
     setIsPressed(true);
-  }, []);
+    checkAnswer();
+  }, [checkAnswer]);
 
   const handlePressOut = useCallback(() => {
     setIsPressed(false);
-    checkAnswer();
-  }, [checkAnswer]);
+  }, []);
 
   /**
    * Side effect that sets the styles 

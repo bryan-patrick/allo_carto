@@ -29,6 +29,7 @@ export default function AppLayout() {
   async function initDB() {
     await getDB();
     await getTables();
+    //await createUser({ id: 'local', name: 'local' });
   }
 
   /**

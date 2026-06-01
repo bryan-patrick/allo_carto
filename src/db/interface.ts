@@ -158,13 +158,13 @@ export async function getTables() {
 		 * Create users table
 		 */
 		await logThisIfItFails(
-			'Oops we messed up the users table somehows',
+			'Oops we messed up the users table somehows mon homme',
 			async () => {
 				return await database.execAsync(`
 					CREATE TABLE IF NOT EXISTS users (
 						id TEXT PRIMARY KEY,
 						name TEXT,
-						isHomme INTEGER NOT NULL DEFAULT 1
+						isMonHomme INTEGER NOT NULL DEFAULT 1
 					);
 				`);
 			},
@@ -193,23 +193,21 @@ export async function getTables() {
 
 		/**
 		 * Create a local user
-		 * isHomme just means local user
+		 * isMonHomme just means local user
 		 */
-		await logThisIfItFails(
-			'Oops we messed up creating the local user',
-			async () => {
-				return await database.runAsync(
-					`
+		await logThisIfItFails('Oops we messed up mon homme', async () => {
+			return await database.runAsync(
+				`
 				INSERT OR IGNORE INTO users (
 					id,
-					name
+					name,
+					isMonHomme
 				)
-				VALUES (?, ?);
+				VALUES (?, ?, ?);
 			`,
-					['monhomme', 'Mon Homme'],
-				);
-			},
-		);
+				['monhomme', 'Mon Homme', 1],
+			);
+		});
 	} catch (error) {
 		console.error('Failed to create tables.', error);
 		throw error;
