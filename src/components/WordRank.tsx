@@ -11,6 +11,7 @@ import { useCardDeck } from "./CardDeck/useCardDeck";
 type RankIconProps = Omit<ComponentProps<typeof MaterialIcons>, "name"> & {
   score?: number;
 };
+
 /**
  * Static colors
  */
@@ -25,7 +26,7 @@ const {
 
 /**
  * Helpers
- * Yes, I did put a period next to the "5" so the ifs would line up.
+ * Yes, I did put a decimal so the ifs would line up.
  */
 function getRankColor(score: number = 0) {
   if (score < 5.) return fnew;
@@ -52,11 +53,11 @@ export function RankIcon({ score = 0, size = 12, ...props }: RankIconProps) {
  * WordRank Component
  */
 export default function WordRank() {
-  const { currentCard } = useCardDeck();
 
   /**
    * State
-   */
+  */
+  const { currentCard } = useCardDeck();
   const [currentScore] = useState(currentCard.userScore);
   const [nextScore] = useState(currentCard.userScore + 1);
 
@@ -88,6 +89,9 @@ export default function WordRank() {
     icon,
   } = wordRankStyles;
 
+  /**
+   * When the userScore changes, trigger our animation
+   */
   useEffect(() => {
     if (currentCard.userScore !== currentScore) {
       translateY.value = withDelay(600,
@@ -104,6 +108,9 @@ export default function WordRank() {
     translateY
   ]);
 
+  /**
+   * Render
+   */
   return (
     <Animated.View style={[container, containerY]}>
       <Animated.View style={textContainer}>

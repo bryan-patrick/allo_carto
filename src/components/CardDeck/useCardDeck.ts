@@ -9,11 +9,17 @@ import { initialWordState } from './cardDeckTypes';
  * without destructuring in every single component.
  */
 export function useCardDeck() {
+	/**
+	 * State
+	 */
 	const { cardDeckState, cardDeckDispatch } = useContext(CardDeckContext);
 	const currentCard =
 		cardDeckState.cardDeck.words[cardDeckState.currentIndex] ??
 		initialWordState;
 
+	/**
+	 * Return
+	 */
 	return {
 		cardDeckState,
 		cardDeckDispatch,

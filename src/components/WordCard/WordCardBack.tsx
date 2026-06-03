@@ -27,13 +27,19 @@ const WordCardBack = memo(function WordCardBackMemo({
   articleSlotStyle,
   wordSlotStyle
 }: WordCardBackProps) {
+
+  /**
+   * State
+   */
   const { cardState } = useWordCardUI();
   const { currentCard } = useCardDeck();
 
   /**
    * Destructure Styles
    */
-  const { cardBack } = wordCardBackStyles;
+  const {
+    cardBack
+  } = wordCardBackStyles;
 
   const {
     wordId,
@@ -74,20 +80,14 @@ const WordCardBack = memo(function WordCardBackMemo({
         {englishArticle && (
           <Text
             numberOfLines={1}
-            style={[
-              answerSlot,
-              articleSlotStyle
-            ]}
+            style={[answerSlot, articleSlotStyle]}
           >
             {englishArticle}
           </Text>
         )}
         <Text
           numberOfLines={1}
-          style={[
-            answerSlot,
-            wordSlotStyle
-          ]}
+          style={[answerSlot, wordSlotStyle]}
         >
           {englishWords[0]}
         </Text>

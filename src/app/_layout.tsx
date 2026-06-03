@@ -2,13 +2,14 @@ import { ThemeProvider } from "@react-navigation/native";
 import { useFonts } from 'expo-font';
 import { Stack } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
-import { Suspense, useEffect, useReducer, useState } from "react";
+import { Suspense, useReducer, useState } from "react";
 import { CardDeckContext, initialCardDeckState } from "../components/CardDeck/cardDeckContext";
 import { cardDeckReducer } from "../components/CardDeck/cardDeckReducer";
 import Loader from "../components/Loader";
 import { getDB, getTables } from "../db/interface";
 import getMonHomme, { UserRow } from "../db/queries/getMonHomme";
 import { UserContext } from "../db/userContext";
+
 import alloTheme from './alloTheme';
 
 /**
@@ -18,9 +19,16 @@ import alloTheme from './alloTheme';
  * - Vladimir, Waiting for Godot
  */
 export default function AppLayout() {
-  const [user, setUser] = useState<UserRow | null>(null);
-  const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
 
+  /**
+   * State
+   */
+  const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
+  const [user, setUser] = useState<UserRow | null>(null);
+
+  /**
+   * Load our fonts
+   */
   useFonts({
     'lexend-variable': require('./assets/fonts/lexend-variable.ttf'),
     'red-hat-variable': require('./assets/fonts/red-hat-variable.ttf'),
@@ -32,19 +40,9 @@ export default function AppLayout() {
   async function initDB() {
     await getDB();
     await getTables();
+    const monHomme = await getMonHomme();
+    setUser(monHomme);
   }
-
-  /**
-   * Get mon homme
-   */
-  useEffect(() => {
-    async function load() {
-      const monHomme = await getMonHomme();
-      setUser(monHomme);
-    }
-
-    load();
-  }, [setUser])
 
   /**
    * The (tabs) dir are navigable routes on the bottom bar

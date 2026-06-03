@@ -15,19 +15,16 @@ import colors from "../app/colors";
 /**
  * Animation consts
  */
-const CARD_TRAVEL_X = 90;
-const CARD_ROTATION = 180;
-const CARD_MOVE_OUT_DURATION = 800;
-const CARD_MOVE_BACK_DURATION = 300;
-const TOP_CARD_Z_INDEX = 4;
+const CARD_X = 100;
+const CARD_ROTATE = 180;
+const CARD_MOVE_DURATION = 800;
+const TOP_CARD_Z_INDEX = 3;
 const UNDER_DECK_Z_INDEX = -1;
 const DECK_Z_INDEX = 1;
 const CARD_ONE_DELAY = 0;
 const CARD_TWO_DELAY = 900;
 const CARD_THREE_DELAY = 1800;
-const CARD_ONE_REST_DURATION = 1800;
-const CARD_TWO_REST_DURATION = 900;
-const CARD_THREE_REST_DURATION = 0;
+const CARD_REST_DURATION = 1800;
 
 /**
  * Helper function to animate the cards
@@ -35,49 +32,68 @@ const CARD_THREE_REST_DURATION = 0;
 function animateCard(
   x: SharedValue<number>,
   rotate: SharedValue<number>,
-  animatedZIndex: SharedValue<number>,
-  delay: number,
-  restDuration: number
+  zIndex: SharedValue<number>,
+  delay: number
 ) {
+
+  /**
+   * 3 cards stacked on top of each other
+   * First, they move to the side
+   */
   x.value =
-    withRepeat(
-      withSequence(
-        withDelay(delay, withTiming(CARD_TRAVEL_X, {
-          duration: CARD_MOVE_OUT_DURATION,
-          easing: Easing.inOut(Easing.ease)
-        })),
-        withTiming(0, {
-          duration: CARD_MOVE_BACK_DURATION,
-          easing: Easing.inOut(Easing.ease)
-        }),
-        withDelay(restDuration, withTiming(0, { duration: 0 }))
+    withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(CARD_X, {
+            duration: CARD_MOVE_DURATION,
+            easing: Easing.inOut(Easing.ease)
+          }),
+          withTiming(0, {
+            duration: CARD_MOVE_DURATION,
+            easing: Easing.inOut(Easing.ease)
+          }),
+          withDelay(CARD_REST_DURATION, withTiming(0, { duration: 0 }))
+        ),
+        -1
       ),
-      -1
     );
 
+  /**
+   * While moving to the side, the cards should be rotating
+   */
   rotate.value =
-    withRepeat(
-      withSequence(
-        withDelay(delay, withTiming(CARD_ROTATION, {
-          duration: CARD_MOVE_OUT_DURATION,
-          easing: Easing.inOut(Easing.ease)
-        })),
-        withTiming(CARD_ROTATION, { duration: CARD_MOVE_BACK_DURATION }),
-        withTiming(0, { duration: 0 }),
-        withDelay(restDuration, withTiming(0, { duration: 0 }))
+    withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(CARD_ROTATE, {
+            duration: CARD_MOVE_DURATION * 2,
+            easing: Easing.inOut(Easing.ease)
+          }),
+          withTiming(0, { duration: 0 }),
+          withDelay(CARD_REST_DURATION, withTiming(0, { duration: 0 }))
+        ),
+        -1
       ),
-      -1
     );
 
-  animatedZIndex.value =
-    withRepeat(
-      withSequence(
-        withDelay(delay, withTiming(TOP_CARD_Z_INDEX, { duration: 0 })),
-        withDelay(CARD_MOVE_OUT_DURATION, withTiming(UNDER_DECK_Z_INDEX, { duration: 0 })),
-        withDelay(CARD_MOVE_BACK_DURATION, withTiming(DECK_Z_INDEX, { duration: 0 })),
-        withDelay(restDuration, withTiming(DECK_Z_INDEX, { duration: 0 }))
+  /**
+   * Mid rotation and off to the side, 
+   * set the zIndex to a lower value
+   */
+  zIndex.value =
+    withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(TOP_CARD_Z_INDEX, { duration: 0 }),
+          withDelay(CARD_MOVE_DURATION, withTiming(UNDER_DECK_Z_INDEX, { duration: 0 })),
+          withDelay(CARD_MOVE_DURATION, withTiming(DECK_Z_INDEX, { duration: 0 })),
+          withDelay(CARD_REST_DURATION, withTiming(DECK_Z_INDEX, { duration: 0 }))
+        ),
+        -1
       ),
-      -1
     );
 }
 
@@ -138,9 +154,9 @@ export default function Loader() {
    * Trigger the animations
    */
   useEffect(() => {
-    animateCard(cardOneX, cardOneRotate, cardOneZIndex, CARD_ONE_DELAY, CARD_ONE_REST_DURATION);
-    animateCard(cardTwoX, cardTwoRotate, cardTwoZIndex, CARD_TWO_DELAY, CARD_TWO_REST_DURATION);
-    animateCard(cardThreeX, cardThreeRotate, cardThreeZIndex, CARD_THREE_DELAY, CARD_THREE_REST_DURATION);
+    animateCard(cardOneX, cardOneRotate, cardOneZIndex, CARD_ONE_DELAY);
+    animateCard(cardTwoX, cardTwoRotate, cardTwoZIndex, CARD_TWO_DELAY);
+    animateCard(cardThreeX, cardThreeRotate, cardThreeZIndex, CARD_THREE_DELAY);
   }, [
     cardOneRotate,
     cardOneX,
@@ -182,6 +198,7 @@ export default function Loader() {
 const styles = StyleSheet.create({
   container: {
     height: '100%',
+    backgroundColor: colors.dark.background
   },
   cardContainer: {
     width: '100%',
@@ -200,7 +217,6 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 40,
     paddingBottom: 40,
-    boxShadow: `4px 4px 4px 0 ${colors.dark.text}`,
     transform: [{
       translateX: 0,
     }],

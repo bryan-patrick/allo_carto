@@ -40,6 +40,7 @@ export default function LinkButton({
   style,
   props,
 }: LinkButtonProps) {
+
   /**
    * Sound effect
    */

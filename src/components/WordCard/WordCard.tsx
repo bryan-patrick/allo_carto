@@ -30,6 +30,7 @@ interface WordCardProps {
  * card flip effect.
  */
 export default function WordCard({ isCurrent }: WordCardProps) {
+
   /**
    * State
    */
