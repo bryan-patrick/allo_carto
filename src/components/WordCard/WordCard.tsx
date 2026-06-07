@@ -42,7 +42,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 
   /**
    * Styles
-  */
+   */
   const {
     feedbackSuccess,
     feedbackWarning,
@@ -142,7 +142,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
     isCurrent,
     cardState.stage,
     cardDeckDispatch
-  ])
+  ]);
 
   /**
    * Handle slots and feedback styles.

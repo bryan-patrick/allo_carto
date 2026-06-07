@@ -9,7 +9,6 @@ import Loader from "../components/Loader";
 import { getDB, getTables } from "../db/interface";
 import getMonHomme, { UserRow } from "../db/queries/getMonHomme";
 import { UserContext } from "../db/userContext";
-
 import alloTheme from './alloTheme';
 
 /**

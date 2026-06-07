@@ -1,0 +1,31 @@
+import { getDB } from '../interface';
+
+/**
+ * Typing
+ */
+interface GetWordRankProps {
+	userId: string;
+	wordId: string;
+}
+
+/**
+ * Get user's score from the join table
+ */
+export default async function getWordRank({
+	userId,
+	wordId,
+}: GetWordRankProps) {
+	console.log(userId, wordId);
+
+	const database = await getDB();
+
+	const row: { correctCount: number } | null = await database.getFirstAsync(
+		`SELECT correctCount FROM userWords WHERE userId = ? AND wordId = ?`,
+		userId,
+		wordId,
+	);
+
+	console.log(row);
+
+	return row ?? { correctCount: 0 };
+}

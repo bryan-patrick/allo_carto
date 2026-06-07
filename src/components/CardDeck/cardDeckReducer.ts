@@ -54,7 +54,5 @@ export function cardDeckReducer(
 				currentId: nextCurrentId,
 			};
 		}
-		default:
-			return state;
 	}
 }

@@ -24,6 +24,12 @@ interface WordRow {
 	rarity?: CardRarity;
 }
 
+interface WordRankRow {
+	wordId: string;
+	seenCount: number;
+	correctCount: number;
+}
+
 /**
  * Expo does the heavy lifting here for us.
  * This includes where the DB is stored and
@@ -59,14 +65,14 @@ export async function getDB(): Promise<SQLite.SQLiteDatabase> {
 	}
 }
 
-async function logThisIfItFails<T>(
-	label: string,
+export async function logThisIfItFails<T>(
+	message: string,
 	fn: () => Promise<T>,
 ): Promise<T> {
 	try {
 		return await fn();
 	} catch (error) {
-		console.error(`DB step failed: ${label}`, error);
+		console.error(`DB step failed: ${message}`, error);
 		throw error;
 	}
 }
@@ -226,6 +232,12 @@ export async function deleteDB() {
 	}
 }
 
+interface GetDeckProps {
+	deck: CardDeck;
+	amount?: number;
+	userId: string;
+}
+
 /**
  * Get a deck
  *
@@ -234,14 +246,21 @@ export async function deleteDB() {
  * Need to include lemma's that are unique
  * Need to limit amount
  */
-export async function getDeck(
-	deck: CardDeck,
-	amount: number = 6,
-): Promise<CardDeck | undefined> {
+export async function getDeck({
+	deck,
+	amount,
+	userId,
+}: GetDeckProps): Promise<CardDeck | undefined> {
+	/**
+	 * We need placeholder quest markers (?s)
+	 */
 	const quests: string = deck.wordIds.map(() => '?').join(',');
 
+	/**
+	 * Get the DB
+	 * Select all the words in that deck (deck.wordIds)
+	 */
 	try {
-		await getTables();
 		const database = await getDB();
 		const rows = await database.getAllAsync<WordRow>(
 			`
@@ -270,19 +289,84 @@ export async function getDeck(
 		 */
 		const seenLemmaIds = new Set<string>();
 
-		const uniqueLemmaWords = words.filter(word => {
+		const uniqueLemmaWordsDeck: Word[] = words.filter(word => {
 			if (seenLemmaIds.has(word.lemmaId ?? word.id)) return false;
 			return Boolean(seenLemmaIds.add(word.lemmaId ?? word.id));
 		});
 
 		/**
+		 * Slice the deck to the "amount var"
+		 * This will also save us some work when
+		 * getting our user scores from our join
+		 * table.
+		 */
+		const slicedWords: Word[] = uniqueLemmaWordsDeck.slice(0, amount);
+		const slicedWordsIds: string[] = slicedWords.map(word => word.id);
+		const slicedWordsQuests: string = slicedWords.map(() => '?').join(',');
+
+		/**
+		 * We need the join table's correct word counts for the
+		 * WordRank badges and what not.
+		 */
+		const rankRows: WordRankRow[] = await database.getAllAsync(
+			`
+			SELECT ALL wordId, correctCount, seenCount
+			FROM userWords
+			WHERE userId = ?
+			AND wordId IN (${slicedWordsQuests});
+			`,
+			userId,
+			...slicedWordsIds,
+		);
+
+		/**
+		 * Instead of finding every userScore by nested
+		 * id, we can just use the ids as a lookup table.
+		 *
+		 * In other words, we're turning this:
+		 * [{"correctCount": 1, "seenCount": 0, "wordId": "word_noun_cafe"}, ...]
+		 *
+		 * Into a lookup table:
+		 * {word_noun_cafe: {"correctCount": 1, "seenCount": 0, "wordId": "word_noun_cafe"}, ...}
+		 *
+		 * This prevents us from having to iterate over
+		 * the object for every single word
+		 * just to get the userScore.
+		 */
+		const keyedRankRows: Record<string, WordRankRow> = {};
+
+		for (const row of rankRows) {
+			keyedRankRows[row.wordId] = row;
+		}
+
+		/**
 		 * Shuffle!
 		 */
-		const shuffledUniqueLemmaWords = shuffleArray(uniqueLemmaWords);
+		const shuffledUniqueLemmaWords = shuffleArray(slicedWords);
+
+		/**
+		 * Slice to the amount
+		 */
+		const slicedShuffledWords = shuffledUniqueLemmaWords.slice(0, amount);
+
+		/**
+		 * Add in the correctCount/userScores
+		 * These can be undefined if they have
+		 * never been seen by the user.
+		 */
+		const withUniqueUserScores = slicedShuffledWords.map((word: Word): Word => {
+			const wordRankRow: WordRankRow | undefined = keyedRankRows[word.id];
+			const userScore: number = wordRankRow?.correctCount ?? 0;
+
+			return {
+				...word,
+				userScore,
+			};
+		});
 
 		return {
 			...deck,
-			words: shuffledUniqueLemmaWords.slice(0, amount),
+			words: withUniqueUserScores,
 		};
 	} catch (error) {
 		console.error('Could not retrieve deck:', error);

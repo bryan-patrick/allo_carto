@@ -38,6 +38,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 }: WordCardFrontProps) {
   const { cardState } = useWordCardUI();
   const { currentCard } = useCardDeck();
+
   /**
    * Destructure Styles
    */

@@ -7,6 +7,7 @@ import { useCallback } from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
+import { useUserContext } from "../db/useUserContext";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import GradientText from "./GradientText";
 
@@ -21,6 +22,7 @@ interface ChooseCardDeckProps {
  * ChooseCardDeck component
  */
 export default function DeckBox({ deck }: ChooseCardDeckProps) {
+  const user = useUserContext();
   const { cardDeckDispatch } = useCardDeck();
   const {
     title,
@@ -61,13 +63,21 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
    * Handlers
    */
   const handleDeckSelect = useCallback(async (selectedDeck: CardDeck) => {
-    const deck = await getDeck(selectedDeck);
+    if (user?.id) {
+      const deck = await getDeck({
+        deck: selectedDeck,
+        userId: user.id
+      });
 
-    if (deck) {
-      cardDeckDispatch({ type: 'SET_DECK', payload: deck });
-      router.push('/CardDeck');
+      if (deck) {
+        cardDeckDispatch({ type: 'SET_DECK', payload: deck });
+        router.push('/CardDeck');
+      }
     }
-  }, [cardDeckDispatch]);
+  }, [
+    user?.id,
+    cardDeckDispatch
+  ]);
 
   /**
    * Render the card grid

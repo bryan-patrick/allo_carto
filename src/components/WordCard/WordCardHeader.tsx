@@ -5,6 +5,9 @@ import { useCardDeck } from "../CardDeck/useCardDeck";
 import WordRank from "../WordRank";
 import { sharedWordCardStyles } from "./sharedWordCardStyles";
 
+/**
+ * WordCardHeader Component
+ */
 export default function WordCardHeader() {
   const { currentCard } = useCardDeck();
 
