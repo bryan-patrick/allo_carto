@@ -10,7 +10,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'dahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -22,7 +22,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'sewr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -34,7 +34,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'soo',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -46,7 +46,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'duh-vahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -58,7 +58,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'deh-ryair',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -70,7 +70,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'ahn-truh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -82,7 +82,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'ah-vek',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -94,7 +94,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'sahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -106,7 +106,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'vair',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -118,7 +118,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'ah',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -130,7 +130,7 @@ export const words_a1_prepositions: Word[] = [
 		partOfSpeech: 'preposition',
 		CEFR: 'A1',
 		pronunciation: 'duh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];

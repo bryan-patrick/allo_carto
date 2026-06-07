@@ -18,7 +18,7 @@ const firstWord: Word = {
   pronunciation: 'ka-fay',
   isVulgar: false,
   CEFR: 'A1',
-  userScore: 14,
+  correctCount: 14,
 };
 
 const secondWord: Word = {
@@ -28,7 +28,7 @@ const secondWord: Word = {
   pronunciation: 'leev-ruh',
   isVulgar: false,
   CEFR: 'A1',
-  userScore: 7,
+  correctCount: 7,
 };
 
 /**

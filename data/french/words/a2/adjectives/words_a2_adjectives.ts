@@ -11,7 +11,7 @@ export const words_a2_adjectives: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'ploo-vyuh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -23,7 +23,7 @@ export const words_a2_adjectives: Word[] = [
 		partOfSpeech: 'adjective',
 		CEFR: 'A2',
 		pronunciation: 'sha-luh-ruh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -35,7 +35,7 @@ export const words_a2_adjectives: Word[] = [
 		partOfSpeech: 'adjective',
 		CEFR: 'A2',
 		pronunciation: 'trahn-keel',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];

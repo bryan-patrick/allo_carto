@@ -58,8 +58,8 @@ export default function WordRank() {
    * State
   */
   const { currentCard } = useCardDeck();
-  const [currentScore] = useState(currentCard.userScore);
-  const [nextScore] = useState(currentCard.userScore + 1);
+  const [currentScore] = useState(currentCard.correctCount);
+  const [nextScore] = useState(currentCard.correctCount + 1);
 
   const currentRankColor = useMemo(() =>
     ({ color: getRankColor(currentScore) }),
@@ -90,10 +90,10 @@ export default function WordRank() {
   } = wordRankStyles;
 
   /**
-   * When the userScore changes, trigger our animation
+   * When the correctCount changes, trigger our animation
    */
   useEffect(() => {
-    if (currentCard.userScore !== currentScore) {
+    if (currentCard.correctCount !== currentScore) {
       translateY.value = withDelay(600,
         withSpring(-20, {
           stiffness: 360,
@@ -104,7 +104,7 @@ export default function WordRank() {
     }
   }, [
     currentScore,
-    currentCard.userScore,
+    currentCard.correctCount,
     translateY
   ]);
 

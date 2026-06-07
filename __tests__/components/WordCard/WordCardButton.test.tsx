@@ -2,6 +2,7 @@ import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import WordCardButton from '@/src/components/WordCard/WordCardButton';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
+import { incrementCorrectCount } from '@/src/db/queries/incrementCorrectCount';
 import { fireEvent, render } from '@testing-library/react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -16,12 +17,14 @@ jest.mock('expo-haptics', () => ({
     Error: 'error',
   },
 }));
+jest.mock('@/src/db/queries/incrementCorrectCount');
 jest.mock('@/src/components/CardDeck/useCardDeck');
 jest.mock('@/src/components/WordCard/useWordCardUI');
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseWordCardUI = jest.mocked(useWordCardUI);
 const mockNotificationAsync = jest.mocked(Haptics.notificationAsync);
+const mockIncrementCorrectCount = jest.mocked(incrementCorrectCount);
 
 /**
  * Mock state
@@ -35,7 +38,7 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
     pronunciation: 'ka-fay',
     isVulgar: false,
     CEFR: 'A1' as const,
-    userScore: 14,
+    correctCount: 14,
   };
 
   mockUseCardDeck.mockReturnValue({
@@ -61,6 +64,7 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
 describe('<WordCardButton />', () => {
   beforeEach(() => {
     mockNotificationAsync.mockClear();
+    mockIncrementCorrectCount.mockResolvedValue();
     mockUseCardDeck.mockReset();
     mockUseWordCardUI.mockReset();
   });
@@ -82,7 +86,7 @@ describe('<WordCardButton />', () => {
     UNSAFE_getByProps({ disabled: true });
   });
 
-  test('checks the current answer on press out', () => {
+  test('checks the current answer on press in', () => {
     const wordCardUIDispatch = jest.fn();
     const { currentCard } = mockDeckState();
 
@@ -98,10 +102,9 @@ describe('<WordCardButton />', () => {
     const { getByText } = render(<WordCardButton>Check</WordCardButton>);
 
     /**
-     * The component checks on press out.
-     * Press in is just the little fake button squish.
+     * The component checks on press in.
      */
-    fireEvent(getByText('Check'), 'pressOut');
+    fireEvent(getByText('Check'), 'pressIn');
 
     expect(wordCardUIDispatch).toHaveBeenCalledWith({
       type: 'CHECK_ANSWER',

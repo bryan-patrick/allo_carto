@@ -13,7 +13,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'fem',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -28,7 +28,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'ay-pee-sree',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -43,7 +43,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'day-pan-uhr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Epic',
 	},
 	{
@@ -58,7 +58,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'ahn-plwah-yay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -73,7 +73,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'klee-ahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -88,7 +88,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'klee-ahnt',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -103,7 +103,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'uhr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -118,7 +118,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'frwee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -133,7 +133,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'lay-goom',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -148,7 +148,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'van blahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -163,7 +163,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'froh-mahzh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -178,7 +178,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'fah-reen',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -193,7 +193,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'bees-kwee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -208,7 +208,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'paht',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -223,7 +223,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'sehr-vyet',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -238,7 +238,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'ah-lay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -253,7 +253,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'ray-yon',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -268,7 +268,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'shah-ree-oh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -283,7 +283,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'pah-nyay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -298,7 +298,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'poo-lay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -313,7 +313,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'uhf',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -328,7 +328,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'buhr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -343,7 +343,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'pum',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -358,7 +358,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'bah-nahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -373,7 +373,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'boo-tay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -388,7 +388,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'pah-kay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -403,7 +403,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'bwaht',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -418,7 +418,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'sak',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -433,7 +433,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'kess',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -448,7 +448,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'feel',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -463,7 +463,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'kom-twar',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -478,7 +478,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'kay-syay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -493,7 +493,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'kay-syair',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -508,7 +508,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'pray-zahn-twar',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -523,7 +523,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'rah-bay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -538,7 +538,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'spay-syahl',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -553,7 +553,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'C1',
 		gender: 'Masculine',
 		pronunciation: 'gree-mwar',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Legendary',
 	},
 	{
@@ -568,7 +568,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'boo-zhee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Epic',
 	},
 	{
@@ -583,7 +583,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'pro-dwee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -598,7 +598,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'ar-teekl',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -613,7 +613,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'ar-zhahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -628,7 +628,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'kart',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -643,7 +643,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'ruh-sew',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -658,7 +658,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Feminine',
 		pronunciation: 'moh-nay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -673,7 +673,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'day-bee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -688,7 +688,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'kray-dee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 ];

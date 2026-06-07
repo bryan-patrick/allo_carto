@@ -11,7 +11,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'sho',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -24,7 +24,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'frwah',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -37,7 +37,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'uh-ruh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -50,7 +50,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'uh-ruhz',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -62,7 +62,7 @@ export const words_a1_adjectives: Word[] = [
 		partOfSpeech: 'adjective',
 		CEFR: 'A1',
 		pronunciation: 'treest',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -75,7 +75,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'puh-tee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -88,7 +88,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'puh-teet',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -101,7 +101,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'mwah-yen',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -114,7 +114,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'mwah-yen',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -127,7 +127,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'grahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -140,7 +140,7 @@ export const words_a1_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'grahnd',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];

@@ -10,7 +10,7 @@ export const words_c1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'C1',
 		pronunciation: 'ben',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -22,7 +22,7 @@ export const words_c1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'C1',
 		pronunciation: 'tah-bar-nak',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Legendary',
 	},
 	{
@@ -34,7 +34,7 @@ export const words_c1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'C1',
 		pronunciation: 'os-tee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Legendary',
 	},
 	{
@@ -46,7 +46,7 @@ export const words_c1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'C1',
 		pronunciation: 'cal-vair',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Legendary',
 	},
 	{
@@ -58,7 +58,7 @@ export const words_c1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'C1',
 		pronunciation: 'vyarj',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Legendary',
 	},
 	{
@@ -70,7 +70,7 @@ export const words_c1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'C1',
 		pronunciation: 'kah-leen',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 ];

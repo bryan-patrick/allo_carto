@@ -20,7 +20,7 @@ interface WordRow {
 	tense?: string;
 	gender?: Word['gender'];
 	partOfSpeech?: string;
-	userScore: number;
+	correctCount: number;
 	rarity?: CardRarity;
 }
 
@@ -105,7 +105,7 @@ export async function getTables() {
 						tense TEXT,
 						gender TEXT,
 						partOfSpeech TEXT,
-						userScore INTEGER NOT NULL,
+						correctCount INTEGER NOT NULL,
 						rarity TEXT
 					);
 				`);
@@ -134,7 +134,7 @@ export async function getTables() {
 						tense,
 						gender,
 						partOfSpeech,
-						userScore,
+						correctCount,
 						rarity
 						)
 						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -152,7 +152,7 @@ export async function getTables() {
 							word.tense ?? null,
 							word.gender ?? null,
 							word.partOfSpeech ?? null,
-							word.userScore,
+							word.correctCount,
 							word.rarity ?? null,
 						],
 					);
@@ -320,7 +320,7 @@ export async function getDeck({
 		);
 
 		/**
-		 * Instead of finding every userScore by nested
+		 * Instead of finding every correctCount by nested
 		 * id, we can just use the ids as a lookup table.
 		 *
 		 * In other words, we're turning this:
@@ -331,7 +331,7 @@ export async function getDeck({
 		 *
 		 * This prevents us from having to iterate over
 		 * the object for every single word
-		 * just to get the userScore.
+		 * just to get the correctCount.
 		 */
 		const keyedRankRows: Record<string, WordRankRow> = {};
 
@@ -350,23 +350,31 @@ export async function getDeck({
 		const slicedShuffledWords = shuffledUniqueLemmaWords.slice(0, amount);
 
 		/**
-		 * Add in the correctCount/userScores
+		 * Add in the correctCount/correctCounts
 		 * These can be undefined if they have
 		 * never been seen by the user.
 		 */
-		const withUniqueUserScores = slicedShuffledWords.map((word: Word): Word => {
-			const wordRankRow: WordRankRow | undefined = keyedRankRows[word.id];
-			const userScore: number = wordRankRow?.correctCount ?? 0;
+		const withUniquecorrectCounts = slicedShuffledWords.map(
+			(word: Word): Word => {
+				const wordRankRow: WordRankRow | undefined = keyedRankRows[word.id];
+				const correctCount: number = wordRankRow?.correctCount ?? 0;
 
-			return {
-				...word,
-				userScore,
-			};
-		});
+				/**
+				 * Return (map) Word
+				 */
+				return {
+					...word,
+					correctCount,
+				};
+			},
+		);
 
+		/**
+		 * Return the deck
+		 */
 		return {
 			...deck,
-			words: withUniqueUserScores,
+			words: withUniquecorrectCounts,
 		};
 	} catch (error) {
 		console.error('Could not retrieve deck:', error);

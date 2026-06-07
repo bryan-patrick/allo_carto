@@ -33,7 +33,7 @@ export function cardDeckReducer(
 
 			words[state.currentIndex] = {
 				...currentWord,
-				userScore: currentWord.userScore + 1,
+				correctCount: currentWord.correctCount + 1,
 			};
 
 			return {

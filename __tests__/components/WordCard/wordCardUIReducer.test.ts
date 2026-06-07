@@ -17,7 +17,7 @@ const cardWithArticle: Word = {
 	pronunciation: 'ka-fay',
 	isVulgar: false,
 	CEFR: 'A1',
-	userScore: 14,
+	correctCount: 14,
 };
 
 /**
@@ -30,7 +30,7 @@ const cardWithoutArticle: Word = {
 	pronunciation: 'mahn-zhay',
 	isVulgar: false,
 	CEFR: 'A1',
-	userScore: 3,
+	correctCount: 3,
 };
 
 /**

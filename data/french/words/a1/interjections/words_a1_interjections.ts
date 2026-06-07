@@ -10,7 +10,7 @@ export const words_a1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'A1',
 		pronunciation: 'sah-loo',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -22,7 +22,7 @@ export const words_a1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'A1',
 		pronunciation: 'bon-zhoor',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -34,7 +34,7 @@ export const words_a1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'A1',
 		pronunciation: 'mehr-see',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -46,7 +46,7 @@ export const words_a1_interjections: Word[] = [
 		partOfSpeech: 'interjection',
 		CEFR: 'A1',
 		pronunciation: 'par-don',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];

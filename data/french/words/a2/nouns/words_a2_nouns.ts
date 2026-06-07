@@ -13,7 +13,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Feminine',
 		pronunciation: 'oon kah-fuh-tyair',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -28,7 +28,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'uhn nor-dee-nah-tuhr por-tahbl',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -43,7 +43,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'uhn sak ah do',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -58,7 +58,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Feminine',
 		pronunciation: 'lah-dee-see-on',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Epic',
 	},
 	{
@@ -73,7 +73,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'luh wee-fee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -88,7 +88,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'luh mo duh pass',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -103,7 +103,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'uhn pah-rah-plwee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -118,7 +118,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'uhn shar-zhuhr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -133,7 +133,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Feminine',
 		pronunciation: 'lah lek-tuhr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -148,7 +148,7 @@ export const words_a2_nouns: Word[] = [
 		CEFR: 'A2',
 		gender: 'Feminine',
 		pronunciation: 'lah poo-bel',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];

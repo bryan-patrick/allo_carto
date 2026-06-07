@@ -72,7 +72,7 @@ describe('<DeckResultsView />', () => {
               pronunciation: 'ka-fay',
               isVulgar: false,
               CEFR: 'A1',
-              userScore: 1,
+              correctCount: 1,
             },
             {
               id: 'word_noun_the',
@@ -81,7 +81,7 @@ describe('<DeckResultsView />', () => {
               pronunciation: 'tay',
               isVulgar: false,
               CEFR: 'A1',
-              userScore: 0,
+              correctCount: 0,
             },
           ],
         },
@@ -94,7 +94,7 @@ describe('<DeckResultsView />', () => {
         pronunciation: 'ka-fay',
         isVulgar: false,
         CEFR: 'A1',
-        userScore: 1,
+        correctCount: 1,
       },
     });
   });

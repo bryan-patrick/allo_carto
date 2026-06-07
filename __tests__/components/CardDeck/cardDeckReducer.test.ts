@@ -13,7 +13,7 @@ const firstWord: Word = {
 	pronunciation: 'ka-fay',
 	isVulgar: false,
 	CEFR: 'A1',
-	userScore: 14,
+	correctCount: 14,
 };
 
 const secondWord: Word = {
@@ -23,7 +23,7 @@ const secondWord: Word = {
 	pronunciation: 'leev-ruh',
 	isVulgar: false,
 	CEFR: 'A1',
-	userScore: 7,
+	correctCount: 7,
 };
 
 const thirdWord: Word = {
@@ -33,7 +33,7 @@ const thirdWord: Word = {
 	pronunciation: 'pom',
 	isVulgar: false,
 	CEFR: 'A1',
-	userScore: 11,
+	correctCount: 11,
 };
 
 /**
@@ -86,9 +86,11 @@ describe('cardDeckReducer', () => {
 
 		const nextState = cardDeckReducer(state, { type: 'INCREMENT_WORD_SCORE' });
 
-		expect(nextState.cardDeck.words[0].userScore).toBe(firstWord.userScore);
-		expect(nextState.cardDeck.words[1].userScore).toBe(
-			secondWord.userScore + 1,
+		expect(nextState.cardDeck.words[0].correctCount).toBe(
+			firstWord.correctCount,
+		);
+		expect(nextState.cardDeck.words[1].correctCount).toBe(
+			secondWord.correctCount + 1,
 		);
 	});
 

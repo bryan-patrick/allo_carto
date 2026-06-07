@@ -10,7 +10,7 @@ export const words_a1_expressions: Word[] = [
 		partOfSpeech: 'expression',
 		CEFR: 'A1',
 		pronunciation: 'ah-vwar fan',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -22,7 +22,7 @@ export const words_a1_expressions: Word[] = [
 		partOfSpeech: 'expression',
 		CEFR: 'A1',
 		pronunciation: 'ah-vwar swaf',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -34,7 +34,7 @@ export const words_a1_expressions: Word[] = [
 		partOfSpeech: 'expression',
 		CEFR: 'A1',
 		pronunciation: 'kohm-byen',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -46,7 +46,7 @@ export const words_a1_expressions: Word[] = [
 		partOfSpeech: 'expression',
 		CEFR: 'A1',
 		pronunciation: 'bun zhoor-nay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -58,7 +58,7 @@ export const words_a1_expressions: Word[] = [
 		partOfSpeech: 'expression',
 		CEFR: 'A1',
 		pronunciation: 'seel teh play',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];

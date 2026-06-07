@@ -13,7 +13,7 @@ export const words_b1_nouns: Word[] = [
 		CEFR: 'B1',
 		gender: 'Feminine',
 		pronunciation: 'lo-duhr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -28,7 +28,7 @@ export const words_b1_nouns: Word[] = [
 		CEFR: 'B1',
 		gender: 'Feminine',
 		pronunciation: 'lah blond',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Epic',
 	},
 	{
@@ -43,7 +43,7 @@ export const words_b1_nouns: Word[] = [
 		CEFR: 'B1',
 		gender: 'Masculine',
 		pronunciation: 'uhn chum',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Epic',
 	},
 ];

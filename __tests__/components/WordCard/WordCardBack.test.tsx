@@ -52,7 +52,7 @@ describe('<WordCardBack />', () => {
         pronunciation: 'ka-fay',
         isVulgar: false,
         CEFR: 'A1',
-        userScore: 14,
+        correctCount: 14,
       },
     });
   });

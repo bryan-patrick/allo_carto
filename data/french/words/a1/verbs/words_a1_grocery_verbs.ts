@@ -10,7 +10,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'ahn-tray',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -22,7 +22,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'duh-mahn-day',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -34,7 +34,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A2',
 		pronunciation: 'ray-pon-druh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -46,7 +46,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A2',
 		pronunciation: 'mah-gah-zee-nay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -58,7 +58,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'shehr-shay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -70,7 +70,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'troo-vay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -82,7 +82,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'mon-tray',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -94,7 +94,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A2',
 		pronunciation: 'an-dee-kay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -106,7 +106,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A2',
 		pronunciation: 'sweev-ruh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -118,7 +118,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'prahn-druh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -130,7 +130,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'meh-truh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -142,7 +142,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'ah-zhoo-tay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -154,7 +154,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'oo-blee-yay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -166,7 +166,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'vwahr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -178,7 +178,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'ash-tay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -190,7 +190,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'pay-yay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -202,7 +202,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'vahn-druh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -214,7 +214,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'koo-tay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -226,7 +226,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'shwah-zeer',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -238,7 +238,7 @@ export const words_a1_grocery_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'por-tay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];

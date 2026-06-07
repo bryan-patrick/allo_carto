@@ -36,7 +36,7 @@ export interface Word {
 	tense?: string;
 	gender?: 'Feminine' | 'Masculine';
 	partOfSpeech?: string;
-	userScore: number;
+	correctCount: number;
 	rarity?: CardRarity;
 }
 
@@ -47,5 +47,5 @@ export const initialWordState: Word = {
 	pronunciation: '',
 	isVulgar: false,
 	CEFR: 'A1',
-	userScore: 0,
+	correctCount: 0,
 };

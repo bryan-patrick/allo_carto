@@ -16,8 +16,8 @@ import ResultsList from './ResultsList';
 export default function DeckResultsView() {
   const { cardDeckState } = useCardDeck();
   const { title, words } = cardDeckState.cardDeck;
-  const correctWords = words.filter((word: Word) => word.userScore === 1);
-  const incorrectWords = words.filter((word: Word) => word.userScore === 0);
+  const correctWords = words.filter((word: Word) => word.correctCount === 1);
+  const incorrectWords = words.filter((word: Word) => word.correctCount === 0);
 
   /**
    * Destructure styles

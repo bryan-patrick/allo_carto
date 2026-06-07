@@ -58,7 +58,7 @@ describe('<WordCardContainer />', () => {
       pronunciation: 'ka-fay',
       isVulgar: false,
       CEFR: 'A1' as const,
-      userScore: 14,
+      correctCount: 14,
     };
 
     const { getByText } = render(

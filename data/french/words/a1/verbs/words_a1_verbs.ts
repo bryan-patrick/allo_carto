@@ -10,7 +10,7 @@ export const words_a1_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'oo-vreer',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -22,7 +22,7 @@ export const words_a1_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'fair-may',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -34,7 +34,7 @@ export const words_a1_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'ay-tew-dee-ay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -46,7 +46,7 @@ export const words_a1_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'ay-kreer',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -58,7 +58,7 @@ export const words_a1_verbs: Word[] = [
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'day-see-nay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];

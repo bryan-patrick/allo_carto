@@ -31,7 +31,7 @@ export const sharedWordCardStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
-  cardUserScore: {
+  cardcorrectCount: {
     color: colors.light.text,
     fontSize: 16,
     fontWeight: '700',

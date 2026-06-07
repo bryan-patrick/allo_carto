@@ -26,7 +26,7 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
     englishWordStyle,
     successStyle,
     dangerStyle,
-    userScoreStyle,
+    correctCountStyle,
     CEFRStyle
   } = styles;
 
@@ -48,7 +48,7 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
       {wordArr.length > 0 && wordArr.map((word: Word) => {
         const {
           frenchWord,
-          userScore,
+          correctCount,
           englishWords,
           CEFR
         } = word;
@@ -57,7 +57,7 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
          * Map out the words
          */
         return (
-          <View key={`${frenchWord}-${userScore}`} style={wordRowContainerStyle}>
+          <View key={`${frenchWord}-${correctCount}`} style={wordRowContainerStyle}>
             <View style={checkMarKContainerStyle}>
               <MaterialIcons
                 name={iconName}
@@ -69,7 +69,7 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
                 <Text style={[englishWordStyle, isCorrectStyle]}>{englishWords.join(', ')}</Text>
               </View>
             </View>
-            <View style={userScoreStyle}>
+            <View style={correctCountStyle}>
               <Text></Text>
             </View>
             <Text style={[CEFRStyle, { backgroundColor: colors.light.CEFR[CEFR] }]}>{CEFR}</Text>
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   dangerStyle: {
     color: colors.dark.danger
   },
-  userScoreStyle: {
+  correctCountStyle: {
 
   },
   CEFRStyle: {

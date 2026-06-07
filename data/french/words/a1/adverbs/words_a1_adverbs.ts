@@ -10,7 +10,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'tar',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -22,7 +22,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'toh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -34,7 +34,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'ee-see',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -46,7 +46,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'lah',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -58,7 +58,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'mant-nahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -70,7 +70,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'ahn-kor',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -82,7 +82,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'oh-see',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -94,7 +94,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'suhl-mahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -106,7 +106,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'day-zhah',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -118,7 +118,7 @@ export const words_a1_adverbs: Word[] = [
 		partOfSpeech: 'adverb',
 		CEFR: 'A1',
 		pronunciation: 'byen-toh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 ];

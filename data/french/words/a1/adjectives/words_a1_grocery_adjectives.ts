@@ -11,7 +11,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'oo-vair',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -24,7 +24,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'fair-may',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -37,7 +37,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'blahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -50,7 +50,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'koh-mun',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -63,7 +63,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'fray',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -76,7 +76,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'plan',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -88,7 +88,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		partOfSpeech: 'adjective',
 		CEFR: 'A1',
 		pronunciation: 'veed',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -100,7 +100,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		partOfSpeech: 'adjective',
 		CEFR: 'A2',
 		pronunciation: 'dees-poh-neebl',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -113,7 +113,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		CEFR: 'A2',
 		gender: 'Masculine',
 		pronunciation: 'sol-day',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Epic',
 	},
 	{
@@ -126,7 +126,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'spay-syahl',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -138,7 +138,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		partOfSpeech: 'adjective',
 		CEFR: 'A2',
 		pronunciation: 'kool',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Epic',
 	},
 	{
@@ -151,7 +151,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'shehr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -163,7 +163,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 		partOfSpeech: 'adjective',
 		CEFR: 'A1',
 		pronunciation: 'ohtr',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];

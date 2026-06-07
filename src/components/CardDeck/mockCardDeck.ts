@@ -16,7 +16,7 @@ export const mockDeck: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'luh shee-ehn',
-		userScore: 14,
+		correctCount: 14,
 	},
 	{
 		id: 'word_noun_maison',
@@ -30,7 +30,7 @@ export const mockDeck: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'lah meh-zohn',
-		userScore: 14,
+		correctCount: 14,
 	},
 	{
 		id: 'word_noun_livre',
@@ -44,7 +44,7 @@ export const mockDeck: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'luh leev-uh',
-		userScore: 7,
+		correctCount: 7,
 	},
 	{
 		id: 'word_noun_pomme',
@@ -58,6 +58,6 @@ export const mockDeck: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'lah pom',
-		userScore: 11,
+		correctCount: 11,
 	},
 ];

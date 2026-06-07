@@ -2,14 +2,20 @@ import { ThemeProvider } from "@react-navigation/native";
 import { useFonts } from 'expo-font';
 import { Stack } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
-import { Suspense, useReducer, useState } from "react";
+import { Suspense, useEffect, useReducer, useState } from "react";
 import { CardDeckContext, initialCardDeckState } from "../components/CardDeck/cardDeckContext";
 import { cardDeckReducer } from "../components/CardDeck/cardDeckReducer";
 import Loader from "../components/Loader";
-import { getDB, getTables } from "../db/interface";
+import { deleteDB, getDB, getTables } from "../db/interface";
 import getMonHomme, { UserRow } from "../db/queries/getMonHomme";
 import { UserContext } from "../db/userContext";
 import alloTheme from './alloTheme';
+
+/**
+ * Set to true to delete/reset the db
+ * Remember to put it back
+ */
+const resetDB = false;
 
 /**
  * AppLayout Component
@@ -43,6 +49,15 @@ export default function AppLayout() {
     setUser(monHomme);
   }
 
+  useEffect(() => {
+    async function doReset() {
+      await deleteDB();
+      console.log('Reset DB!');
+    }
+
+    if (resetDB) doReset();
+  }, [])
+
   /**
    * The (tabs) dir are navigable routes on the bottom bar
    * All other routes go in dir (routes)
@@ -59,35 +74,37 @@ export default function AppLayout() {
           cardDeckDispatch
         }}>
           <Suspense fallback={<Loader />}>
-            <SQLiteProvider
-              databaseName="allo_carto.db"
-              onInit={initDB}
-              useSuspense
-            >
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{
-                  headerShown: false,
-                  headerTitle: 'Home',
-                }} />
-                <Stack.Screen name="(routes)/CardDeck" options={{
-                  headerShown: true,
-                  headerBackTitle: 'Back',
-                  headerBackButtonDisplayMode: 'minimal',
-                  headerTitle: 'Review a deck'
-                }} />
-                <Stack.Screen name="(routes)/ChooseCardDeck" options={{
-                  headerShown: true,
-                  headerBackTitle: 'Home',
-                  headerTitle: 'Choose a Deck',
-                  headerBackButtonDisplayMode: 'minimal',
-                }} />
-                <Stack.Screen name="(routes)/DeckResults" options={{
-                  headerShown: true,
-                  headerTitle: 'Results',
-                  headerBackVisible: false
-                }} />
-              </Stack>
-            </SQLiteProvider>
+            {!resetDB &&
+              <SQLiteProvider
+                databaseName="allo_carto.db"
+                onInit={initDB}
+                useSuspense
+              >
+                <Stack>
+                  <Stack.Screen name="(tabs)" options={{
+                    headerShown: false,
+                    headerTitle: 'Home',
+                  }} />
+                  <Stack.Screen name="(routes)/CardDeck" options={{
+                    headerShown: true,
+                    headerBackTitle: 'Back',
+                    headerBackButtonDisplayMode: 'minimal',
+                    headerTitle: 'Review a deck'
+                  }} />
+                  <Stack.Screen name="(routes)/ChooseCardDeck" options={{
+                    headerShown: true,
+                    headerBackTitle: 'Home',
+                    headerTitle: 'Choose a Deck',
+                    headerBackButtonDisplayMode: 'minimal',
+                  }} />
+                  <Stack.Screen name="(routes)/DeckResults" options={{
+                    headerShown: true,
+                    headerTitle: 'Results',
+                    headerBackVisible: false
+                  }} />
+                </Stack>
+              </SQLiteProvider>
+            }
           </Suspense>
         </CardDeckContext>
       </ThemeProvider>

@@ -122,7 +122,7 @@ export default function WordCardButton({
    * Side effects (and haptics) for dispatching check answer
    */
   useEffect(() => {
-    async function udateUserScore() {
+    async function udatecorrectCount() {
       if (user) {
         await incrementCorrectCount(user.id, currentCard.id);
       }
@@ -133,7 +133,7 @@ export default function WordCardButton({
       switch (`${cardState.stage}_${cardState.progress}`) {
         case 'CORRECT_SUCCESS':
           cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
-          udateUserScore();
+          udatecorrectCount();
           Haptics.notificationAsync(
             Haptics.NotificationFeedbackType.Success,
           );

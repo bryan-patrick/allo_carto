@@ -13,7 +13,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'uhn kah-fay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -28,7 +28,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'luh dee-vahn',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -43,7 +43,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'oon tahbl',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -58,7 +58,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'oon shez',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -73,7 +73,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'oon tass',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -88,7 +88,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'uhn vay-lo',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -103,7 +103,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'lah glass',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -118,7 +118,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'oon fuh-net',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -133,7 +133,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'uhn nah-mee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -148,7 +148,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'oon nah-mee',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -163,7 +163,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'luh trah-vai',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -178,7 +178,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'luh pan',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -193,7 +193,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'lah twah-let',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -208,7 +208,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'lah klay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Rare',
 	},
 	{
@@ -223,7 +223,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'lo',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -238,7 +238,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'uhn muh-new',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -253,7 +253,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Feminine',
 		pronunciation: 'lah mew-zeek',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -268,7 +268,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'uhn leev-ruh',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 	{
@@ -283,7 +283,7 @@ export const words_a1_nouns: Word[] = [
 		CEFR: 'A1',
 		gender: 'Masculine',
 		pronunciation: 'luh lay',
-		userScore: 0,
+		correctCount: 0,
 		rarity: 'Common',
 	},
 ];
