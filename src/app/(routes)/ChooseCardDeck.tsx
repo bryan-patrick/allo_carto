@@ -1,5 +1,6 @@
 import { DeckCoffeeShop } from "@/data/french/decks/deck__coffee_shop";
 import { DeckGroceryStore } from "@/data/french/decks/deck__grocery_store";
+import { DeckClocksAndTime } from "@/data/french/decks/deck__time";
 import DeckBox from "@/src/components/DeckBox";
 import { FlatList, StyleSheet } from "react-native";
 
@@ -7,12 +8,13 @@ import { FlatList, StyleSheet } from "react-native";
  * Add more decks here
  * TODO: Maybe barrel
  */
-const decks = [DeckCoffeeShop, DeckGroceryStore];
+const decks = [DeckCoffeeShop, DeckGroceryStore, DeckClocksAndTime];
 
 /**
  * ChooseCardDeck component
  */
 export default function ChooseCardDeck() {
+
   /**
    * Destructure styles
    */

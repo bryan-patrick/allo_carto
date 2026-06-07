@@ -70,7 +70,7 @@ export const DeckCoffeeShop: CardDeck = {
 		'word_adjective_moyenne',
 		'word_adjective_grand',
 		'word_adjective_grande',
-		'word_expression_sil_vous_plait',
+		'word_expression_sil_te_plait',
 		'word_verb_etudier',
 		'word_verb_ecrire',
 		'word_verb_dessiner',
