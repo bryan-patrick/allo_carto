@@ -1,4 +1,9 @@
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
+import {
+  makeMockCardDeck,
+  makeMockCardDeckState,
+} from '@/src/components/CardDeck/mockCardDeck';
+import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
 import WordCardButton from '@/src/components/WordCard/WordCardButton';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
@@ -30,30 +35,23 @@ const mockIncrementCorrectCount = jest.mocked(incrementCorrectCount);
  * Mock state
  */
 function mockDeckState(cardDeckDispatch = jest.fn()) {
-  const currentCard = {
+  const currentCard: Word = {
     id: 'word_noun_cafe',
     frenchWord: 'cafe',
     englishArticle: 'The',
     englishWords: ['coffee'],
     pronunciation: 'ka-fay',
     isVulgar: false,
-    CEFR: 'A1' as const,
+    CEFR: 'A1',
     correctCount: 14,
   };
 
   mockUseCardDeck.mockReturnValue({
-    cardDeckState: {
+    cardDeckState: makeMockCardDeckState({
       currentIndex: 0,
       currentId: currentCard.id,
-      cardDeck: {
-        title: 'Testing deck',
-        description: 'A deck for tests',
-        CEFR: ['A1'],
-        image: undefined,
-        wordIds: [currentCard.id],
-        words: [currentCard],
-      },
-    },
+      cardDeck: makeMockCardDeck({ words: [currentCard] }),
+    }),
     cardDeckDispatch,
     currentCard,
   });

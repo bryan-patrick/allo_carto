@@ -3,7 +3,7 @@
  */
 import { createContext, type Dispatch } from 'react';
 import { CardDeckAction } from './cardDeckReducer';
-import type { CardDeck } from './cardDeckTypes';
+import type { CardDeck, Word } from './cardDeckTypes';
 import { initialWordState } from './cardDeckTypes';
 
 /**
@@ -18,6 +18,8 @@ export interface CardDeckStateProps {
 	currentIndex: number;
 	currentId: string;
 	cardDeck: CardDeck;
+	correctWords: Word[];
+	incorrectWords: Word[];
 }
 
 /**
@@ -26,6 +28,8 @@ export interface CardDeckStateProps {
 export const initialCardDeckState: CardDeckStateProps = {
 	currentIndex: 0,
 	currentId: '',
+	correctWords: [],
+	incorrectWords: [],
 	cardDeck: {
 		title: '',
 		description: '',
@@ -33,6 +37,7 @@ export const initialCardDeckState: CardDeckStateProps = {
 		CEFR: [],
 		wordIds: [],
 		words: [initialWordState],
+		wordChoices: [],
 	},
 };
 

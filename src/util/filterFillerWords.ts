@@ -24,33 +24,20 @@ export default function filterFillerWords({
 	words = englishArticles,
 	correctWords,
 }: FilterFillerWordsProps) {
+	/**
+	 * Normalize caps
+	 */
 	let lowerCaseCorrectWords = correctWords.map((word: string) =>
 		word.toLowerCase(),
 	);
 
-	let wordsCopy = [...words].filter(word => {
-		return !lowerCaseCorrectWords.includes(word.toLowerCase());
-	});
-
-	if (amount <= wordsCopy.length) {
-		let iterationCount = wordsCopy.length - amount + 1;
-		let max = 50;
-		let safety = 0;
-
-		while (iterationCount > 0 && safety < max) {
-			let randomPos = Math.floor(Math.random() * wordsCopy.length);
-			safety += 1;
-
-			if (safety >= max) {
-				throw new Error('Maximum iterations allowed (getFillerWords.ts)');
-			}
-
-			if (wordsCopy[randomPos] !== 'DELETE') {
-				wordsCopy[randomPos] = 'DELETE';
-				iterationCount -= 1;
-			}
-		}
-	}
+	/**
+	 * Remove the correct answer from this choices arr
+	 * (also shuffle and slice to amount)
+	 */
+	let wordsCopy = [...shuffleArray(words)]
+		.filter(word => !lowerCaseCorrectWords.includes(word.toLowerCase()))
+		.slice(0, amount);
 
 	return shuffleArray([
 		...wordsCopy.filter(article => article !== 'DELETE'),

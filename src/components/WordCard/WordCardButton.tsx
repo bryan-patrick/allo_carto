@@ -133,16 +133,22 @@ export default function WordCardButton({
       switch (`${cardState.stage}_${cardState.progress}`) {
         case 'CORRECT_SUCCESS':
           cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
+          cardDeckDispatch({ type: 'ADD_CORRECT_WORD' });
           udatecorrectCount();
           Haptics.notificationAsync(
             Haptics.NotificationFeedbackType.Success,
           );
           break;
         case 'READY_WARNING':
+          Haptics.notificationAsync(
+            Haptics.NotificationFeedbackType.Warning,
+          );
+          break;
         case 'INCORRECT_DANGER':
           Haptics.notificationAsync(
             Haptics.NotificationFeedbackType.Warning,
           );
+          cardDeckDispatch({ type: 'ADD_INCORRECT_WORD' });
           break;
         case 'COMPLETED_DANGER':
           Haptics.notificationAsync(

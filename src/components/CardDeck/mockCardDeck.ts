@@ -1,9 +1,10 @@
-import { type Word } from './cardDeckTypes';
+import { type CardDeckStateProps } from './cardDeckContext';
+import { type CardDeck, type Word } from './cardDeckTypes';
 
 /**
- * TODO remove.
+ * Mock words
  */
-export const mockDeck: Word[] = [
+export const mockWords: Word[] = [
 	{
 		id: 'word_noun_chien',
 		frenchWord: 'chien',
@@ -61,3 +62,50 @@ export const mockDeck: Word[] = [
 		correctCount: 11,
 	},
 ];
+
+/**
+ * Mock deck
+ */
+export const mockCardDeck: CardDeck = {
+	title: 'Testing deck',
+	description: 'A deck for tests',
+	CEFR: ['A1'],
+	wordIds: mockWords.map(word => word.id),
+	words: mockWords,
+	image: undefined,
+	wordChoices: mockWords.flatMap(word => word.englishWords),
+};
+
+/**
+ * Make a mock deck with overrides.
+ */
+export function makeMockCardDeck(overrides: Partial<CardDeck> = {}): CardDeck {
+	const words = overrides.words ?? mockCardDeck.words;
+
+	return {
+		...mockCardDeck,
+		...overrides,
+		words,
+		wordIds: overrides.wordIds ?? words.map(word => word.id),
+		wordChoices:
+			overrides.wordChoices ?? words.flatMap(word => word.englishWords),
+	};
+}
+
+/**
+ * Make mock card deck state with overrides.
+ */
+export function makeMockCardDeckState(
+	overrides: Partial<CardDeckStateProps> = {},
+): CardDeckStateProps {
+	const cardDeck = overrides.cardDeck ?? mockCardDeck;
+
+	return {
+		currentIndex: 0,
+		currentId: cardDeck.words[0]?.id ?? '',
+		cardDeck,
+		correctWords: [],
+		incorrectWords: [],
+		...overrides,
+	};
+}

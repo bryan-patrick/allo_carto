@@ -19,6 +19,7 @@ export const DeckCoffeeShop: CardDeck = {
 	CEFR: ['A1', 'B1'],
 	words: [],
 	image: coffeeHouse,
+	wordChoices: [],
 	wordIds: [
 		'word_interjection_salut',
 		'word_noun_cafe',

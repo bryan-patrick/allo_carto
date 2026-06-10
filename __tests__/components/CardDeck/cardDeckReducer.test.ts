@@ -1,54 +1,14 @@
 import { CardDeckStateProps } from '@/src/components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '@/src/components/CardDeck/cardDeckReducer';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
-import { Word } from '@/src/components/CardDeck/cardDeckTypes';
+import {
+	makeMockCardDeck,
+	mockWords,
+} from '@/src/components/CardDeck/mockCardDeck';
 
 /**
  * Mock words
  */
-const firstWord: Word = {
-	id: 'word_noun_cafe',
-	frenchWord: 'cafe',
-	englishWords: ['coffee'],
-	pronunciation: 'ka-fay',
-	isVulgar: false,
-	CEFR: 'A1',
-	correctCount: 14,
-};
-
-const secondWord: Word = {
-	id: 'word_noun_livre',
-	frenchWord: 'livre',
-	englishWords: ['book'],
-	pronunciation: 'leev-ruh',
-	isVulgar: false,
-	CEFR: 'A1',
-	correctCount: 7,
-};
-
-const thirdWord: Word = {
-	id: 'word_noun_pomme',
-	frenchWord: 'pomme',
-	englishWords: ['apple'],
-	pronunciation: 'pom',
-	isVulgar: false,
-	CEFR: 'A1',
-	correctCount: 11,
-};
-
-/**
- * Make a deck
- */
-function mockDeck(words: Word[]): CardDeck {
-	return {
-		title: 'Testing deck',
-		description: 'A deck for tests',
-		CEFR: ['A1'],
-		wordIds: words.map(word => word.id),
-		image: undefined,
-		words,
-	};
-}
+const [firstWord, secondWord, thirdWord] = mockWords;
 
 /**
  * Mock reducer state
@@ -57,7 +17,9 @@ function mockState(words = [firstWord, secondWord]): CardDeckStateProps {
 	return {
 		currentIndex: 0,
 		currentId: words[0]?.id ?? '',
-		cardDeck: mockDeck(words),
+		cardDeck: makeMockCardDeck({ words }),
+		correctWords: [],
+		incorrectWords: [],
 	};
 }
 
@@ -94,12 +56,36 @@ describe('cardDeckReducer', () => {
 		);
 	});
 
+	test('adds the current word to correct words', () => {
+		const state = {
+			...mockState(),
+			incorrectWords: [firstWord],
+		};
+
+		const nextState = cardDeckReducer(state, { type: 'ADD_CORRECT_WORD' });
+
+		expect(nextState.correctWords).toEqual([firstWord]);
+		expect(nextState.incorrectWords).toEqual([firstWord]);
+	});
+
+	test('adds the current word to incorrect words', () => {
+		const state = {
+			...mockState(),
+			correctWords: [firstWord],
+		};
+
+		const nextState = cardDeckReducer(state, { type: 'ADD_INCORRECT_WORD' });
+
+		expect(nextState.correctWords).toEqual([firstWord]);
+		expect(nextState.incorrectWords).toEqual([firstWord]);
+	});
+
 	/**
 	 * Make sure setting a new deck gives us expected state
 	 */
 	test('sets a new deck and starts at the first card', () => {
 		const state = mockState();
-		const newDeck = mockDeck([thirdWord]);
+		const newDeck = makeMockCardDeck({ words: [thirdWord] });
 
 		const nextState = cardDeckReducer(state, {
 			type: 'SET_DECK',
@@ -109,5 +95,7 @@ describe('cardDeckReducer', () => {
 		expect(nextState.cardDeck).toBe(newDeck);
 		expect(nextState.currentIndex).toBe(0);
 		expect(nextState.currentId).toBe(thirdWord.id);
+		expect(nextState.correctWords).toEqual([]);
+		expect(nextState.incorrectWords).toEqual([]);
 	});
 });

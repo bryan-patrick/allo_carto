@@ -16,6 +16,10 @@ interface ResultsListProps {
  * ResultsList component
  */
 export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
+
+  /**
+   * Destructure styles
+   */
   const {
     sectionTitleStyle,
     wordRowContainerStyle,

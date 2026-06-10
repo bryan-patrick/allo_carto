@@ -3,6 +3,9 @@ import * as SQLite from 'expo-sqlite';
 import type { CardDeck } from '../components/CardDeck/cardDeckTypes';
 import { CardRarity, CEFR, Word } from '../components/CardDeck/cardDeckTypes';
 import shuffleArray from '../util/shuffleArray';
+import { getDB, logThisIfItFails } from './connection';
+import getDeckWordChoices from './queries/getDeckWordChoices';
+export { getDB } from './connection';
 
 /**
  * Typing
@@ -44,39 +47,6 @@ interface WordRankRow {
  *
  * Our DB dir is for our own seeders and queries/interface.
  */
-let db: SQLite.SQLiteDatabase | null = null;
-
-export async function getDB(): Promise<SQLite.SQLiteDatabase> {
-	try {
-		if (db) {
-			return db;
-		}
-
-		db = await SQLite.openDatabaseAsync('allo_carto.db');
-
-		if (!db) {
-			throw new Error('DB not found, SQLite.openDatabaseAsync failed.');
-		}
-
-		return db;
-	} catch (e) {
-		console.error('Failed to init db:', e);
-		throw e;
-	}
-}
-
-export async function logThisIfItFails<T>(
-	message: string,
-	fn: () => Promise<T>,
-): Promise<T> {
-	try {
-		return await fn();
-	} catch (error) {
-		console.error(`DB step failed: ${message}`, error);
-		throw error;
-	}
-}
-
 /**
  * Check if are tables exist and are seeded.
  * If not, call the seeder
@@ -244,11 +214,10 @@ interface GetDeckProps {
  * TODO:
  * Need to shuffle
  * Need to include lemma's that are unique
- * Need to limit amount
  */
 export async function getDeck({
 	deck,
-	amount,
+	amount = 6,
 	userId,
 }: GetDeckProps): Promise<CardDeck | undefined> {
 	/**
@@ -259,6 +228,8 @@ export async function getDeck({
 	/**
 	 * Get the DB
 	 * Select all the words in that deck (deck.wordIds)
+	 * ORDER BY RANDOM() is important so that the user
+	 * doesn't get the same set of cards each time.
 	 */
 	try {
 		const database = await getDB();
@@ -267,6 +238,7 @@ export async function getDeck({
 			SELECT *
 			FROM words
 			WHERE id IN (${quests});
+			ORDER BY RANDOM();
 			`,
 			deck.wordIds,
 		);
@@ -326,7 +298,7 @@ export async function getDeck({
 		 * In other words, we're turning this:
 		 * [{"correctCount": 1, "seenCount": 0, "wordId": "word_noun_cafe"}, ...]
 		 *
-		 * Into a lookup table:
+		 * Into this (a lookup table):
 		 * {word_noun_cafe: {"correctCount": 1, "seenCount": 0, "wordId": "word_noun_cafe"}, ...}
 		 *
 		 * This prevents us from having to iterate over
@@ -340,21 +312,16 @@ export async function getDeck({
 		}
 
 		/**
-		 * Shuffle!
+		 * Shuffle and slice!
 		 */
-		const shuffledUniqueLemmaWords = shuffleArray(slicedWords);
-
-		/**
-		 * Slice to the amount
-		 */
-		const slicedShuffledWords = shuffledUniqueLemmaWords.slice(0, amount);
+		const shlicedUniqueLemmaWords = shuffleArray(slicedWords).slice(0, amount);
 
 		/**
 		 * Add in the correctCount/correctCounts
 		 * These can be undefined if they have
 		 * never been seen by the user.
 		 */
-		const withUniquecorrectCounts = slicedShuffledWords.map(
+		const withUniquecorrectCounts = shlicedUniqueLemmaWords.map(
 			(word: Word): Word => {
 				const wordRankRow: WordRankRow | undefined = keyedRankRows[word.id];
 				const correctCount: number = wordRankRow?.correctCount ?? 0;
@@ -375,6 +342,7 @@ export async function getDeck({
 		return {
 			...deck,
 			words: withUniquecorrectCounts,
+			wordChoices: await getDeckWordChoices({ wordIds: deck.wordIds }),
 		};
 	} catch (error) {
 		console.error('Could not retrieve deck:', error);

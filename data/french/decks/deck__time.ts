@@ -8,6 +8,7 @@ export const DeckClocksAndTime: CardDeck = {
 	CEFR: ['A1', 'A2'],
 	words: [],
 	image: clocksImage,
+	wordChoices: [],
 	wordIds: [
 		'word_noun_horloge',
 		'word_noun_montre',

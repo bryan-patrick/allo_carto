@@ -1,4 +1,4 @@
-import { getDB } from '../interface';
+import { getDB } from '../connection';
 
 /**
  * Typing

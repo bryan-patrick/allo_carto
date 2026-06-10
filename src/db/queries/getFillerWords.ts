@@ -1,6 +1,6 @@
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import filterFillerWords from '@/src/util/filterFillerWords';
-import { getDB } from '../interface';
+import { getDB } from '../connection';
 
 /**
  * Typing

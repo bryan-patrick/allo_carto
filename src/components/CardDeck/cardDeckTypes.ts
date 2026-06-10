@@ -13,6 +13,7 @@ export interface CardDeck {
 	wordIds: string[];
 	words: Word[];
 	image: ImageSourcePropType | undefined;
+	wordChoices: string[];
 }
 
 /**

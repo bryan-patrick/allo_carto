@@ -1,7 +1,6 @@
 import sharedStyles from '@/src/app/sharedStyles';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from "../../app/colors";
-import type { Word } from "../CardDeck/cardDeckTypes";
 import { useCardDeck } from "../CardDeck/useCardDeck";
 import GradientText from '../GradientText';
 import LinkButton from '../LinkButton';
@@ -15,9 +14,8 @@ import ResultsList from './ResultsList';
  */
 export default function DeckResultsView() {
   const { cardDeckState } = useCardDeck();
-  const { title, words } = cardDeckState.cardDeck;
-  const correctWords = words.filter((word: Word) => word.correctCount === 1);
-  const incorrectWords = words.filter((word: Word) => word.correctCount === 0);
+  const { title } = cardDeckState.cardDeck;
+  const { correctWords, incorrectWords } = cardDeckState;
 
   /**
    * Destructure styles

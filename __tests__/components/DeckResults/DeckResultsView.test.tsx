@@ -1,4 +1,9 @@
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
+import {
+  makeMockCardDeck,
+  makeMockCardDeckState,
+} from '@/src/components/CardDeck/mockCardDeck';
+import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckResultsView from '@/src/components/DeckResults/DeckResultsView';
 import { useLinkProps } from '@react-navigation/native';
 import { fireEvent, render } from '@testing-library/react-native';
@@ -51,43 +56,8 @@ describe('<DeckResultsView />', () => {
   beforeEach(() => {
     mockLinkPress.mockClear();
     mockUseLinkProps.mockClear();
-    mockUseCardDeck.mockReturnValue({
-      cardDeckState: {
-        currentIndex: 0,
-        currentId: 'word_noun_cafe',
-        cardDeck: {
-          title: 'Testing Coffee Deck',
-          CEFR: ['A1'],
-          description: 'A deck for tests',
-          image: testingImage,
-          wordIds: [
-            'word_noun_cafe',
-            'word_noun_the',
-          ],
-          words: [
-            {
-              id: 'word_noun_cafe',
-              frenchWord: 'cafe',
-              englishWords: ['coffee'],
-              pronunciation: 'ka-fay',
-              isVulgar: false,
-              CEFR: 'A1',
-              correctCount: 1,
-            },
-            {
-              id: 'word_noun_the',
-              frenchWord: 'the',
-              englishWords: ['tea'],
-              pronunciation: 'tay',
-              isVulgar: false,
-              CEFR: 'A1',
-              correctCount: 0,
-            },
-          ],
-        },
-      },
-      cardDeckDispatch: jest.fn(),
-      currentCard: {
+    const words: Word[] = [
+      {
         id: 'word_noun_cafe',
         frenchWord: 'cafe',
         englishWords: ['coffee'],
@@ -96,6 +66,32 @@ describe('<DeckResultsView />', () => {
         CEFR: 'A1',
         correctCount: 1,
       },
+      {
+        id: 'word_noun_the',
+        frenchWord: 'the',
+        englishWords: ['tea'],
+        pronunciation: 'tay',
+        isVulgar: false,
+        CEFR: 'A1',
+        correctCount: 0,
+      },
+    ];
+    const cardDeck = makeMockCardDeck({
+      title: 'Testing Coffee Deck',
+      image: testingImage,
+      words,
+    });
+
+    mockUseCardDeck.mockReturnValue({
+      cardDeckState: makeMockCardDeckState({
+        currentIndex: 0,
+        currentId: words[0].id,
+        cardDeck,
+        correctWords: [words[0]],
+        incorrectWords: [words[1]],
+      }),
+      cardDeckDispatch: jest.fn(),
+      currentCard: words[0],
     });
   });
 

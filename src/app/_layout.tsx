@@ -13,7 +13,7 @@ import alloTheme from './alloTheme';
 
 /**
  * Set to true to delete/reset the db
- * Remember to put it back
+ * Remember to put it back!
  */
 const resetDB = false;
 

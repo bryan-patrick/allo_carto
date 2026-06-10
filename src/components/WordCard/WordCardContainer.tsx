@@ -5,6 +5,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-na
 import { englishArticles } from "../../util/filterFillerWords";
 import getFillerWords from "../../util/getFillerWords";
 import { type Word } from "../CardDeck/cardDeckTypes";
+import { useCardDeck } from "../CardDeck/useCardDeck";
 import WordCard from "./WordCard";
 import WordCardButton from "./WordCardButton";
 import { initialWordCardState, WordCardUIContext } from "./wordCardContext";
@@ -23,6 +24,7 @@ interface CardContainerProps {
  * WordCardContainer Component
  */
 export default function WordCardContainer({ word, isCurrent }: CardContainerProps) {
+  const { cardDeckState } = useCardDeck();
   const { container, nextBtn } = wordCardContainerStyles;
 
   /**
@@ -43,7 +45,9 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   useEffect(() => {
     async function loadWords() {
       setFillerWords(await getFillerWords({
-        correctWords: word.englishWords
+        //TODO Here is where you will pass in the decks set of "correct" words
+        correctWords: word.englishWords,
+        words: cardDeckState.cardDeck.wordChoices,
       }));
 
       if (word.englishArticle) {
@@ -61,6 +65,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
     word.frenchWord,
     word.englishWords,
     word.englishArticle,
+    cardDeckState.cardDeck.wordChoices,
   ]);
 
   /**

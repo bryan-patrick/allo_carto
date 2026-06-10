@@ -18,6 +18,7 @@ export const DeckGroceryStore: CardDeck = {
 		'Food. Wine. Cookies. A large deck, there are a vast amount of words related to grocery shopping.',
 	words: [],
 	image: groceryStore,
+	wordChoices: [],
 	wordIds: [
 		'word_interjection_salut',
 		'word_interjection_bonjour',

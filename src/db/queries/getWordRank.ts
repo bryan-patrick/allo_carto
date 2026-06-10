@@ -1,4 +1,4 @@
-import { getDB } from '../interface';
+import { getDB } from '../connection';
 
 /**
  * Typing
@@ -15,8 +15,6 @@ export default async function getWordRank({
 	userId,
 	wordId,
 }: GetWordRankProps) {
-	console.log(userId, wordId);
-
 	const database = await getDB();
 
 	const row: { correctCount: number } | null = await database.getFirstAsync(
