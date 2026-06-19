@@ -89,6 +89,7 @@ Real quick so I don't forget...
 - Add words properly to the new decks
 - Card decoration / color badge based on letters and mapped colors of the word IDs
 - SVG chapter and progress map (visual and data)
+- Place hero image frame (like a polaroid or something? Idk)
 
 ## Free art and assets credits
 
