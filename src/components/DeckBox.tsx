@@ -9,7 +9,6 @@ import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
 import { useUserContext } from "../db/useUserContext";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
-import GradientText from "./GradientText";
 
 /**
  * Typing
@@ -88,25 +87,20 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
         <View style={cardHeaderStyle}>
           <View style={titleContainer}>
             <View style={gradientTextContainer}>
-              <GradientText
-                text={title}
-                fontSize={20}
-                style={titleStyle}
-                colors={CEFRGradientDark}
-              />
+              <Text style={titleStyle}>{title}</Text>
             </View>
-            <LinearGradient
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              colors={CEFRGradientLight}
-              style={CEFRGradientStyle}
-            >
-              <Text style={CEFRLabelStyle}>CEFR</Text>
-              <Text style={CEFRTextStyle}>{CEFR.join(' - ')}</Text>
-            </LinearGradient>
           </View>
           <Text style={descriptionStyle}>{description}</Text>
         </View>
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          colors={CEFRGradientLight}
+          style={CEFRGradientStyle}
+        >
+          <Text style={CEFRLabelStyle}>CEFR</Text>
+          <Text style={CEFRTextStyle}>{CEFR.join(' - ')}</Text>
+        </LinearGradient>
         <ImageBackground source={image} style={imageBackgroundStyle} />
         <View style={cardFooterStyle}>
           <LinkButton handler={() => handleDeckSelect(deck)}>
@@ -134,13 +128,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.background,
     overflow: 'hidden',
     borderRadius: 16,
-    borderWidth: 6,
+    borderWidth: 4,
     borderColor: colors.light.border,
     boxShadow: `0 16px 0 ${colors.dark.border}`
   },
   cardHeaderStyle: {
     display: 'flex',
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderColor: colors.light.border
   },
   titleContainer: {
@@ -151,10 +145,10 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   gradientTextContainer: {
-    paddingTop: 8,
-    flexShrink: 1,
-    paddingLeft: 12,
     display: 'flex',
+    flexShrink: 1,
+    padding: 12,
+    paddingBottom: 0,
     justifyContent: 'center'
   },
   titleStyle: {
@@ -165,34 +159,25 @@ const styles = StyleSheet.create({
   },
   CEFRGradientStyle: {
     display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignSelf: 'flex-start',
     overflow: 'hidden',
-    paddingRight: 4,
-    paddingLeft: 4,
-    borderWidth: 1,
-    marginLeft: 4,
-    borderRadius: 8,
-    borderTopWidth: 0,
-    borderRightWidth: 0,
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 0,
-    borderColor: colors.dark.border,
+    width: '100%',
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 1,
+    paddingBottom: 1,
+    borderColor: colors.light.border,
   },
   CEFRLabelStyle: {
-    fontSize: 10,
-    paddingLeft: 8,
-    paddingTop: 2,
-    fontWeight: 800,
+    fontSize: 14,
+    fontWeight: 700,
   },
   CEFRTextStyle: {
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: 14,
     color: colors.dark.text,
-    paddingTop: 0,
-    paddingLeft: 8,
-    paddingRight: 8,
-    padding: 4,
   },
   descriptionStyle: {
     color: colors.dark.text,

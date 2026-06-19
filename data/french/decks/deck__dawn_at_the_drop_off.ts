@@ -8,8 +8,8 @@ const dawnDropOff = require('@/src/app/assets/images/decks/dawn-drop-off.jpg');
 export const DeckDawnAtTheDropOff: CardDeck = {
 	title: 'Dawn at the Drop Off',
 	description:
-		'Luggage, preparation, getting a ride, at the entrance, directions to the drop off,',
-	CEFR: ['A1', 'A2'],
+		'Luggage, preparation, getting a ride, at the entrance, directions to the drop off, etc.',
+	CEFR: ['A1', 'B1'],
 	words: [],
 	image: dawnDropOff,
 	wordChoices: [],

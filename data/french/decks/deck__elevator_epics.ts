@@ -9,8 +9,8 @@ export const DeckElevatorEpics: CardDeck = {
 	title: 'Elevator Epics',
 	description: 'Epic stories from random people in elevators.',
 	CEFR: ['A1', 'A2'],
-	words: [],
 	image: elevatorEpics,
+	words: [],
 	wordChoices: [],
 	wordIds: [
 		'word_verb_entrer',
