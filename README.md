@@ -76,15 +76,17 @@ Real quick so I don't forget...
 
 - ̶d̶e̶c̶k̶ ̶r̶e̶s̶u̶l̶t̶s̶ ̶r̶o̶u̶t̶e̶
 - -̶̶u̶s̶e̶r̶/̶s̶t̶a̶t̶s̶/̶w̶o̶r̶d̶s̶ ̶t̶a̶b̶l̶e̶
-- User table writes
-- Word table writes
+- U̶s̶e̶r̶ ̶t̶a̶b̶l̶e̶ ̶w̶r̶i̶t̶e̶s̶
+- W̶o̶r̶d̶ ̶t̶a̶b̶l̶e̶ ̶w̶r̶i̶t̶e̶s̶
 - ̶t̶e̶s̶t̶i̶n̶g̶ ̶l̶i̶b̶
 - App icon and cleaning out the images dir
 - Deck progress
 - Word cards/decks and phrases will be separate
 - accessibility roles
-- Deck categorization
+- D̶e̶c̶k̶ ̶c̶a̶t̶e̶g̶o̶r̶i̶z̶a̶t̶i̶o̶n̶
 - ̶F̶i̶l̶l̶e̶r̶ ̶w̶o̶r̶d̶s̶ ̶n̶e̶e̶d̶s̶ ̶a̶ ̶n̶e̶w̶ ̶d̶b̶ ̶m̶e̶t̶h̶o̶d̶
+- Include deck colors on flash cards
+- Add words properly to the new decks
 
 ## Free art and assets credits
 
