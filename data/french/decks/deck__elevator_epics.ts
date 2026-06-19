@@ -12,6 +12,10 @@ export const DeckElevatorEpics: CardDeck = {
 	image: elevatorEpics,
 	words: [],
 	wordChoices: [],
+	colors: {
+		dark: '#500B25',
+		light: '#8A184B',
+	},
 	wordIds: [
 		'word_verb_entrer',
 		'word_verb_ouvrir',

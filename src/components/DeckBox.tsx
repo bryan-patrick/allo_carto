@@ -9,6 +9,7 @@ import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
 import { useUserContext } from "../db/useUserContext";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
+import GradientText from "./GradientText";
 
 /**
  * Typing
@@ -27,17 +28,13 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
     title,
     description,
     CEFR,
-    image
+    image,
+    colors: deckColors
   } = deck;
 
   const CEFRGradientLight: readonly [string, string] = [
     colors.light.CEFR[CEFR[0]],
     colors.light.CEFR[CEFR.at(-1)!],
-  ];
-
-  const CEFRGradientDark: readonly [string, string] = [
-    colors.dark.CEFR[CEFR[0]],
-    colors.dark.CEFR[CEFR.at(-1)!],
   ];
 
   /**
@@ -87,7 +84,17 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
         <View style={cardHeaderStyle}>
           <View style={titleContainer}>
             <View style={gradientTextContainer}>
-              <Text style={titleStyle}>{title}</Text>
+              {deckColors?.dark && deckColors.light && (
+                <GradientText
+                  fontSize={20}
+                  fontWeight={800}
+                  colors={[deckColors.dark, deckColors.light]}
+                  text={title}
+                />
+              )}
+              {!deckColors?.dark && !deckColors?.light && (
+                <Text style={titleStyle}>{title}</Text>
+              )}
             </View>
           </View>
           <Text style={descriptionStyle}>{description}</Text>
@@ -103,7 +110,10 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
         </LinearGradient>
         <ImageBackground source={image} style={imageBackgroundStyle} />
         <View style={cardFooterStyle}>
-          <LinkButton handler={() => handleDeckSelect(deck)}>
+          <LinkButton
+            handler={() => handleDeckSelect(deck)}
+            deckColors={deckColors}
+          >
             <Text>Review this deck →</Text>
           </LinkButton>
         </View>
@@ -128,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.background,
     overflow: 'hidden',
     borderRadius: 16,
-    borderWidth: 4,
+    borderWidth: 6,
     borderColor: colors.light.border,
     boxShadow: `0 16px 0 ${colors.dark.border}`
   },
@@ -147,7 +157,7 @@ const styles = StyleSheet.create({
   gradientTextContainer: {
     display: 'flex',
     flexShrink: 1,
-    padding: 12,
+    padding: 16,
     paddingBottom: 0,
     justifyContent: 'center'
   },
@@ -164,8 +174,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     overflow: 'hidden',
     width: '100%',
-    paddingLeft: 12,
-    paddingRight: 12,
+    paddingLeft: 16,
+    paddingRight: 16,
     paddingTop: 1,
     paddingBottom: 1,
     borderColor: colors.light.border,
@@ -184,7 +194,7 @@ const styles = StyleSheet.create({
     wordWrap: 'wrap',
     fontSize: 16,
     fontWeight: 400,
-    padding: 12,
+    padding: 16,
     paddingTop: 8
   },
   imageBackgroundStyle: {
@@ -193,7 +203,7 @@ const styles = StyleSheet.create({
     height: 200,
   },
   cardFooterStyle: {
-    padding: 12,
+    padding: 16,
     paddingBottom: 20,
     borderTopWidth: 2,
     borderColor: colors.light.border

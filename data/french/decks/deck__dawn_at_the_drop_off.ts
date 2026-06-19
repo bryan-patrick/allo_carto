@@ -9,10 +9,14 @@ export const DeckDawnAtTheDropOff: CardDeck = {
 	title: 'Dawn at the Drop Off',
 	description:
 		'Luggage, preparation, getting a ride, at the entrance, directions to the drop off, etc.',
-	CEFR: ['A1', 'B1'],
+	CEFR: ['A1', 'A2'],
 	words: [],
 	image: dawnDropOff,
 	wordChoices: [],
+	colors: {
+		dark: '#2f0916',
+		light: '#4F1C30',
+	},
 	wordIds: [
 		'word_verb_prendre',
 		'word_verb_demander',

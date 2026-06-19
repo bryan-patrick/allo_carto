@@ -13,6 +13,10 @@ export const DeckToTheGate: CardDeck = {
 	words: [],
 	image: toTheGate,
 	wordChoices: [],
+	colors: {
+		dark: '#31223A',
+		light: '#583C68',
+	},
 	wordIds: [
 		'word_verb_entrer',
 		'word_verb_prendre',

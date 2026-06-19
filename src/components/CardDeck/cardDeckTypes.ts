@@ -5,6 +5,7 @@ import { ImageSourcePropType } from 'react-native';
  */
 export type CardRarity = 'Common' | 'Rare' | 'Epic' | 'Legendary';
 export type CEFR = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+export type DeckColors = Record<'dark' | 'light', string>;
 
 export interface CardDeck {
 	title: string;
@@ -15,6 +16,7 @@ export interface CardDeck {
 	image: ImageSourcePropType | undefined;
 	wordChoices: string[];
 	place?: string;
+	colors?: DeckColors;
 }
 
 /**

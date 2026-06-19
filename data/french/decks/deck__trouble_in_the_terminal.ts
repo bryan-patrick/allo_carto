@@ -16,6 +16,10 @@ export const DeckTroubleInTheTerminal: CardDeck = {
 	words: [],
 	image: troubleInTerminal,
 	wordChoices: [],
+	colors: {
+		dark: '#072725',
+		light: '#065653',
+	},
 	wordIds: [
 		'word_verb_entrer',
 		'word_verb_demander',

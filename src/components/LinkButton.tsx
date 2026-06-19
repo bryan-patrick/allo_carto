@@ -1,9 +1,13 @@
+/**
+ * Kind of becoming an everything bagel >.<
+ */
 import { useLinkProps } from '@react-navigation/native';
 import { useAudioPlayer } from 'expo-audio';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import colors from '../app/colors';
+import { DeckColors } from './CardDeck/cardDeckTypes';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -23,6 +27,7 @@ interface LinkButtonProps extends PressableProps {
   screen?: string;
   href?: string;
   props?: any
+  deckColors?: DeckColors;
 }
 
 /**
@@ -38,6 +43,7 @@ export default function LinkButton({
   SVGElement,
   style,
   props,
+  deckColors
 }: LinkButtonProps) {
 
   /**
@@ -58,6 +64,14 @@ export default function LinkButton({
   } = styles;
   let currentLinkButtonStyles = linkButton;
   let currentLinkTextStyles = linkText;
+  let deckColorStyles = {};
+
+  if (deckColors?.dark && deckColors.light) {
+    deckColorStyles = {
+      backgroundColor: deckColors.light,
+      shadowColor: deckColors.dark,
+    };
+  }
 
   /**
    * State/prop vars
@@ -153,7 +167,7 @@ export default function LinkButton({
         onHoverOut={() => setIsHovered(false)}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={[currentLinkButtonStyles, animatedShadowStyle]}
+        style={[currentLinkButtonStyles, deckColorStyles, animatedShadowStyle]}
       >
         {SVGElement}
         <Text style={currentLinkTextStyles}>{children}</Text>
@@ -195,4 +209,4 @@ const styles = StyleSheet.create({
   pressedLinkText: {
     color: colors.light.primary,
   }
-})  
+})
