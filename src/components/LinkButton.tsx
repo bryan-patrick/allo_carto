@@ -1,6 +1,5 @@
 import { useLinkProps } from '@react-navigation/native';
 import { useAudioPlayer } from 'expo-audio';
-import { LinkProps } from 'expo-router';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -20,7 +19,7 @@ interface LinkButtonProps extends PressableProps {
   SVGElement?: ReactElement;
   handler?: Function;
   children?: ReactNode;
-  params?: LinkProps;
+  params?: Record<string, string | string[] | undefined>;
   screen?: string;
   href?: string;
   props?: any

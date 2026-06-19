@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     color: colors.dark.text,
     wordWrap: 'wrap',
     fontSize: 16,
-    fontWeight: 600,
+    fontWeight: 400,
     padding: 12,
     paddingTop: 8
   },

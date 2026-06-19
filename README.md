@@ -88,5 +88,11 @@ Real quick so I don't forget...
 
 ## Free art and assets credits
 
+### Placeholder images
+
 - [unDraw](https://undraw.co/)
 - [Fabnel LDN — Vibrant aisle in supermarket with drinks display (Pexels)](https://www.pexels.com/photo/vibrant-aisle-in-supermarket-with-drinks-display-33690927/) — Temporary artwork for the Grocery Store deck.
+- [Dawn drop off](https://unsplash.com/photos/cars-on-a-road-vxaTycfb78w?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink)
+- [Trouble in the terminal](https://unsplash.com/photos/building-interior-photograph-l5fDJ3I-9Uk?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink)
+- [To the gate](https://www.pexels.com/photo/airbus-at-airport-16562841/)
+- [Elevator epics](https://www.pexels.com/photo/hand-picking-the-floor-in-the-elevator-16026071/)

@@ -3,7 +3,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 /**
  * Image src
  */
-const groceryStore = require('@/src/app/assets/images/decks/grocery-store.jpg');
+const airportOiseau = require('@/src/app/assets/images/decks/grocery-store.jpg');
 
 /**
  * Our second deck!
@@ -17,7 +17,7 @@ export const DeckGroceryStore: CardDeck = {
 	description:
 		'Food. Wine. Cookies. A large deck, there are a vast amount of words related to grocery shopping.',
 	words: [],
-	image: groceryStore,
+	image: airportOiseau,
 	wordChoices: [],
 	wordIds: [
 		'word_interjection_salut',
