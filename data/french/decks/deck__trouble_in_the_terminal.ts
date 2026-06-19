@@ -9,7 +9,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 const troubleInTerminal = require('@/src/app/assets/images/decks/trouble-in-terminal.jpg');
 
 export const DeckTroubleInTheTerminal: CardDeck = {
-	title: 'Trouble In the Terminal',
+	title: 'Trouble at the Terminal',
 	description:
 		'Information about the airport, late, early, times, crowds, people rushing, business, etc.',
 	CEFR: ['A1', 'A2'],

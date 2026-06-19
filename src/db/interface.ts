@@ -1,11 +1,10 @@
 import { seedWords } from '@/data/french/words';
-import * as SQLite from 'expo-sqlite';
 import type { CardDeck } from '../components/CardDeck/cardDeckTypes';
 import { CardRarity, CEFR, Word } from '../components/CardDeck/cardDeckTypes';
 import shuffleArray from '../util/shuffleArray';
 import { getDB, logThisIfItFails } from './connection';
 import getDeckWordChoices from './queries/getDeckWordChoices';
-export { getDB } from './connection';
+export { deleteDB, getDB, setDB } from './connection';
 
 /**
  * Typing
@@ -187,18 +186,6 @@ export async function getTables() {
 	} catch (error) {
 		console.error('Failed to create tables.', error);
 		throw error;
-	}
-}
-
-/**
- * Delete the sqlite DB for testing
- * (It's safe, we have seeders)
- */
-export async function deleteDB() {
-	try {
-		await SQLite.deleteDatabaseAsync('allo_carto.db');
-	} catch (error) {
-		console.error('Could not delete the allo_carto.db:', error);
 	}
 }
 

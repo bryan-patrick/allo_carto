@@ -3,7 +3,14 @@ import * as SQLite from 'expo-sqlite';
 let db: SQLite.SQLiteDatabase | null = null;
 
 /**
- * Gets the SQLite DB
+ * Use the connection opened by SQLiteProvider for the whole application.
+ */
+export function setDB(database: SQLite.SQLiteDatabase): void {
+	db = database;
+}
+
+/**
+ * Get the SQLite DB
  */
 export async function getDB(): Promise<SQLite.SQLiteDatabase> {
 	try {
@@ -22,6 +29,20 @@ export async function getDB(): Promise<SQLite.SQLiteDatabase> {
 		console.error('Failed to init db:', e);
 		throw e;
 	}
+}
+
+/**
+ * Close any cached connection before deleting the database file.
+ */
+export async function deleteDB(): Promise<void> {
+	const database = db;
+	db = null;
+
+	if (database) {
+		await database.closeAsync();
+	}
+
+	await SQLite.deleteDatabaseAsync('allo_carto.db');
 }
 
 /**

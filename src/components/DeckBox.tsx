@@ -170,6 +170,7 @@ const styles = StyleSheet.create({
     paddingRight: 4,
     paddingLeft: 4,
     borderWidth: 1,
+    marginLeft: 4,
     borderRadius: 8,
     borderTopWidth: 0,
     borderRightWidth: 0,
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
   },
   CEFRTextStyle: {
     fontWeight: 600,
-    fontSize: 16,
+    fontSize: 14,
     color: colors.dark.text,
     paddingTop: 0,
     paddingLeft: 8,

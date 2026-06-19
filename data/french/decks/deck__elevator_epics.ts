@@ -12,5 +12,12 @@ export const DeckElevatorEpics: CardDeck = {
 	words: [],
 	image: elevatorEpics,
 	wordChoices: [],
-	wordIds: [],
+	wordIds: [
+		'word_verb_entrer',
+		'word_verb_ouvrir',
+		'word_verb_fermer',
+		'word_interjection_bonjour',
+		'word_interjection_pardon',
+		'word_adverb_ici',
+	],
 };

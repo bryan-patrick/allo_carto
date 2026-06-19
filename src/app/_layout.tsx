@@ -1,12 +1,12 @@
 import { ThemeProvider } from "@react-navigation/native";
 import { useFonts } from 'expo-font';
 import { Stack } from "expo-router";
-import { SQLiteProvider } from "expo-sqlite";
-import { Suspense, useEffect, useReducer, useState } from "react";
+import { SQLiteProvider, type SQLiteDatabase } from "expo-sqlite";
+import { Suspense, useCallback, useReducer, useState } from "react";
 import { CardDeckContext, initialCardDeckState } from "../components/CardDeck/cardDeckContext";
 import { cardDeckReducer } from "../components/CardDeck/cardDeckReducer";
 import Loader from "../components/Loader";
-import { deleteDB, getDB, getTables } from "../db/interface";
+import { getTables, setDB } from "../db/interface";
 import getMonHomme, { UserRow } from "../db/queries/getMonHomme";
 import { UserContext } from "../db/userContext";
 import alloTheme from './alloTheme';
@@ -42,21 +42,22 @@ export default function AppLayout() {
   /**
    * SLQLite provider init
    */
-  async function initDB() {
-    await getDB();
-    await getTables();
-    const monHomme = await getMonHomme();
-    setUser(monHomme);
-  }
+  const initDB = useCallback(async (database: SQLiteDatabase) => {
+    setDB(database);
 
-  useEffect(() => {
-    async function doReset() {
-      await deleteDB();
+    if (resetDB) {
+      await database.execAsync(`
+        DROP TABLE IF EXISTS userWords;
+        DROP TABLE IF EXISTS users;
+        DROP TABLE IF EXISTS words;
+      `);
       console.log('Reset DB!');
     }
 
-    if (resetDB) doReset();
-  }, [])
+    await getTables();
+    const monHomme = await getMonHomme();
+    setUser(monHomme);
+  }, []);
 
   /**
    * The (tabs) dir are navigable routes on the bottom bar
@@ -74,43 +75,41 @@ export default function AppLayout() {
           cardDeckDispatch
         }}>
           <Suspense fallback={<Loader />}>
-            {!resetDB &&
-              <SQLiteProvider
-                databaseName="allo_carto.db"
-                onInit={initDB}
-                useSuspense
-              >
-                <Stack>
-                  <Stack.Screen name="(tabs)" options={{
-                    headerShown: false,
-                    headerTitle: 'Home',
-                  }} />
-                  <Stack.Screen name="(routes)/CardDeck" options={{
-                    headerShown: true,
-                    headerBackTitle: 'Back',
-                    headerBackButtonDisplayMode: 'minimal',
-                    headerTitle: 'Review a deck'
-                  }} />
-                  <Stack.Screen name="(routes)/CardDeckSelect" options={{
-                    headerShown: true,
-                    headerBackTitle: 'Back',
-                    headerBackButtonDisplayMode: 'minimal',
-                    headerTitle: 'Choose a Deck'
-                  }} />
-                  <Stack.Screen name="(routes)/PlaceSelect" options={{
-                    headerShown: true,
-                    headerBackTitle: 'Home',
-                    headerTitle: 'Choose a Chapter and Place',
-                    headerBackButtonDisplayMode: 'minimal',
-                  }} />
-                  <Stack.Screen name="(routes)/DeckResults" options={{
-                    headerShown: true,
-                    headerTitle: 'Results',
-                    headerBackVisible: false
-                  }} />
-                </Stack>
-              </SQLiteProvider>
-            }
+            <SQLiteProvider
+              databaseName="allo_carto.db"
+              onInit={initDB}
+              useSuspense
+            >
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{
+                  headerShown: false,
+                  headerTitle: 'Home',
+                }} />
+                <Stack.Screen name="(routes)/CardDeck" options={{
+                  headerShown: true,
+                  headerBackTitle: 'Back',
+                  headerBackButtonDisplayMode: 'minimal',
+                  headerTitle: 'Review a deck'
+                }} />
+                <Stack.Screen name="(routes)/CardDeckSelect" options={{
+                  headerShown: true,
+                  headerBackTitle: 'Back',
+                  headerBackButtonDisplayMode: 'minimal',
+                  headerTitle: 'Choose a Deck'
+                }} />
+                <Stack.Screen name="(routes)/PlaceSelect" options={{
+                  headerShown: true,
+                  headerBackTitle: 'Home',
+                  headerTitle: 'Choose a Chapter and Place',
+                  headerBackButtonDisplayMode: 'minimal',
+                }} />
+                <Stack.Screen name="(routes)/DeckResults" options={{
+                  headerShown: true,
+                  headerTitle: 'Results',
+                  headerBackVisible: false
+                }} />
+              </Stack>
+            </SQLiteProvider>
           </Suspense>
         </CardDeckContext>
       </ThemeProvider>
