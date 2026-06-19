@@ -87,6 +87,8 @@ Real quick so I don't forget...
 - ̶F̶i̶l̶l̶e̶r̶ ̶w̶o̶r̶d̶s̶ ̶n̶e̶e̶d̶s̶ ̶a̶ ̶n̶e̶w̶ ̶d̶b̶ ̶m̶e̶t̶h̶o̶d̶
 - Include deck colors on flash cards
 - Add words properly to the new decks
+- Card decoration / color badge based on letters and mapped colors of the word IDs
+- SVG chapter and progress map (visual and data)
 
 ## Free art and assets credits
 

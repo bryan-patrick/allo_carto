@@ -61,4 +61,16 @@ export const words_a1_expressions: Word[] = [
 		correctCount: 0,
 		rarity: 'Common',
 	},
+	{
+		id: 'word_expression_au_revoir',
+		frenchWord: 'au revoir',
+		englishWords: ['goodbye'],
+		isVulgar: false,
+		lemmaId: 'au_revoir',
+		partOfSpeech: 'expression',
+		CEFR: 'A1',
+		pronunciation: 'oh ruh vwar',
+		correctCount: 0,
+		rarity: 'Common',
+	},
 ];
