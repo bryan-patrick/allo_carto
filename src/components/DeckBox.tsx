@@ -1,9 +1,14 @@
 import { useCardDeck } from "@/src/components/CardDeck/useCardDeck";
 import LinkButton from "@/src/components/LinkButton";
 import { getDeck } from "@/src/db/interface";
+import getDeckRankCounts, {
+  DeckRankCounts,
+  emptyDeckRankCounts,
+} from "@/src/db/queries/getDeckRankCounts";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
@@ -24,6 +29,7 @@ interface SelectCardDeckProps {
 export default function DeckBox({ deck }: SelectCardDeckProps) {
   const user = useUserContext();
   const { cardDeckDispatch } = useCardDeck();
+  const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
   const {
     title,
     description,
@@ -31,6 +37,10 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     image,
     colors: deckColors
   } = deck;
+
+  const badgeIconSize = 16;
+  const gradientStart = deckColors?.dark ?? colors.dark.primary;
+  const gradientEnd = deckColors?.light ?? colors.light.primary;
 
   const CEFRGradientLight: readonly [string, string] = [
     colors.light.CEFR[CEFR[0]],
@@ -54,8 +64,37 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     descriptionStyle,
     imageContainerStyle,
     imageStyle,
+    badgeContainerStyle,
+    badgeCountContainerStyle,
+    badgeCountTextStyle,
     cardFooterStyle,
   } = styles;
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadRankCounts() {
+      if (!user?.id) {
+        setRankCounts(emptyDeckRankCounts);
+        return;
+      }
+
+      const counts = await getDeckRankCounts({
+        userId: user.id,
+        wordIds: deck.wordIds,
+      });
+
+      if (isCurrent) setRankCounts(counts);
+    }
+
+    loadRankCounts().catch(error => {
+      console.error('Could not retrieve deck rank counts:', error);
+    });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [user?.id, deck.wordIds]);
 
   /**
    * Handlers
@@ -113,6 +152,32 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
           </LinearGradient>
           <View style={imageContainerStyle}>
             <ImageBackground source={image} style={imageStyle} />
+          </View>
+          <View style={[badgeContainerStyle, { backgroundColor: deckColors?.light ?? colors.dark.primary }]}>
+            <View style={badgeCountContainerStyle}>
+              <Text style={badgeCountTextStyle}>{rankCounts.fnew}</Text>
+              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="fiber-new" />
+            </View>
+            <View style={badgeCountContainerStyle}>
+              <Text style={badgeCountTextStyle}>{rankCounts.bronze}</Text>
+              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="stars" />
+            </View>
+            <View style={badgeCountContainerStyle}>
+              <Text style={badgeCountTextStyle}>{rankCounts.silver}</Text>
+              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="military-tech" />
+            </View>
+            <View style={badgeCountContainerStyle}>
+              <Text style={badgeCountTextStyle}>{rankCounts.gold}</Text>
+              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="emoji-events" />
+            </View>
+            <View style={badgeCountContainerStyle}>
+              <Text style={badgeCountTextStyle}>{rankCounts.diamond}</Text>
+              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="diamond" />
+            </View>
+            <View style={badgeCountContainerStyle}>
+              <Text style={badgeCountTextStyle}>{rankCounts.memorized}</Text>
+              <MaterialIcons color={colors.light.text} size={16} name="psychology" />
+            </View>
           </View>
           <View style={cardFooterStyle}>
             <LinkButton
@@ -186,16 +251,16 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingLeft: 16,
     paddingRight: 16,
-    paddingTop: 1,
-    paddingBottom: 1,
+    paddingTop: 2,
+    paddingBottom: 2,
     borderColor: colors.dark.border,
   },
   CEFRLabelStyle: {
     fontSize: 14,
-    fontWeight: 700,
+    fontWeight: 500,
   },
   CEFRTextStyle: {
-    fontWeight: 700,
+    fontWeight: 500,
     fontSize: 14,
     color: colors.dark.text,
   },
@@ -208,22 +273,38 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   imageContainerStyle: {
-    borderColor: colors.dark.border,
-    borderWidth: 1,
-    borderRightWidth: 0,
-    borderLeftWidth: 0,
   },
   imageStyle: {
     display: 'flex',
     justifyContent: 'flex-end',
     height: 200,
   },
+  badgeContainerStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    paddingTop: 4,
+    paddingBottom: 4,
+    borderBottomWidth: 1,
+    borderColor: colors.dark.border
+  },
+  badgeCountContainerStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4
+  },
+  badgeCountTextStyle: {
+    fontFamily: 'red-hat-variable',
+    color: colors.light.text,
+    fontSize: 12,
+  },
   cardFooterStyle: {
     padding: 12,
-    paddingTop: 8,
+    paddingTop: 10,
     paddingBottom: 20,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
-    borderColor: colors.light.border
   },
 })

@@ -96,6 +96,7 @@ Real quick so I don't forget...
 - Card Collection page
 - Random deck option
 - Practice words frequently gotten wrong
+- We should add "repeat deck" or "do a random deck" buttons on the results view
 
 ## Free art and assets credits
 
