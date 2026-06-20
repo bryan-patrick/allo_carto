@@ -138,18 +138,19 @@ const { containerMargin } = sharedStyles;
  */
 const styles = StyleSheet.create({
   cardStyle: {
-    margin: containerMargin
+    margin: containerMargin,
+    paddingBottom: 8,
   },
   cardInnerStyle: {
     backgroundColor: colors.light.background,
     overflow: 'hidden',
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 4,
     borderColor: colors.light.border,
-    boxShadow: `0 16px 0 ${colors.dark.border}`,
+    boxShadow: `0 20px 0 ${colors.dark.border}`,
   },
   cardBorderInnerStyle: {
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.dark.border
   },
@@ -159,21 +160,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
-    borderColor: colors.dark.border
+    borderColor: colors.light.border,
   },
   titleContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    maxWidth: '100%',
   },
   gradientTextContainer: {
     display: 'flex',
     flexShrink: 1,
     padding: 16,
     paddingBottom: 0,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   titleStyle: {
     color: colors.dark.text,
@@ -209,7 +205,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 500,
     padding: 16,
-    paddingTop: 8
+    paddingTop: 8,
   },
   imageContainerStyle: {
     borderColor: colors.dark.border,
@@ -225,7 +221,7 @@ const styles = StyleSheet.create({
   cardFooterStyle: {
     padding: 12,
     paddingTop: 8,
-    paddingBottom: 16,
+    paddingBottom: 20,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
     borderColor: colors.light.border

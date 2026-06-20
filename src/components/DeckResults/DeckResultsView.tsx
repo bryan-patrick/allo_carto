@@ -17,6 +17,9 @@ export default function DeckResultsView() {
   const { title } = cardDeckState.cardDeck;
   const { correctWords, incorrectWords } = cardDeckState;
 
+  const deckColorDark = cardDeckState.cardDeck.colors?.dark ?? colors.dark.primary;
+  const deckColorLight = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
+
   /**
    * Destructure styles
    */
@@ -38,17 +41,15 @@ export default function DeckResultsView() {
     <ScrollView>
       <View style={resultsContainerStyle}>
         <View style={deckDetailsContainerStyle}>
-          <View>
-            <View style={titleRowStyle}>
-              <Text style={titleStyle}>Good job! You completed a </Text>
-              <GradientText
-                text={title}
-                colors={[colors.dark.primary, colors.dark.text]}
-                fontSize={20}
-                fontWeight={700}
-              />
-              <Text style={titleStyle}> deck.</Text>
-            </View>
+          <View style={titleRowStyle}>
+            <Text style={titleStyle}>Good job! You completed a </Text>
+            <GradientText
+              text={title}
+              colors={[deckColorDark, deckColorLight]}
+              fontSize={20}
+              fontWeight={900}
+            />
+            <Text style={titleStyle}> deck.</Text>
           </View>
           <View style={imageContainerStyle}>
             <ImageBackground
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     fontSize: 20,
-    fontWeight: 700,
+    fontWeight: 500,
   },
   imageContainerStyle: {
     borderTopWidth: 2,
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     borderColor: colors.light.border
   },
   imageStyle: {
-    height: 200,
+    height: 175,
   },
   wordsFlexRows: {
     display: 'flex',

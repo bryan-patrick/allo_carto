@@ -10,6 +10,7 @@ import { words_time_single } from './nouns/words_a1_time_nouns';
 import { words_a1_prepositions } from './prepositions/words_a1_prepositions';
 import { words_a1_grocery_verbs } from './verbs/words_a1_grocery_verbs';
 import { words_a1_verbs } from './verbs/words_a1_verbs';
+import { words_a1_elevator_epics } from './words_a1_elevator_epics';
 
 export * from './adjectives/words_a1_adjectives';
 export * from './adjectives/words_a1_grocery_adjectives';
@@ -23,6 +24,7 @@ export * from './nouns/words_a1_time_nouns';
 export * from './prepositions/words_a1_prepositions';
 export * from './verbs/words_a1_grocery_verbs';
 export * from './verbs/words_a1_verbs';
+export * from './words_a1_elevator_epics';
 
 export const words_a1 = [
 	...words_a1_adjectives,
@@ -37,4 +39,5 @@ export const words_a1 = [
 	...words_a1_prepositions,
 	...words_a1_grocery_verbs,
 	...words_a1_verbs,
+	...words_a1_elevator_epics,
 ];

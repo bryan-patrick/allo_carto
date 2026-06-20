@@ -94,7 +94,7 @@ export const words_time_single: Word[] = [
 	{
 		id: 'word_noun_retard',
 		frenchWord: 'retard',
-		englishWords: ['delay', 'lateness'],
+		englishWords: ['delay'],
 		frenchArticle: 'un',
 		englishArticle: 'a',
 		pronunciation: 'reh tar',

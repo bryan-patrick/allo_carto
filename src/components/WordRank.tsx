@@ -155,7 +155,8 @@ const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>(
     display: 'flex',
     flexDirection: 'row',
     gap: 4,
-    height: 25
+    height: 25,
+    marginRight: 5
   },
   textContainer: {
     display: 'flex',

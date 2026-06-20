@@ -120,7 +120,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_grand',
 		frenchWord: 'grand',
-		englishWords: ['large'],
+		englishWords: ['tall'],
 		isVulgar: false,
 		lemmaId: 'grand',
 		partOfSpeech: 'adjective',
@@ -133,7 +133,7 @@ export const words_a1_adjectives: Word[] = [
 	{
 		id: 'word_adjective_grande',
 		frenchWord: 'grande',
-		englishWords: ['large'],
+		englishWords: ['tall'],
 		isVulgar: false,
 		lemmaId: 'grand',
 		partOfSpeech: 'adjective',

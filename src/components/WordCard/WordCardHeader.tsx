@@ -1,6 +1,6 @@
 import colors from "@/src/app/colors";
 import { LinearGradient } from "expo-linear-gradient";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { useCardDeck } from "../CardDeck/useCardDeck";
 import WordRank from "../WordRank";
 import { sharedWordCardStyles } from "./sharedWordCardStyles";
@@ -9,14 +9,15 @@ import { sharedWordCardStyles } from "./sharedWordCardStyles";
  * WordCardHeader Component
  */
 export default function WordCardHeader() {
-  const { cardDeckState, currentCard } = useCardDeck();
+  const { /*cardDeckState,*/ currentCard } = useCardDeck();
 
-  const gradientStart = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
-  const gradient = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
+  // const gradientStart = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
+  // const gradient = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
 
   const {
     cardGradient,
     cardCEFRLevel,
+    CEFRContainerStyle,
   } = sharedWordCardStyles;
 
   return (
@@ -26,14 +27,19 @@ export default function WordCardHeader() {
       colors={[colors.light.primary, colors.dark.border]}
       style={cardGradient}
     >
-      <Text
-        style={[
-          cardCEFRLevel,
-          { backgroundColor: colors.light.CEFR[currentCard.CEFR] },
-        ]}
-      >
-        {currentCard.CEFR}
-      </Text>
+      <View style={[
+        CEFRContainerStyle,
+        {
+          backgroundColor: colors.light.CEFR[currentCard.CEFR]
+        }]}>
+        <Text
+          style={[
+            cardCEFRLevel,
+          ]}
+        >
+          {currentCard.CEFR}
+        </Text>
+      </View>
       <WordRank />
     </LinearGradient>
   )

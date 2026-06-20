@@ -224,7 +224,7 @@ export async function getDeck({
 			`
 			SELECT *
 			FROM words
-			WHERE id IN (${quests});
+			WHERE id IN (${quests})
 			ORDER BY RANDOM();
 			`,
 			deck.wordIds,

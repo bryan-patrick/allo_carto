@@ -14,8 +14,6 @@ export const sharedWordCardStyles = StyleSheet.create({
     borderRadius: 8,
   },
   cardGradient: {
-    alignContent: 'space-between',
-    alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: colors.light.border,
     justifyContent: 'space-between',
@@ -24,14 +22,20 @@ export const sharedWordCardStyles = StyleSheet.create({
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
-  cardCEFRLevel: {
-    fontFamily: 'red-hat-variable',
-    fontSize: 14,
+  CEFRContainerStyle: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderTopLeftRadius: 4,
     borderRightWidth: 1,
-    padding: 3,
+  },
+  cardCEFRLevel: {
+    width: '100%',
     paddingRight: 8,
     paddingLeft: 8,
+    fontFamily: 'red-hat-variable',
+    fontSize: 14,
     borderColor: colors.light.border,
   },
   cardcorrectCount: {
