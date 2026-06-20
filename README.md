@@ -94,6 +94,7 @@ Real quick so I don't forget...
 - Word rank counts on decks
 - Chapter select list view
 - Card Collection page
+- Random deck option
 
 ## Free art and assets credits
 
