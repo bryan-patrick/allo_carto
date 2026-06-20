@@ -26,7 +26,7 @@ export function sleep(ms: number | SharedValue<number>) {
  * We can flatmap this since they're all words anyway.
  */
 export default async function getFillerWords({
-	amount = 8,
+	amount = 6,
 	correctWords,
 	words,
 }: GetFillerWordsProps) {

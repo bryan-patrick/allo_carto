@@ -1,3 +1,4 @@
+import { type DeckWordChoice } from '../../components/CardDeck/cardDeckTypes';
 import { getDB } from '../connection';
 
 /**
@@ -16,6 +17,7 @@ interface GetDeckEnglishWordsProps {
  */
 interface DeckEnglishWordsRow {
 	englishWords: string;
+	partOfSpeech?: string;
 }
 
 /**
@@ -25,14 +27,13 @@ interface DeckEnglishWordsRow {
  */
 export default async function getDeckWordChoices({
 	wordIds,
-}: GetDeckEnglishWordsProps): Promise<string[]> {
-	let resultWords: string[] = [];
+}: GetDeckEnglishWordsProps): Promise<DeckWordChoice[]> {
 	const database = await getDB();
 	const quests = wordIds.map(() => '?').join(',');
 
 	const rows = await database.getAllAsync<DeckEnglishWordsRow>(
 		`
-    SELECT englishWords
+		SELECT englishWords, partOfSpeech
     FROM words
     WHERE id IN (${quests})
     ORDER BY RANDOM();
@@ -40,15 +41,8 @@ export default async function getDeckWordChoices({
 		wordIds,
 	);
 
-	/**
-	 * Since we can have multiple correct answers,
-	 * we use arrays. This means we will have an
-	 * array of arrays of correct answers, but we
-	 * only want a single array of choices, so
-	 * that's why we use flatMap, to flatten the
-	 * nested arrays into one choices array.
-	 */
-	resultWords = rows.flatMap(row => JSON.parse(row.englishWords));
-
-	return resultWords;
+	return rows.map(row => ({
+		englishWords: JSON.parse(row.englishWords),
+		partOfSpeech: row.partOfSpeech ?? undefined,
+	}));
 }

@@ -54,7 +54,19 @@ describe('<WordCardContainer />', () => {
       englishWords: ['fast'],
       partOfSpeech: 'adjective',
     };
-    const cardDeck = makeMockCardDeck({ words: [...mockWords, adjective] });
+    const extraNoun = {
+      ...mockWords[0],
+      id: 'word_noun_train',
+      frenchWord: 'train',
+      englishWords: ['train'],
+    };
+    const wholeDeck = makeMockCardDeck({
+      words: [...mockWords, adjective, extraNoun],
+    });
+    const cardDeck = makeMockCardDeck({
+      words: mockWords,
+      wordChoices: wholeDeck.wordChoices,
+    });
 
     mockUseCardDeck.mockReturnValue({
       cardDeckState: makeMockCardDeckState({ cardDeck }),
@@ -111,7 +123,7 @@ describe('<WordCardContainer />', () => {
     await waitFor(() => {
       expect(mockGetFillerWords).toHaveBeenNthCalledWith(1, {
         correctWords: ['coffee'],
-        words: ['dog', 'house', 'book', 'apple'],
+        words: ['dog', 'house', 'book', 'apple', 'train'],
       });
 
       expect(mockWordCardSelection).toHaveBeenLastCalledWith(

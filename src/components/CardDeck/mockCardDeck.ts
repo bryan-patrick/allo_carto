@@ -73,7 +73,10 @@ export const mockCardDeck: CardDeck = {
 	wordIds: mockWords.map(word => word.id),
 	words: mockWords,
 	image: undefined,
-	wordChoices: mockWords.flatMap(word => word.englishWords),
+	wordChoices: mockWords.map(word => ({
+		englishWords: word.englishWords,
+		partOfSpeech: word.partOfSpeech,
+	})),
 };
 
 /**
@@ -88,7 +91,10 @@ export function makeMockCardDeck(overrides: Partial<CardDeck> = {}): CardDeck {
 		words,
 		wordIds: overrides.wordIds ?? words.map(word => word.id),
 		wordChoices:
-			overrides.wordChoices ?? words.flatMap(word => word.englishWords),
+			overrides.wordChoices ?? words.map(word => ({
+				englishWords: word.englishWords,
+				partOfSpeech: word.partOfSpeech,
+			})),
 	};
 }
 

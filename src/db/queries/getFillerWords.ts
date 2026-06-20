@@ -20,7 +20,7 @@ interface FillerWordRow {
  * map the choice buttons the user can press to make their selection.
  */
 export default async function getDeckFillerWords({
-	amount = 8,
+	amount = 6,
 	correctWords,
 	deck,
 }: GetDeckFillerWordsProps) {

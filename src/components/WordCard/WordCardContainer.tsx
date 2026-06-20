@@ -52,14 +52,16 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
        * In other words it moves the MappedWords around. 
        * To future me, put the crowbar down and slowly back away.
        */
-      if (loadedWordId.current === word.id) return; loadedWordId.current = word.id;
+      if (loadedWordId.current === word.id) return;
+      loadedWordId.current = word.id;
 
-      let matchingWordChoices = cardDeckState.cardDeck.wordChoices;
+      let matchingWordChoices = cardDeckState.cardDeck.wordChoices
+        .flatMap(choice => choice.englishWords);
 
       if (word.partOfSpeech) {
-        matchingWordChoices = cardDeckState.cardDeck.words
-          .filter(deckWord => deckWord.partOfSpeech === word.partOfSpeech)
-          .flatMap(deckWord => deckWord.englishWords);
+        matchingWordChoices = cardDeckState.cardDeck.wordChoices
+          .filter(choice => choice.partOfSpeech === word.partOfSpeech)
+          .flatMap(choice => choice.englishWords);
       }
 
       setFillerWords(await getFillerWords({
@@ -84,7 +86,6 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
     word.englishWords,
     word.englishArticle,
     word.partOfSpeech,
-    cardDeckState.cardDeck.words,
     cardDeckState.cardDeck.wordChoices,
   ]);
 
