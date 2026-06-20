@@ -1,5 +1,4 @@
 import colors from "@/src/app/colors";
-import logify from "@/src/util/logify";
 import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "react-native";
 import { useCardDeck } from "../CardDeck/useCardDeck";
@@ -11,9 +10,6 @@ import { sharedWordCardStyles } from "./sharedWordCardStyles";
  */
 export default function WordCardHeader() {
   const { cardDeckState, currentCard } = useCardDeck();
-
-  console.log('CURRENT CARD', currentCard);
-  logify(cardDeckState.cardDeck.colors?.dark);
 
   const gradientStart = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
   const gradient = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;

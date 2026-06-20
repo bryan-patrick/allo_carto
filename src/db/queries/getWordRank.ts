@@ -23,7 +23,5 @@ export default async function getWordRank({
 		wordId,
 	);
 
-	console.log(row);
-
 	return row ?? { correctCount: 0 };
 }

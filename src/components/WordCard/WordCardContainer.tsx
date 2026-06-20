@@ -1,5 +1,5 @@
 import sharedStyles from "@/src/app/sharedStyles";
-import { useEffect, useLayoutEffect, useReducer, useState } from "react";
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { englishArticles } from "../../util/filterFillerWords";
@@ -32,6 +32,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
    */
   const [fillerWords, setFillerWords] = useState<string[]>([]);
   const [articleWords, setArticleWords] = useState<string[]>([]);
+  const loadedWordId = useRef<string | null>(null);
   const [cardState, wordCardUIDispatch] = useReducer(
     wordCardUIReducer,
     initialWordCardState,
@@ -44,10 +45,26 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
     */
   useEffect(() => {
     async function loadWords() {
+      /**
+       * Checking an answer updates the deck's words array, which reruns this
+       * effect and reshuffles the choices mid card, which is bad mmmk?
+       * 
+       * In other words it moves the MappedWords around. 
+       * To future me, put the crowbar down and slowly back away.
+       */
+      if (loadedWordId.current === word.id) return; loadedWordId.current = word.id;
+
+      let matchingWordChoices = cardDeckState.cardDeck.wordChoices;
+
+      if (word.partOfSpeech) {
+        matchingWordChoices = cardDeckState.cardDeck.words
+          .filter(deckWord => deckWord.partOfSpeech === word.partOfSpeech)
+          .flatMap(deckWord => deckWord.englishWords);
+      }
+
       setFillerWords(await getFillerWords({
-        //TODO Here is where you will pass in the decks set of "correct" words
         correctWords: word.englishWords,
-        words: cardDeckState.cardDeck.wordChoices,
+        words: matchingWordChoices,
       }));
 
       if (word.englishArticle) {
@@ -62,9 +79,12 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 
     loadWords();
   }, [
+    word.id,
     word.frenchWord,
     word.englishWords,
     word.englishArticle,
+    word.partOfSpeech,
+    cardDeckState.cardDeck.words,
     cardDeckState.cardDeck.wordChoices,
   ]);
 
@@ -139,7 +159,7 @@ const wordCardContainerStyles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'stretch',
     gap: 16,
-    left: 500, // animation start
+    left: 500, // animation start position
   },
   nextBtn: {
     margin: containerMargin

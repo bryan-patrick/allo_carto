@@ -90,6 +90,7 @@ Real quick so I don't forget...
 - Card decoration / color badge based on letters and mapped colors of the word IDs
 - SVG chapter and progress map (visual and data)
 - Place hero image frame (like a polaroid or something? Idk)
+- Bruh you need more words with the same part of speech sheesh
 
 ## Free art and assets credits
 

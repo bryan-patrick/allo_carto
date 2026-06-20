@@ -1,3 +1,5 @@
+import { makeMockCardDeck, makeMockCardDeckState, mockWords } from '@/src/components/CardDeck/mockCardDeck';
+import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import WordCard from '@/src/components/WordCard/WordCard';
 import WordCardContainer from '@/src/components/WordCard/WordCardContainer';
 import WordCardSelection from '@/src/components/WordCard/WordCardSelection';
@@ -8,6 +10,7 @@ import { render, waitFor } from '@testing-library/react-native';
  * Mock the util
  */
 jest.mock('@/src/util/getFillerWords');
+jest.mock('@/src/components/CardDeck/useCardDeck');
 
 /**
  * Mock the children it is supposed to render
@@ -31,6 +34,7 @@ jest.mock('@/src/components/WordCard/WordCardButton', () => {
 });
 
 const mockGetFillerWords = jest.mocked(getFillerWords);
+const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockWordCard = jest.mocked(WordCard);
 const mockWordCardSelection = jest.mocked(WordCardSelection);
 
@@ -42,6 +46,21 @@ describe('<WordCardContainer />', () => {
     mockGetFillerWords.mockReset();
     mockWordCard.mockClear();
     mockWordCardSelection.mockClear();
+
+    const adjective = {
+      ...mockWords[0],
+      id: 'word_adjective_rapide',
+      frenchWord: 'rapide',
+      englishWords: ['fast'],
+      partOfSpeech: 'adjective',
+    };
+    const cardDeck = makeMockCardDeck({ words: [...mockWords, adjective] });
+
+    mockUseCardDeck.mockReturnValue({
+      cardDeckState: makeMockCardDeckState({ cardDeck }),
+      cardDeckDispatch: jest.fn(),
+      currentCard: cardDeck.words[0],
+    });
   });
 
   test('renders the word card pieces', async () => {
@@ -58,10 +77,11 @@ describe('<WordCardContainer />', () => {
       pronunciation: 'ka-fay',
       isVulgar: false,
       CEFR: 'A1' as const,
+      partOfSpeech: 'noun',
       correctCount: 14,
     };
 
-    const { getByText } = render(
+    const { getByText, rerender } = render(
       <WordCardContainer
         word={word}
         isCurrent={true}
@@ -89,6 +109,11 @@ describe('<WordCardContainer />', () => {
      * This is for loadWords() in the useEffect
      */
     await waitFor(() => {
+      expect(mockGetFillerWords).toHaveBeenNthCalledWith(1, {
+        correctWords: ['coffee'],
+        words: ['dog', 'house', 'book', 'apple'],
+      });
+
       expect(mockWordCardSelection).toHaveBeenLastCalledWith(
         expect.objectContaining({
           articleWords: ['The', 'A'],
@@ -97,5 +122,26 @@ describe('<WordCardContainer />', () => {
         undefined,
       );
     });
+
+    const updatedWords = mockWords.map(deckWord => ({
+      ...deckWord,
+      correctCount: deckWord.correctCount + 1,
+    }));
+    const updatedCardDeck = makeMockCardDeck({ words: updatedWords });
+
+    mockUseCardDeck.mockReturnValue({
+      cardDeckState: makeMockCardDeckState({ cardDeck: updatedCardDeck }),
+      cardDeckDispatch: jest.fn(),
+      currentCard: updatedCardDeck.words[0],
+    });
+
+    rerender(
+      <WordCardContainer
+        word={word}
+        isCurrent={true}
+      />,
+    );
+
+    expect(mockGetFillerWords).toHaveBeenCalledTimes(2);
   });
 });
