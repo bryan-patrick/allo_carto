@@ -281,15 +281,13 @@ const mappedWordsStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'transparent',
     padding: 12,
-    paddingRight: 16,
-    paddingLeft: 16,
-    maxWidth: 120,
+    maxWidth: 140,
     backgroundColor: colors.light.background,
   },
   wcsText: {
     textAlign: 'center',
     color: colors.dark.text,
-    fontWeight: 700
+    fontWeight: 700,
   },
   highlightSuccess: {
     backgroundColor: colors.light.success,

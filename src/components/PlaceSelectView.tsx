@@ -147,8 +147,8 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingLeft: 16,
     paddingTop: 8,
-    fontWeight: 400,
-    fontSize: 16
+    fontWeight: 500,
+    fontSize: 16,
   },
   linkButtonStyle: {
     margin: 16,

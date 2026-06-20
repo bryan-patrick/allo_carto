@@ -6,7 +6,7 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import colors from "../colors";
 
 /**
- * ChooseCardDeck component
+ * CardDeckSelect component
 */
 export default function CardDeckSelect() {
   const { placeId } = useLocalSearchParams<{ placeId?: string }>();

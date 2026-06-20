@@ -95,12 +95,12 @@ export default function AppLayout() {
                   headerShown: true,
                   headerBackTitle: 'Back',
                   headerBackButtonDisplayMode: 'minimal',
-                  headerTitle: 'Choose a Deck'
+                  headerTitle: 'Select a Deck'
                 }} />
                 <Stack.Screen name="(routes)/PlaceSelect" options={{
                   headerShown: true,
                   headerBackTitle: 'Home',
-                  headerTitle: 'Choose a Chapter and Place',
+                  headerTitle: 'Select a Chapter and Place',
                   headerBackButtonDisplayMode: 'minimal',
                 }} />
                 <Stack.Screen name="(routes)/DeckResults" options={{

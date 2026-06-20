@@ -14,14 +14,14 @@ import GradientText from "./GradientText";
 /**
  * Typing
  */
-interface ChooseCardDeckProps {
+interface SelectCardDeckProps {
   deck: CardDeck;
 }
 
 /**
- * ChooseCardDeck component
+ * DeckBox component
  */
-export default function DeckBox({ deck }: ChooseCardDeckProps) {
+export default function DeckBox({ deck }: SelectCardDeckProps) {
   const user = useUserContext();
   const { cardDeckDispatch } = useCardDeck();
   const {
@@ -43,6 +43,7 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
   const {
     cardStyle,
     cardInnerStyle,
+    cardBorderInnerStyle,
     cardHeaderStyle,
     titleContainer,
     gradientTextContainer,
@@ -51,7 +52,8 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
     CEFRLabelStyle,
     CEFRTextStyle,
     descriptionStyle,
-    imageBackgroundStyle,
+    imageContainerStyle,
+    imageStyle,
     cardFooterStyle,
   } = styles;
 
@@ -81,44 +83,48 @@ export default function DeckBox({ deck }: ChooseCardDeckProps) {
   return (
     <View style={cardStyle}>
       <View style={cardInnerStyle}>
-        <View style={cardHeaderStyle}>
-          <View style={titleContainer}>
-            <View style={gradientTextContainer}>
-              {deckColors?.dark && deckColors.light && (
-                <GradientText
-                  fontSize={20}
-                  fontWeight={800}
-                  colors={[deckColors.dark, deckColors.light]}
-                  text={title}
-                />
-              )}
-              {!deckColors?.dark && !deckColors?.light && (
-                <Text style={titleStyle}>{title}</Text>
-              )}
+        <View style={cardBorderInnerStyle}>
+          <View style={cardHeaderStyle}>
+            <View style={titleContainer}>
+              <View style={gradientTextContainer}>
+                {deckColors?.dark && deckColors.light && (
+                  <GradientText
+                    fontSize={20}
+                    fontWeight={800}
+                    colors={[deckColors.dark, deckColors.light]}
+                    text={title}
+                  />
+                )}
+                {!deckColors?.dark && !deckColors?.light && (
+                  <Text style={titleStyle}>{title}</Text>
+                )}
+              </View>
             </View>
+            <Text style={descriptionStyle}>{description}</Text>
           </View>
-          <Text style={descriptionStyle}>{description}</Text>
-        </View>
-        <LinearGradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          colors={CEFRGradientLight}
-          style={CEFRGradientStyle}
-        >
-          <Text style={CEFRLabelStyle}>CEFR</Text>
-          <Text style={CEFRTextStyle}>{CEFR.join(' - ')}</Text>
-        </LinearGradient>
-        <ImageBackground source={image} style={imageBackgroundStyle} />
-        <View style={cardFooterStyle}>
-          <LinkButton
-            handler={() => handleDeckSelect(deck)}
-            deckColors={deckColors}
+          <LinearGradient
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            colors={CEFRGradientLight}
+            style={CEFRGradientStyle}
           >
-            <Text>Review this deck →</Text>
-          </LinkButton>
+            <Text style={CEFRLabelStyle}>CEFR</Text>
+            <Text style={CEFRTextStyle}>{CEFR.join(' - ')}</Text>
+          </LinearGradient>
+          <View style={imageContainerStyle}>
+            <ImageBackground source={image} style={imageStyle} />
+          </View>
+          <View style={cardFooterStyle}>
+            <LinkButton
+              handler={() => handleDeckSelect(deck)}
+              deckColors={deckColors}
+            >
+              <Text>Review this deck →</Text>
+            </LinkButton>
+          </View>
         </View>
-      </View >
-    </View >
+      </View>
+    </View>
   );
 }
 
@@ -138,14 +144,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.background,
     overflow: 'hidden',
     borderRadius: 16,
-    borderWidth: 6,
+    borderWidth: 4,
     borderColor: colors.light.border,
-    boxShadow: `0 16px 0 ${colors.dark.border}`
+    boxShadow: `0 16px 0 ${colors.dark.border}`,
+  },
+  cardBorderInnerStyle: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.dark.border
   },
   cardHeaderStyle: {
     display: 'flex',
     borderBottomWidth: 1,
-    borderColor: colors.light.border
+    borderRadius: 12,
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderColor: colors.dark.border
   },
   titleContainer: {
     display: 'flex',
@@ -178,7 +192,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingTop: 1,
     paddingBottom: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.dark.border,
   },
   CEFRLabelStyle: {
     fontSize: 14,
@@ -193,19 +207,27 @@ const styles = StyleSheet.create({
     color: colors.dark.text,
     wordWrap: 'wrap',
     fontSize: 16,
-    fontWeight: 400,
+    fontWeight: 500,
     padding: 16,
     paddingTop: 8
   },
-  imageBackgroundStyle: {
+  imageContainerStyle: {
+    borderColor: colors.dark.border,
+    borderWidth: 1,
+    borderRightWidth: 0,
+    borderLeftWidth: 0,
+  },
+  imageStyle: {
     display: 'flex',
     justifyContent: 'flex-end',
     height: 200,
   },
   cardFooterStyle: {
-    padding: 16,
-    paddingBottom: 20,
-    borderTopWidth: 2,
+    padding: 12,
+    paddingTop: 8,
+    paddingBottom: 16,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
     borderColor: colors.light.border
   },
 })

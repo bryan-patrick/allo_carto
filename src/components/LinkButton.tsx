@@ -70,6 +70,7 @@ export default function LinkButton({
     deckColorStyles = {
       backgroundColor: deckColors.light,
       shadowColor: deckColors.dark,
+      borderColor: deckColors.dark
     };
   }
 
@@ -207,6 +208,5 @@ const styles = StyleSheet.create({
     color: colors.light.text,
   },
   pressedLinkText: {
-    color: colors.light.primary,
   }
 })
