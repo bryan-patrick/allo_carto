@@ -30,7 +30,6 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
     englishWordStyle,
     successStyle,
     dangerStyle,
-    correctCountStyle,
     CEFRStyle
   } = styles;
 
@@ -72,9 +71,6 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
                 <Text style={frenchWordStyle}>{frenchWord}</Text>
                 <Text style={[englishWordStyle, isCorrectStyle]}>{englishWords.join(', ')}</Text>
               </View>
-            </View>
-            <View style={correctCountStyle}>
-              <Text></Text>
             </View>
             <Text style={[CEFRStyle, { backgroundColor: colors.light.CEFR[CEFR] }]}>{CEFR}</Text>
           </View>

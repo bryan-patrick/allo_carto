@@ -1,4 +1,5 @@
 import colors from "@/src/app/colors";
+import logify from "@/src/util/logify";
 import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "react-native";
 import { useCardDeck } from "../CardDeck/useCardDeck";
@@ -9,7 +10,13 @@ import { sharedWordCardStyles } from "./sharedWordCardStyles";
  * WordCardHeader Component
  */
 export default function WordCardHeader() {
-  const { currentCard } = useCardDeck();
+  const { cardDeckState, currentCard } = useCardDeck();
+
+  console.log('CURRENT CARD', currentCard);
+  logify(cardDeckState.cardDeck.colors?.dark);
+
+  const gradientStart = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
+  const gradient = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
 
   const {
     cardGradient,
@@ -23,7 +30,14 @@ export default function WordCardHeader() {
       colors={[colors.light.primary, colors.dark.border]}
       style={cardGradient}
     >
-      <Text style={cardCEFRLevel}>{currentCard.CEFR}</Text>
+      <Text
+        style={[
+          cardCEFRLevel,
+          { backgroundColor: colors.light.CEFR[currentCard.CEFR] },
+        ]}
+      >
+        {currentCard.CEFR}
+      </Text>
       <WordRank />
     </LinearGradient>
   )
