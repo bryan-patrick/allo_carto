@@ -95,6 +95,7 @@ Real quick so I don't forget...
 - Chapter select list view
 - Card Collection page
 - Random deck option
+- Practice words frequently gotten wrong
 
 ## Free art and assets credits
 

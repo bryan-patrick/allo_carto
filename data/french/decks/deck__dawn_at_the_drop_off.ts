@@ -110,7 +110,7 @@ export const DeckDawnAtTheDropOff: CardDeck = {
 		'word_noun_debarcadere',
 		'word_noun_noirceur',
 		'word_noun_lever_du_soleil',
-		'word_noun_fatigue',
+		'word_adjective_fatigue',
 		'word_noun_epuisement',
 		'word_noun_sommeil',
 		'word_noun_aventure',

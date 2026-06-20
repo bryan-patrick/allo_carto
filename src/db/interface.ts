@@ -90,7 +90,7 @@ export async function getTables() {
 				async () => {
 					await database.runAsync(
 						`
-					INSERT OR IGNORE INTO words (
+					INSERT INTO words (
 						id,
 						frenchWord,
 						englishWords,
@@ -107,6 +107,19 @@ export async function getTables() {
 						rarity
 						)
 						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+						ON CONFLICT(id) DO UPDATE SET
+							frenchWord = excluded.frenchWord,
+							englishWords = excluded.englishWords,
+							frenchArticle = excluded.frenchArticle,
+							englishArticle = excluded.englishArticle,
+							pronunciation = excluded.pronunciation,
+							isVulgar = excluded.isVulgar,
+							CEFR = excluded.CEFR,
+							lemmaId = excluded.lemmaId,
+							tense = excluded.tense,
+							gender = excluded.gender,
+							partOfSpeech = excluded.partOfSpeech,
+							rarity = excluded.rarity
 						`,
 						[
 							word.id,

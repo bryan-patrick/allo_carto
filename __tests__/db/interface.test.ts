@@ -1,12 +1,20 @@
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
-import { getDeck } from '@/src/db/interface';
+import { getDeck, getTables } from '@/src/db/interface';
 
 const mockGetAllAsync = jest.fn();
+const mockExecAsync = jest.fn();
+const mockRunAsync = jest.fn();
 
 jest.mock('@/src/db/connection', () => ({
 	deleteDB: jest.fn(),
-	getDB: jest.fn(async () => ({ getAllAsync: mockGetAllAsync })),
-	logThisIfItFails: jest.fn(),
+	getDB: jest.fn(async () => ({
+		execAsync: mockExecAsync,
+		getAllAsync: mockGetAllAsync,
+		runAsync: mockRunAsync,
+	})),
+	logThisIfItFails: jest.fn(
+		async (_message: string, operation: () => Promise<unknown>) => operation(),
+	),
 	setDB: jest.fn(),
 }));
 
@@ -21,6 +29,25 @@ jest.mock('@/src/util/shuffleArray', () =>
 describe('getDeck', () => {
 	beforeEach(() => {
 		mockGetAllAsync.mockReset();
+		mockExecAsync.mockReset();
+		mockRunAsync.mockReset();
+	});
+
+	test('refreshes existing word metadata when seeding', async () => {
+		await getTables();
+
+		const wordSeedQuery = mockRunAsync.mock.calls[0][0] as string;
+
+		expect(wordSeedQuery).toMatch(/ON CONFLICT\(id\) DO UPDATE SET/);
+		expect(wordSeedQuery).toMatch(
+			/englishWords = excluded\.englishWords/,
+		);
+		expect(wordSeedQuery).toMatch(
+			/pronunciation = excluded\.pronunciation/,
+		);
+		expect(wordSeedQuery).not.toMatch(
+			/correctCount = excluded\.correctCount/,
+		);
 	});
 
 	test('randomizes rows before selecting the deck words', async () => {

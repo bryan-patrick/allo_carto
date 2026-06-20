@@ -12,7 +12,7 @@ export const words_b1_nouns: Word[] = [
 		partOfSpeech: 'noun',
 		CEFR: 'B1',
 		gender: 'Feminine',
-		pronunciation: 'lo duhr',
+		pronunciation: 'lo-duhr',
 		correctCount: 0,
 		rarity: 'Common',
 	},
