@@ -1,6 +1,6 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ComponentProps, useEffect, useMemo, useState } from "react";
-import { StyleSheet, TextStyle, ViewStyle } from "react-native";
+import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from "react-native-reanimated";
 import colors from "../app/colors";
 import { useCardDeck } from "./CardDeck/useCardDeck";
@@ -53,7 +53,6 @@ export function RankIcon({ score = 0, size = 12, ...props }: RankIconProps) {
  * WordRank Component
  */
 export default function WordRank() {
-
   /**
    * State
   */
@@ -72,7 +71,7 @@ export default function WordRank() {
   /**
    * Animation vars
    */
-  const translateY = useSharedValue(22);
+  const translateY = useSharedValue(0);
 
   const containerY = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }]
@@ -82,10 +81,11 @@ export default function WordRank() {
    * Destructure styles
    */
   const {
-    container,
-    textContainer,
-    iconContainer,
-    score,
+    wordRankContainer,
+    animationContainer,
+    currentContainer,
+    nextContainer,
+    scoreText,
     icon,
   } = wordRankStyles;
 
@@ -95,10 +95,10 @@ export default function WordRank() {
   useEffect(() => {
     if (currentCard.correctCount !== currentScore) {
       translateY.value = withDelay(600,
-        withSpring(-20, {
-          stiffness: 360,
+        withSpring(-44, {
+          stiffness: 180,
           damping: 40,
-          mass: 4,
+          mass: 2,
         })
       );
     }
@@ -112,38 +112,40 @@ export default function WordRank() {
    * Render
    */
   return (
-    <Animated.View style={[container, containerY]}>
-      <Animated.View style={textContainer}>
-        <Animated.Text
-          style={[
-            score,
-            currentRankColor,
-          ]}
-        >
-          {currentScore}
-        </Animated.Text>
-        <Animated.Text
-          style={[
-            score,
-            nextRankColor,
-          ]}
-        >
-          {nextScore}
-        </Animated.Text>
+    <View style={wordRankContainer}>
+      <Animated.View style={[animationContainer, containerY]}>
+        <Animated.View style={currentContainer}>
+          <Animated.Text
+            style={[
+              scoreText,
+              currentRankColor,
+            ]}
+          >
+            {currentScore}
+          </Animated.Text>
+          <RankIcon
+            style={icon}
+            score={currentScore}
+            size={20}
+          />
+        </Animated.View>
+        <Animated.View style={nextContainer}>
+          <Animated.Text
+            style={[
+              scoreText,
+              nextRankColor,
+            ]}
+          >
+            {nextScore}
+          </Animated.Text>
+          <RankIcon
+            style={icon}
+            score={nextScore}
+            size={22}
+          />
+        </Animated.View>
       </Animated.View>
-      <Animated.View style={iconContainer}>
-        <RankIcon
-          style={icon}
-          score={currentScore}
-          size={22}
-        />
-        <RankIcon
-          style={icon}
-          score={nextScore}
-          size={22}
-        />
-      </Animated.View>
-    </Animated.View>
+    </View>
   )
 }
 
@@ -151,29 +153,37 @@ export default function WordRank() {
  * Styles
  */
 const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>(({
-  container: {
+  wordRankContainer: {
+    display: 'flex',
+    height: 22,
+    backgroundColor: colors.dark.primary,
+    paddingLeft: 4,
+    paddingRight: 4
+  },
+  animationContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    gap: 22,
+  },
+  currentContainer: {
     display: 'flex',
     flexDirection: 'row',
-    gap: 4,
-    height: 25,
-    marginRight: 5
-  },
-  textContainer: {
-    display: 'flex',
     justifyContent: 'center',
-    gap: 20,
+    alignItems: 'center',
+    height: 22,
+    gap: 4
   },
-  iconContainer: {
+  nextContainer: {
     display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20
+    alignItems: 'center',
+    height: 22,
+    gap: 4
   },
-  score: {
+  scoreText: {
     fontSize: 16,
-    fontWeight: 600,
-    height: 22
-  },
-  icon: {
-    height: 22
+    fontFamily: 'red-hat-variable',
   },
 })); 

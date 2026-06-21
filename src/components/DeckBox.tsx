@@ -37,11 +37,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     image,
     colors: deckColors
   } = deck;
-
   const badgeIconSize = 16;
-  const gradientStart = deckColors?.dark ?? colors.dark.primary;
-  const gradientEnd = deckColors?.light ?? colors.light.primary;
-
   const CEFRGradientLight: readonly [string, string] = [
     colors.light.CEFR[CEFR[0]],
     colors.light.CEFR[CEFR.at(-1)!],

@@ -93,6 +93,7 @@ Real quick so I don't forget...
 - Deck count on place selection view
 - Word rank counts on decks
 - Chapter select list view
+- R̶a̶r̶i̶t̶y̶ ̶o̶n̶ ̶f̶l̶a̶s̶h̶ ̶c̶a̶r̶d̶s̶
 - Card Collection page
 - Random deck option
 - Practice words frequently gotten wrong

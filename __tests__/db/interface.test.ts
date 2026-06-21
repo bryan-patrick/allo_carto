@@ -18,12 +18,10 @@ jest.mock('@/src/db/connection', () => ({
 	setDB: jest.fn(),
 }));
 
-jest.mock('@/src/db/queries/getDeckWordChoices', () =>
-	jest.fn(async () => []),
-);
+jest.mock('@/src/db/queries/getDeckWordChoices', () => jest.fn(async () => []));
 
-jest.mock('@/src/util/shuffleArray', () =>
-	jest.fn(<T,>(items: T[]) => [...items]),
+jest.mock('@/src/util/wordRaffle', () =>
+	jest.fn(<T>(words: T[]) => [...words]),
 );
 
 describe('getDeck', () => {
@@ -39,18 +37,12 @@ describe('getDeck', () => {
 		const wordSeedQuery = mockRunAsync.mock.calls[0][0] as string;
 
 		expect(wordSeedQuery).toMatch(/ON CONFLICT\(id\) DO UPDATE SET/);
-		expect(wordSeedQuery).toMatch(
-			/englishWords = excluded\.englishWords/,
-		);
-		expect(wordSeedQuery).toMatch(
-			/pronunciation = excluded\.pronunciation/,
-		);
-		expect(wordSeedQuery).not.toMatch(
-			/correctCount = excluded\.correctCount/,
-		);
+		expect(wordSeedQuery).toMatch(/englishWords = excluded\.englishWords/);
+		expect(wordSeedQuery).toMatch(/pronunciation = excluded\.pronunciation/);
+		expect(wordSeedQuery).not.toMatch(/correctCount = excluded\.correctCount/);
 	});
 
-	test('randomizes rows before selecting the deck words', async () => {
+	test('loads every word before the word raffle', async () => {
 		const deck: CardDeck = {
 			title: 'Test deck',
 			description: 'A deck used to test selection',
@@ -79,9 +71,7 @@ describe('getDeck', () => {
 
 		const selectionQuery = mockGetAllAsync.mock.calls[0][0] as string;
 
-		expect(selectionQuery).toMatch(
-			/WHERE id IN \([^)]*\)\s+ORDER BY RANDOM\(\);/,
-		);
-		expect(selectionQuery).not.toMatch(/WHERE id IN \([^)]*\);/);
+		expect(selectionQuery).toMatch(/WHERE id IN \([^)]*\);/);
+		expect(selectionQuery).not.toMatch(/ORDER BY RANDOM\(\)/);
 	});
 });

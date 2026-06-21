@@ -49,6 +49,12 @@ const colors = {
 		diamond: '#c6e9ff',
 		memorized: '#00ffcf',
 	},
+	rarity: {
+		Common: '#7BADA6',
+		Rare: '#84a1ff',
+		Epic: '#BC85FF',
+		Legendary: '#ffa200',
+	},
 };
 
 export default colors;

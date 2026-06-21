@@ -280,7 +280,7 @@ const mappedWordsStyles = StyleSheet.create({
     borderRadius: 8,
     borderColor: 'transparent',
     padding: 14,
-    maxWidth: 140,
+    maxWidth: 160,
     minWidth: 70,
     backgroundColor: colors.light.background,
   },

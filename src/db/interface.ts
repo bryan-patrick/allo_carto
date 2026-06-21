@@ -1,7 +1,7 @@
 import { seedWords } from '@/data/french/words';
 import type { CardDeck } from '../components/CardDeck/cardDeckTypes';
 import { CardRarity, CEFR, Word } from '../components/CardDeck/cardDeckTypes';
-import shuffleArray from '../util/shuffleArray';
+import wordRaffle from '../util/wordRaffle';
 import { getDB, logThisIfItFails } from './connection';
 import getDeckWordChoices from './queries/getDeckWordChoices';
 export { deleteDB, getDB, setDB } from './connection';
@@ -45,10 +45,6 @@ interface WordRankRow {
  * https://www.sqlite.org/lang.html
  *
  * Our DB dir is for our own seeders and queries/interface.
- */
-/**
- * Check if are tables exist and are seeded.
- * If not, call the seeder
  */
 export async function getTables() {
 	try {
@@ -210,10 +206,6 @@ interface GetDeckProps {
 
 /**
  * Get a deck
- *
- * TODO:
- * Need to shuffle
- * Need to include lemma's that are unique
  */
 export async function getDeck({
 	deck,
@@ -228,8 +220,9 @@ export async function getDeck({
 	/**
 	 * Get the DB
 	 * Select all the words in that deck (deck.wordIds)
-	 * ORDER BY RANDOM() is important so that the user
-	 * doesn't get the same set of cards each time.
+	 * The word raffle happens after this query.
+	 * We need all of the possible words here so every word
+	 * has a chance to be selected.
 	 */
 	try {
 		const database = await getDB();
@@ -237,8 +230,7 @@ export async function getDeck({
 			`
 			SELECT *
 			FROM words
-			WHERE id IN (${quests})
-			ORDER BY RANDOM();
+			WHERE id IN (${quests});
 			`,
 			deck.wordIds,
 		);
@@ -267,14 +259,12 @@ export async function getDeck({
 		});
 
 		/**
-		 * Slice the deck to the "amount var"
-		 * This will also save us some work when
-		 * getting our user scores from our join
-		 * table.
+		 * Draw the cards.
+		 * wordRaffle is for determined rarity
 		 */
-		const slicedWords: Word[] = uniqueLemmaWordsDeck.slice(0, amount);
-		const slicedWordsIds: string[] = slicedWords.map(word => word.id);
-		const slicedWordsQuests: string = slicedWords.map(() => '?').join(',');
+		const selectedWords = wordRaffle(uniqueLemmaWordsDeck, amount);
+		const selectedWordIds = selectedWords.map(word => word.id);
+		const selectedWordQuests = selectedWords.map(() => '?').join(',');
 
 		/**
 		 * We need the join table's correct word counts for the
@@ -285,10 +275,10 @@ export async function getDeck({
 			SELECT ALL wordId, correctCount, seenCount
 			FROM userWords
 			WHERE userId = ?
-			AND wordId IN (${slicedWordsQuests});
+			AND wordId IN (${selectedWordQuests});
 			`,
 			userId,
-			...slicedWordsIds,
+			...selectedWordIds,
 		);
 
 		/**
@@ -312,29 +302,22 @@ export async function getDeck({
 		}
 
 		/**
-		 * Shuffle and slice!
-		 */
-		const shlicedUniqueLemmaWords = shuffleArray(slicedWords).slice(0, amount);
-
-		/**
 		 * Add in the correctCount/correctCounts
 		 * These can be undefined if they have
 		 * never been seen by the user.
 		 */
-		const withUniquecorrectCounts = shlicedUniqueLemmaWords.map(
-			(word: Word): Word => {
-				const wordRankRow: WordRankRow | undefined = keyedRankRows[word.id];
-				const correctCount: number = wordRankRow?.correctCount ?? 0;
+		const withUniquecorrectCounts = selectedWords.map((word: Word): Word => {
+			const wordRankRow: WordRankRow | undefined = keyedRankRows[word.id];
+			const correctCount: number = wordRankRow?.correctCount ?? 0;
 
-				/**
-				 * Return (map) Word
-				 */
-				return {
-					...word,
-					correctCount,
-				};
-			},
-		);
+			/**
+			 * Return (map) Word
+			 */
+			return {
+				...word,
+				correctCount,
+			};
+		});
 
 		/**
 		 * Return the deck
