@@ -15,8 +15,21 @@ interface FillerWordRow {
 	englishWords: string;
 }
 
+function parseEnglishWords(serializedEnglishWords: string): string[] {
+	const parsedEnglishWords: unknown = JSON.parse(serializedEnglishWords);
+
+	if (
+		Array.isArray(parsedEnglishWords) &&
+		parsedEnglishWords.every((englishWord): englishWord is string => typeof englishWord === 'string')
+	) {
+		return parsedEnglishWords;
+	}
+
+	return [];
+}
+
 /**
- * Get random english words as "filler" words for when we
+ * Get random english words for filler words when we
  * map the choice buttons the user can press to make their selection.
  */
 export default async function getDeckFillerWords({
@@ -43,7 +56,7 @@ export default async function getDeckFillerWords({
 	const words: string[] = [];
 
 	for (const row of rows) {
-		const englishWords = JSON.parse(row.englishWords) as string[];
+		const englishWords = parseEnglishWords(row.englishWords);
 
 		for (const englishWord of englishWords) {
 			words.push(englishWord);

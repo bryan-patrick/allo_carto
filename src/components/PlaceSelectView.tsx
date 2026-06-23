@@ -36,7 +36,7 @@ export default function PlaceSelectView() {
           /**
            * Destructure the chapters
            */
-          const { id, name, places } = chapter;
+          const { id, name, places, chapterName } = chapter;
 
           /**
            * Render the individual chapter sections
@@ -44,7 +44,7 @@ export default function PlaceSelectView() {
           return (
             <View style={chapterContainerStyle} key={id}>
               <View style={chapterTitleContainerStyle}>
-                <Text style={chapterIndexStyle}>Chapter {index + 1}:</Text>
+                <Text style={chapterIndexStyle}>{chapterName}</Text>
                 <Text style={chapterTitleStyle}>{name}</Text>
               </View>
               {
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   chapterTitleStyle: {
     textAlign: 'center',
     width: '100%',
-    fontWeight: 800,
+    fontFamily: 'lexend-600',
     fontSize: 22,
     color: colors.light.text,
   },
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   placeNameTextStyle: {
     color: colors.dark.text,
-    fontWeight: 700,
+    fontFamily: 'lexend-600',
     fontSize: 18,
     marginTop: 16
   },
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingLeft: 16,
     paddingTop: 8,
-    fontWeight: 500,
+    fontFamily: 'lexend-400',
     fontSize: 16,
   },
   linkButtonStyle: {

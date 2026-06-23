@@ -87,7 +87,7 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
 const styles = StyleSheet.create({
   sectionTitleStyle: {
     fontSize: 18,
-    fontWeight: 800,
+    fontFamily: 'lexend-600',
     color: colors.dark.text,
     marginBottom: 2
   },
@@ -116,11 +116,11 @@ const styles = StyleSheet.create({
   },
   frenchWordStyle: {
     fontSize: 14,
-    fontWeight: 400
+    fontFamily: 'lexend-400'
   },
   englishWordStyle: {
     fontSize: 16,
-    fontWeight: 700,
+    fontFamily: 'lexend-600',
   },
   successStyle: {
     color: colors.dark.success
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
 
   },
   CEFRStyle: {
-    fontFamily: 'red-hat-variable',
+    fontFamily: 'azeret-mono-600',
     fontSize: 12,
     padding: 2,
     borderRadius: 4,

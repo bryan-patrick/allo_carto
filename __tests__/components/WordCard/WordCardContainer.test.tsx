@@ -1,4 +1,5 @@
 import { makeMockCardDeck, makeMockCardDeckState, mockWords } from '@/src/components/CardDeck/mockCardDeck';
+import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import WordCard from '@/src/components/WordCard/WordCard';
 import WordCardContainer from '@/src/components/WordCard/WordCardContainer';
@@ -80,7 +81,7 @@ describe('<WordCardContainer />', () => {
       .mockResolvedValueOnce(['coffee', 'tea'])
       .mockResolvedValueOnce(['The', 'A']);
 
-    const word = {
+    const word: Word = {
       id: 'word_noun_cafe',
       frenchWord: 'cafe',
       frenchArticle: 'le',
@@ -88,7 +89,7 @@ describe('<WordCardContainer />', () => {
       englishWords: ['coffee'],
       pronunciation: 'ka-fay',
       isVulgar: false,
-      CEFR: 'A1' as const,
+      CEFR: 'A1',
       partOfSpeech: 'noun',
       correctCount: 14,
     };

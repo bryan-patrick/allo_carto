@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingRight: 8,
     paddingLeft: 8,
-    fontFamily: 'red-hat-variable',
+    fontFamily: 'azeret-mono-600',
     fontSize: 14,
     borderColor: colors.light.border,
   },
@@ -92,6 +92,6 @@ const styles = StyleSheet.create({
     flexGrow: 1
   },
   rarityTextStyle: {
-    fontFamily: 'red-hat-variable',
+    fontFamily: 'azeret-mono-400',
   }
 });

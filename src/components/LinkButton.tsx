@@ -4,7 +4,7 @@
 import { useLinkProps } from '@react-navigation/native';
 import { useAudioPlayer } from 'expo-audio';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
-import { Pressable, PressableProps, StyleSheet, Text, ViewStyle } from 'react-native';
+import { Pressable, PressableProps, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import colors from '../app/colors';
 import { DeckColors } from './CardDeck/cardDeckTypes';
@@ -19,7 +19,7 @@ const tapAudio = require('@/src/app/assets/sounds/tap.wav');
 /**
  * Typing
  */
-interface LinkButtonProps extends PressableProps {
+interface LinkButtonProps extends Omit<PressableProps, 'style'> {
   SVGElement?: ReactElement;
   handler?: Function;
   children?: ReactNode;
@@ -28,6 +28,7 @@ interface LinkButtonProps extends PressableProps {
   href?: string;
   props?: any
   deckColors?: DeckColors;
+  style?: StyleProp<ViewStyle>;
 }
 
 /**
@@ -149,7 +150,7 @@ export default function LinkButton({
   }
 
   /**
-   * Pull in props when used as a link button
+   * Pull in props when used for a navigation link button.
    */
   let allTheProps = props;
 
@@ -161,7 +162,7 @@ export default function LinkButton({
    * Render the thing
    */
   return (
-    <Animated.View style={[style as ViewStyle, animatedContainerStyle]}>
+    <Animated.View style={[style, animatedContainerStyle]}>
       <AnimatedPressable
         {...allTheProps}
         onHoverIn={() => setIsHovered(true)}
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: colors.light.text,
-    fontWeight: 800,
+    fontFamily: 'lexend-600',
     fontSize: 16,
   },
   hoveredLinkButton: {

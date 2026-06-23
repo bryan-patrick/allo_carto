@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, Text, TextStyle } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 /**
  * Typing
@@ -8,23 +8,18 @@ import { StyleSheet, Text, TextStyle } from 'react-native';
 interface GradientTextProps {
   colors: readonly [string, string, ...string[]],
   fontSize: number,
-  fontWeight?: TextStyle['fontWeight'],
-  style?: TextStyle,
+  fontWeight?: 400 | 600 | 700,
   text: string
 }
 
 /**
  * GradientText component
  */
-export default function GradientText({ colors, fontSize, fontWeight, style, text }: GradientTextProps) {
-  const flattenedStyle = StyleSheet.flatten(style) ?? {};
-  const textStyle = StyleSheet.flatten([
-    style,
-    {
-      fontSize,
-      fontWeight: fontWeight ?? flattenedStyle.fontWeight,
-    },
-  ]);
+export default function GradientText({ colors, fontSize, fontWeight = 400, text }: GradientTextProps) {
+  const textStyle = {
+    fontFamily: getLexendFontFamily(fontWeight),
+    fontSize,
+  };
 
   return (
     <MaskedView
@@ -55,3 +50,11 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
 });
+
+function getLexendFontFamily(fontWeight: GradientTextProps['fontWeight']) {
+  if (fontWeight === 700) {
+    return 'lexend-700';
+  }
+
+  return fontWeight === 600 ? 'lexend-600' : 'lexend-400';
+}

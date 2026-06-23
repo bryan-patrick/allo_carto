@@ -30,7 +30,7 @@ export const words_a2_adjectives: Word[] = [
 	{
 		id: 'word_adjective_chaleureux',
 		frenchWord: 'chaleureux',
-		englishWords: ['cozy', 'warm', 'welcoming'],
+		englishWords: ['warm', 'welcoming'],
 		isVulgar: false,
 		lemmaId: 'chaleureux',
 		partOfSpeech: 'adjective',

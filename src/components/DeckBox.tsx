@@ -125,7 +125,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
                 {deckColors?.dark && deckColors.light && (
                   <GradientText
                     fontSize={20}
-                    fontWeight={800}
+                    fontWeight={700}
                     colors={[deckColors.dark, deckColors.light]}
                     text={title}
                   />
@@ -207,6 +207,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 18,
     borderWidth: 4,
+    marginRight: 8,
+    marginLeft: 8,
     borderColor: colors.light.border,
     boxShadow: `0 20px 0 ${colors.dark.border}`,
   },
@@ -235,7 +237,7 @@ const styles = StyleSheet.create({
   titleStyle: {
     color: colors.dark.text,
     fontSize: 20,
-    fontWeight: 800,
+    fontFamily: 'lexend-700',
     wordWrap: 'wrap',
   },
   CEFRGradientStyle: {
@@ -253,10 +255,10 @@ const styles = StyleSheet.create({
   },
   CEFRLabelStyle: {
     fontSize: 14,
-    fontWeight: 500,
+    fontFamily: 'lexend-400',
   },
   CEFRTextStyle: {
-    fontWeight: 500,
+    fontFamily: 'lexend-400',
     fontSize: 14,
     color: colors.dark.text,
   },
@@ -264,7 +266,7 @@ const styles = StyleSheet.create({
     color: colors.dark.text,
     wordWrap: 'wrap',
     fontSize: 16,
-    fontWeight: 500,
+    fontFamily: 'lexend-400',
     padding: 16,
     paddingTop: 8,
   },
@@ -273,7 +275,7 @@ const styles = StyleSheet.create({
   imageStyle: {
     display: 'flex',
     justifyContent: 'flex-end',
-    height: 200,
+    height: 160,
   },
   badgeContainerStyle: {
     display: 'flex',
@@ -292,14 +294,13 @@ const styles = StyleSheet.create({
     gap: 4
   },
   badgeCountTextStyle: {
-    fontFamily: 'red-hat-variable',
+    fontFamily: 'azeret-mono-600',
     color: colors.light.text,
     fontSize: 12,
   },
   cardFooterStyle: {
-    padding: 12,
-    paddingTop: 10,
-    paddingBottom: 20,
+    padding: 14,
+    paddingBottom: 22,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },

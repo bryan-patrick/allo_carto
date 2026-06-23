@@ -151,7 +151,6 @@ const MappedButton = memo(function MappedButtonMemo({
 /**
  * MappedWords Component
  * Map the word buttons
- * Just a cute wittle memo
  */
 const MappedWords = memo(
   function MappedWordsMemo({
@@ -159,9 +158,15 @@ const MappedWords = memo(
     activeWord,
     handler
   }: MappedWordsProps) {
+    /**
+     * Context
+     */
     const { currentCard } = useCardDeck();
     const { cardState } = useWordCardUI();
 
+    /**
+     * Destructure Styles
+     */
     const {
       highlightSuccess,
       highlightWarning,
@@ -258,10 +263,6 @@ const MappedWords = memo(
     ))
   });
 
-/**
- * Export the memoized function
- * The cutest wittle memoized function
- */
 export default MappedWords;
 
 /**
@@ -280,14 +281,14 @@ const mappedWordsStyles = StyleSheet.create({
     borderRadius: 8,
     borderColor: 'transparent',
     padding: 14,
-    maxWidth: 160,
+    maxWidth: '50%',
     minWidth: 70,
     backgroundColor: colors.light.background,
   },
   wcsText: {
     textAlign: 'center',
     color: colors.dark.text,
-    fontWeight: 700,
+    fontFamily: 'lexend-600',
   },
   highlightSuccess: {
     backgroundColor: colors.light.success,

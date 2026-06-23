@@ -64,7 +64,7 @@ export const words_time_single: Word[] = [
 	{
 		id: 'word_noun_aiguille',
 		frenchWord: 'aiguille',
-		englishWords: ['hand', 'needle'],
+		englishWords: ['hand'],
 		frenchArticle: 'une',
 		englishArticle: 'a',
 		pronunciation: 'eh-geey',

@@ -16,7 +16,9 @@ export interface GetFillerWordsProps {
  * ZZZZZZZZZZzzzzzzzzzzz
  */
 export function sleep(ms: number | SharedValue<number>) {
-	return new Promise(_ => setTimeout(_, ms as number));
+	const delay = typeof ms === 'number' ? ms : ms.value;
+
+	return new Promise(resolve => setTimeout(resolve, delay));
 }
 
 /**

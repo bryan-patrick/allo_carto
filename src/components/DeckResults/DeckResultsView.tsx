@@ -6,6 +6,8 @@ import GradientText from '../GradientText';
 import LinkButton from '../LinkButton';
 import ResultsList from './ResultsList';
 
+const englishVowels = ['a', 'e', 'i', 'o', 'u', 'y']
+
 /**
  * DeckResultsView component
  * 
@@ -16,9 +18,10 @@ export default function DeckResultsView() {
   const { cardDeckState } = useCardDeck();
   const { title } = cardDeckState.cardDeck;
   const { correctWords, incorrectWords } = cardDeckState;
-
   const deckColorDark = cardDeckState.cardDeck.colors?.dark ?? colors.dark.primary;
   const deckColorLight = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
+  const isFirstLetterAVowel = englishVowels.includes(title.split('')[0].toLowerCase());
+  const resultsTitleArticle = isFirstLetterAVowel ? 'an' : 'a'
 
   /**
    * Destructure styles
@@ -42,12 +45,12 @@ export default function DeckResultsView() {
       <View style={resultsContainerStyle}>
         <View style={deckDetailsContainerStyle}>
           <View style={titleRowStyle}>
-            <Text style={titleStyle}>Good job! You completed a </Text>
+            <Text style={titleStyle}>Good job! You completed {resultsTitleArticle} </Text>
             <GradientText
               text={title}
               colors={[deckColorDark, deckColorLight]}
               fontSize={20}
-              fontWeight={900}
+              fontWeight={600}
             />
             <Text style={titleStyle}> deck.</Text>
           </View>
@@ -102,7 +105,7 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     fontSize: 20,
-    fontWeight: 500,
+    fontFamily: 'lexend-400',
   },
   imageContainerStyle: {
     borderTopWidth: 2,

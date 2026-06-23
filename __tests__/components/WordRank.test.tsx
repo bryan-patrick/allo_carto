@@ -6,7 +6,7 @@ import { render } from '@testing-library/react-native';
 
 
 /**
- * Icon name as text mock since these can load late async
+ * Icon name text mock because these can load late async.
 */
 jest.mock('@expo/vector-icons/MaterialIcons', () => jest.fn(() => null));
 jest.mock('@/src/components/CardDeck/useCardDeck');
@@ -47,13 +47,13 @@ describe('<WordRank />', () => {
 
   /**
    * Make sure the next icon also renders
-   * military-tech is the name of the MUI icon
+   * diamond is the name of the MUI icon
    */
   test('renders the rank icon for a score', () => {
     render(<RankIcon score={15} />);
 
     expect(mockMaterialIcon).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'military-tech' }),
+      expect.objectContaining({ name: 'diamond' }),
       undefined,
     );
   });

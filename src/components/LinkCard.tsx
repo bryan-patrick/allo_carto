@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     fontSize: 20,
-    fontWeight: 700,
+    fontFamily: 'lexend-600',
     color: colors.dark.text,
   },
   rowBetweenStyle: {
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   cardTextStyle: {
     color: colors.dark.text,
-    fontWeight: 500,
+    fontFamily: 'lexend-400',
     fontSize: 16,
   },
 })

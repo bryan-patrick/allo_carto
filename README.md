@@ -60,7 +60,7 @@
 
 ### Fonts
 
-**Lexend** is used throughout the application. The font is included in `app/assets/fonts/lexend-variable.ttf` and loaded asychonously via the `useFonts` hook via expo.
+**Lexend** is used throughout the application, with **Azeret Mono** for compact rank/CEFR labels. Static font weights live in `app/assets/fonts/` and are loaded asynchronously via the `useFonts` hook in Expo.
 
 https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 
@@ -98,6 +98,10 @@ Real quick so I don't forget...
 - Random deck option
 - Practice words frequently gotten wrong
 - We should add "repeat deck" or "do a random deck" buttons on the results view
+- Cards unlock secret decks / these are very hard decks / secret deck unlock indicator, probably a lock SVG
+- Image loading (is lazy)
+- Mastering a word should "remove" it from the deck? This could also help with unlocking next decks/chapters
+- Completion steps (Results -> Experience gain + coins -> )
 
 ## Free art and assets credits
 

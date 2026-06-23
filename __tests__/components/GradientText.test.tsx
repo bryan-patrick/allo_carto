@@ -10,12 +10,12 @@ describe('<GradientText />', () => {
      * Render the thing.
      */
     const { UNSAFE_getAllByType, UNSAFE_getByType } = render(
-      <GradientText
-        colors={['#111111', '#eeeeee']}
-        fontSize={20}
-        fontWeight="800"
-        text="Bonjour"
-      />
+        <GradientText
+          colors={['#111111', '#eeeeee']}
+          fontSize={20}
+          fontWeight={700}
+          text="Bonjour"
+        />
     );
 
     const textNodes = UNSAFE_getAllByType(Text);
@@ -39,8 +39,8 @@ describe('<GradientText />', () => {
       expect(textNode.props.children).toBe('Bonjour');
       expect(StyleSheet.flatten(textNode.props.style)).toEqual(
         expect.objectContaining({
+          fontFamily: 'lexend-700',
           fontSize: 20,
-          fontWeight: '800',
         })
       );
     });

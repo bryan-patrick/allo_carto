@@ -4,6 +4,7 @@ import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from "react-native-reanimated";
 import colors from "../app/colors";
 import { useCardDeck } from "./CardDeck/useCardDeck";
+import { getWordRankDefinition } from "../util/wordRanks";
 
 /**
  * Typing
@@ -12,41 +13,24 @@ type RankIconProps = Omit<ComponentProps<typeof MaterialIcons>, "name"> & {
   score?: number;
 };
 
-/**
- * Static colors
- */
-const {
-  fnew,
-  bronze,
-  silver,
-  gold,
-  diamond,
-  memorized
-} = colors.rank;
-
-/**
- * Helpers
- * Yes, I did put a decimal so the ifs would line up.
- */
 function getRankColor(score: number = 0) {
-  if (score < 5.) return fnew;
-  if (score < 15) return bronze;
-  if (score < 30) return silver;
-  if (score < 60) return gold;
-  if (score < 80) return diamond;
-  else return memorized;
+  return colors.rank[getWordRankDefinition(score).key];
 }
 
 /**
  * RankIcon Component
  */
 export function RankIcon({ score = 0, size = 12, ...props }: RankIconProps) {
-  if (score < 5.) return <MaterialIcons {...props} color={fnew} size={size} name="fiber-new" />
-  if (score < 15) return <MaterialIcons {...props} color={bronze} size={size} name="stars" />
-  if (score < 30) return <MaterialIcons {...props} color={silver} size={size} name="military-tech" />
-  if (score < 60) return <MaterialIcons {...props} color={gold} size={size} name="emoji-events" />
-  if (score < 80) return <MaterialIcons {...props} color={diamond} size={size} name="diamond" />
-  else return <MaterialIcons {...props} color={memorized} size={size} name="psychology" />
+  const rank = getWordRankDefinition(score);
+
+  return (
+    <MaterialIcons
+      {...props}
+      color={colors.rank[rank.key]}
+      size={size}
+      name={rank.iconName}
+    />
+  );
 }
 
 /**
@@ -55,7 +39,7 @@ export function RankIcon({ score = 0, size = 12, ...props }: RankIconProps) {
 export default function WordRank() {
   /**
    * State
-  */
+   */
   const { currentCard } = useCardDeck();
   const [currentScore] = useState(currentCard.correctCount);
   const [nextScore] = useState(currentCard.correctCount + 1);
@@ -184,6 +168,6 @@ const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>(
   },
   scoreText: {
     fontSize: 16,
-    fontFamily: 'red-hat-variable',
+    fontFamily: 'azeret-mono-400',
   },
 })); 

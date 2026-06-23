@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     }],
   },
   cardText: {
-    fontWeight: 800,
+    fontFamily: 'lexend-600',
     fontSize: 20,
     color: colors.dark.border
   },
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     height: '50%',
   },
   text: {
-    fontWeight: 700,
+    fontFamily: 'lexend-600',
     fontSize: 18,
     color: colors.light.text,
   },

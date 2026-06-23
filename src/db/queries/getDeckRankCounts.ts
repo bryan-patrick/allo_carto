@@ -1,13 +1,7 @@
 import { getDB } from '../connection';
+import { getWordRankSqlCountSelect, WordRankKey } from '../../util/wordRanks';
 
-export interface DeckRankCounts {
-	fnew: number;
-	bronze: number;
-	silver: number;
-	gold: number;
-	diamond: number;
-	memorized: number;
-}
+export type DeckRankCounts = Record<WordRankKey, number>;
 
 interface GetDeckRankCountsProps {
 	userId: string;
@@ -36,16 +30,12 @@ export default async function getDeckRankCounts({
 
 	const database = await getDB();
 	const quests = wordIds.map(() => '?').join(',');
+	const rankCountSelect = getWordRankSqlCountSelect('uw.correctCount');
 
 	const row = await database.getFirstAsync<DeckRankCounts>(
 		`
 		SELECT
-			SUM(CASE WHEN COALESCE(uw.correctCount, 0) < 5 THEN 1 ELSE 0 END) AS fnew,
-			SUM(CASE WHEN uw.correctCount BETWEEN 5 AND 14 THEN 1 ELSE 0 END) AS bronze,
-			SUM(CASE WHEN uw.correctCount BETWEEN 15 AND 29 THEN 1 ELSE 0 END) AS silver,
-			SUM(CASE WHEN uw.correctCount BETWEEN 30 AND 59 THEN 1 ELSE 0 END) AS gold,
-			SUM(CASE WHEN uw.correctCount BETWEEN 60 AND 79 THEN 1 ELSE 0 END) AS diamond,
-			SUM(CASE WHEN uw.correctCount >= 80 THEN 1 ELSE 0 END) AS memorized
+			${rankCountSelect}
 		FROM words AS w
 		LEFT JOIN userWords AS uw
 			ON uw.wordId = w.id

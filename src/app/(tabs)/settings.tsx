@@ -1,4 +1,7 @@
-import * as Haptics from 'expo-haptics';
+import {
+  impactAsync,
+  ImpactFeedbackStyle,
+} from 'expo-haptics';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function Settings() {
@@ -9,7 +12,7 @@ export default function Settings() {
       <Pressable
         style={pressable}
         onPress={
-          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+          () => impactAsync(ImpactFeedbackStyle.Light)
         }
       >
         <Text style={text}>
@@ -19,7 +22,7 @@ export default function Settings() {
       <Pressable
         style={pressable}
         onPress={
-          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+          () => impactAsync(ImpactFeedbackStyle.Medium)
         }
       >
         <Text style={text}>
@@ -29,7 +32,7 @@ export default function Settings() {
       <Pressable
         style={pressable}
         onPress={
-          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+          () => impactAsync(ImpactFeedbackStyle.Heavy)
         }
       >
         <Text style={text}>
@@ -39,7 +42,7 @@ export default function Settings() {
       <Pressable
         style={pressable}
         onPress={
-          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid)
+          () => impactAsync(ImpactFeedbackStyle.Rigid)
         }
       >
         <Text style={text}>
@@ -49,7 +52,7 @@ export default function Settings() {
       <Pressable
         style={pressable}
         onPress={
-          () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+          () => impactAsync(ImpactFeedbackStyle.Soft)
         }
       >
         <Text style={text}>

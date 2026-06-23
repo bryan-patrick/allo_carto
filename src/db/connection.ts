@@ -1,24 +1,28 @@
-import * as SQLite from 'expo-sqlite';
+import {
+	deleteDatabaseAsync,
+	openDatabaseAsync,
+	type SQLiteDatabase,
+} from 'expo-sqlite';
 
-let db: SQLite.SQLiteDatabase | null = null;
+let db: SQLiteDatabase | null = null;
 
 /**
  * Use the connection opened by SQLiteProvider for the whole application.
  */
-export function setDB(database: SQLite.SQLiteDatabase): void {
+export function setDB(database: SQLiteDatabase): void {
 	db = database;
 }
 
 /**
  * Get the SQLite DB
  */
-export async function getDB(): Promise<SQLite.SQLiteDatabase> {
+export async function getDB(): Promise<SQLiteDatabase> {
 	try {
 		if (db) {
 			return db;
 		}
 
-		db = await SQLite.openDatabaseAsync('allo_carto.db');
+		db = await openDatabaseAsync('allo_carto.db');
 
 		if (!db) {
 			throw new Error('DB not found, SQLite.openDatabaseAsync failed.');
@@ -42,7 +46,7 @@ export async function deleteDB(): Promise<void> {
 		await database.closeAsync();
 	}
 
-	await SQLite.deleteDatabaseAsync('allo_carto.db');
+	await deleteDatabaseAsync('allo_carto.db');
 }
 
 /**

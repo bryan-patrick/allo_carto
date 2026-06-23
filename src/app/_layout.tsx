@@ -35,8 +35,11 @@ export default function AppLayout() {
    * Load our fonts
    */
   useFonts({
-    'lexend-variable': require('./assets/fonts/lexend-variable.ttf'),
-    'red-hat-variable': require('./assets/fonts/red-hat-variable.ttf'),
+    'lexend-400': require('./assets/fonts/lexend-400.ttf'),
+    'lexend-600': require('./assets/fonts/lexend-600.ttf'),
+    'lexend-700': require('./assets/fonts/lexend-700.ttf'),
+    'azeret-mono-400': require('./assets/fonts/azeret-mono-400.ttf'),
+    'azeret-mono-600': require('./assets/fonts/azeret-mono-600.ttf'),
   });
 
   /**

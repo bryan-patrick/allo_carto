@@ -1,7 +1,10 @@
 import colors from '@/src/app/colors';
 import { incrementCorrectCount } from '@/src/db/queries/incrementCorrectCount';
 import { useUserContext } from '@/src/db/useUserContext';
-import * as Haptics from 'expo-haptics';
+import {
+  notificationAsync,
+  NotificationFeedbackType,
+} from 'expo-haptics';
 import { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -135,24 +138,24 @@ export default function WordCardButton({
           cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
           cardDeckDispatch({ type: 'ADD_CORRECT_WORD' });
           udatecorrectCount();
-          Haptics.notificationAsync(
-            Haptics.NotificationFeedbackType.Success,
+          notificationAsync(
+            NotificationFeedbackType.Success,
           );
           break;
         case 'READY_WARNING':
-          Haptics.notificationAsync(
-            Haptics.NotificationFeedbackType.Warning,
+          notificationAsync(
+            NotificationFeedbackType.Warning,
           );
           break;
         case 'INCORRECT_DANGER':
-          Haptics.notificationAsync(
-            Haptics.NotificationFeedbackType.Warning,
+          notificationAsync(
+            NotificationFeedbackType.Warning,
           );
           cardDeckDispatch({ type: 'ADD_INCORRECT_WORD' });
           break;
         case 'COMPLETED_DANGER':
-          Haptics.notificationAsync(
-            Haptics.NotificationFeedbackType.Error,
+          notificationAsync(
+            NotificationFeedbackType.Error,
           );
           break;
       }
@@ -255,7 +258,7 @@ const wordCardButtonStyles = StyleSheet.create({
   },
   textStyles: {
     color: colors.light.text,
-    fontWeight: '800',
+    fontFamily: 'lexend-600',
     fontSize: 16,
   },
   successPressable: {

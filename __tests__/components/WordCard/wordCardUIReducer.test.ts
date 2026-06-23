@@ -115,7 +115,7 @@ describe('wordCardUIReducer', () => {
 	/**
 	 * Correct answer. oooooo weeeeeeee
 	 */
-	test('marks a correct answer as correct', () => {
+	test('marks a correct answer correct', () => {
 		const state = makeState({
 			selectedArticle: 'The',
 			selectedWord: 'coffee',

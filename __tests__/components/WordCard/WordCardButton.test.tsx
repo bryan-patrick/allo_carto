@@ -9,7 +9,10 @@ import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
 import { incrementCorrectCount } from '@/src/db/queries/incrementCorrectCount';
 import { fireEvent, render } from '@testing-library/react-native';
-import * as Haptics from 'expo-haptics';
+import {
+  notificationAsync,
+  NotificationFeedbackType,
+} from 'expo-haptics';
 
 /**
  * Mock all the things
@@ -28,7 +31,7 @@ jest.mock('@/src/components/WordCard/useWordCardUI');
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseWordCardUI = jest.mocked(useWordCardUI);
-const mockNotificationAsync = jest.mocked(Haptics.notificationAsync);
+const mockNotificationAsync = jest.mocked(notificationAsync);
 const mockIncrementCorrectCount = jest.mocked(incrementCorrectCount);
 
 /**
@@ -139,7 +142,7 @@ describe('<WordCardButton />', () => {
      * Make sure the haptic went off!
      */
     expect(mockNotificationAsync).toHaveBeenCalledWith(
-      Haptics.NotificationFeedbackType.Success,
+      NotificationFeedbackType.Success,
     );
   });
 });

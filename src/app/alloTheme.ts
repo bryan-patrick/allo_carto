@@ -17,20 +17,20 @@ const alloTheme: Theme = {
 	},
 	fonts: {
 		regular: {
-			fontFamily: 'lexend-variable',
+			fontFamily: 'lexend-400',
 			fontWeight: '400',
 		},
 		medium: {
-			fontFamily: 'lexend-variable',
-			fontWeight: '500',
+			fontFamily: 'lexend-400',
+			fontWeight: '400',
 		},
 		bold: {
-			fontFamily: 'lexend-variable',
+			fontFamily: 'lexend-600',
 			fontWeight: '600',
 		},
 		heavy: {
-			fontFamily: 'lexend-variable',
-			fontWeight: '700',
+			fontFamily: 'lexend-600',
+			fontWeight: '600',
 		},
 	},
 };

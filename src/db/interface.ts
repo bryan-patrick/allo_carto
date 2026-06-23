@@ -238,7 +238,7 @@ export async function getDeck({
 		/**
 		 * We have to add back in englishWords and isVulgar
 		 * since we have to parse the array and isVulgar is
-		 * stored as a number instead of a boolean.
+		 * stored with a numeric value instead of a boolean.
 		 */
 		const words: Word[] =
 			rows?.map((row: WordRow) => ({
@@ -283,7 +283,7 @@ export async function getDeck({
 
 		/**
 		 * Instead of finding every correctCount by nested
-		 * id, we can just use the ids as a lookup table.
+		 * id, we can use the ids for a lookup table.
 		 *
 		 * In other words, we're turning this:
 		 * [{"correctCount": 1, "seenCount": 0, "wordId": "word_noun_cafe"}, ...]

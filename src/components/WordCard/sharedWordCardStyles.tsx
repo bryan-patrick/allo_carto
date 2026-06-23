@@ -25,7 +25,7 @@ export const sharedWordCardStyles = StyleSheet.create({
   wordId: {
     color: colors.dark.text,
     fontSize: 22,
-    fontWeight: '700',
+    fontFamily: 'lexend-600',
   },
   wordPronunciation: {
     fontSize: 18,
@@ -39,7 +39,7 @@ export const sharedWordCardStyles = StyleSheet.create({
   answerSlot: {
     color: 'transparent',
     borderBottomWidth: 2,
-    fontWeight: 700,
+    fontFamily: 'lexend-600',
     fontSize: 18,
     padding: 8,
     paddingRight: 12,
@@ -68,7 +68,7 @@ export const sharedWordCardStyles = StyleSheet.create({
   feedbackText: {
     textAlign: 'center',
     fontSize: 16,
-    fontWeight: 600,
+    fontFamily: 'lexend-600',
     paddingTop: 8,
     paddingLeft: 4,
     paddingRight: 4,

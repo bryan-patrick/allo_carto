@@ -34,7 +34,7 @@ describe('getDeck', () => {
 	test('refreshes existing word metadata when seeding', async () => {
 		await getTables();
 
-		const wordSeedQuery = mockRunAsync.mock.calls[0][0] as string;
+		const [wordSeedQuery] = mockRunAsync.mock.calls[0];
 
 		expect(wordSeedQuery).toMatch(/ON CONFLICT\(id\) DO UPDATE SET/);
 		expect(wordSeedQuery).toMatch(/englishWords = excluded\.englishWords/);
@@ -69,7 +69,7 @@ describe('getDeck', () => {
 
 		await getDeck({ deck, amount: 1, userId: 'user_one' });
 
-		const selectionQuery = mockGetAllAsync.mock.calls[0][0] as string;
+		const [selectionQuery] = mockGetAllAsync.mock.calls[0];
 
 		expect(selectionQuery).toMatch(/WHERE id IN \([^)]*\);/);
 		expect(selectionQuery).not.toMatch(/ORDER BY RANDOM\(\)/);

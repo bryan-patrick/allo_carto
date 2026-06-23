@@ -1,8 +1,26 @@
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import wordRaffle from '@/src/util/wordRaffle';
 
-const firstWord = { id: 'word_one', rarity: 'Common' } as Word;
-const secondWord = { id: 'word_two', rarity: 'Legendary' } as Word;
+const firstWord: Word = {
+	id: 'word_one',
+	frenchWord: 'un',
+	englishWords: ['one'],
+	pronunciation: 'un',
+	isVulgar: false,
+	CEFR: 'A1',
+	correctCount: 0,
+	rarity: 'Common',
+};
+const secondWord: Word = {
+	id: 'word_two',
+	frenchWord: 'deux',
+	englishWords: ['two'],
+	pronunciation: 'duh',
+	isVulgar: false,
+	CEFR: 'A1',
+	correctCount: 0,
+	rarity: 'Legendary',
+};
 
 describe('wordRaffle', () => {
 	afterEach(() => {
