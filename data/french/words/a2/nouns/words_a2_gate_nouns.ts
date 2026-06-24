@@ -19,7 +19,7 @@ export const words_a2_gate_nouns: Word[] = [
 	{
 		id: 'word_noun_indication',
 		frenchWord: 'indication',
-		englishWords: ['directions'],
+		englishWords: ['indication'],
 		isVulgar: false,
 		lemmaId: 'indication',
 		frenchArticle: "l'",
@@ -79,7 +79,7 @@ export const words_a2_gate_nouns: Word[] = [
 	{
 		id: 'word_noun_agent',
 		frenchWord: 'agent',
-		englishWords: ['agent'],
+		englishWords: ['staff member'],
 		isVulgar: false,
 		lemmaId: 'agent',
 		frenchArticle: "l'",

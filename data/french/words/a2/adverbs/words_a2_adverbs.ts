@@ -88,7 +88,7 @@ export const words_a2_adverbs: Word[] = [
 	{
 		id: 'word_adverb_prudemment',
 		frenchWord: 'prudemment',
-		englishWords: ['carefully'],
+		englishWords: ['cautiously'],
 		isVulgar: false,
 		lemmaId: 'prudemment',
 		partOfSpeech: 'adverb',

@@ -20,6 +20,25 @@ interface CardContainerProps {
   isCurrent: boolean;
 }
 
+const MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WORDS_FROM_OTHER_PARTS_OF_SPEECH = 3;
+
+function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
+  const lowerCaseCorrectAnswers = new Set(
+    correctAnswers.map(correctAnswer => correctAnswer.toLowerCase()),
+  );
+  const wrongAnswerChoices = new Set<string>();
+
+  for (const word of words) {
+    const lowerCaseWord = word.toLowerCase();
+
+    if (!lowerCaseCorrectAnswers.has(lowerCaseWord)) {
+      wrongAnswerChoices.add(lowerCaseWord);
+    }
+  }
+
+  return wrongAnswerChoices.size;
+}
+
 /**
  * WordCardContainer Component
  */
@@ -55,13 +74,21 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
       if (loadedWordId.current === word.id) return;
       loadedWordId.current = word.id;
 
-      let matchingWordChoices = cardDeckState.cardDeck.wordChoices
+      const deckWordChoices = cardDeckState.cardDeck.wordChoices
         .flatMap(choice => choice.englishWords);
+      let matchingWordChoices = deckWordChoices;
 
       if (word.partOfSpeech) {
         matchingWordChoices = cardDeckState.cardDeck.wordChoices
           .filter(choice => choice.partOfSpeech === word.partOfSpeech)
           .flatMap(choice => choice.englishWords);
+
+        if (
+          countWrongAnswerChoices(matchingWordChoices, word.englishWords) <
+          MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WORDS_FROM_OTHER_PARTS_OF_SPEECH
+        ) {
+          matchingWordChoices = deckWordChoices;
+        }
       }
 
       setFillerWords(await getFillerWords({

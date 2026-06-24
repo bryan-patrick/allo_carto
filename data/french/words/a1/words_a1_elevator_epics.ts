@@ -189,7 +189,7 @@ export const words_a1_elevator_epics: Word[] = [
 	{
 		id: 'word_preposition_chez',
 		frenchWord: 'chez',
-		englishWords: ['at'],
+		englishWords: ["at someone's place"],
 		isVulgar: false,
 		lemmaId: 'chez',
 		partOfSpeech: 'preposition',

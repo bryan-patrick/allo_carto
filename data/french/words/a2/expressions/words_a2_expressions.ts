@@ -16,7 +16,7 @@ export const words_a2_expressions: Word[] = [
 	{
 		id: 'word_expression_bon_voyage',
 		frenchWord: 'bon voyage',
-		englishWords: ['good journey'],
+		englishWords: ['have a good trip'],
 		isVulgar: false,
 		lemmaId: 'bon_voyage',
 		partOfSpeech: 'expression',

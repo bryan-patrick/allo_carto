@@ -49,7 +49,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_addition',
 		frenchWord: 'addition',
-		englishWords: ['check'],
+		englishWords: ['bill'],
 		isVulgar: false,
 		lemmaId: 'addition',
 		frenchArticle: "l'",

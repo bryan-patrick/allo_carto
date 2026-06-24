@@ -52,7 +52,7 @@ export const words_a2_prepositions: Word[] = [
 	{
 		id: 'word_preposition_jusqua',
 		frenchWord: "jusqu'à",
-		englishWords: ['as far as'],
+		englishWords: ['until'],
 		isVulgar: false,
 		lemmaId: 'jusqua',
 		partOfSpeech: 'preposition',

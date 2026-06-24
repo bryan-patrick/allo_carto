@@ -82,7 +82,7 @@ export const words_time_single: Word[] = [
 		englishWords: ['dial', 'clock face'],
 		frenchArticle: 'un',
 		englishArticle: 'a',
-		pronunciation: 'kah-dron',
+		pronunciation: 'kah-drahn',
 		isVulgar: false,
 		CEFR: 'A2',
 		lemmaId: 'cadran',

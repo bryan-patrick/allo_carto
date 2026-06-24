@@ -157,4 +157,50 @@ describe('<WordCardContainer />', () => {
 
     expect(mockGetFillerWords).toHaveBeenCalledTimes(2);
   });
+
+  test('falls back to the full deck when part-of-speech choices are too sparse', async () => {
+    mockGetFillerWords
+      .mockResolvedValueOnce(['how much', 'market', 'clue'])
+      .mockResolvedValueOnce([]);
+
+    const word: Word = {
+      id: 'word_expression_combien',
+      frenchWord: 'combien',
+      englishWords: ['how much'],
+      pronunciation: 'kohm-byen',
+      isVulgar: false,
+      CEFR: 'A1',
+      partOfSpeech: 'expression',
+      correctCount: 0,
+    };
+    const cardDeck = makeMockCardDeck({
+      words: [word],
+      wordChoices: [
+        { englishWords: ['how much'], partOfSpeech: 'expression' },
+        { englishWords: ['market'], partOfSpeech: 'noun' },
+        { englishWords: ['clue'], partOfSpeech: 'noun' },
+        { englishWords: ['hidden'], partOfSpeech: 'adjective' },
+      ],
+    });
+
+    mockUseCardDeck.mockReturnValue({
+      cardDeckState: makeMockCardDeckState({ cardDeck }),
+      cardDeckDispatch: jest.fn(),
+      currentCard: word,
+    });
+
+    render(
+      <WordCardContainer
+        word={word}
+        isCurrent={true}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(mockGetFillerWords).toHaveBeenNthCalledWith(1, {
+        correctWords: ['how much'],
+        words: ['how much', 'market', 'clue', 'hidden'],
+      });
+    });
+  });
 });

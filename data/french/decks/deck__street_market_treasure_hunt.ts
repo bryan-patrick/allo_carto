@@ -33,6 +33,7 @@ export const DeckStreetMarketTreasureHunt: CardDeck = {
 		'word_noun_croquis',
 		'word_noun_repere',
 		'word_noun_recoin',
+		'word_noun_envers',
 		'word_noun_enseigne',
 		'word_noun_passant',
 		'word_noun_camelot',

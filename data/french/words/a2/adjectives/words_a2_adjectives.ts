@@ -54,7 +54,7 @@ export const words_a2_adjectives: Word[] = [
 	{
 		id: 'word_adjective_presse',
 		frenchWord: 'pressé',
-		englishWords: ['rushed'],
+		englishWords: ['in a hurry'],
 		isVulgar: false,
 		lemmaId: 'presse',
 		partOfSpeech: 'adjective',

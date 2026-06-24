@@ -172,7 +172,7 @@ export const words_a1_verbs: Word[] = [
 	{
 		id: 'word_verb_debarquer',
 		frenchWord: 'débarquer',
-		englishWords: ['to get out'],
+		englishWords: ['to get off'],
 		isVulgar: false,
 		lemmaId: 'debarquer',
 		partOfSpeech: 'verb',
@@ -232,7 +232,7 @@ export const words_a1_verbs: Word[] = [
 	{
 		id: 'word_verb_quitter',
 		frenchWord: 'quitter',
-		englishWords: ['to say goodbye'],
+		englishWords: ['to leave'],
 		isVulgar: false,
 		lemmaId: 'quitter',
 		partOfSpeech: 'verb',
@@ -244,7 +244,7 @@ export const words_a1_verbs: Word[] = [
 	{
 		id: 'word_verb_rouler',
 		frenchWord: 'rouler',
-		englishWords: ['to hit the road'],
+		englishWords: ['to drive'],
 		isVulgar: false,
 		lemmaId: 'rouler',
 		partOfSpeech: 'verb',

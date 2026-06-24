@@ -79,7 +79,7 @@ export const words_c1_room_keys_nouns: Word[] = [
 	{
 		id: 'word_noun_surclassement',
 		frenchWord: 'surclassement',
-		englishWords: ['upgrade'],
+		englishWords: ['upgrade', 'promotion'],
 		isVulgar: false,
 		lemmaId: 'surclassement',
 		frenchArticle: 'le',
@@ -94,7 +94,7 @@ export const words_c1_room_keys_nouns: Word[] = [
 	{
 		id: 'word_noun_commodites',
 		frenchWord: 'commodités',
-		englishWords: ['amenities'],
+		englishWords: ['amenities', 'conveniences'],
 		isVulgar: false,
 		lemmaId: 'commodites',
 		frenchArticle: 'les',

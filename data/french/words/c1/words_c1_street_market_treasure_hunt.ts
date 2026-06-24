@@ -34,7 +34,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_etal',
 		frenchWord: 'étal',
-		englishWords: ['stall', 'market stall'],
+		englishWords: ['stall'],
 		frenchArticle: "l'",
 		englishArticle: 'the',
 		pronunciation: 'ay-tal',
@@ -64,7 +64,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_echoppe',
 		frenchWord: 'échoppe',
-		englishWords: ['small shop', 'stall'],
+		englishWords: ['market stall'],
 		frenchArticle: "l'",
 		englishArticle: 'the',
 		pronunciation: 'ay-shop',
@@ -79,7 +79,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_brocante',
 		frenchWord: 'brocante',
-		englishWords: ['flea market', 'secondhand market'],
+		englishWords: ['flea market'],
 		frenchArticle: 'la',
 		englishArticle: 'the',
 		pronunciation: 'bro-kahnt',
@@ -109,7 +109,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_babiole',
 		frenchWord: 'babiole',
-		englishWords: ['trinket', 'bauble'],
+		englishWords: ['trinket'],
 		frenchArticle: 'la',
 		englishArticle: 'the',
 		pronunciation: 'ba-byol',
@@ -139,7 +139,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_indice',
 		frenchWord: 'indice',
-		englishWords: ['clue', 'hint'],
+		englishWords: ['hint'],
 		frenchArticle: "l'",
 		englishArticle: 'the',
 		pronunciation: 'an-dees',
@@ -154,7 +154,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_enigme',
 		frenchWord: 'énigme',
-		englishWords: ['riddle', 'puzzle'],
+		englishWords: ['riddle'],
 		frenchArticle: "l'",
 		englishArticle: 'the',
 		pronunciation: 'ay-neegm',
@@ -169,7 +169,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_piste',
 		frenchWord: 'piste',
-		englishWords: ['lead', 'trail'],
+		englishWords: ['lead'],
 		frenchArticle: 'la',
 		englishArticle: 'the',
 		pronunciation: 'peest',
@@ -199,7 +199,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_medaillon',
 		frenchWord: 'médaillon',
-		englishWords: ['medallion', 'locket'],
+		englishWords: ['medallion'],
 		frenchArticle: 'le',
 		englishArticle: 'the',
 		pronunciation: 'may-dye-on',
@@ -214,7 +214,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_coffret',
 		frenchWord: 'coffret',
-		englishWords: ['small box', 'casket'],
+		englishWords: ['small box'],
 		frenchArticle: 'le',
 		englishArticle: 'the',
 		pronunciation: 'ko-fray',
@@ -259,7 +259,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_repere',
 		frenchWord: 'repère',
-		englishWords: ['landmark', 'reference point'],
+		englishWords: ['reference point'],
 		frenchArticle: 'le',
 		englishArticle: 'the',
 		pronunciation: 'ruh-pair',
@@ -274,7 +274,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_recoin',
 		frenchWord: 'recoin',
-		englishWords: ['nook', 'hidden corner'],
+		englishWords: ['nook'],
 		frenchArticle: 'le',
 		englishArticle: 'the',
 		pronunciation: 'ruh-kwan',
@@ -287,9 +287,24 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 		rarity: 'Epic',
 	},
 	{
+		id: 'word_noun_envers',
+		frenchWord: 'l’envers',
+		englishWords: ['reverse side', 'wrong side', 'back side'],
+		frenchArticle: "l'",
+		englishArticle: 'the',
+		pronunciation: 'lahn-vair',
+		isVulgar: false,
+		CEFR: 'B1',
+		lemmaId: 'envers',
+		gender: 'Masculine',
+		partOfSpeech: 'noun',
+		correctCount: 0,
+		rarity: 'Rare',
+	},
+	{
 		id: 'word_noun_enseigne',
 		frenchWord: 'enseigne',
-		englishWords: ['shop sign', 'sign'],
+		englishWords: ['shop sign'],
 		frenchArticle: "l'",
 		englishArticle: 'the',
 		pronunciation: 'ahn-senn',
@@ -319,7 +334,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_camelot',
 		frenchWord: 'camelot',
-		englishWords: ['street vendor', 'hawker'],
+		englishWords: ['street vendor'],
 		frenchArticle: 'le',
 		englishArticle: 'the',
 		pronunciation: 'kam-lo',
@@ -424,7 +439,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_noun_ruelle',
 		frenchWord: 'ruelle',
-		englishWords: ['alley', 'small street'],
+		englishWords: ['alley'],
 		frenchArticle: 'la',
 		englishArticle: 'the',
 		pronunciation: 'roo-el',
@@ -454,7 +469,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_dissimule',
 		frenchWord: 'dissimulé',
-		englishWords: ['hidden', 'concealed'],
+		englishWords: ['hidden'],
 		pronunciation: 'dee-see-moo-lay',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -466,7 +481,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_voile',
 		frenchWord: 'voilé',
-		englishWords: ['veiled', 'partly hidden'],
+		englishWords: ['veiled'],
 		pronunciation: 'vwa-lay',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -478,7 +493,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_egare',
 		frenchWord: 'égaré',
-		englishWords: ['misplaced', 'lost'],
+		englishWords: ['lost'],
 		pronunciation: 'ay-gah-ray',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -502,7 +517,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_precieux',
 		frenchWord: 'précieux',
-		englishWords: ['precious', 'valuable'],
+		englishWords: ['valuable'],
 		pronunciation: 'pray-syuh',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -526,7 +541,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_use',
 		frenchWord: 'usé',
-		englishWords: ['worn out', 'used up'],
+		englishWords: ['worn out'],
 		pronunciation: 'oo-zay',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -538,7 +553,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_terni',
 		frenchWord: 'terni',
-		englishWords: ['tarnished', 'dulled'],
+		englishWords: ['tarnished'],
 		pronunciation: 'tair-nee',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -562,7 +577,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_sournois',
 		frenchWord: 'sournois',
-		englishWords: ['sly', 'sneaky'],
+		englishWords: ['sneaky'],
 		pronunciation: 'soor-nwa',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -574,7 +589,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_mefiant',
 		frenchWord: 'méfiant',
-		englishWords: ['wary', 'distrustful'],
+		englishWords: ['wary'],
 		pronunciation: 'may-fee-ahn',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -586,7 +601,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_etroit',
 		frenchWord: 'étroit',
-		englishWords: ['narrow', 'tight'],
+		englishWords: ['narrow'],
 		pronunciation: 'ay-trwa',
 		isVulgar: false,
 		CEFR: 'B1',
@@ -610,7 +625,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adjective_insaisissable',
 		frenchWord: 'insaisissable',
-		englishWords: ['elusive', 'hard to grasp'],
+		englishWords: ['elusive'],
 		pronunciation: 'an-say-zee-sabl',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -622,7 +637,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_marchander',
 		frenchWord: 'marchander',
-		englishWords: ['to bargain', 'to haggle'],
+		englishWords: ['to haggle'],
 		pronunciation: 'mar-shahn-day',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -634,7 +649,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_denicher',
 		frenchWord: 'dénicher',
-		englishWords: ['to dig up', 'to find after searching'],
+		englishWords: ['to find after searching'],
 		pronunciation: 'day-nee-shay',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -646,7 +661,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_reperer',
 		frenchWord: 'repérer',
-		englishWords: ['to spot', 'to locate'],
+		englishWords: ['to locate'],
 		pronunciation: 'ruh-pay-ray',
 		isVulgar: false,
 		CEFR: 'B1',
@@ -658,7 +673,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_scruter',
 		frenchWord: 'scruter',
-		englishWords: ['to scrutinize', 'to examine closely'],
+		englishWords: ['to scrutinize'],
 		pronunciation: 'skroo-tay',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -670,7 +685,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_apercevoir',
 		frenchWord: 'apercevoir',
-		englishWords: ['to catch sight of', 'to glimpse'],
+		englishWords: ['to catch sight of'],
 		pronunciation: 'ah-pair-suh-vwar',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -694,7 +709,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_devoiler',
 		frenchWord: 'dévoiler',
-		englishWords: ['to reveal', 'to unveil'],
+		englishWords: ['to reveal'],
 		pronunciation: 'day-vwa-lay',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -706,7 +721,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_deceler',
 		frenchWord: 'déceler',
-		englishWords: ['to detect', 'to discern'],
+		englishWords: ['to detect'],
 		pronunciation: 'day-suh-lay',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -718,7 +733,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_s_emparer',
 		frenchWord: 's’emparer',
-		englishWords: ['to seize', 'to grab'],
+		englishWords: ['to seize'],
 		pronunciation: 'sahn-pah-ray',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -730,7 +745,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_echanger',
 		frenchWord: 'échanger',
-		englishWords: ['to exchange', 'to trade'],
+		englishWords: ['to exchange'],
 		pronunciation: 'ay-shahn-zhay',
 		isVulgar: false,
 		CEFR: 'B1',
@@ -742,7 +757,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_attirer',
 		frenchWord: 'attirer',
-		englishWords: ['to attract', 'to draw in'],
+		englishWords: ['to attract'],
 		pronunciation: 'ah-tee-ray',
 		isVulgar: false,
 		CEFR: 'B1',
@@ -766,7 +781,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_flaner',
 		frenchWord: 'flâner',
-		englishWords: ['to stroll aimlessly', 'to wander'],
+		englishWords: ['to wander'],
 		pronunciation: 'flah-nay',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -778,7 +793,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_se_faufiler',
 		frenchWord: 'se faufiler',
-		englishWords: ['to slip through', 'to squeeze through'],
+		englishWords: ['to slip through'],
 		pronunciation: 'suh fo-fee-lay',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -790,7 +805,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_guetter',
 		frenchWord: 'guetter',
-		englishWords: ['to watch for', 'to lie in wait'],
+		englishWords: ['to watch for'],
 		pronunciation: 'geh-tay',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -826,7 +841,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_verb_resoudre',
 		frenchWord: 'résoudre',
-		englishWords: ['to solve', 'to resolve'],
+		englishWords: ['to solve'],
 		pronunciation: 'ray-zoodr',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -838,7 +853,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adverb_furtivement',
 		frenchWord: 'furtivement',
-		englishWords: ['stealthily', 'furtively'],
+		englishWords: ['stealthily'],
 		pronunciation: 'fur-teev-mahn',
 		isVulgar: false,
 		CEFR: 'C1',
@@ -850,7 +865,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adverb_soigneusement',
 		frenchWord: 'soigneusement',
-		englishWords: ['carefully', 'meticulously'],
+		englishWords: ['carefully'],
 		pronunciation: 'swan-yuhz-mahn',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -874,7 +889,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adverb_aussitot',
 		frenchWord: 'aussitôt',
-		englishWords: ['immediately', 'right away'],
+		englishWords: ['right away'],
 		pronunciation: 'oh-see-toh',
 		isVulgar: false,
 		CEFR: 'B1',
@@ -898,7 +913,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adverb_alentour',
 		frenchWord: 'alentour',
-		englishWords: ['nearby', 'around'],
+		englishWords: ['nearby'],
 		pronunciation: 'ah-lahn-toor',
 		isVulgar: false,
 		CEFR: 'B2',
@@ -922,7 +937,7 @@ export const words_c1_street_market_treasure_hunt: Word[] = [
 	{
 		id: 'word_adverb_expres',
 		frenchWord: 'exprès',
-		englishWords: ['on purpose', 'deliberately'],
+		englishWords: ['on purpose'],
 		pronunciation: 'eks-preh',
 		isVulgar: false,
 		CEFR: 'B1',

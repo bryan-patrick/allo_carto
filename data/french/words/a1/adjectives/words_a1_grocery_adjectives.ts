@@ -106,7 +106,7 @@ export const words_a1_grocery_adjectives: Word[] = [
 	{
 		id: 'word_adjective_solde',
 		frenchWord: 'soldé',
-		englishWords: ['on sale', 'discounted'],
+		englishWords: ['on sale'],
 		isVulgar: false,
 		lemmaId: 'solde',
 		partOfSpeech: 'adjective',

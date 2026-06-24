@@ -74,7 +74,7 @@ export const words_a2_elevator_epics: Word[] = [
 	{
 		id: 'word_adjective_drole',
 		frenchWord: 'drôle',
-		englishWords: ['funny'],
+		englishWords: ['odd'],
 		isVulgar: false,
 		lemmaId: 'drole',
 		partOfSpeech: 'adjective',

@@ -8,6 +8,15 @@
 
 - May 15, 2026 | Started rebuilding in React Native. I preserved the flutter version under branch `v1-flutter`.
 
+Pronunciations aren't official, they're just kinda like this:
+
+- `an` / `en`: `ahn`
+- `on`: `ohn`
+- `in` / `ain` / `ein`: `an`
+- `un`: `uhn`
+
+The final `n` usually means do the french nasal sound but idk, it's confusing so we include it a lot anyway. I could use someone to look through them and correct them as needed.
+
 ## Style Guide
 
 ### Colors
@@ -93,12 +102,14 @@ Real quick so I don't forget...
 - Deck count on place selection view
 - Word rank counts on decks
 - Chapter select list view
+- You should probably get rid of the undraw SVG on the "Learn more words!" card
 - R̶a̶r̶i̶t̶y̶ ̶o̶n̶ ̶f̶l̶a̶s̶h̶ ̶c̶a̶r̶d̶s̶
 - Card Collection page
 - Random deck option
 - Practice words frequently gotten wrong
 - We should add "repeat deck" or "do a random deck" buttons on the results view
 - Cards unlock secret decks / these are very hard decks / secret deck unlock indicator, probably a lock SVG
+- Mailing link on cards to email me with bad translations
 - Image loading (is lazy)
 - Mastering a word should "remove" it from the deck? This could also help with unlocking next decks/chapters
 - Completion steps (Results -> Experience gain + coins -> )
