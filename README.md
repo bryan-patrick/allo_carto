@@ -113,6 +113,7 @@ Real quick so I don't forget...
 - Image loading (is lazy)
 - Mastering a word should "remove" it from the deck? This could also help with unlocking next decks/chapters
 - Completion steps (Results -> Experience gain + coins -> )
+- Look into how to use the dynamic island
 
 ## Free art and assets credits
 
