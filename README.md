@@ -91,6 +91,7 @@ Real quick so I don't forget...
 - App icon and cleaning out the images dir
 - Deck progress (progress bar, count, etc.)
 - accessibility roles
+- Kill the sound on presses (it messes with music and stuff)
 - D̶e̶c̶k̶ ̶c̶a̶t̶e̶g̶o̶r̶i̶z̶a̶t̶i̶o̶n̶
 - F̶i̶l̶l̶e̶r̶ ̶w̶o̶r̶d̶s̶ ̶n̶e̶e̶d̶s̶ ̶a̶ ̶n̶e̶w̶ ̶d̶b̶ ̶m̶e̶t̶h̶o̶d̶
 - Include deck colors on flash cards
