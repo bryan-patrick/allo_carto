@@ -9,7 +9,7 @@ export const words_b1_terminal_verbs: Word[] = [
 		lemmaId: 'senregistrer',
 		partOfSpeech: 'verb',
 		CEFR: 'A2',
-		pronunciation: 'sahn-ruh-zhees-tray',
+		pronunciation: 'sah-ruh-zhees-tray',
 		correctCount: 0,
 		rarity: 'Common',
 	},

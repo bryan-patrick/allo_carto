@@ -91,7 +91,7 @@ const MappedButton = memo(function MappedButtonMemo({
         if (isActive) {
           buttonBackgroundColor.value = colors.dark.primaryActive;
           buttonY.value = withTiming(6, timing);
-          buttonBoxShadow.value = '';
+          buttonBoxShadow.value = `0 0 0 0 transparent`;
         } else {
           buttonY.value = withTiming(0, timing);
           buttonBackgroundColor.value = withTiming(colors.light.background, timing);

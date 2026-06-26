@@ -2,6 +2,8 @@ import colors from '@/src/app/colors';
 import { incrementCorrectCount } from '@/src/db/queries/incrementCorrectCount';
 import { useUserContext } from '@/src/db/useUserContext';
 import {
+  impactAsync,
+  ImpactFeedbackStyle,
   notificationAsync,
   NotificationFeedbackType,
 } from 'expo-haptics';
@@ -126,7 +128,7 @@ export default function WordCardButton({
    */
   useEffect(() => {
     async function udatecorrectCount() {
-      if (user) {
+      if (user?.id) {
         await incrementCorrectCount(user.id, currentCard.id);
       }
 
@@ -138,9 +140,7 @@ export default function WordCardButton({
           cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
           cardDeckDispatch({ type: 'ADD_CORRECT_WORD' });
           udatecorrectCount();
-          notificationAsync(
-            NotificationFeedbackType.Success,
-          );
+          impactAsync(ImpactFeedbackStyle.Light);
           break;
         case 'READY_WARNING':
           notificationAsync(

@@ -9,7 +9,7 @@ export const words_c1_interjections: Word[] = [
 		lemmaId: 'ben',
 		partOfSpeech: 'interjection',
 		CEFR: 'C1',
-		pronunciation: 'ben',
+		pronunciation: 'beh',
 		correctCount: 0,
 		rarity: 'Rare',
 	},

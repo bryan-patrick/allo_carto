@@ -7,7 +7,7 @@ import colors from "../colors";
 
 /**
  * CardDeckSelect component
-*/
+ */
 export default function CardDeckSelect() {
   const { placeId } = useLocalSearchParams<{ placeId?: string }>();
 

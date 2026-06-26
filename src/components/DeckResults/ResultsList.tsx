@@ -40,7 +40,7 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
   const iconColor: string = isCorrect ? colors.dark.success : colors.dark.danger;
   const isCorrectStyle: TextStyle = isCorrect ? successStyle : dangerStyle;
   const iconName: ComponentProps<typeof MaterialIcons>["name"] = isCorrect ? 'check' : 'close';
-  const emptyText = isCorrect ? "You got none correct. Try again!" : "Wow, you had no incorrect words! Nice!"
+  const emptyText = isCorrect ? "You didn't get any correct. Try again!" : "No incorrect words! Nice! Parlez-vous français?"
 
   /**
    * Render the results list

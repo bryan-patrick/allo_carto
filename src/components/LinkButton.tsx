@@ -51,7 +51,10 @@ export default function LinkButton({
    * Sound effect
    */
   const tapPlayer = useAudioPlayer(tapAudio);
-  tapPlayer.volume = 0.2;
+
+  useEffect(() => {
+    tapPlayer.volume = 0.2;
+  }, [tapPlayer]);
 
   /**
    * Destructure styles
@@ -128,10 +131,21 @@ export default function LinkButton({
   /**
    * Action handlers
    */
+  async function playTapSound() {
+    try {
+      await tapPlayer.seekTo(0);
+      tapPlayer.play();
+    } catch {
+      // Shush warning
+    }
+  }
+
+  /**
+   * Side effects
+   */
   function handlePressIn() {
     setIsPressed(true);
-    tapPlayer.seekTo(0);
-    tapPlayer.play();
+    playTapSound();
     handler();
   }
 

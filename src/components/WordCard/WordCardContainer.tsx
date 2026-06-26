@@ -43,12 +43,10 @@ function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
  * WordCardContainer Component
  */
 export default function WordCardContainer({ word, isCurrent }: CardContainerProps) {
-  const { cardDeckState } = useCardDeck();
-  const { container, nextBtn } = wordCardContainerStyles;
-
   /**
    * State
    */
+  const { cardDeckState } = useCardDeck();
   const [fillerWords, setFillerWords] = useState<string[]>([]);
   const [articleWords, setArticleWords] = useState<string[]>([]);
   const loadedWordId = useRef<string | null>(null);
@@ -56,6 +54,11 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
     wordCardUIReducer,
     initialWordCardState,
   );
+
+  /**
+   * Destructure styles
+   */
+  const { container } = wordCardContainerStyles;
 
   /**
     * Side effects
@@ -159,7 +162,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
           articleWords={articleWords}
           fillerWords={fillerWords}
         />
-        <WordCardButton style={nextBtn}>
+        <WordCardButton>
           {
             cardState.stage === 'CORRECT' ||
               cardState.stage === 'INCORRECT'
@@ -181,15 +184,10 @@ const { containerMargin } = sharedStyles;
  */
 const wordCardContainerStyles = StyleSheet.create({
   container: {
-    position: 'absolute',
     height: '100%',
     display: 'flex',
+    padding: containerMargin,
     justifyContent: 'space-around',
-    alignItems: 'stretch',
-    gap: 16,
     left: 500, // animation start position
   },
-  nextBtn: {
-    margin: containerMargin
-  }
 });

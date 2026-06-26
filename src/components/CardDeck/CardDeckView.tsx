@@ -1,4 +1,3 @@
-import sharedStyles from '@/src/app/sharedStyles';
 import { StyleSheet } from 'react-native';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import WordCardContainer from '../WordCard/WordCardContainer';
@@ -36,18 +35,10 @@ export default function CardDeckView({ currentCard }: CardDeckViewProps) {
 }
 
 /**
- * Destructure shared style values
- */
-const {
-  containerMargin
-} = sharedStyles;
-
-/**
  * Styles
  */
 const cardDeckViewStyles = StyleSheet.create({
   wordCardAnimatedView: {
-    margin: containerMargin,
     flex: 1,
     position: 'relative',
   },
