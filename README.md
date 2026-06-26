@@ -107,6 +107,7 @@ Real quick so I don't forget...
 - R̶a̶r̶i̶t̶y̶ ̶o̶n̶ ̶f̶l̶a̶s̶h̶ ̶c̶a̶r̶d̶s̶
 - Card Collection page
 - Random deck option
+- Fix portrait orientation (landscape should be disabled)
 - Practice words frequently gotten wrong
 - We should add "repeat deck" or "do a random deck" buttons on the results view
 - Cards unlock secret decks / these are very hard decks / secret deck unlock indicator, probably a lock SVG
