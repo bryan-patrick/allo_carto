@@ -1,4 +1,5 @@
 import { deckAtlas, DeckChapter, DeckPlace } from "@/data/french/deckAtlas";
+import { useLocalSearchParams } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../app/colors";
 import LinkButton from "./LinkButton";
@@ -20,75 +21,61 @@ export default function PlaceSelectView() {
     linkButtonStyle
   } = styles;
 
+  const { chapterId } = useLocalSearchParams<{ chapterId?: string }>();
   const { chapters } = deckAtlas;
+  const selectedChapter: DeckChapter = chapters.find((chapter) => chapter.id === chapterId)!;
+
+  const { name, places, chapterName } = selectedChapter;
 
   /**
    * Render the card grid
    */
   return (
     <ScrollView>
-      {
-        /**
-         * Map the chapters
-         */
-        chapters.map((chapter: DeckChapter, index) => {
-
+      <View style={chapterContainerStyle}>
+        <View style={chapterTitleContainerStyle}>
+          <Text style={chapterIndexStyle}>{chapterName}</Text>
+          <Text style={chapterTitleStyle}>{name}</Text>
+        </View>
+        {
           /**
-           * Destructure the chapters
+           * Map the places
            */
-          const { id, name, places, chapterName } = chapter;
+          places.map((place: DeckPlace) => {
 
-          /**
-           * Render the individual chapter sections
-           */
-          return (
-            <View style={chapterContainerStyle} key={id}>
-              <View style={chapterTitleContainerStyle}>
-                <Text style={chapterIndexStyle}>{chapterName}</Text>
-                <Text style={chapterTitleStyle}>{name}</Text>
+            /**
+             * Destructure the place data
+             */
+            const { id: placeId, name, description, image } = place;
+
+            /**
+             * Render the place view/card
+             */
+            return (
+              <View
+                key={placeId}
+                style={placeContainerStyle}
+              >
+                <View style={placeNameContainerStyle}>
+                  <Text style={placeNameTextStyle}>{name}</Text>
+                  <Text style={placeDescriptionTextStyle}>{description}</Text>
+                </View>
+                <Image
+                  source={image}
+                  style={placeImageStyle}
+                />
+                <LinkButton
+                  style={linkButtonStyle}
+                  screen={'(routes)/CardDeckSelect'}
+                  params={{ placeId }}
+                >
+                  View decks
+                </LinkButton>
               </View>
-              {
-                /**
-                 * Map the places
-                 */
-                places.map((place: DeckPlace) => {
-
-                  /**
-                   * Destructure the place data
-                   */
-                  const { id: placeId, name, description, image } = place;
-
-                  /**
-                   * Render the place view/card
-                   */
-                  return (
-                    <View
-                      key={placeId}
-                      style={placeContainerStyle}
-                    >
-                      <View style={placeNameContainerStyle}>
-                        <Text style={placeNameTextStyle}>{name}</Text>
-                        <Text style={placeDescriptionTextStyle}>{description}</Text>
-                      </View>
-                      <Image
-                        source={image}
-                        style={placeImageStyle}
-                      />
-                      <LinkButton
-                        style={linkButtonStyle}
-                        screen={'(routes)/CardDeckSelect'}
-                        params={{ placeId }}
-                      >
-                        <Text>View decks →</Text>
-                      </LinkButton>
-                    </View>
-                  )
-                })
-              }
-            </View>
-          )
-        })
-      }
+            )
+          })
+        }
+      </View>
     </ScrollView>
   );
 }

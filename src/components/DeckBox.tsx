@@ -11,7 +11,6 @@ import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import colors from "../app/colors";
-import sharedStyles from "../app/sharedStyles";
 import { useUserContext } from "../db/useUserContext";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import GradientText from "./GradientText";
@@ -180,7 +179,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               handler={() => handleDeckSelect(deck)}
               deckColors={deckColors}
             >
-              <Text>Review this deck →</Text>
+              Review this deck
             </LinkButton>
           </View>
         </View>
@@ -190,17 +189,11 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
 }
 
 /**
- * Destructure shared styles
- */
-const { containerMargin } = sharedStyles;
-
-/**
  * Styles
  */
 const styles = StyleSheet.create({
   cardStyle: {
-    margin: containerMargin,
-    paddingBottom: 8,
+    margin: 32,
   },
   cardInnerStyle: {
     backgroundColor: colors.light.background,

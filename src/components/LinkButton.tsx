@@ -4,10 +4,11 @@
 import { useLinkProps } from '@react-navigation/native';
 import { useAudioPlayer } from 'expo-audio';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
-import { Pressable, PressableProps, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
+import { Pressable, PressableProps, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import colors from '../app/colors';
 import { DeckColors } from './CardDeck/cardDeckTypes';
+import SVGRightArrow from './SVG/SVGRightArrow';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -28,6 +29,7 @@ interface LinkButtonProps extends Omit<PressableProps, 'style'> {
   href?: string;
   props?: any
   deckColors?: DeckColors;
+  arrowSize?: number;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -44,7 +46,9 @@ export default function LinkButton({
   SVGElement,
   style,
   props,
-  deckColors
+  arrowSize = 24,
+  deckColors,
+  ...pressableProps
 }: LinkButtonProps) {
 
   /**
@@ -62,6 +66,7 @@ export default function LinkButton({
   const {
     linkButton,
     linkText,
+    linkTextRow,
     hoveredLinkButton,
     hoveredLinkText,
     pressedLinkText
@@ -86,6 +91,7 @@ export default function LinkButton({
     params: params ?? {},
     href
   });
+
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
 
@@ -166,27 +172,40 @@ export default function LinkButton({
   /**
    * Pull in props when used for a navigation link button.
    */
-  let allTheProps = props;
+  let allTheProps = { ...pressableProps, ...props };
 
   if (screen) {
-    allTheProps = { ...props, ...linkProps };
+    allTheProps = { ...pressableProps, ...props, ...linkProps };
+  }
+
+  function LinkText() {
+    const labelText = typeof children === 'string'
+      ? children.replace(/\s*→\s*$/, '')
+      : children;
+
+    return (
+      <View style={linkTextRow}>
+        <Text style={currentLinkTextStyles}>{labelText}</Text>
+        <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} />
+      </View>
+    );
   }
 
   /**
    * Render the thing
    */
   return (
-    <Animated.View style={[style, animatedContainerStyle]}>
+    <Animated.View style={animatedContainerStyle}>
       <AnimatedPressable
         {...allTheProps}
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={[currentLinkButtonStyles, deckColorStyles, animatedShadowStyle]}
+        style={[currentLinkButtonStyles, deckColorStyles, animatedShadowStyle, style]}
       >
         {SVGElement}
-        <Text style={currentLinkTextStyles}>{children}</Text>
+        <LinkText />
       </AnimatedPressable>
     </Animated.View>
   );
@@ -214,6 +233,11 @@ const styles = StyleSheet.create({
     color: colors.light.text,
     fontFamily: 'lexend-600',
     fontSize: 16,
+  },
+  linkTextRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
   },
   hoveredLinkButton: {
     borderRadius: 4,

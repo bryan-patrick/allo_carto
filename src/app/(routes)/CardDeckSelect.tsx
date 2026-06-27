@@ -17,7 +17,10 @@ export default function CardDeckSelect() {
   const {
     cardGridStyle,
     noDecksContainerStyle,
-    noDecksTextStyle
+    noDecksTextStyle,
+    deckNameContainerStyle,
+    deckNameTextStyle,
+    deckDescriptionTextStyle
   } = styles;
 
   function findPlaceById(placeId: string | undefined): DeckPlace | undefined {
@@ -28,13 +31,18 @@ export default function CardDeckSelect() {
     }
   }
 
-  const decks = findPlaceById(placeId)?.decks || [];
+  const place = findPlaceById(placeId);
+  const decks = place?.decks || [];
 
   /**
    * Render the card grid
    */
   return (
     <>
+      <View style={deckNameContainerStyle}>
+        <Text style={deckNameTextStyle}>{place?.name}</Text>
+        <Text style={deckDescriptionTextStyle}>{place?.description}</Text>
+      </View>
       {decks.length > 0 && (
         <FlatList
           contentContainerStyle={cardGridStyle}
@@ -56,6 +64,27 @@ export default function CardDeckSelect() {
  * Styles
  */
 const styles = StyleSheet.create({
+  deckNameContainerStyle: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  deckNameTextStyle: {
+    textAlign: 'center',
+    width: '100%',
+    fontFamily: 'lexend-600',
+    fontSize: 20,
+    color: colors.light.text,
+  },
+  deckDescriptionTextStyle: {
+    textAlign: 'center',
+    width: '100%',
+    fontFamily: 'lexend-400',
+    fontSize: 16,
+    paddingTop: 8,
+    color: colors.light.text,
+  },
   cardGridStyle: {
     display: 'flex',
   },

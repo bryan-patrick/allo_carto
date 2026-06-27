@@ -12,10 +12,10 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <StatusBar style="light" />
       <LinkCard
-        screen="(routes)/PlaceSelect"
+        screen="(routes)/ChapterSelect"
         title="Learn more words!"
-        linkText="Review a deck →"
-        description="Generate a deck of new words to work on"
+        linkText="Review a deck"
+        description="Progress through chapters places and decks!"
         SVGElement={<SVGCards height={'120px'} width={'130px'} color={colors.dark.secondary} />}
       />
     </View>
