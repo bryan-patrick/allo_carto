@@ -1,6 +1,3 @@
-/**
- * Kind of becoming an everything bagel >.<
- */
 import { useLinkProps } from '@react-navigation/native';
 import { useAudioPlayer } from 'expo-audio';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
@@ -30,6 +27,7 @@ interface LinkButtonProps extends Omit<PressableProps, 'style'> {
   props?: any
   deckColors?: DeckColors;
   arrowSize?: number;
+  useArrow?: boolean;
   arrowColor?: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -47,6 +45,7 @@ export default function LinkButton({
   SVGElement,
   style,
   props,
+  useArrow = true,
   arrowSize = 24,
   disabled = false,
   arrowColor = colors.light.text,
@@ -189,7 +188,9 @@ export default function LinkButton({
     return (
       <View style={linkTextRow}>
         <Text style={currentLinkTextStyles}>{labelText}</Text>
-        <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={arrowColor} />
+        {useArrow && (
+          <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={arrowColor} />
+        )}
       </View>
     );
   }
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 2,
     padding: 16,
-    gap: 16,
+    gap: 8,
     shadowColor: colors.dark.border,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 1,

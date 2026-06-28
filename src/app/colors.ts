@@ -21,6 +21,13 @@ const colors = {
 			C1: '#3B251C',
 			C2: '#2D1A1B',
 		},
+		rank: {
+			fnew: '#292929',
+			bronze: '#2B2117',
+			silver: '#303946',
+			gold: '#322A20',
+			diamond: '#26333B',
+		},
 	},
 	light: {
 		primary: '#7BADA6',
@@ -40,13 +47,13 @@ const colors = {
 			C1: '#FFB18E',
 			C2: '#FF8FA2',
 		},
-	},
-	rank: {
-		fnew: '#b7b7b7',
-		bronze: '#f4d2b1d4',
-		silver: '#e1e7ef',
-		gold: '#ffd196',
-		diamond: '#c6e9ff',
+		rank: {
+			fnew: '#b7b7b7',
+			bronze: '#f4d2b1',
+			silver: '#e1e7ef',
+			gold: '#ffd196',
+			diamond: '#c6e9ff',
+		},
 	},
 	rarity: {
 		Common: '#7BADA6',

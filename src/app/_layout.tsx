@@ -92,13 +92,13 @@ export default function AppLayout() {
                   headerShown: true,
                   headerBackTitle: 'Back',
                   headerBackButtonDisplayMode: 'minimal',
-                  headerTitle: 'Review a deck'
+                  headerTitle: 'Deck'
                 }} />
                 <Stack.Screen name="(routes)/ChapterSelect" options={{
                   headerShown: true,
                   headerBackTitle: 'Back',
                   headerBackButtonDisplayMode: 'minimal',
-                  headerTitle: 'Select a Chapter'
+                  headerTitle: 'Chapter Select'
                 }} />
                 <Stack.Screen name="(routes)/PlaceSelect" options={{
                   headerShown: true,
@@ -110,13 +110,13 @@ export default function AppLayout() {
                   headerShown: true,
                   headerBackTitle: 'Back',
                   headerBackButtonDisplayMode: 'minimal',
-                  headerTitle: 'Select a Deck'
+                  headerTitle: 'Deck Select'
                 }} />
                 <Stack.Screen name="(routes)/CardDeckRankSelect" options={{
                   headerShown: true,
                   headerBackTitle: 'Back',
                   headerBackButtonDisplayMode: 'minimal',
-                  headerTitle: 'Select a Rank'
+                  headerTitle: 'Rank Select'
                 }} />
                 <Stack.Screen name="(routes)/DeckResults" options={{
                   headerShown: true,

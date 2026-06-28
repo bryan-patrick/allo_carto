@@ -45,16 +45,32 @@ export const wordRankDefinitions: WordRankDefinition[] = [
 
 export function getWordRankDefinition(score: number = 0): WordRankDefinition {
 	const normalizedScore = Math.max(score, 0);
+	let matchingRank = wordRankDefinitions[0];
 
 	for (let index = wordRankDefinitions.length - 1; index >= 0; index--) {
 		const rank = wordRankDefinitions[index];
 
 		if (normalizedScore >= rank.minCorrectCount) {
-			return rank;
+			matchingRank = rank;
+			break;
 		}
 	}
 
-	return wordRankDefinitions[0];
+	return matchingRank;
+}
+
+export function getWordRankDefinitionByKey(
+	rankKey: WordRankKey,
+): WordRankDefinition {
+	let matchingRank = wordRankDefinitions[0];
+
+	for (const rank of wordRankDefinitions) {
+		if (rank.key === rankKey) {
+			matchingRank = rank;
+		}
+	}
+
+	return matchingRank;
 }
 
 export function getWordRankSqlCountSelect(
@@ -71,5 +87,5 @@ export function getWordRankSqlCountSelect(
 
 			return `SUM(CASE WHEN ${condition} THEN 1 ELSE 0 END) AS ${rank.key}`;
 		})
-		.join(',\n\t\t\t');
+		.join(',');
 }

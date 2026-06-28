@@ -1,12 +1,13 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text } from 'react-native';
+import type { DeckColors } from './CardDeck/cardDeckTypes';
 
 /**
  * Typing
  */
 interface GradientTextProps {
-  colors: readonly [string, string, ...string[]],
+  colors: string[] | DeckColors,
   fontSize: number,
   fontWeight?: 400 | 600 | 700,
   text: string
@@ -30,7 +31,7 @@ export default function GradientText({ colors, fontSize, fontWeight = 400, text 
       }
     >
       <LinearGradient
-        colors={colors}
+        colors={colors as any}
         end={{ x: 1, y: 0 }}
         start={{ x: 0, y: 0 }}
       >

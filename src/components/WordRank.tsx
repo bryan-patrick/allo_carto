@@ -3,32 +3,37 @@ import { ComponentProps, useEffect, useMemo, useState } from "react";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from "react-native-reanimated";
 import colors from "../app/colors";
-import { getWordRankDefinition } from "../util/wordRanks";
+import { getWordRankDefinition, getWordRankDefinitionByKey, WordRankKey } from "../util/wordRanks";
 import { useCardDeck } from "./CardDeck/useCardDeck";
 
 /**
  * Typing
  */
 type RankIconProps = Omit<ComponentProps<typeof MaterialIcons>, "name"> & {
+  rank?: WordRankKey;
   score?: number;
 };
 
 function getRankColor(score: number = 0) {
-  return colors.rank[getWordRankDefinition(score).key];
+  return colors.light.rank[getWordRankDefinition(score).key];
 }
 
 /**
  * RankIcon Component
  */
-export function RankIcon({ score = 0, size = 12, ...props }: RankIconProps) {
-  const rank = getWordRankDefinition(score);
+export function RankIcon({ rank, score = 0, size = 12, color, ...props }: RankIconProps) {
+  let rankDefinition = getWordRankDefinition(score);
+
+  if (rank) {
+    rankDefinition = getWordRankDefinitionByKey(rank);
+  }
 
   return (
     <MaterialIcons
       {...props}
-      color={colors.rank[rank.key]}
+      color={color ?? colors.light.rank[rankDefinition.key]}
       size={size}
-      name={rank.iconName}
+      name={rankDefinition.iconName}
     />
   );
 }

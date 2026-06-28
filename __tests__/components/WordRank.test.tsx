@@ -57,4 +57,13 @@ describe('<WordRank />', () => {
       undefined,
     );
   });
+
+  test('renders the rank icon for a rank name', () => {
+    render(<RankIcon rank="silver" />);
+
+    expect(mockMaterialIcon).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'military-tech' }),
+      undefined,
+    );
+  });
 });

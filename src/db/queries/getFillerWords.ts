@@ -20,7 +20,9 @@ function parseEnglishWords(serializedEnglishWords: string): string[] {
 
 	if (
 		Array.isArray(parsedEnglishWords) &&
-		parsedEnglishWords.every((englishWord): englishWord is string => typeof englishWord === 'string')
+		parsedEnglishWords.every(
+			(englishWord): englishWord is string => typeof englishWord === 'string',
+		)
 	) {
 		return parsedEnglishWords;
 	}
