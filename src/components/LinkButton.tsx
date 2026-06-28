@@ -30,6 +30,7 @@ interface LinkButtonProps extends Omit<PressableProps, 'style'> {
   props?: any
   deckColors?: DeckColors;
   arrowSize?: number;
+  arrowColor?: string;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -47,6 +48,8 @@ export default function LinkButton({
   style,
   props,
   arrowSize = 24,
+  disabled = false,
+  arrowColor = colors.light.text,
   deckColors,
   ...pressableProps
 }: LinkButtonProps) {
@@ -186,7 +189,7 @@ export default function LinkButton({
     return (
       <View style={linkTextRow}>
         <Text style={currentLinkTextStyles}>{labelText}</Text>
-        <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} />
+        <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={arrowColor} />
       </View>
     );
   }
@@ -203,6 +206,7 @@ export default function LinkButton({
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         style={[currentLinkButtonStyles, deckColorStyles, animatedShadowStyle, style]}
+        disabled={disabled}
       >
         {SVGElement}
         <LinkText />

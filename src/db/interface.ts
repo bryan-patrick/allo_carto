@@ -2,6 +2,7 @@ import { seedWords } from '@/data/french/words';
 import type { CardDeck } from '../components/CardDeck/cardDeckTypes';
 import { CardRarity, CEFR, Word } from '../components/CardDeck/cardDeckTypes';
 import wordRaffle from '../util/wordRaffle';
+import { wordRankDefinitions, WordRankKey } from '../util/wordRanks';
 import { getDB, logThisIfItFails } from './connection';
 import getDeckWordChoices from './queries/getDeckWordChoices';
 export { deleteDB, getDB, setDB } from './connection';
@@ -24,12 +25,7 @@ interface WordRow {
 	partOfSpeech?: string;
 	correctCount: number;
 	rarity?: CardRarity;
-}
-
-interface WordRankRow {
-	wordId: string;
-	seenCount: number;
-	correctCount: number;
+	userCorrectCount: number;
 }
 
 /**
@@ -201,7 +197,26 @@ export async function getTables() {
 interface GetDeckProps {
 	deck: CardDeck;
 	amount?: number;
+	rank?: WordRankKey;
 	userId: string;
+}
+
+function getRankCorrectCountCondition(rankKey: WordRankKey): string {
+	const rankIndex = wordRankDefinitions.findIndex(rank => rank.key === rankKey);
+	const rank = wordRankDefinitions[rankIndex];
+	const nextRank = wordRankDefinitions[rankIndex + 1];
+	const normalizedCorrectCount = 'COALESCE(uw.correctCount, 0)';
+	let condition = '1 = 1'; // SQL secret speak for "include all cards". It's just a fallback.
+
+	if (rank) {
+		if (nextRank) {
+			condition = `${normalizedCorrectCount} >= ${rank.minCorrectCount} AND ${normalizedCorrectCount} < ${nextRank.minCorrectCount}`;
+		} else {
+			condition = `${normalizedCorrectCount} >= ${rank.minCorrectCount}`;
+		}
+	}
+
+	return condition;
 }
 
 /**
@@ -210,6 +225,7 @@ interface GetDeckProps {
 export async function getDeck({
 	deck,
 	amount = 6,
+	rank,
 	userId,
 }: GetDeckProps): Promise<CardDeck | undefined> {
 	/**
@@ -226,13 +242,22 @@ export async function getDeck({
 	 */
 	try {
 		const database = await getDB();
+		const rankCondition =
+			rank ? `AND ${getRankCorrectCountCondition(rank)}` : '';
 		const rows = await database.getAllAsync<WordRow>(
 			`
-			SELECT *
-			FROM words
-			WHERE id IN (${quests});
+			SELECT
+				w.*,
+				COALESCE(uw.correctCount, 0) AS userCorrectCount
+			FROM words AS w
+			LEFT JOIN userWords AS uw
+				ON uw.wordId = w.id
+				AND uw.userId = ?
+			WHERE w.id IN (${quests})
+			${rankCondition};
 			`,
-			deck.wordIds,
+			userId,
+			...deck.wordIds,
 		);
 
 		/**
@@ -245,11 +270,12 @@ export async function getDeck({
 				...row,
 				englishWords: JSON.parse(row.englishWords),
 				isVulgar: Boolean(row.isVulgar),
+				correctCount: row.userCorrectCount ?? 0,
 			})) ?? [];
 
 		/**
 		 * Let's build decks with only one card per lemma (infinitives, etc.)
-		 * E.G. we don't want both manger and mange
+		 * e.g. we don't want both manger and mange
 		 */
 		const seenLemmaIds = new Set<string>();
 
@@ -263,68 +289,13 @@ export async function getDeck({
 		 * wordRaffle is for determined rarity
 		 */
 		const selectedWords = wordRaffle(uniqueLemmaWordsDeck, amount);
-		const selectedWordIds = selectedWords.map(word => word.id);
-		const selectedWordQuests = selectedWords.map(() => '?').join(',');
-
-		/**
-		 * We need the join table's correct word counts for the
-		 * WordRank badges and what not.
-		 */
-		const rankRows: WordRankRow[] = await database.getAllAsync(
-			`
-			SELECT ALL wordId, correctCount, seenCount
-			FROM userWords
-			WHERE userId = ?
-			AND wordId IN (${selectedWordQuests});
-			`,
-			userId,
-			...selectedWordIds,
-		);
-
-		/**
-		 * Instead of finding every correctCount by nested
-		 * id, we can use the ids for a lookup table.
-		 *
-		 * In other words, we're turning this:
-		 * [{"correctCount": 1, "seenCount": 0, "wordId": "word_noun_cafe"}, ...]
-		 *
-		 * Into this (a lookup table):
-		 * {word_noun_cafe: {"correctCount": 1, "seenCount": 0, "wordId": "word_noun_cafe"}, ...}
-		 *
-		 * This prevents us from having to iterate over
-		 * the object for every single word
-		 * just to get the correctCount.
-		 */
-		const keyedRankRows: Record<string, WordRankRow> = {};
-
-		for (const row of rankRows) {
-			keyedRankRows[row.wordId] = row;
-		}
-
-		/**
-		 * Add in the correctCount/correctCounts
-		 * These can be undefined if they have
-		 * never been seen by the user.
-		 */
-		const withUniquecorrectCounts = selectedWords.map((word: Word): Word => {
-			const wordRankRow: WordRankRow | undefined = keyedRankRows[word.id];
-			const correctCount: number = wordRankRow?.correctCount ?? 0;
-
-			/**
-			 * Return (map) Word
-			 */
-			return {
-				...word,
-				correctCount,
-			};
-		});
 
 		/**
 		 * Return the deck
 		 */
 		return {
 			...deck,
-			words: withUniquecorrectCounts,
+			words: selectedWords,
 			wordChoices: await getDeckWordChoices({ wordIds: deck.wordIds }),
 		};
 	} catch (error) {

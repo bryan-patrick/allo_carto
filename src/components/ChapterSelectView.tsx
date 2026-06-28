@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     color: colors.light.text,
-    padding: 16,
+    padding: 24,
     marginBottom: 0,
     backgroundColor: colors.light.background
   },
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   ChapterSelectButtonStyle: {
-    padding: 10,
+    padding: 14,
     paddingRight: 48,
     paddingLeft: 48,
     marginBottom: 4,

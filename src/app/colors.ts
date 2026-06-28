@@ -47,7 +47,6 @@ const colors = {
 		silver: '#e1e7ef',
 		gold: '#ffd196',
 		diamond: '#c6e9ff',
-		memorized: '#00ffcf',
 	},
 	rarity: {
 		Common: '#7BADA6',

@@ -127,3 +127,5 @@ Real quick so I don't forget...
 - [Trouble in the terminal](https://unsplash.com/photos/building-interior-photograph-l5fDJ3I-9Uk?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink)
 - [To the gate](https://www.pexels.com/photo/airbus-at-airport-16562841/)
 - [Elevator epics](https://www.pexels.com/photo/hand-picking-the-floor-in-the-elevator-16026071/)
+
+"Blaming on his boots the faults of his feet" - Vlad

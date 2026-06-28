@@ -71,7 +71,31 @@ describe('getDeck', () => {
 
 		const [selectionQuery] = mockGetAllAsync.mock.calls[0];
 
-		expect(selectionQuery).toMatch(/WHERE id IN \([^)]*\);/);
+		expect(selectionQuery).toMatch(/WHERE w\.id IN \([^)]*\)/);
 		expect(selectionQuery).not.toMatch(/ORDER BY RANDOM\(\)/);
+	});
+
+	test('can filter deck words by selected rank', async () => {
+		const deck: CardDeck = {
+			title: 'Test deck',
+			description: 'A deck used to test selection',
+			image: undefined,
+			CEFR: ['A1'],
+			wordIds: ['word_one', 'word_two'],
+			words: [],
+			wordChoices: [],
+		};
+
+		mockGetAllAsync.mockResolvedValueOnce([]);
+
+		await getDeck({ deck, amount: 1, rank: 'bronze', userId: 'user_one' });
+
+		const [selectionQuery, userId, ...wordIds] = mockGetAllAsync.mock.calls[0];
+
+		expect(selectionQuery).toMatch(/LEFT JOIN userWords AS uw/);
+		expect(selectionQuery).toMatch(/COALESCE\(uw\.correctCount, 0\) >= 3/);
+		expect(selectionQuery).toMatch(/COALESCE\(uw\.correctCount, 0\) < 7/);
+		expect(userId).toBe('user_one');
+		expect(wordIds).toEqual(deck.wordIds);
 	});
 });

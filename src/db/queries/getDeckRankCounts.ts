@@ -14,7 +14,6 @@ export const emptyDeckRankCounts: DeckRankCounts = {
 	silver: 0,
 	gold: 0,
 	diamond: 0,
-	memorized: 0,
 };
 
 /**

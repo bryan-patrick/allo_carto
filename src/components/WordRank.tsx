@@ -3,8 +3,8 @@ import { ComponentProps, useEffect, useMemo, useState } from "react";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from "react-native-reanimated";
 import colors from "../app/colors";
-import { useCardDeck } from "./CardDeck/useCardDeck";
 import { getWordRankDefinition } from "../util/wordRanks";
+import { useCardDeck } from "./CardDeck/useCardDeck";
 
 /**
  * Typing

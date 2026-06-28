@@ -5,7 +5,7 @@ import colors from "../app/colors";
 import LinkButton from "./LinkButton";
 
 /**
- * Place Select View component
+ * PlaceSelectView component
  */
 export default function PlaceSelectView() {
   const {

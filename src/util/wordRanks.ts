@@ -1,16 +1,11 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { ComponentProps } from 'react';
 
-export type WordRankKey =
-	| 'fnew'
-	| 'bronze'
-	| 'silver'
-	| 'gold'
-	| 'diamond'
-	| 'memorized';
+export type WordRankKey = 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond';
 
 export interface WordRankDefinition {
 	key: WordRankKey;
+	name: string;
 	minCorrectCount: number;
 	iconName: ComponentProps<typeof MaterialIcons>['name'];
 }
@@ -18,33 +13,33 @@ export interface WordRankDefinition {
 export const wordRankDefinitions: WordRankDefinition[] = [
 	{
 		key: 'fnew',
+		name: 'New',
 		minCorrectCount: 0,
 		iconName: 'fiber-new',
 	},
 	{
 		key: 'bronze',
+		name: 'Bronze',
 		minCorrectCount: 3,
 		iconName: 'stars',
 	},
 	{
 		key: 'silver',
+		name: 'Silver',
 		minCorrectCount: 7,
 		iconName: 'military-tech',
 	},
 	{
 		key: 'gold',
+		name: 'Gold',
 		minCorrectCount: 12,
 		iconName: 'emoji-events',
 	},
 	{
 		key: 'diamond',
+		name: 'Diamond',
 		minCorrectCount: 15,
 		iconName: 'diamond',
-	},
-	{
-		key: 'memorized',
-		minCorrectCount: 25,
-		iconName: 'psychology',
 	},
 ];
 

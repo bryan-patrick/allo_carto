@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import colors from "../app/colors";
+import sharedStyles from "../app/sharedStyles";
 import { useUserContext } from "../db/useUserContext";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import GradientText from "./GradientText";
@@ -69,22 +70,25 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     let isCurrent = true;
 
     async function loadRankCounts() {
-      if (!user?.id) {
-        setRankCounts(emptyDeckRankCounts);
-        return;
+      try {
+        if (!user?.id) {
+          setRankCounts(emptyDeckRankCounts);
+          return;
+        }
+
+        const counts = await getDeckRankCounts({
+          userId: user.id,
+          wordIds: deck.wordIds,
+        });
+
+        if (isCurrent) setRankCounts(counts);
+
+      } catch (error) {
+        console.error('Could not retrieve deck rank counts:', error);
       }
-
-      const counts = await getDeckRankCounts({
-        userId: user.id,
-        wordIds: deck.wordIds,
-      });
-
-      if (isCurrent) setRankCounts(counts);
     }
 
-    loadRankCounts().catch(error => {
-      console.error('Could not retrieve deck rank counts:', error);
-    });
+    loadRankCounts();
 
     return () => {
       isCurrent = false;
@@ -103,7 +107,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
 
       if (deck) {
         cardDeckDispatch({ type: 'SET_DECK', payload: deck });
-        router.push('/CardDeck');
+        router.push('/CardDeckRankSelect');
       }
     }
   }, [
@@ -169,10 +173,6 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               <Text style={badgeCountTextStyle}>{rankCounts.diamond}</Text>
               <MaterialIcons color={colors.light.text} size={badgeIconSize} name="diamond" />
             </View>
-            <View style={badgeCountContainerStyle}>
-              <Text style={badgeCountTextStyle}>{rankCounts.memorized}</Text>
-              <MaterialIcons color={colors.light.text} size={16} name="psychology" />
-            </View>
           </View>
           <View style={cardFooterStyle}>
             <LinkButton
@@ -189,11 +189,16 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
 }
 
 /**
+ * Destructure shared styles
+ */
+const { containerMargin } = sharedStyles
+
+/**
  * Styles
  */
 const styles = StyleSheet.create({
   cardStyle: {
-    margin: 32,
+    margin: containerMargin,
   },
   cardInnerStyle: {
     backgroundColor: colors.light.background,
