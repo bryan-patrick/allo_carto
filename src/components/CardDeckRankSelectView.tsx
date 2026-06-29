@@ -26,6 +26,7 @@ export default function CardDeckRankSelectView() {
     innerCardStyle,
     titleRowStyle,
     deckImageStyle,
+    rankButtonContainer,
   } = styles;
 
   /**
@@ -93,10 +94,9 @@ export default function CardDeckRankSelectView() {
 
   return (
     <View style={selectContainerStyle}>
-      <ImageBackground style={deckImageStyle} source={image} />
       <View style={innerCardStyle}>
         <View style={titleRowStyle}>
-          <Text style={rankSelectTitleText}>Select your word rank for</Text>
+          <Text style={rankSelectTitleText}>Select your card ranks for</Text>
           <GradientText
             colors={[gradientDark, gradientLight]}
             fontSize={20}
@@ -104,37 +104,39 @@ export default function CardDeckRankSelectView() {
             fontWeight={700}
           />
         </View>
-        {
-          wordRankDefinitions.map((item: WordRankDefinition) => {
-            const { key, name } = item;
+        <ImageBackground style={deckImageStyle} source={image} />
+        <View style={rankButtonContainer}>
+          {
+            wordRankDefinitions.map((item: WordRankDefinition) => {
+              const { key, name } = item;
 
-            const rankButtonStyle = {
-              backgroundColor: colors.light.rank[key],
-              padding: 8,
-              paddingBottom: 12,
-              gap: 4
-            }
+              const rankButtonStyle = {
+                backgroundColor: colors.light.rank[key],
+                padding: 8,
+                gap: 4
+              }
 
-            const rankButtonTextStyle = {
-              color: colors.dark.text
-            }
+              const rankButtonTextStyle = {
+                color: colors.dark.text
+              }
 
-            return (
-              <View key={key} style={rankSelectContainerStyle}>
-                <LinkButton
-                  handler={() => handleLevelSelect(key)}
-                  style={rankButtonStyle}
-                  arrowColor={colors.dark.text}
-                  useArrow={false}
-                  disabled={rankCounts[key] < 5}
-                  SVGElement={<RankIcon size={32} rank={key} color={colors.dark.rank[key]} />}
-                >
-                  <Text style={rankButtonTextStyle}>{name} ({rankCounts[key]})</Text>
-                </LinkButton>
-              </View>
-            )
-          })
-        }
+              return (
+                <View key={key} style={rankSelectContainerStyle}>
+                  <LinkButton
+                    handler={() => handleLevelSelect(key)}
+                    style={rankButtonStyle}
+                    arrowColor={colors.dark.text}
+                    useArrow={false}
+                    disabled={rankCounts[key] < 5}
+                    SVGElement={<RankIcon size={32} rank={key} color={colors.dark.rank[key]} />}
+                  >
+                    <Text style={rankButtonTextStyle}>{name} ({rankCounts[key]})</Text>
+                  </LinkButton>
+                </View>
+              )
+            })
+          }
+        </View>
       </View>
     </View>
   )
@@ -154,11 +156,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     margin: containerMargin,
-    borderWidth: 2,
+    borderWidth: 4,
     borderColor: colors.dark.border,
     backgroundColor: colors.light.border,
     overflow: 'hidden',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 8,
   },
   rankSelectTitleContainer: {
@@ -171,31 +173,38 @@ const styles = StyleSheet.create({
   deckImageStyle: {
     height: 150,
     width: '100%',
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.dark.border,
+    marginTop: 4,
+    marginBottom: 8,
     overflow: 'hidden',
   },
   titleRowStyle: {
     display: 'flex',
     alignItems: 'center',
-    paddingBottom: 8,
   },
   innerCardStyle: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+    borderRadius: 8,
     backgroundColor: colors.light.background,
     flexWrap: 'wrap',
     padding: 16,
+    paddingBottom: 20,
+    gap: 12
+  },
+  rankButtonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
   },
   rankSelectContainerStyle: {
     flexGrow: 1,
-    flexShrink: 1,
-    margin: 8,
-    marginBottom: 12,
+    marginBottom: 4,
     width: '40%' // a hack for 50% without calc
   },
   rankButtonStyle: {
