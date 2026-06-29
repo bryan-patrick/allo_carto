@@ -103,6 +103,7 @@ Real quick so I don't forget...
 - Deck count on place selection view
 - Word rank counts on decks
 - Chapter select list view
+- Word count per day/history feature along with words learned per day delta
 - You should probably get rid of the undraw SVG on the "Learn more words!" card
 - R̶a̶r̶i̶t̶y̶ ̶o̶n̶ ̶f̶l̶a̶s̶h̶ ̶c̶a̶r̶d̶s̶
 - Card Collection page
