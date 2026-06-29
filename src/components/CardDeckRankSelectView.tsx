@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.border,
     overflow: 'hidden',
     borderRadius: 16,
-    padding: 8,
+    padding: 4,
   },
   rankSelectTitleContainer: {
     margin: 0,
