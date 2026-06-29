@@ -10,14 +10,19 @@ import { initialWordCardState } from '@/src/components/WordCard/wordCardContext'
 import { incrementCorrectCount } from '@/src/db/queries/incrementCorrectCount';
 import { fireEvent, render } from '@testing-library/react-native';
 import {
+  impactAsync,
+  ImpactFeedbackStyle,
   notificationAsync,
-  NotificationFeedbackType,
 } from 'expo-haptics';
 
 /**
  * Mock all the things
  */
 jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(),
+  ImpactFeedbackStyle: {
+    Light: 'light',
+  },
   notificationAsync: jest.fn(),
   NotificationFeedbackType: {
     Success: 'success',
@@ -31,6 +36,7 @@ jest.mock('@/src/components/WordCard/useWordCardUI');
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseWordCardUI = jest.mocked(useWordCardUI);
+const mockImpactAsync = jest.mocked(impactAsync);
 const mockNotificationAsync = jest.mocked(notificationAsync);
 const mockIncrementCorrectCount = jest.mocked(incrementCorrectCount);
 
@@ -64,6 +70,7 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
 
 describe('<WordCardButton />', () => {
   beforeEach(() => {
+    mockImpactAsync.mockClear();
     mockNotificationAsync.mockClear();
     mockIncrementCorrectCount.mockResolvedValue();
     mockUseCardDeck.mockReset();
@@ -141,8 +148,8 @@ describe('<WordCardButton />', () => {
     /**
      * Make sure the haptic went off!
      */
-    expect(mockNotificationAsync).toHaveBeenCalledWith(
-      NotificationFeedbackType.Success,
+    expect(mockImpactAsync).toHaveBeenCalledWith(
+      ImpactFeedbackStyle.Light,
     );
   });
 });
