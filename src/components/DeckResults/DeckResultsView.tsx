@@ -1,4 +1,7 @@
+import { deckAtlas } from '@/data/french/deckAtlas';
 import sharedStyles from '@/src/app/sharedStyles';
+import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import { router } from 'expo-router';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from "../../app/colors";
 import { useCardDeck } from "../CardDeck/useCardDeck";
@@ -7,6 +10,24 @@ import LinkButton from '../LinkButton';
 import ResultsList from './ResultsList';
 
 const englishVowels = ['a', 'e', 'i', 'o', 'u', 'y']
+
+function findDeckPlaceId(cardDeck: CardDeck) {
+  for (const chapter of deckAtlas.chapters) {
+    for (const place of chapter.places) {
+      const deck = place.decks.find((deck) => {
+        const isSameTitle = deck.title === cardDeck.title;
+        const hasSameWordCount = deck.wordIds.length === cardDeck.wordIds.length;
+        const hasSameWords = deck.wordIds.every((wordId) => {
+          return cardDeck.wordIds.includes(wordId);
+        });
+
+        return isSameTitle && hasSameWordCount && hasSameWords;
+      });
+
+      if (deck) return place.id;
+    }
+  }
+}
 
 /**
  * DeckResultsView component
@@ -22,6 +43,19 @@ export default function DeckResultsView() {
   const deckColorLight = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
   const isFirstLetterAVowel = englishVowels.includes(title.split('')[0].toLowerCase());
   const resultsTitleArticle = isFirstLetterAVowel ? 'an' : 'a'
+  const placeId = findDeckPlaceId(cardDeckState.cardDeck);
+
+  function handleFinish() {
+    if (placeId) {
+      router.replace({
+        pathname: '/CardDeckSelect',
+        params: { placeId },
+      });
+      return;
+    }
+
+    router.replace('/(tabs)');
+  }
 
   /**
    * Destructure styles
@@ -71,7 +105,7 @@ export default function DeckResultsView() {
             isCorrect={false}
           />
         </View>
-        <LinkButton screen="(tabs)" style={finishedLinkStyle}>Finish</LinkButton>
+        <LinkButton handler={handleFinish} style={finishedLinkStyle}>Finish</LinkButton>
       </View>
     </ScrollView>
   )

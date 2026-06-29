@@ -1,15 +1,14 @@
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import {
-  makeMockCardDeck,
   makeMockCardDeckState,
 } from '@/src/components/CardDeck/mockCardDeck';
 import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckResultsView from '@/src/components/DeckResults/DeckResultsView';
+import { DeckToTheGate } from '@/data/french/decks';
+import { router } from 'expo-router';
 import { useLinkProps } from '@react-navigation/native';
 import { fireEvent, render } from '@testing-library/react-native';
 import { ImageBackground } from 'react-native';
-
-const mockLinkPress = jest.fn();
 
 /**
  * Mock the deck hook
@@ -20,9 +19,13 @@ jest.mock('@/src/components/CardDeck/useCardDeck');
  * Mock navigation so we can check the link press.
  */
 jest.mock('@react-navigation/native', () => ({
-  useLinkProps: jest.fn(() => ({
-    onPress: mockLinkPress,
-  })),
+  useLinkProps: jest.fn(() => ({})),
+}));
+
+jest.mock('expo-router', () => ({
+  router: {
+    replace: jest.fn(),
+  },
 }));
 
 /**
@@ -47,6 +50,7 @@ jest.mock('@expo/vector-icons/MaterialIcons', () => {
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseLinkProps = jest.mocked(useLinkProps);
+const mockRouterReplace = jest.mocked(router.replace);
 const testingImage = { uri: 'testing-deck-image.jpg' };
 
 /**
@@ -54,7 +58,7 @@ const testingImage = { uri: 'testing-deck-image.jpg' };
  */
 describe('<DeckResultsView />', () => {
   beforeEach(() => {
-    mockLinkPress.mockClear();
+    mockRouterReplace.mockClear();
     mockUseLinkProps.mockClear();
     const words: Word[] = [
       {
@@ -76,11 +80,11 @@ describe('<DeckResultsView />', () => {
         correctCount: 0,
       },
     ];
-    const cardDeck = makeMockCardDeck({
-      title: 'Testing Coffee Deck',
+    const cardDeck = {
+      ...DeckToTheGate,
       image: testingImage,
       words,
-    });
+    };
 
     mockUseCardDeck.mockReturnValue({
       cardDeckState: makeMockCardDeckState({
@@ -107,7 +111,7 @@ describe('<DeckResultsView />', () => {
      * (on purpose).
      */
     getByText('Good job! You completed a ');
-    expect(getAllByText('Testing Coffee Deck')).toHaveLength(2);
+    expect(getAllByText(DeckToTheGate.title)).toHaveLength(2);
     getByText(' deck.');
 
     /**
@@ -131,25 +135,19 @@ describe('<DeckResultsView />', () => {
   });
 
   /**
-   * Make sure the finish button goes home
+   * Make sure the finish button goes back to deck select
    */
-  test('routes back to the tabs home when pressing finish', () => {
+  test('replaces results with the selected place deck list when pressing finish', () => {
     const { getByText } = render(<DeckResultsView />);
 
     /**
-     * Pressing the finish link should use the navigation link props.
+     * Pressing the finish link should replace the route, so back does not
+     * land on completed results again.
      */
-    fireEvent.press(getByText('Finish'));
-    expect(mockLinkPress).toHaveBeenCalled();
-
-    /**
-     * When the results page renders its the Finish 
-     * button, make sure that button will route to (tabs).
-     */
-    expect(mockUseLinkProps).toHaveBeenCalledWith(
-      expect.objectContaining({
-        screen: '(tabs)',
-      }),
-    );
+    fireEvent(getByText('Finish'), 'pressIn');
+    expect(mockRouterReplace).toHaveBeenCalledWith({
+      pathname: '/CardDeckSelect',
+      params: { placeId: 'aeroport-oiseau' },
+    });
   });
 });

@@ -22,6 +22,7 @@ jest.mock('@/src/components/WordCard/useWordCardUI');
 jest.mock('expo-router', () => ({
   router: {
     push: jest.fn(),
+    replace: jest.fn(),
   },
 }));
 
@@ -52,6 +53,7 @@ const mockUseWordCardUI = jest.mocked(useWordCardUI);
 const mockWordCardFront = jest.mocked(WordCardFront);
 const mockWordCardBack = jest.mocked(WordCardBack);
 const mockRouterPush = jest.mocked(router.push);
+const mockRouterReplace = jest.mocked(router.replace);
 
 function renderWithAFakeDispatchSoWeCanDoActions(
   children: ReactNode,
@@ -77,6 +79,7 @@ describe('<WordCard />', () => {
     mockWordCardFront.mockClear();
     mockWordCardBack.mockClear();
     mockRouterPush.mockClear();
+    mockRouterReplace.mockClear();
     mockUseWordCardUI.mockReset();
   });
 
@@ -128,10 +131,12 @@ describe('<WordCard />', () => {
     renderWithAFakeDispatchSoWeCanDoActions(<WordCard isCurrent={true} />);
 
     /**
-     * Make sure we go to the finished deck
+     * Make sure we go to the finished deck without leaving
+     * the completed card deck behind in history.
      */
     await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith('/DeckResults');
+      expect(mockRouterReplace).toHaveBeenCalledWith('/DeckResults');
     });
+    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });

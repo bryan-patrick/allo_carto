@@ -132,7 +132,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
   useEffect(() => {
     if (isCurrent && cardState.stage === 'COMPLETED') {
       if (cardDeckState.currentIndex === cardDeckState.cardDeck.words.length - 1) {
-        router.push('/DeckResults');
+        router.replace('/DeckResults');
       } else {
         cardDeckDispatch({ type: 'NEXT_CARD' });
       }
