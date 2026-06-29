@@ -1,8 +1,9 @@
 import { ThemeProvider } from "@react-navigation/native";
+import { setAudioModeAsync } from "expo-audio";
 import { useFonts } from 'expo-font';
 import { Stack } from "expo-router";
 import { SQLiteProvider, type SQLiteDatabase } from "expo-sqlite";
-import { Suspense, useCallback, useReducer, useState } from "react";
+import { Suspense, useCallback, useEffect, useReducer, useState } from "react";
 import { CardDeckContext, initialCardDeckState } from "../components/CardDeck/cardDeckContext";
 import { cardDeckReducer } from "../components/CardDeck/cardDeckReducer";
 import Loader from "../components/Loader";
@@ -41,6 +42,17 @@ export default function AppLayout() {
     'azeret-mono-400': require('./assets/fonts/azeret-mono-400.ttf'),
     'azeret-mono-600': require('./assets/fonts/azeret-mono-600.ttf'),
   });
+
+  /**
+   * Let short UI sounds play without interrupting other device audio.
+   */
+  useEffect(() => {
+    setAudioModeAsync({
+      interruptionMode: 'mixWithOthers',
+    }).catch((error) => {
+      console.error('Could not set audio mode:', error);
+    });
+  }, []);
 
   /**
    * SLQLite provider init

@@ -11,12 +11,14 @@ import { WordRankDefinition, WordRankKey, wordRankDefinitions } from '../util/wo
 import { useCardDeck } from "./CardDeck/useCardDeck";
 import GradientText from './GradientText';
 import LinkButton from "./LinkButton";
+import LockOverlay from './LockOverlay';
 import { RankIcon } from './WordRank';
 
 export default function CardDeckRankSelectView() {
   const user = useUserContext();
   const { cardDeckState, cardDeckDispatch } = useCardDeck();
   const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
+  const unlockAmount = 5;
 
   /**
    * Styles
@@ -27,6 +29,7 @@ export default function CardDeckRankSelectView() {
     titleRowStyle,
     deckImageStyle,
     rankButtonContainer,
+    rankLockOverlayStyle,
   } = styles;
 
   /**
@@ -105,10 +108,12 @@ export default function CardDeckRankSelectView() {
           />
         </View>
         <ImageBackground style={deckImageStyle} source={image} />
+        <Text style={rankSelectTitleText}>You need at least {unlockAmount} cards in a rank to unlock it.</Text>
         <View style={rankButtonContainer}>
           {
             wordRankDefinitions.map((item: WordRankDefinition) => {
               const { key, name } = item;
+              const isLocked = rankCounts[key] < unlockAmount;
 
               const rankButtonStyle = {
                 backgroundColor: colors.light.rank[key],
@@ -122,16 +127,23 @@ export default function CardDeckRankSelectView() {
 
               return (
                 <View key={key} style={rankSelectContainerStyle}>
-                  <LinkButton
-                    handler={() => handleLevelSelect(key)}
-                    style={rankButtonStyle}
-                    arrowColor={colors.dark.text}
-                    useArrow={false}
-                    disabled={rankCounts[key] < 5}
-                    SVGElement={<RankIcon size={32} rank={key} color={colors.dark.rank[key]} />}
+                  <LockOverlay
+                    isLocked={isLocked}
+                    lockedAccessibilityHint={`You need at least ${unlockAmount} cards in this rank to unlock it. You currently have ${rankCounts[key]}.`}
+                    lockedAccessibilityLabel={`${name} rank locked`}
+                    overlayStyle={rankLockOverlayStyle}
                   >
-                    <Text style={rankButtonTextStyle}>{name} ({rankCounts[key]})</Text>
-                  </LinkButton>
+                    <LinkButton
+                      handler={() => handleLevelSelect(key)}
+                      style={rankButtonStyle}
+                      arrowColor={colors.dark.text}
+                      useArrow={false}
+                      disabled={isLocked}
+                      SVGElement={<RankIcon size={32} rank={key} color={colors.dark.rank[key]} />}
+                    >
+                      <Text style={rankButtonTextStyle}>{name} ({rankCounts[key]})</Text>
+                    </LinkButton>
+                  </LockOverlay>
                 </View>
               )
             })
@@ -206,6 +218,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     marginBottom: 4,
     width: '40%' // a hack for 50% without calc
+  },
+  rankLockOverlayStyle: {
+    borderRadius: 8,
   },
   rankButtonStyle: {
     display: 'flex',
