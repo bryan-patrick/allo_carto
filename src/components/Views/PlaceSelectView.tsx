@@ -1,8 +1,8 @@
 import { deckAtlas, DeckChapter, DeckPlace } from "@/data/french/deckAtlas";
 import { useLocalSearchParams } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import colors from "../app/colors";
-import LinkButton from "./LinkButton";
+import colors from "../../app/colors";
+import LinkButton from "../LinkButton";
 
 /**
  * PlaceSelectView component

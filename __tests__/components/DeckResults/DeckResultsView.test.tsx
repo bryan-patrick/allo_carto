@@ -3,7 +3,7 @@ import {
   makeMockCardDeckState,
 } from '@/src/components/CardDeck/mockCardDeck';
 import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
-import DeckResultsView from '@/src/components/DeckResults/DeckResultsView';
+import DeckResultsView from '@/src/components/Views/DeckResultsView';
 import { DeckToTheGate } from '@/data/french/decks';
 import { router } from 'expo-router';
 import { useLinkProps } from '@react-navigation/native';
@@ -24,6 +24,7 @@ jest.mock('@react-navigation/native', () => ({
 
 jest.mock('expo-router', () => ({
   router: {
+    dismissTo: jest.fn(),
     replace: jest.fn(),
   },
 }));
@@ -50,7 +51,7 @@ jest.mock('@expo/vector-icons/MaterialIcons', () => {
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseLinkProps = jest.mocked(useLinkProps);
-const mockRouterReplace = jest.mocked(router.replace);
+const mockRouterDismissTo = jest.mocked(router.dismissTo);
 const testingImage = { uri: 'testing-deck-image.jpg' };
 
 /**
@@ -58,7 +59,7 @@ const testingImage = { uri: 'testing-deck-image.jpg' };
  */
 describe('<DeckResultsView />', () => {
   beforeEach(() => {
-    mockRouterReplace.mockClear();
+    mockRouterDismissTo.mockClear();
     mockUseLinkProps.mockClear();
     const words: Word[] = [
       {
@@ -137,15 +138,15 @@ describe('<DeckResultsView />', () => {
   /**
    * Make sure the finish button goes back to deck select
    */
-  test('replaces results with the selected place deck list when pressing finish', () => {
+  test('dismisses results back to the selected place deck list when pressing finish', () => {
     const { getByText } = render(<DeckResultsView />);
 
     /**
-     * Pressing the finish link should replace the route, so back does not
-     * land on completed results again.
+     * Pressing the finish link should pop back to deck select, so back
+     * does not land on completed results again.
      */
     fireEvent(getByText('Finish'), 'pressIn');
-    expect(mockRouterReplace).toHaveBeenCalledWith({
+    expect(mockRouterDismissTo).toHaveBeenCalledWith({
       pathname: '/CardDeckSelect',
       params: { placeId: 'aeroport-oiseau' },
     });

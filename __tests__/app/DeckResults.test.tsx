@@ -1,11 +1,11 @@
 import DeckResults from '@/src/app/(routes)/DeckResults';
-import DeckResultsView from '@/src/components/DeckResults/DeckResultsView';
+import DeckResultsView from '@/src/components/Views/DeckResultsView';
 import { render } from '@testing-library/react-native';
 
 /**
  * Mock the child results view
  */
-jest.mock('@/src/components/DeckResults/DeckResultsView', () => {
+jest.mock('@/src/components/Views/DeckResultsView', () => {
   const { Text } = jest.requireActual('react-native');
 
   return jest.fn(() => {

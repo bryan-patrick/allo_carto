@@ -1,8 +1,8 @@
 import colors from "@/src/app/colors";
+import { Word } from "@/src/components/CardDeck/cardDeckTypes";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ComponentProps } from "react";
 import { StyleSheet, Text, TextStyle, View } from "react-native";
-import { Word } from "../CardDeck/cardDeckTypes";
 
 /**
  * Typing

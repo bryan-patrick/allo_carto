@@ -1,4 +1,4 @@
-import PlaceSelectView from "@/src/components/PlaceSelectView";
+import PlaceSelectView from "@/src/components/Views/PlaceSelectView";
 
 /**
  * Route wrapper for the place selection view

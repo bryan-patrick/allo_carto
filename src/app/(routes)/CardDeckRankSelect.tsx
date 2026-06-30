@@ -1,4 +1,4 @@
-import CardDeckRankSelectView from "@/src/components/CardDeckRankSelectView";
+import CardDeckRankSelectView from "@/src/components/Views/CardDeckRankSelectView";
 
 /**
  * Route wrapper for CardDeckRankSelectView

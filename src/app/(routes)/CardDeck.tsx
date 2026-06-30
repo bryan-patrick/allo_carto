@@ -1,5 +1,5 @@
-import CardDeckView from "@/src/components/CardDeck/CardDeckView";
 import { useCardDeck } from "@/src/components/CardDeck/useCardDeck";
+import CardDeckView from "@/src/components/Views/CardDeckView";
 
 /**
  * Deck view - A route wrapper in (routes)

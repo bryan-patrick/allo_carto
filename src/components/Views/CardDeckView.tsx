@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import WordCardContainer from '../WordCard/WordCardContainer';
-import { Word } from './cardDeckTypes';
+import { Word } from '../CardDeck/cardDeckTypes';
 
 /**
  * Typing

@@ -2,9 +2,9 @@ import type { DeckChapter } from "@/data/french/deckAtlas";
 import { deckAtlas } from "@/data/french/deckAtlas";
 import { ReactNode } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import colors from "../app/colors";
-import sharedStyles from "../app/sharedStyles";
-import LinkButton from "./LinkButton";
+import colors from "../../app/colors";
+import sharedStyles from "../../app/sharedStyles";
+import LinkButton from "../LinkButton";
 
 /**
  * ChapterSelectView component

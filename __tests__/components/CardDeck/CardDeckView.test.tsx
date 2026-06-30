@@ -1,4 +1,4 @@
-import CardDeckView from '@/src/components/CardDeck/CardDeckView';
+import CardDeckView from '@/src/components/Views/CardDeckView';
 import { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import WordCardContainer from '@/src/components/WordCard/WordCardContainer';
 import { render } from '@testing-library/react-native';

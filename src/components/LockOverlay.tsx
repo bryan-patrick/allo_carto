@@ -51,7 +51,7 @@ export default function LockOverlay({
           testID="lock-overlay"
         >
           <MaterialIcons
-            color={colors.dark.border}
+            color={colors.light.text}
             name="lock"
             size={32}
           />
@@ -71,8 +71,10 @@ const styles = StyleSheet.create({
   overlayStyle: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
-    backgroundColor: `#CCCCCCCC`,
+    backgroundColor: `#333333dd`,
     justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 1,
     zIndex: 10,
   },
 });

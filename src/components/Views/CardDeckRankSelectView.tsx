@@ -1,18 +1,18 @@
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
-import colors from '../app/colors';
-import sharedStyles from '../app/sharedStyles';
-import { getDeck } from "../db/interface";
-import type { DeckRankCounts } from '../db/queries/getDeckRankCounts';
-import getDeckRankCounts, { emptyDeckRankCounts } from '../db/queries/getDeckRankCounts';
-import { useUserContext } from "../db/useUserContext";
-import { WordRankDefinition, WordRankKey, wordRankDefinitions } from '../util/wordRanks';
-import { useCardDeck } from "./CardDeck/useCardDeck";
-import GradientText from './GradientText';
-import LinkButton from "./LinkButton";
-import LockOverlay from './LockOverlay';
-import { RankIcon } from './WordRank';
+import { StyleSheet, Text, View } from "react-native";
+import colors from '../../app/colors';
+import sharedStyles from '../../app/sharedStyles';
+import { getDeck } from "../../db/interface";
+import type { DeckRankCounts } from '../../db/queries/getDeckRankCounts';
+import getDeckRankCounts, { emptyDeckRankCounts } from '../../db/queries/getDeckRankCounts';
+import { useUserContext } from "../../db/useUserContext";
+import { WordRankDefinition, WordRankKey, wordRankDefinitions } from '../../util/wordRanks';
+import { useCardDeck } from "../CardDeck/useCardDeck";
+import GradientText from '../GradientText';
+import LinkButton from "../LinkButton";
+import LockOverlay from '../LockOverlay';
+import { RankIcon } from '../WordRank';
 
 export default function CardDeckRankSelectView() {
   const user = useUserContext();
@@ -91,24 +91,24 @@ export default function CardDeckRankSelectView() {
     rankSelectContainerStyle
   } = styles;
 
-  const { colors: deckColors, title, image } = cardDeckState.cardDeck;
+  const { colors: deckColors, title } = cardDeckState.cardDeck;
   const gradientDark = deckColors?.dark ?? '#000000';
   const gradientLight = deckColors?.light ?? '#ffffff';
+  const unlockText = `You need ${unlockAmount} cards to unlock a rank`;
 
   return (
     <View style={selectContainerStyle}>
       <View style={innerCardStyle}>
         <View style={titleRowStyle}>
-          <Text style={rankSelectTitleText}>Select your card ranks for</Text>
+          <Text style={rankSelectTitleText}>Select the deck rank for</Text>
           <GradientText
             colors={[gradientDark, gradientLight]}
             fontSize={20}
             text={title}
             fontWeight={700}
           />
+          <Text style={rankSelectTitleText}>{unlockText}</Text>
         </View>
-        <ImageBackground style={deckImageStyle} source={image} />
-        <Text style={rankSelectTitleText}>You need at least {unlockAmount} cards in a rank to unlock it.</Text>
         <View style={rankButtonContainer}>
           {
             wordRankDefinitions.map((item: WordRankDefinition) => {
@@ -129,7 +129,7 @@ export default function CardDeckRankSelectView() {
                 <View key={key} style={rankSelectContainerStyle}>
                   <LockOverlay
                     isLocked={isLocked}
-                    lockedAccessibilityHint={`You need at least ${unlockAmount} cards in this rank to unlock it. You currently have ${rankCounts[key]}.`}
+                    lockedAccessibilityHint={`${unlockText} You currently have ${rankCounts[key]}.`}
                     lockedAccessibilityLabel={`${name} rank locked`}
                     overlayStyle={rankLockOverlayStyle}
                   >
@@ -168,33 +168,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     margin: containerMargin,
-    borderWidth: 4,
     borderColor: colors.dark.border,
     backgroundColor: colors.light.border,
     overflow: 'hidden',
+    borderWidth: 4,
     borderRadius: 16,
-    padding: 4,
-  },
-  rankSelectTitleContainer: {
-    margin: 0,
   },
   rankSelectTitleText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 500,
-  },
-  deckImageStyle: {
-    height: 150,
-    width: '100%',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.dark.border,
-    marginTop: 4,
-    marginBottom: 8,
-    overflow: 'hidden',
+    textAlign: 'center',
   },
   titleRowStyle: {
     display: 'flex',
     alignItems: 'center',
+    gap: 4
   },
   innerCardStyle: {
     display: 'flex',
@@ -204,15 +192,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.light.background,
     flexWrap: 'wrap',
-    padding: 16,
-    paddingBottom: 20,
-    gap: 12
+    padding: 32,
+    gap: 32
   },
   rankButtonContainer: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 8,
   },
   rankSelectContainerStyle: {
     flexGrow: 1,
