@@ -27,7 +27,6 @@ export default function CardDeckRankSelectView() {
     rankSelectTitleText,
     innerCardStyle,
     titleRowStyle,
-    deckImageStyle,
     rankButtonContainer,
     rankLockOverlayStyle,
   } = styles;

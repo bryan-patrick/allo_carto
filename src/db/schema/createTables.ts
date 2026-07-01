@@ -20,6 +20,7 @@ async function createWordsTable(): Promise<void> {
 					isVulgar INTEGER NOT NULL,
 					CEFR TEXT NOT NULL,
 					lemmaId TEXT,
+					form TEXT,
 					tense TEXT,
 					gender TEXT,
 					partOfSpeech TEXT,
@@ -27,6 +28,25 @@ async function createWordsTable(): Promise<void> {
 					rarity TEXT
 				);
 			`);
+		},
+	);
+}
+
+async function ensureWordsFormColumn(): Promise<void> {
+	const database = await getDB();
+
+	await logThisIfItFails(
+		'Oops we messed up adding the words form column',
+		async () => {
+			const columns =
+				(await database.getAllAsync<{ name: string }>(
+					'PRAGMA table_info(words)',
+				)) ?? [];
+			const hasFormColumn = columns.some(column => column.name === 'form');
+
+			if (!hasFormColumn) {
+				await database.execAsync('ALTER TABLE words ADD COLUMN form TEXT;');
+			}
 		},
 	);
 }
@@ -78,6 +98,7 @@ async function createUserWordsTable(): Promise<void> {
 
 export default async function createTables(): Promise<void> {
 	await createWordsTable();
+	await ensureWordsFormColumn();
 	await createUsersTable();
 	await createUserWordsTable();
 }

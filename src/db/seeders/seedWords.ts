@@ -21,13 +21,14 @@ export default async function seedWords(): Promise<void> {
 					isVulgar,
 					CEFR,
 					lemmaId,
+					form,
 					tense,
 					gender,
 					partOfSpeech,
 					correctCount,
 					rarity
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				ON CONFLICT(id) DO UPDATE SET
 					frenchWord = excluded.frenchWord,
 					englishWords = excluded.englishWords,
@@ -37,6 +38,7 @@ export default async function seedWords(): Promise<void> {
 					isVulgar = excluded.isVulgar,
 					CEFR = excluded.CEFR,
 					lemmaId = excluded.lemmaId,
+					form = excluded.form,
 					tense = excluded.tense,
 					gender = excluded.gender,
 					partOfSpeech = excluded.partOfSpeech,
@@ -52,6 +54,7 @@ export default async function seedWords(): Promise<void> {
 					word.isVulgar ? 1 : 0,
 					word.CEFR,
 					word.lemmaId ?? null,
+					word.form ?? null,
 					word.tense ?? null,
 					word.gender ?? null,
 					word.partOfSpeech ?? null,

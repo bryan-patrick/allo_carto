@@ -22,6 +22,7 @@ export interface CardDeck {
 	wordChoices: DeckWordChoice[];
 	place?: string;
 	colors?: DeckColors;
+	story?: string;
 }
 
 /**
@@ -42,6 +43,7 @@ export interface Word {
 	isVulgar: boolean;
 	CEFR: CEFR;
 	lemmaId?: string;
+	form?: string;
 	tense?: string;
 	gender?: 'Feminine' | 'Masculine';
 	partOfSpeech?: string;
