@@ -14,7 +14,7 @@ Pronunciations aren't official, they're just kinda like this:
 - `in` / `ain` / `ein`: `an`
 - `un`: `uhn`
 
-The final `n` usually means do the french nasal sound but idk, it's confusing so we include it a lot anyway. I could use someone to look through them and correct them as needed.
+The final `n` usually means do the french nasal sound but idk, it's confusing so we include it a lot anyway.
 
 ## Style Guide
 
