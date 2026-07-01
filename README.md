@@ -1,12 +1,11 @@
 # Allô Carto
 
-**_Work in progress!_**
-
 ![App preview](preview.jpg)
 
 ## Dev Notes
 
 - May 15, 2026 | Started rebuilding in React Native. I preserved the flutter version under branch `v1-flutter`.
+- June 30, 2026 | Merged the first story into the app. This shifts the application from being a "flashcard" app into something much more progression based, which will be much more fun and useful. im really pretty stoked about how it is turning out!
 
 Pronunciations aren't official, they're just kinda like this:
 
