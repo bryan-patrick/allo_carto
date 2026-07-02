@@ -1,6 +1,6 @@
 import { useCardDeck } from "@/src/components/CardDeck/useCardDeck";
 import LinkButton from "@/src/components/LinkButton";
-import { getDeck } from "@/src/db/interface";
+import { getDeck, getWordRanksById } from "@/src/db/interface";
 import getDeckRankCounts, {
   DeckRankCounts,
   emptyDeckRankCounts,
@@ -9,10 +9,11 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import { Alert, ImageBackground, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
 import { useUserContext } from "../db/useUserContext";
+import type { WordRankKey } from "../util/wordRanks";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import GradientText from "./GradientText";
 
@@ -30,6 +31,8 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
   const user = useUserContext();
   const { cardDeckDispatch } = useCardDeck();
   const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
+  const [wordRankKeyByWordId, setWordRankKeyByWordId] = useState<Record<string, WordRankKey>>({});
+  const [modalVisible, setModalVisible] = useState(false);
   const {
     title,
     description,
@@ -54,17 +57,27 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     titleContainer,
     gradientTextContainer,
     titleStyle,
+    descriptionStyle,
     CEFRGradientStyle,
     CEFRLabelStyle,
     CEFRTextStyle,
-    descriptionStyle,
     imageContainerStyle,
     imageStyle,
     badgeContainerStyle,
     badgeCountContainerStyle,
     badgeCountTextStyle,
     cardFooterStyle,
+    centeredView,
+    modalView,
+    modalTitleStyle,
+    modalTextContentStyle,
+    modalText,
+    buttonOpen,
+    buttonOpenText,
+    buttonClose,
+    buttonCloseText,
   } = styles;
+
 
   useEffect(() => {
     let isCurrent = true;
@@ -94,6 +107,36 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
       isCurrent = false;
     };
   }, [user?.id, deck.wordIds]);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadStoryWordRanks() {
+      try {
+        if (user?.id) {
+          const storyWordRankKeyByWordId = await getWordRanksById({
+            userId: user.id,
+            story: deck.story,
+          });
+
+          if (isCurrent) setWordRankKeyByWordId(storyWordRankKeyByWordId);
+        }
+
+        if (!user?.id && isCurrent) {
+          setWordRankKeyByWordId({});
+        }
+
+      } catch (error) {
+        console.error('Could not retrieve story word ranks:', error);
+      }
+    }
+
+    loadStoryWordRanks();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [user?.id, deck.story]);
 
   /**
    * Handlers
@@ -139,6 +182,94 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               </View>
             </View>
             <Text style={descriptionStyle}>{description}</Text>
+            {
+              /**
+               * Modal
+               */
+            }
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalVisible(!modalVisible);
+              }}>
+              <View style={centeredView}>
+                <View style={modalView}>
+                  <View style={modalTitleStyle}>
+                    <GradientText
+                      colors={[deck.colors?.dark ?? '', deck.colors?.light ?? '']}
+                      fontSize={18}
+                      fontWeight={700}
+                      text={deck.title}
+                    />
+                  </View>
+                  {
+                    /**
+                     * Modal Content
+                     */
+                  }
+                  <Text style={modalTextContentStyle}>
+                    {deck.story && deck.story.map(({ text, wordId, after }, index) => {
+                      const key = `${index}-${wordId ?? text}`;
+                      const spaceMaybeButNotAlways = after ?? ' ';
+                      let rank = wordRankKeyByWordId[wordId ?? '']
+
+                      const wordStyle: any = {
+                        fontSize: 14,
+                        fontWeight: '400',
+                        color: colors.light.rank[rank],
+                      }
+
+                      switch (rank) {
+                        case "fnew":
+                          wordStyle.color = colors.light.rank.fnew;
+                          break;
+                        case "bronze":
+                          wordStyle.fontSize = 18;
+                          wordStyle.fontWeight = '500';
+                          break;
+                        case "silver":
+                          wordStyle.fontSize = 20;
+                          wordStyle.fontWeight = '500';
+                          break;
+                        case "gold":
+                          wordStyle.fontSize = 22;
+                          wordStyle.fontWeight = '700';
+                          break;
+                        case "diamond":
+                          wordStyle.fontSize = 24;
+                          wordStyle.fontWeight = '800';
+                          break;
+                      }
+
+                      return (
+                        <Text
+                          key={key}
+                          style={[modalText, wordStyle]}>{text + spaceMaybeButNotAlways}{spaceMaybeButNotAlways}
+                        </Text>
+                      )
+                    })}
+                  </Text>
+                  {
+                    /**
+                     * Modal Close Button
+                     */
+                  }
+                  <Pressable
+                    style={buttonClose}
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style={buttonCloseText}>Hide Story</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </Modal>
+            <Pressable
+              style={buttonOpen}
+              onPress={() => setModalVisible(true)}>
+              <Text style={buttonOpenText}>Show Story</Text>
+            </Pressable>
           </View>
           <LinearGradient
             start={{ x: 0, y: 0 }}
@@ -183,8 +314,8 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
             </LinkButton>
           </View>
         </View>
-      </View>
-    </View>
+      </View >
+    </View >
   );
 }
 
@@ -239,6 +370,14 @@ const styles = StyleSheet.create({
     fontFamily: 'lexend-700',
     wordWrap: 'wrap',
   },
+  descriptionStyle: {
+    color: colors.dark.text,
+    wordWrap: 'wrap',
+    fontSize: 16,
+    fontFamily: 'lexend-400',
+    padding: 16,
+    paddingTop: 8,
+  },
   CEFRGradientStyle: {
     display: 'flex',
     flexDirection: 'row',
@@ -260,14 +399,6 @@ const styles = StyleSheet.create({
     fontFamily: 'lexend-400',
     fontSize: 14,
     color: colors.dark.text,
-  },
-  descriptionStyle: {
-    color: colors.dark.text,
-    wordWrap: 'wrap',
-    fontSize: 16,
-    fontFamily: 'lexend-400',
-    padding: 16,
-    paddingTop: 8,
   },
   imageContainerStyle: {
   },
@@ -302,5 +433,82 @@ const styles = StyleSheet.create({
     paddingBottom: 22,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
+  },
+  // Modal styles
+  centeredView: {
+    margin: containerMargin,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    position: 'relative',
+    margin: containerMargin,
+    backgroundColor: colors.dark.background,
+    borderColor: colors.light.border,
+    borderRadius: 12,
+    borderWidth: 12,
+    width: '100%',
+    alignItems: 'center',
+    shadowColor: colors.dark.border,
+    shadowOffset: {
+      width: 0,
+      height: 16,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
+    gap: 8,
+  },
+  modalTextContentStyle: {
+    padding: 4
+  },
+  modalTitleStyle: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    backgroundColor: colors.light.background,
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+    padding: 8,
+    width: '100%',
+  },
+  modalText: {
+    textAlign: 'center',
+    color: 'transparent',
+  },
+  buttonOpen: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: 'transparent',
+    borderColor: colors.dark.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: 'center',
+    margin: 16,
+    marginTop: 0,
+    padding: 8,
+  },
+  buttonOpenText: {
+    color: colors.dark.text,
+    fontFamily: 'lexend-600',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  buttonClose: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderColor: colors.light.border,
+    borderWidth: 1,
+    justifyContent: 'center',
+    padding: 10,
+    width: '100%'
+  },
+  buttonCloseText: {
+    color: colors.light.text,
+    fontFamily: 'lexend-600',
+    textAlign: 'center',
+    fontSize: 16,
   },
 })
