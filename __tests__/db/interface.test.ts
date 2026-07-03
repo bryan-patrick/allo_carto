@@ -1,5 +1,5 @@
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
-import { getDeck, getTables } from '@/src/db/interface';
+import { getDeck, getTables, getWordRanksById } from '@/src/db/interface';
 
 const mockGetAllAsync = jest.fn();
 const mockExecAsync = jest.fn();
@@ -97,5 +97,55 @@ describe('getDeck', () => {
 		expect(selectionQuery).toMatch(/COALESCE\(uw\.correctCount, 0\) < 7/);
 		expect(userId).toBe('user_one');
 		expect(wordIds).toEqual(deck.wordIds);
+	});
+
+	test('loads word ranks by id as an object lookup', async () => {
+		mockGetAllAsync.mockResolvedValueOnce([
+			{ wordId: 'word_bronze', correctCount: 3 },
+			{ wordId: 'word_silver', correctCount: 7 },
+		]);
+
+		const rankByWordId = await getWordRanksById({
+			userId: 'user_one',
+			story: [
+				{ text: 'New', wordId: 'word_new' },
+				{ text: 'Bronze', wordId: 'word_bronze' },
+				{ text: 'Silver', wordId: 'word_silver' },
+				{ text: 'Bronze again', wordId: 'word_bronze' },
+				{ text: '.' },
+			],
+		});
+
+		const [rankQuery, userId, ...wordIds] = mockGetAllAsync.mock.calls[0];
+
+		expect(rankQuery).toMatch(/FROM userWords/);
+		expect(rankQuery).toMatch(/wordId IN \([^)]*\)/);
+		expect(userId).toBe('user_one');
+		expect(wordIds).toEqual(['word_new', 'word_bronze', 'word_silver']);
+		expect(rankByWordId).toEqual({
+			word_new: 'fnew',
+			word_bronze: 'bronze',
+			word_silver: 'silver',
+		});
+	});
+
+	test('skips word rank query when there are no word ids', async () => {
+		const rankByWordId = await getWordRanksById({
+			userId: 'user_one',
+			story: [{ text: '.' }],
+		});
+
+		expect(rankByWordId).toEqual({});
+		expect(mockGetAllAsync).not.toHaveBeenCalled();
+	});
+
+	test('returns an empty object when story is undefined', async () => {
+		const rankByWordId = await getWordRanksById({
+			userId: 'user_one',
+			story: undefined,
+		});
+
+		expect(rankByWordId).toEqual({});
+		expect(mockGetAllAsync).not.toHaveBeenCalled();
 	});
 });

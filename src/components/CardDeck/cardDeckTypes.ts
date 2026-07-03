@@ -12,6 +12,12 @@ export interface DeckWordChoice {
 	partOfSpeech?: string;
 }
 
+export interface StorySegment {
+	text: string;
+	wordId?: string;
+	after?: string;
+}
+
 export interface CardDeck {
 	title: string;
 	CEFR: CEFR[];
@@ -22,7 +28,7 @@ export interface CardDeck {
 	wordChoices: DeckWordChoice[];
 	place?: string;
 	colors?: DeckColors;
-	story?: string;
+	story?: StorySegment[];
 }
 
 /**

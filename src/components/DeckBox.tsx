@@ -1,6 +1,6 @@
 import { useCardDeck } from "@/src/components/CardDeck/useCardDeck";
 import LinkButton from "@/src/components/LinkButton";
-import { getDeck } from "@/src/db/interface";
+import { getDeck, getWordRanksById } from "@/src/db/interface";
 import getDeckRankCounts, {
   DeckRankCounts,
   emptyDeckRankCounts,
@@ -9,12 +9,18 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
 import { useUserContext } from "../db/useUserContext";
+import type { WordRankKey } from "../util/wordRanks";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
+import DeckBoxModal from "./DeckBoxModal";
 import GradientText from "./GradientText";
+import SVGArrowUpFromLine from "./SVG/SVGArrowUpFromLine";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /**
  * Typing
@@ -30,6 +36,8 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
   const user = useUserContext();
   const { cardDeckDispatch } = useCardDeck();
   const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
+  const [wordRankKeyByWordId, setWordRankKeyByWordId] = useState<Record<string, WordRankKey>>({});
+  const [modalVisible, setModalVisible] = useState(false);
   const {
     title,
     description,
@@ -54,17 +62,21 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     titleContainer,
     gradientTextContainer,
     titleStyle,
+    descriptionStyle,
     CEFRGradientStyle,
     CEFRLabelStyle,
     CEFRTextStyle,
-    descriptionStyle,
     imageContainerStyle,
     imageStyle,
     badgeContainerStyle,
     badgeCountContainerStyle,
     badgeCountTextStyle,
     cardFooterStyle,
+    buttonOpen,
+    buttonOpenContent,
+    buttonOpenText,
   } = styles;
+
 
   useEffect(() => {
     let isCurrent = true;
@@ -95,6 +107,36 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     };
   }, [user?.id, deck.wordIds]);
 
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadStoryWordRanks() {
+      try {
+        if (user?.id) {
+          const storyWordRankKeyByWordId = await getWordRanksById({
+            userId: user.id,
+            story: deck.story,
+          });
+
+          if (isCurrent) setWordRankKeyByWordId(storyWordRankKeyByWordId);
+        }
+
+        if (!user?.id && isCurrent) {
+          setWordRankKeyByWordId({});
+        }
+
+      } catch (error) {
+        console.error('Could not retrieve story word ranks:', error);
+      }
+    }
+
+    loadStoryWordRanks();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [user?.id, deck.story]);
+
   /**
    * Handlers
    */
@@ -114,6 +156,36 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     user?.id,
     cardDeckDispatch
   ]);
+
+  /**
+   * Animation vars
+   */
+  const storyButtonTranslateY = useSharedValue(0);
+
+  const animatedStoryButtonStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: storyButtonTranslateY.value,
+      },
+    ],
+  }));
+
+  /**
+   * Side effects
+   */
+  function handleStoryPressIn() {
+    storyButtonTranslateY.value = withTiming(-6, {
+      duration: 100,
+      easing: Easing.inOut(Easing.ease),
+    });
+  }
+
+  function handleStoryPressOut() {
+    storyButtonTranslateY.value = withTiming(0, {
+      duration: 140,
+      easing: Easing.out(Easing.ease),
+    });
+  }
 
   /**
    * Render the card grid
@@ -139,6 +211,36 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               </View>
             </View>
             <Text style={descriptionStyle}>{description}</Text>
+            {
+              /**
+               * Modal
+               */
+            }
+            <DeckBoxModal
+              deck={deck}
+              modalVisible={modalVisible}
+              rankCounts={rankCounts}
+              setModalVisible={setModalVisible}
+              wordRankKeyByWordId={wordRankKeyByWordId}
+            />
+            <AnimatedPressable
+              style={[buttonOpen, animatedStoryButtonStyle, {
+                borderColor: deckColors?.light,
+              }]}
+              onPressIn={handleStoryPressIn}
+              onPressOut={handleStoryPressOut}
+              onPress={() => setModalVisible(true)}
+              hitSlop={8}
+            >
+              <View style={[buttonOpenContent]}>
+                <Text style={[buttonOpenText, { color: deckColors?.light }]}>Show Story</Text>
+                <SVGArrowUpFromLine
+                  color={deckColors?.light}
+                  height="20px"
+                  width="20px"
+                />
+              </View>
+            </AnimatedPressable>
           </View>
           <LinearGradient
             start={{ x: 0, y: 0 }}
@@ -183,8 +285,8 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
             </LinkButton>
           </View>
         </View>
-      </View>
-    </View>
+      </View >
+    </View >
   );
 }
 
@@ -203,20 +305,21 @@ const styles = StyleSheet.create({
   cardInnerStyle: {
     backgroundColor: colors.light.background,
     overflow: 'hidden',
-    borderRadius: 18,
-    borderWidth: 4,
+    borderRadius: 24,
+    borderWidth: 8,
     marginRight: 8,
     marginLeft: 8,
-    padding: 8,
+    padding: 4,
     borderColor: colors.light.border,
     boxShadow: `0 20px 0 ${colors.dark.border}`,
   },
   cardBorderInnerStyle: {
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.dark.border
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: colors.light.border,
   },
   cardHeaderStyle: {
+    position: 'relative',
     display: 'flex',
     borderBottomWidth: 1,
     borderRadius: 12,
@@ -238,6 +341,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'lexend-700',
     wordWrap: 'wrap',
+  },
+  descriptionStyle: {
+    color: colors.dark.text,
+    wordWrap: 'wrap',
+    fontSize: 16,
+    fontFamily: 'lexend-400',
+    paddingLeft: 16,
+    paddingRight: 16,
+    marginBottom: 12,
+    paddingTop: 8,
   },
   CEFRGradientStyle: {
     display: 'flex',
@@ -261,20 +374,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.dark.text,
   },
-  descriptionStyle: {
-    color: colors.dark.text,
-    wordWrap: 'wrap',
-    fontSize: 16,
-    fontFamily: 'lexend-400',
-    padding: 16,
-    paddingTop: 8,
-  },
   imageContainerStyle: {
   },
   imageStyle: {
     display: 'flex',
     justifyContent: 'flex-end',
-    height: 160,
+    height: 140,
   },
   badgeContainerStyle: {
     display: 'flex',
@@ -290,7 +395,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4
+    gap: 4,
   },
   badgeCountTextStyle: {
     fontFamily: 'azeret-mono-600',
@@ -302,5 +407,25 @@ const styles = StyleSheet.create({
     paddingBottom: 22,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
+  },
+  buttonOpen: {
+    alignItems: 'center',
+    marginRight: 16,
+    marginLeft: 16,
+    marginBottom: 10,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: colors.dark.border,
+  },
+  buttonOpenContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  buttonOpenText: {
+    color: colors.dark.text,
+    fontFamily: 'lexend-600',
+    textAlign: 'center',
+    fontSize: 16,
   },
 })
