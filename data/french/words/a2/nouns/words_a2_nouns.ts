@@ -514,7 +514,7 @@ export const words_a2_nouns: Word[] = [
 	{
 		id: 'word_noun_hate',
 		frenchWord: 'hâte',
-		englishWords: ['hurry'],
+		englishWords: ['haste', 'eagerness'],
 		isVulgar: false,
 		lemmaId: 'hate',
 		frenchArticle: 'la',
