@@ -3,7 +3,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 /*
  * TODO: curate actual words for this deck
  */
-const dawnDropOff = require('@/src/app/assets/images/decks/dawn-drop-off.jpg');
+const dawnDropOff = require('@/src/app/assets/images/decks/dawn-at-the-drop-off.jpg');
 
 export const DeckDawnAtTheDropOff: CardDeck = {
 	title: 'Dawn at the Drop Off',
@@ -13,8 +13,8 @@ export const DeckDawnAtTheDropOff: CardDeck = {
 	image: dawnDropOff,
 	wordChoices: [],
 	colors: {
-		dark: '#2f0916',
-		light: '#4F1C30',
+		dark: '#33141A',
+		light: '#912741',
 	},
 	story: [
 		{ text: 'Je', wordId: 'word_pronoun_je' },
