@@ -1,4 +1,5 @@
 import { deckAtlas, DeckChapter, DeckPlace } from "@/data/french/deckAtlas";
+import sharedStyles from "@/src/app/sharedStyles";
 import { useLocalSearchParams } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../../app/colors";
@@ -81,14 +82,19 @@ export default function PlaceSelectView() {
 }
 
 /**
+ * Shared styles
+ */
+const { containerMargin } = sharedStyles;
+
+/**
  * Styles
  * TODO: styles
  */
 const styles = StyleSheet.create({
   chapterContainerStyle: {
+    margin: containerMargin,
     display: 'flex',
     gap: 24,
-    padding: 16,
   },
   chapterTitleContainerStyle: {
     gap: 4,
@@ -107,10 +113,8 @@ const styles = StyleSheet.create({
   },
   placeContainerStyle: {
     display: 'flex',
-    borderWidth: 4,
-    borderRadius: 24,
-    padding: 4,
-    borderColor: colors.dark.border,
+    borderRadius: 16,
+    padding: 8,
     backgroundColor: colors.light.background
   },
   placeImageStyle: {
