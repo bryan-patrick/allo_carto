@@ -3,6 +3,7 @@ import { memo } from "react";
 import { type LayoutChangeEvent, StyleSheet, Text, type TextStyle, View, type ViewStyle } from "react-native";
 import type { AnimatedStyle } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
+import formatFrenchWordWithArticle from "../../util/formatFrenchWordWithArticle";
 import { useCardDeck } from "../CardDeck/useCardDeck";
 import { sharedWordCardStyles } from "./sharedWordCardStyles";
 import { useWordCardUI } from "./useWordCardUI";
@@ -74,6 +75,10 @@ const WordCardFront = memo(function WordCardFrontMemo({
   */
   const displayedArticle = cardState.selectedArticle ?? englishArticle;
   const displayedWord = cardState.selectedWord ?? englishWords[0];
+  const displayedFrenchWord = formatFrenchWordWithArticle({
+    article: frenchArticle,
+    word: frenchWord,
+  });
   const articleClass = { color: cardState.selectedArticle ? colors.dark.text : 'transparent' };
   const wordClass = { color: cardState.selectedWord ? colors.dark.text : 'transparent' };
 
@@ -88,7 +93,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
     ]}>
       <WordCardHeader />
       <View style={cardMain}>
-        <Text style={wordId}>{frenchArticle}&nbsp;{frenchWord}</Text>
+        <Text style={wordId}>{displayedFrenchWord}</Text>
         <Text style={wordPronunciation}>({pronunciation})</Text>
       </View>
       <View style={answerSlotContainer}>
