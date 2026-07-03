@@ -35,6 +35,7 @@ const colors = {
 		secondary: '#E09FAD',
 		text: '#F7F7F7',
 		background: '#ACC3BB',
+		lighterBackground: '#BED0CA',
 		border: '#465B5D',
 		secondaryBorder: '#6B474B',
 		success: '#DDFFD6',

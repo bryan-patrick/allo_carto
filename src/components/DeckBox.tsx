@@ -161,11 +161,20 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
    * Animation vars
    */
   const storyButtonTranslateY = useSharedValue(0);
+  const storyButtonIconTranslateY = useSharedValue(0);
 
   const animatedStoryButtonStyle = useAnimatedStyle(() => ({
     transform: [
       {
         translateY: storyButtonTranslateY.value,
+      },
+    ],
+  }));
+
+  const animatedStoryButtonIconStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: storyButtonIconTranslateY.value,
       },
     ],
   }));
@@ -178,10 +187,18 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
       duration: 100,
       easing: Easing.inOut(Easing.ease),
     });
+    storyButtonIconTranslateY.value = withTiming(-4, {
+      duration: 100,
+      easing: Easing.inOut(Easing.ease),
+    });
   }
 
   function handleStoryPressOut() {
     storyButtonTranslateY.value = withTiming(0, {
+      duration: 140,
+      easing: Easing.out(Easing.ease),
+    });
+    storyButtonIconTranslateY.value = withTiming(0, {
       duration: 140,
       easing: Easing.out(Easing.ease),
     });
@@ -225,20 +242,22 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
             />
             <AnimatedPressable
               style={[buttonOpen, animatedStoryButtonStyle, {
-                borderColor: deckColors?.light,
+                borderColor: deckColors?.dark,
               }]}
               onPressIn={handleStoryPressIn}
               onPressOut={handleStoryPressOut}
               onPress={() => setModalVisible(true)}
-              hitSlop={8}
+              hitSlop={4}
             >
-              <View style={[buttonOpenContent]}>
-                <Text style={[buttonOpenText, { color: deckColors?.light }]}>Show Story</Text>
-                <SVGArrowUpFromLine
-                  color={deckColors?.light}
-                  height="20px"
-                  width="20px"
-                />
+              <View style={buttonOpenContent}>
+                <Text style={[buttonOpenText, { color: deckColors?.dark }]}>Show Story</Text>
+                <Animated.View style={animatedStoryButtonIconStyle}>
+                  <SVGArrowUpFromLine
+                    color={deckColors?.dark}
+                    height="20px"
+                    width="20px"
+                  />
+                </Animated.View>
               </View>
             </AnimatedPressable>
           </View>
@@ -410,12 +429,11 @@ const styles = StyleSheet.create({
   },
   buttonOpen: {
     alignItems: 'center',
-    marginRight: 16,
-    marginLeft: 16,
-    marginBottom: 10,
     padding: 4,
-    borderWidth: 1,
+    borderTopWidth: 1,
+    backgroundColor: colors.light.lighterBackground,
     borderColor: colors.dark.border,
+    shadowColor: colors.light.border,
   },
   buttonOpenContent: {
     alignItems: 'center',
