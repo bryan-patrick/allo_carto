@@ -1,5 +1,7 @@
 import colors from "@/src/app/colors";
 import sharedStyles from "@/src/app/sharedStyles";
+import { incrementSeenCount } from "@/src/db/queries/incrementSeenCount";
+import { useUserContext } from "@/src/db/useUserContext";
 import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
@@ -7,9 +9,9 @@ import { englishArticles } from "../../util/filterFillerWords";
 import getFillerWords from "../../util/getFillerWords";
 import { type Word } from "../CardDeck/cardDeckTypes";
 import { useCardDeck } from "../CardDeck/useCardDeck";
+import SVGRightArrow from "../SVG/SVGRightArrow";
 import WordCard from "./WordCard";
 import WordCardButton from "./WordCardButton";
-import SVGRightArrow from "../SVG/SVGRightArrow";
 import { initialWordCardState, WordCardUIContext } from "./wordCardContext";
 import WordCardSelection from "./WordCardSelection";
 import { wordCardUIReducer } from "./wordCardUIReducer";
@@ -48,10 +50,12 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   /**
    * State
    */
+  const user = useUserContext();
   const { cardDeckState } = useCardDeck();
   const [fillerWords, setFillerWords] = useState<string[]>([]);
   const [articleWords, setArticleWords] = useState<string[]>([]);
   const loadedWordId = useRef<string | null>(null);
+  const seenWordId = useRef<string | null>(null);
   const [cardState, wordCardUIDispatch] = useReducer(
     wordCardUIReducer,
     initialWordCardState,
@@ -67,6 +71,25 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   const nextCardArrowColor = cardState.progress === 'SUCCESS'
     ? colors.dark.text
     : colors.light.text;
+
+  /**
+   * Increment the seen count when a card becomes current.
+   */
+  useEffect(() => {
+    async function markWordSeen() {
+      if (!user?.id || !isCurrent) return;
+      if (seenWordId.current === word.id) return;
+
+      seenWordId.current = word.id;
+      await incrementSeenCount(user.id, word.id);
+    }
+
+    markWordSeen();
+  }, [
+    isCurrent,
+    user?.id,
+    word.id,
+  ]);
 
   /**
     * Side effects
@@ -158,6 +181,9 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
     }
   }, [isCurrent, currentPosition, currentOpacity]);
 
+  /**
+   * Render the WordCard container
+   */
   return (
     <WordCardUIContext.Provider value={{ cardState, wordCardUIDispatch }}>
       <Animated.View style={[
@@ -177,7 +203,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
               height="24"
               width="24"
             />
-          ) : undefined}
+          ) : <></>}
         >
           {isNextCardButton ? 'Next card' : 'Check'}
         </WordCardButton>

@@ -100,9 +100,9 @@ export default function WordRank() {
    */
   useEffect(() => {
     if (currentCard.correctCount !== currentScore) {
-      translateY.value = withDelay(370,
+      translateY.value = withDelay(400,
         withSpring(-44, {
-          stiffness: 700,
+          stiffness: 400,
           damping: 20,
           mass: 1,
         })

@@ -1,6 +1,6 @@
 import { useCardDeck } from "@/src/components/CardDeck/useCardDeck";
 import LinkButton from "@/src/components/LinkButton";
-import { getDeck, getWordRanksById } from "@/src/db/interface";
+import { getDeck, getWordProgressById } from "@/src/db/interface";
 import getDeckRankCounts, {
   DeckRankCounts,
   emptyDeckRankCounts,
@@ -14,7 +14,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from '
 import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
 import { useUserContext } from "../db/useUserContext";
-import type { WordRankKey } from "../util/wordRanks";
+import type { WordProgressKey } from "../util/wordRanks";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import DeckBoxModal from "./DeckBoxModal";
 import GradientText from "./GradientText";
@@ -22,7 +22,12 @@ import SVGArrowUpFromLine from "./SVG/SVGArrowUpFromLine";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const plopStyleByRank: Record<WordRankKey, ViewStyle> = {
+const plopStyleByProgress: Record<WordProgressKey, ViewStyle> = {
+  unseen: {
+    backgroundColor: 'transparent',
+    borderColor: colors.dark.border,
+    opacity: 0.35,
+  },
   fnew: {
     backgroundColor: colors.light.rank.fnew,
     borderColor: colors.dark.rank.fnew,
@@ -64,7 +69,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
   const user = useUserContext();
   const { cardDeckDispatch } = useCardDeck();
   const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
-  const [wordRankKeyByWordId, setWordRankKeyByWordId] = useState<Record<string, WordRankKey>>({});
+  const [wordProgressKeyByWordId, setWordProgressKeyByWordId] = useState<Record<string, WordProgressKey>>({});
   const [modalVisible, setModalVisible] = useState(false);
 
   /**
@@ -144,22 +149,22 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     }
   }, [user?.id, deck.wordIds]);
 
-  const loadStoryWordRanks = useCallback(async () => {
+  const loadStoryWordProgress = useCallback(async () => {
     try {
       if (user?.id) {
-        const storyWordRankKeyByWordId = await getWordRanksById({
+        const storyWordProgressKeyByWordId = await getWordProgressById({
           userId: user.id,
           story: deck.story,
         });
 
-        setWordRankKeyByWordId(storyWordRankKeyByWordId);
+        setWordProgressKeyByWordId(storyWordProgressKeyByWordId);
         return;
       }
 
-      setWordRankKeyByWordId({});
+      setWordProgressKeyByWordId({});
 
     } catch (error) {
-      console.error('Could not retrieve story word ranks:', error);
+      console.error('Could not retrieve story word progress:', error);
     }
   }, [user?.id, deck.story]);
 
@@ -171,10 +176,10 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
   useFocusEffect(
     useCallback(() => {
       loadRankCounts();
-      loadStoryWordRanks();
+      loadStoryWordProgress();
     }, [
       loadRankCounts,
-      loadStoryWordRanks,
+      loadStoryWordProgress,
     ])
   );
 
@@ -251,7 +256,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
   async function handleShowStory() {
     await Promise.all([
       loadRankCounts(),
-      loadStoryWordRanks(),
+      loadStoryWordProgress(),
     ]);
 
     setModalVisible(true);
@@ -291,7 +296,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               modalVisible={modalVisible}
               rankCounts={rankCounts}
               setModalVisible={setModalVisible}
-              wordRankKeyByWordId={wordRankKeyByWordId}
+              wordProgressKeyByWordId={wordProgressKeyByWordId}
             />
             <AnimatedPressable
               style={[buttonOpen, animatedStoryButtonStyle, {
@@ -323,12 +328,12 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               <View style={storyProgressStyle}>
                 <View style={plopContainerStyle}>
                   {deck.story?.map(({ wordId, text }, index) => {
-                    const rank = wordRankKeyByWordId[wordId ?? ''] ?? 'fnew';
+                    const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
 
                     return (
                       <View
                         key={`plop-${index}-${wordId}-${text}`}
-                        style={[plopStyle, plopStyleByRank[rank]]}
+                        style={[plopStyle, plopStyleByProgress[progress]]}
                       />
                     )
                   })}
