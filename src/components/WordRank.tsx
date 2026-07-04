@@ -102,8 +102,8 @@ export default function WordRank() {
     if (currentCard.correctCount !== currentScore) {
       translateY.value = withDelay(400,
         withSpring(-44, {
-          stiffness: 400,
-          damping: 20,
+          stiffness: 1200,
+          damping: 30,
           mass: 1,
         })
       );
