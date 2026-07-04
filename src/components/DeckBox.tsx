@@ -471,7 +471,7 @@ const styles = StyleSheet.create({
     fontFamily: 'lexend-400',
     paddingLeft: 16,
     paddingRight: 16,
-    marginBottom: 12,
+    marginBottom: 16,
     paddingTop: 8,
   },
   CEFRGradientStyle: {

@@ -57,9 +57,13 @@ export default function CardDeckRankSelectView() {
    * Styles
    */
   const {
+    rankSelectContainerStyle,
     rankSelectTitleText,
     innerCardStyle,
     titleRowStyle,
+    selectFlexStyle,
+    selectContainerStyle,
+    deckDescriptionStyle,
     rankButtonContainer,
     rankLockOverlayStyle,
   } = styles;
@@ -121,11 +125,6 @@ export default function CardDeckRankSelectView() {
     user?.id
   ]);
 
-  const {
-    selectContainerStyle,
-    rankSelectContainerStyle
-  } = styles;
-
   const { colors: deckColors, title } = cardDeckState.cardDeck;
   const gradientDark = deckColors?.dark ?? '#000000';
   const gradientLight = deckColors?.light ?? '#ffffff';
@@ -135,82 +134,85 @@ export default function CardDeckRankSelectView() {
    * Render the view
    */
   return (
-    <View style={selectContainerStyle}>
-      <View style={innerCardStyle}>
-        <View style={titleRowStyle}>
-          <Text style={rankSelectTitleText}>Select the deck rank for</Text>
-          <GradientText
-            colors={[gradientDark, gradientLight]}
-            fontSize={20}
-            text={title}
-            fontWeight={700}
-          />
-        </View>
-        <View style={rankButtonContainer}>
-          {
-            wordRankDefinitions.map((item: WordRankDefinition) => {
-              /**
-               * Rank vars
-               */
-              const { key, name } = item;
-              const rankCount = rankCounts[key];
-              const rankSelectionState = getDeckRankSelectionState({
-                deckWordCount,
-                rankCounts,
-                rankKey: key,
-              });
-              const isRankComplete = rankSelectionState === 'complete';
-              const isRankLocked = rankSelectionState === 'locked';
-              const isRankAvailable = rankSelectionState === 'available';
-              const isRankButtonDisabled = !isRankAvailable;
+    <View style={selectFlexStyle}>
+      <View style={selectContainerStyle}>
+        <View style={innerCardStyle}>
+          <View style={titleRowStyle}>
+            <Text style={rankSelectTitleText}>Select the deck rank for</Text>
+            <GradientText
+              colors={[gradientDark, gradientLight]}
+              fontSize={20}
+              text={title}
+              fontWeight={700}
+            />
+          </View>
+          <Text style={deckDescriptionStyle}>Get 20 words to the next rank to unlock it early. Finish a rank to unlock more!</Text>
+          <View style={rankButtonContainer}>
+            {
+              wordRankDefinitions.map((item: WordRankDefinition) => {
+                /**
+                 * Rank vars
+                 */
+                const { key, name } = item;
+                const rankCount = rankCounts[key];
+                const rankSelectionState = getDeckRankSelectionState({
+                  deckWordCount,
+                  rankCounts,
+                  rankKey: key,
+                });
+                const isRankComplete = rankSelectionState === 'complete';
+                const isRankLocked = rankSelectionState === 'locked';
+                const isRankAvailable = rankSelectionState === 'available';
+                const isRankButtonDisabled = !isRankAvailable;
 
-              /**
-               * Rank styles
-               */
-              const rankButtonStyle = {
-                backgroundColor: colors.light.rank[key],
-                padding: 8,
-                gap: 4
-              }
+                /**
+                 * Rank styles
+                 */
+                const rankButtonStyle = {
+                  backgroundColor: colors.light.rank[key],
+                  padding: 8,
+                  gap: 4
+                }
 
-              const rankButtonTextStyle = {
-                color: colors.dark.text
-              }
+                const rankButtonTextStyle = {
+                  color: colors.dark.text
+                }
 
-              /**
-               * Select container
-               */
-              return (
-                <View key={key} style={rankSelectContainerStyle}>
-                  <LockOverlay
-                    completeAccessibilityHint={`No cards remain in ${name}.`}
-                    completeAccessibilityLabel={`${name} rank complete`}
-                    isComplete={isRankComplete}
-                    isLocked={isRankLocked}
-                    lockedAccessibilityHint={getLockedAccessibilityHint({
-                      deckWordCount,
-                      rankCounts,
-                      rankKey: key,
-                      rankName: name,
-                    })}
-                    lockedAccessibilityLabel={`${name} rank locked`}
-                    overlayStyle={rankLockOverlayStyle}
-                  >
-                    <LinkButton
-                      handler={() => handleLevelSelect(key)}
-                      style={rankButtonStyle}
-                      arrowColor={colors.dark.text}
-                      useArrow={false}
-                      disabled={isRankButtonDisabled}
-                      SVGElement={<RankIcon size={32} rank={key} color={colors.dark.rank[key]} />}
+                /**
+                 * Select container
+                 */
+                return (
+                  <View key={key} style={rankSelectContainerStyle}>
+                    <LockOverlay
+                      completeAccessibilityHint={`No cards remain in ${name}.`}
+                      completeAccessibilityLabel={`${name} rank complete`}
+                      isComplete={isRankComplete}
+                      isLocked={isRankLocked}
+                      lockedAccessibilityHint={getLockedAccessibilityHint({
+                        deckWordCount,
+                        rankCounts,
+                        rankKey: key,
+                        rankName: name,
+                      })}
+                      lockedAccessibilityLabel={`${name} rank locked`}
+                      overlayStyle={rankLockOverlayStyle}
                     >
-                      <Text style={rankButtonTextStyle}>{name} ({rankCount})</Text>
-                    </LinkButton>
-                  </LockOverlay>
-                </View>
-              )
-            })
-          }
+                      <LinkButton
+                        handler={() => handleLevelSelect(key)}
+                        style={rankButtonStyle}
+                        arrowColor={colors.dark.text}
+                        useArrow={false}
+                        disabled={isRankButtonDisabled}
+                        SVGElement={<RankIcon size={32} rank={key} color={colors.dark.rank[key]} />}
+                      >
+                        <Text style={rankButtonTextStyle}>{name} ({rankCount})</Text>
+                      </LinkButton>
+                    </LockOverlay>
+                  </View>
+                )
+              })
+            }
+          </View>
         </View>
       </View>
     </View>
@@ -226,21 +228,32 @@ const { containerMargin } = sharedStyles
  * Styles
  */
 const styles = StyleSheet.create({
+  selectFlexStyle: {
+    display: 'flex',
+    alignContent: 'center',
+    justifyContent: 'center',
+    flexGrow: 1
+  },
   selectContainerStyle: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    margin: containerMargin,
+    marginHorizontal: containerMargin,
     borderColor: colors.dark.border,
-    backgroundColor: colors.light.border,
     overflow: 'hidden',
     borderWidth: 4,
     borderRadius: 16,
   },
   rankSelectTitleText: {
     fontSize: 16,
-    fontWeight: 500,
+    fontFamily: 'lexend-400',
     textAlign: 'center',
+  },
+  deckDescriptionStyle: {
+    fontSize: 14,
+    fontFamily: 'lexend-400',
+    textAlign: 'center',
+    paddingBottom: 8
   },
   titleRowStyle: {
     display: 'flex',
@@ -256,7 +269,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.background,
     flexWrap: 'wrap',
     padding: 32,
-    gap: 32
+    gap: 8
   },
   rankButtonContainer: {
     display: 'flex',
