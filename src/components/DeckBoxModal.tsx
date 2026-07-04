@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 12,
     borderTopWidth: 12,
     borderRadius: 12,
-    backgroundColor: colors.light.lighterBackground,
+    backgroundColor: colors.light.background,
     borderColor: colors.light.background,
     shadowColor: colors.light.border,
     shadowOffset: {
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    backgroundColor: colors.light.lighterBackground,
+    backgroundColor: colors.light.background,
     paddingTop: 8,
     borderWidth: 2,
     borderBottomWidth: 0,
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   modalHeaderStyle: {
-    backgroundColor: colors.light.lighterBackground,
+    backgroundColor: colors.light.background,
     borderColor: colors.light.background,
     padding: 8,
     gap: 4,
@@ -329,6 +329,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   modalText: {
+    color: colors.light.text,
+    fontFamily: 'lexend-400',
+    fontSize: 16,
+    lineHeight: 32,
     textAlign: 'left',
   },
   buttonCloseContainer: {
@@ -339,7 +343,7 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     alignItems: 'center',
-    backgroundColor: colors.light.lighterBackground,
+    backgroundColor: colors.light.background,
     justifyContent: 'center',
     padding: 16,
     borderWidth: 2,

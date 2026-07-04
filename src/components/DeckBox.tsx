@@ -111,6 +111,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     cardFooterStyle,
     buttonOpen,
     buttonOpenContent,
+    buttonOpenTitleStyle,
     buttonOpenText,
     storyProgressStyle,
     storyProgressTextStyle,
@@ -308,17 +309,19 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               hitSlop={4}
             >
               <View style={buttonOpenContent}>
-                <Text style={[buttonOpenText, { color: deckColors?.dark }]}>Show Story</Text>
+                <View style={buttonOpenTitleStyle}>
+                  <Text style={[buttonOpenText, { color: deckColors?.dark }]}>Show Story</Text>
+                  <Animated.View style={animatedStoryButtonIconStyle}>
+                    <SVGArrowUpFromLine
+                      color={deckColors?.dark}
+                      height="18px"
+                      width="18px"
+                    />
+                  </Animated.View>
+                </View>
                 <Text style={[storyProgressTextStyle, { color: deckColors?.dark }]}>
                   ({deckCompletionPercent}%)
                 </Text>
-                <Animated.View style={animatedStoryButtonIconStyle}>
-                  <SVGArrowUpFromLine
-                    color={deckColors?.dark}
-                    height="20px"
-                    width="20px"
-                  />
-                </Animated.View>
               </View>
               {
                 /**
@@ -530,30 +533,41 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 8,
   },
   buttonOpen: {
-    alignItems: 'center',
-    paddingVertical: 4,
-    gap: 2,
+    alignItems: 'flex-start',
     borderTopWidth: 1,
-    backgroundColor: colors.light.lighterBackground,
+    backgroundColor: colors.light.background,
     borderColor: colors.dark.border,
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8
   },
   buttonOpenContent: {
+    display: 'flex',
     alignItems: 'center',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
     gap: 4,
+  },
+  buttonOpenTitleStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4
   },
   buttonOpenText: {
     color: colors.dark.text,
     fontFamily: 'lexend-600',
-    textAlign: 'center',
     fontSize: 16,
+  },
+  storyProgressContainerStyle: {
+    backgroundColor: colors.dark.primary
   },
   storyProgressStyle: {
     alignItems: 'center',
     borderColor: colors.dark.border,
-    backgroundColor: colors.light.lighterBackground,
+    backgroundColor: colors.light.background,
     flexDirection: 'row',
-    paddingHorizontal: 16,
   },
   storyProgressTextStyle: {
     fontFamily: 'azeret-mono-600',
@@ -569,6 +583,5 @@ const styles = StyleSheet.create({
     width: 8,
     height: 4,
     borderWidth: 1,
-    borderRadius: 1
   },
 })
