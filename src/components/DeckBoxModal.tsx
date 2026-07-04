@@ -184,28 +184,24 @@ export default function DeckBoxModal({
                   textShadowOffset: { width: 0, height: 0 },
                   textShadowRadius: 0,
                   fontFamily: 'lexend-400',
+                  opacity: 1,
                   lineHeight: 24
                 }
 
                 switch (progress) {
                   case "unseen":
-                    wordStyle.opacity = 0.16;
+                    wordStyle.opacity = 0;
                     break;
-                  case "fnew":
-                    wordStyle.opacity = 0.3;
-                    break;
-                  case "bronze":
-                    wordStyle.opacity = 0.6;
-                    break;
-                  case "silver":
-                    wordStyle.opacity = 1;
-                    break;
+                  // case "fnew":
+                  //   break;
+                  // case "bronze":
+                  //   break;
+                  // case "silver":
+                  //   break;
                   case "gold":
-                    wordStyle.opacity = 1;
                     wordStyle.textShadowRadius = 8;
                     break;
                   case "diamond":
-                    wordStyle.opacity = 1;
                     wordStyle.textShadowRadius = 16;
                     break;
                 }
