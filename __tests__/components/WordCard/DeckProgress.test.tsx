@@ -74,4 +74,48 @@ describe('<DeckProgress />', () => {
     expect(currentBlipStyle.shadowRadius).toBe(16);
     expect(currentBlipStyle.shadowOpacity).toBe(0);
   });
+
+  test('fills a correct word before moving to the next card', () => {
+    const words = [
+      {
+        id: 'word_fnew',
+        frenchWord: 'bonjour',
+        englishWords: ['hello'],
+        pronunciation: 'bohn-zhoor',
+        isVulgar: false,
+        CEFR: 'A1' as const,
+        correctCount: 0,
+      },
+      {
+        id: 'word_gold_current',
+        frenchWord: 'chat',
+        englishWords: ['cat'],
+        pronunciation: 'shah',
+        isVulgar: false,
+        CEFR: 'A1' as const,
+        correctCount: 12,
+        rarity: 'Epic' as const,
+      },
+    ];
+
+    mockUseCardDeck.mockReturnValue({
+      cardDeckState: makeMockCardDeckState({
+        currentIndex: 1,
+        cardDeck: makeMockCardDeck({ words }),
+        correctWords: [words[1]],
+      }),
+      cardDeckDispatch: jest.fn(),
+      currentCard: words[1],
+    });
+
+    const { getByTestId } = render(<DeckProgress />);
+    const currentBlipStyle = StyleSheet.flatten(
+      getByTestId('progress-blip-word_gold_current').props.style,
+    );
+
+    expect(currentBlipStyle.backgroundColor).toBe(colors.rarity.Epic);
+    expect(currentBlipStyle.borderColor).toBe(colors.rarity.Epic);
+    expect(currentBlipStyle.opacity).toBe(1);
+    expect(currentBlipStyle.shadowOpacity).toBe(1);
+  });
 });

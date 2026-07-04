@@ -26,7 +26,7 @@ export default function DeckProgress() {
   /**
    * Destructuring
    */
-  const { cardDeck: currentCardDeck, currentIndex, incorrectWords } = cardDeckState;
+  const { cardDeck: currentCardDeck, currentIndex, correctWords, incorrectWords } = cardDeckState;
   const { words } = currentCardDeck;
   const {
     deckProgressContainerStyle,
@@ -40,6 +40,7 @@ export default function DeckProgress() {
    */
   const totalCards = words.length;
   const currentCard = currentIndex + 1;
+  const correctWordIds: Set<string> = new Set(correctWords.map(word => word.id));
   const incorrectWordIds: Set<string> = new Set(incorrectWords.map(word => word.id));
 
   /**
@@ -56,10 +57,11 @@ export default function DeckProgress() {
           words.map((word: Word, index: number) => {
             const rarity: CardRarity = word.rarity ?? 'Common';
             const rarityColor: string = colors.rarity[rarity];
+            const isCorrect: boolean = correctWordIds.has(word.id);
             const isIncorrect: boolean = incorrectWordIds.has(word.id);
             const isCompleted: boolean = index + 1 < currentCard;
             const isCurrent: boolean = index + 1 === currentCard;
-            const isFilled: boolean = isCompleted || isIncorrect;
+            const isFilled: boolean = isCompleted || isCorrect || isIncorrect;
             const blipColor: string = isIncorrect ? colors.light.danger : rarityColor;
             const glowRadius: number = glowRadiusByRarity[rarity];
 
