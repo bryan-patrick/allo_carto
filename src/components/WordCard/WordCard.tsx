@@ -59,7 +59,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
   const articleWidth = useSharedValue(0);
   const wordWidth = useSharedValue(0);
   const flipDegrees = useSharedValue(0);
-  const flipDuration = useSharedValue(500);
+  const flipDuration = useSharedValue(400);
 
   /**
    * Animation timing functions

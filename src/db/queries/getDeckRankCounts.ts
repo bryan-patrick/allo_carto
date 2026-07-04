@@ -1,7 +1,9 @@
 import { getDB } from '../connection';
 import { getWordRankSqlCountSelect, WordRankKey } from '../../util/wordRanks';
 
-export type DeckRankCounts = Record<WordRankKey, number>;
+export type DeckRankCounts = Record<WordRankKey, number> & {
+	seen: number;
+};
 
 interface GetDeckRankCountsProps {
 	userId: string;
@@ -9,6 +11,7 @@ interface GetDeckRankCountsProps {
 }
 
 export const emptyDeckRankCounts: DeckRankCounts = {
+	seen: 0,
 	fnew: 0,
 	bronze: 0,
 	silver: 0,
@@ -30,10 +33,21 @@ export default async function getDeckRankCounts({
 	const database = await getDB();
 	const quests = wordIds.map(() => '?').join(',');
 	const rankCountSelect = getWordRankSqlCountSelect('uw.correctCount');
+	const seenCountSelect = `
+		SUM(
+			CASE
+				WHEN COALESCE(uw.seenCount, 0) > 0
+					OR COALESCE(uw.correctCount, 0) > 0
+				THEN 1
+				ELSE 0
+			END
+		) AS seen
+	`;
 
 	const row = await database.getFirstAsync<DeckRankCounts>(
 		`
 		SELECT
+			${seenCountSelect},
 			${rankCountSelect}
 		FROM words AS w
 		LEFT JOIN userWords AS uw

@@ -1,7 +1,7 @@
 import { getDB } from '../connection';
 
 /**
- * Increments the correct count row on the userWords table
+ * Increments the seen count row on the userWords table
  */
 export async function incrementSeenCount(userId: string, wordId: string) {
 	const database = await getDB();

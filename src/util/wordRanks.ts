@@ -2,6 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { ComponentProps } from 'react';
 
 export type WordRankKey = 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond';
+export type WordProgressKey = 'unseen' | WordRankKey;
 
 export interface WordRankDefinition {
 	key: WordRankKey;

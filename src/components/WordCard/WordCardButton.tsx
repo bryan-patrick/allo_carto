@@ -8,7 +8,7 @@ import {
   NotificationFeedbackType,
 } from 'expo-haptics';
 import { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { Pressable, PressableProps, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
+import { Pressable, PressableProps, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import { useWordCardUI } from './useWordCardUI';
@@ -50,6 +50,7 @@ export default function WordCardButton({
     pressableStyles,
     successPressable,
     disabledPressable,
+    textRow,
     textStyles,
     successText,
     disabledText,
@@ -221,15 +222,17 @@ export default function WordCardButton({
           isDisabled && disabledPressable
         ]}
       >
-        {SVGElement}
-        <Text
-          style={[
-            textStyles,
-            textStateStyle,
-            isDisabled && disabledText
-          ]}>
-          {children}
-        </Text>
+        <View style={textRow}>
+          <Text
+            style={[
+              textStyles,
+              textStateStyle,
+              isDisabled && disabledText
+            ]}>
+            {children}
+          </Text>
+          {SVGElement}
+        </View>
       </AnimatedPressable>
     </Animated.View>
   );
@@ -269,6 +272,11 @@ const wordCardButtonStyles = StyleSheet.create({
     backgroundColor: colors.dark.border,
     top: 6,
     shadowColor: 'transparent',
+  },
+  textRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
   },
   successText: {
     color: colors.dark.text
