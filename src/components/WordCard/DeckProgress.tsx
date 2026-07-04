@@ -71,7 +71,7 @@ export default function DeckProgress() {
             const dynamicBlipStyle: ViewStyle = {
               borderColor: blipColor,
               backgroundColor: isFilled ? blipColor : 'transparent',
-              opacity: isFilled || isCurrent ? 1 : 0.15,
+              opacity: isFilled || isCurrent ? 1 : 0.5,
               shadowColor: blipColor,
               shadowOffset: { width: 0, height: 0 },
               shadowOpacity: isFilled && glowRadius ? 1 : 0,
