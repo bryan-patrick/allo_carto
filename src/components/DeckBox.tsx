@@ -9,7 +9,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
-import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
+import { ImageBackground, Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
@@ -21,6 +21,34 @@ import GradientText from "./GradientText";
 import SVGArrowUpFromLine from "./SVG/SVGArrowUpFromLine";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+const plopStyleByRank: Record<WordRankKey, ViewStyle> = {
+  fnew: {
+    backgroundColor: colors.light.rank.fnew,
+    borderColor: colors.dark.rank.fnew,
+    opacity: 0.2,
+  },
+  bronze: {
+    backgroundColor: colors.light.rank.bronze,
+    borderColor: colors.dark.rank.bronze,
+    opacity: 0.75,
+  },
+  silver: {
+    backgroundColor: colors.light.rank.silver,
+    borderColor: colors.dark.rank.silver,
+    opacity: 0.85,
+  },
+  gold: {
+    backgroundColor: colors.light.rank.gold,
+    borderColor: colors.dark.rank.gold,
+    opacity: 0.95,
+  },
+  diamond: {
+    backgroundColor: colors.light.rank.diamond,
+    borderColor: colors.dark.rank.diamond,
+    opacity: 1,
+  },
+};
 
 /**
  * Typing
@@ -79,7 +107,20 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     buttonOpen,
     buttonOpenContent,
     buttonOpenText,
+    storyProgressStyle,
+    storyProgressTextStyle,
+    plopContainerStyle,
+    plopStyle,
   } = styles;
+
+  /**
+   * Deck completion
+   */
+  const deckCompletionTotal = deck.wordIds.length * 4;
+  const deckCompletionCount = rankCounts.bronze + (rankCounts.silver * 2) + (rankCounts.gold * 3) + (rankCounts.diamond * 4);
+  const deckCompletionPercent = deckCompletionTotal === 0
+    ? 0
+    : Math.round((deckCompletionCount / deckCompletionTotal) * 100);
 
   /**
    * Data loaders
@@ -291,6 +332,28 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
                 </Animated.View>
               </View>
             </AnimatedPressable>
+            {
+              /**
+               * Story Progress
+               */
+            }
+            <View style={storyProgressStyle}>
+              <Text style={[storyProgressTextStyle, { color: deckColors?.dark }]}>
+                {deckCompletionPercent}%
+              </Text>
+              <View style={plopContainerStyle}>
+                {deck.story?.map(({ wordId, text }, index) => {
+                  const rank = wordRankKeyByWordId[wordId ?? ''] ?? 'fnew';
+
+                  return (
+                    <View
+                      key={`plop-${index}-${wordId}-${text}`}
+                      style={[plopStyle, plopStyleByRank[rank]]}
+                    />
+                  )
+                })}
+              </View>
+            </View>
           </View>
           {
             /**
@@ -480,7 +543,7 @@ const styles = StyleSheet.create({
   },
   buttonOpen: {
     alignItems: 'center',
-    padding: 4,
+    padding: 8,
     borderTopWidth: 1,
     backgroundColor: colors.light.lighterBackground,
     borderColor: colors.dark.border,
@@ -496,5 +559,31 @@ const styles = StyleSheet.create({
     fontFamily: 'lexend-600',
     textAlign: 'center',
     fontSize: 16,
+  },
+  storyProgressStyle: {
+    alignItems: 'center',
+    borderColor: colors.light.border,
+    backgroundColor: colors.light.lighterBackground,
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingTop: 0,
+    paddingBottom: 4,
+    gap: 8,
+  },
+  storyProgressTextStyle: {
+    fontFamily: 'azeret-mono-600',
+    fontSize: 14,
+  },
+  plopContainerStyle: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 2,
+  },
+  plopStyle: {
+    width: 6,
+    height: 4,
+    borderRadius: 2,
+    borderWidth: 1,
   },
 })
