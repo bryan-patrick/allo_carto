@@ -6,6 +6,7 @@ import { englishArticles } from "../../util/filterFillerWords";
 import getFillerWords from "../../util/getFillerWords";
 import { type Word } from "../CardDeck/cardDeckTypes";
 import { useCardDeck } from "../CardDeck/useCardDeck";
+import DeckProgress from "./DeckProgress";
 import WordCard from "./WordCard";
 import WordCardButton from "./WordCardButton";
 import { initialWordCardState, WordCardUIContext } from "./wordCardContext";
@@ -152,6 +153,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 
   return (
     <WordCardUIContext.Provider value={{ cardState, wordCardUIDispatch }}>
+      <DeckProgress thing={'thing'} />
       <Animated.View style={[
         container,
         positionStyle

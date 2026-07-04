@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     display: 'flex',
     borderBottomWidth: 1,
-    borderRadius: 12,
+    borderRadius: 8,
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
     borderColor: colors.light.border,
