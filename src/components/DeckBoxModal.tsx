@@ -199,8 +199,9 @@ export default function DeckBoxModal({
                   //   break;
                   // case "bronze":
                   //   break;
-                  // case "silver":
-                  //   break;
+                  case "silver":
+                    wordStyle.textShadowRadius = 4;
+                    break;
                   case "gold":
                     wordStyle.textShadowRadius = 8;
                     break;
