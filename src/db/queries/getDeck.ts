@@ -65,7 +65,7 @@ function dedupeByLemma(words: Word[]): Word[] {
 
 export default async function getDeck({
 	deck,
-	amount = 6,
+	amount = 8,
 	rank,
 	userId,
 }: GetDeckProps): Promise<CardDeck | undefined> {

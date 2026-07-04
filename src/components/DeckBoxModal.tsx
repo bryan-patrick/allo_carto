@@ -66,22 +66,28 @@ export default function DeckBoxModal({
   const deckCompletionPercent = deckCompletionTotal === 0
     ? 0
     : Math.round((deckCompletionCount / deckCompletionTotal) * 100);
+  const deckDarkColor = deck.colors?.dark ?? colors.dark.background;
 
   /**
    * Animation vars
    */
   const top = useSharedValue(0);
-  const shadowOffsetHeight = useSharedValue(8);
+  const iconTranslateY = useSharedValue(0);
 
-  const animatedContainerStyle = useAnimatedStyle(() => ({
-    top: top.value,
+  const animatedButtonStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: top.value,
+      },
+    ],
   }));
 
-  const animatedShadowStyle = useAnimatedStyle(() => ({
-    shadowOffset: {
-      width: 0,
-      height: shadowOffsetHeight.value
-    },
+  const animatedButtonIconStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: iconTranslateY.value,
+      },
+    ],
   }));
 
   /**
@@ -89,21 +95,26 @@ export default function DeckBoxModal({
    */
   useEffect(() => {
     if (isPressed) {
-      top.value = withTiming(0, {
+      top.value = withTiming(6, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
       });
-
-      shadowOffsetHeight.value = withTiming(0, {
+      iconTranslateY.value = withTiming(4, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
       });
     } else {
-      top.value = -4;
-      shadowOffsetHeight.value = 4;
+      top.value = withTiming(0, {
+        duration: 140,
+        easing: Easing.out(Easing.ease),
+      });
+      iconTranslateY.value = withTiming(0, {
+        duration: 140,
+        easing: Easing.out(Easing.ease),
+      });
     }
 
-  }, [isPressed, shadowOffsetHeight, top])
+  }, [iconTranslateY, isPressed, top])
 
   /**
    * Side effects
@@ -164,43 +175,35 @@ export default function DeckBoxModal({
                 let rank = wordRankKeyByWordId[wordId ?? '']
 
                 const wordStyle: any = {
-                  fontSize: 14,
-                  fontWeight: '400',
+                  fontSize: 16,
                   color: colors.light.rank[rank],
-                  backgroundColor: 'transparent',
-                  borderColor: colors.light.border,
-                  fontFamily: 'lexend',
-                  borderBottomWidth: 1,
-                  opacity: 0,
+                  textShadowColor: colors.light.rank[rank],
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 0,
+                  fontFamily: 'azeret-mono-600',
                 }
 
                 switch (rank) {
                   case "fnew":
-                    wordStyle.fontSize = 12;
                     wordStyle.color = colors.light.rank.fnew;
-                    wordStyle.opacity = 0.1;
-
-                    let length = text.length;
-                    text = Array.from({ length }, () => '#').join('');;
-
+                    wordStyle.opacity = 0.05;
                     break;
                   case "bronze":
-                    wordStyle.fontSize = 16;
-                    wordStyle.opacity = 1
+                    wordStyle.opacity = 1;
                     break;
                   case "silver":
-                    wordStyle.fontFamily = 'lexend-600'
-                    wordStyle.fontSize = 20;
-                    wordStyle.opacity = 0.85
+                    wordStyle.fontFamily = 'lexend-600';
+                    wordStyle.opacity = 0.85;
+                    wordStyle.textShadowRadius = 8;
                     break;
                   case "gold":
-                    wordStyle.fontFamily = 'lexend-700'
-                    wordStyle.fontSize = 22;
-                    wordStyle.opacity = 1
+                    wordStyle.fontFamily = 'lexend-700';
+                    wordStyle.opacity = 1;
+                    wordStyle.textShadowRadius = 16;
                     break;
                   case "diamond":
-                    wordStyle.fontSize = 24;
-                    wordStyle.opacity = 1
+                    wordStyle.opacity = 1;
+                    wordStyle.textShadowRadius = 24;
                     break;
                 }
 
@@ -218,19 +221,21 @@ export default function DeckBoxModal({
              * Modal Close Button
              */
           }
-          <Animated.View style={[buttonCloseContainer, animatedContainerStyle]}>
+          <Animated.View style={buttonCloseContainer}>
             <AnimatedPressable
-              style={[buttonClose, animatedShadowStyle]}
+              style={[buttonClose, animatedButtonStyle, { borderColor: deckDarkColor }]}
               onPressIn={handlePressIn}
               onPressOut={handlePressOut}
               onPress={() => setModalVisible(!modalVisible)}>
               <View style={buttonCloseContent}>
-                <Text style={buttonCloseText}>Hide Story</Text>
-                <SVGArrowDownToLine
-                  color={colors.light.text}
-                  height="20px"
-                  width="20px"
-                />
+                <Text style={[buttonCloseText, { color: deckDarkColor }]}>Hide Story</Text>
+                <Animated.View style={animatedButtonIconStyle}>
+                  <SVGArrowDownToLine
+                    color={deckDarkColor}
+                    height="20px"
+                    width="20px"
+                  />
+                </Animated.View>
               </View>
             </AnimatedPressable>
           </Animated.View>
@@ -258,15 +263,16 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   modalView: {
-    maxHeight: '75%',
+    maxHeight: '60%',
     display: 'flex',
     justifyContent: 'space-between',
     position: 'relative',
     width: '100%',
     margin: containerMargin,
     borderWidth: 8,
-    borderRadius: 24,
-    backgroundColor: colors.dark.darkerBackground,
+    borderBottomWidth: 12,
+    borderTopWidth: 12,
+    borderRadius: 12,
     borderColor: colors.light.background,
     shadowColor: colors.light.border,
     shadowOffset: {
@@ -278,13 +284,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTextContentStyle: {
-    borderRadius: 16,
     padding: 16,
   },
   modalScrollView: {
-    width: '100%',
-    borderBottomWidth: 8,
-    borderColor: colors.light.background
+    borderColor: colors.light.background,
+    backgroundColor: colors.dark.background,
+    paddingBottom: 32
   },
   modalTitleStyle: {
     display: 'flex',
@@ -293,16 +298,15 @@ const styles = StyleSheet.create({
     position: 'relative',
     backgroundColor: colors.light.background,
     padding: 8,
+    paddingTop: 0,
     width: '100%',
   },
   modalHeaderStyle: {
-    alignItems: 'center',
-    backgroundColor: colors.dark.border,
-    borderBottomWidth: 4,
+    backgroundColor: colors.dark.background,
     borderColor: colors.light.background,
-    gap: 4,
     padding: 8,
-    width: '100%',
+    gap: 4,
+    borderBottomWidth: 2,
   },
   modalHeaderTextStyle: {
     color: colors.light.text,
@@ -317,30 +321,19 @@ const styles = StyleSheet.create({
   },
   modalText: {
     textAlign: 'center',
-    color: 'transparent',
   },
   buttonCloseContainer: {
     width: '100%',
-    padding: 1,
-    borderRadius: 0,
-    borderColor: colors.light.background,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.dark.background
   },
   buttonClose: {
     alignItems: 'center',
-    backgroundColor: colors.dark.primary,
+    backgroundColor: colors.light.lighterBackground,
     justifyContent: 'center',
-    padding: 16,
-    width: '100%',
+    padding: 12,
     borderWidth: 2,
-    borderBottomWidth: 8,
+    borderTopWidth: 0,
     borderColor: colors.dark.border,
-    borderBottomRightRadius: 12,
-    borderBottomLeftRadius: 12,
-    shadowColor: colors.dark.border,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
   },
   buttonCloseContent: {
     alignItems: 'center',
@@ -348,7 +341,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   buttonCloseText: {
-    color: colors.light.text,
+    color: colors.dark.border,
     fontFamily: 'lexend-600',
     textAlign: 'center',
     fontSize: 16,
