@@ -2,7 +2,7 @@ import { deckAtlas } from '@/data/french/deckAtlas';
 import sharedStyles from '@/src/app/sharedStyles';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { router } from 'expo-router';
-import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from "../../app/colors";
 import { useCardDeck } from "../CardDeck/useCardDeck";
 import GradientText from '../GradientText';
@@ -88,12 +88,12 @@ export default function DeckResultsView() {
             />
             <Text style={titleStyle}> deck.</Text>
           </View>
-          <View style={imageContainerStyle}>
+          {/* <View style={imageContainerStyle}>
             <ImageBackground
               source={cardDeckState.cardDeck.image}
               style={imageStyle}
             />
-          </View>
+          </View> */}
         </View>
         <View style={wordsFlexRows}>
           <ResultsList
@@ -135,7 +135,8 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 16
+    padding: 16,
+    paddingBottom: 0
   },
   titleStyle: {
     fontSize: 20,
