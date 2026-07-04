@@ -149,12 +149,12 @@ export default function DeckBoxModal({
               text={deck.title}
             />
           </View>
-          <View style={modalHeaderStyle}>
-            <Text style={modalHeaderTextStyle}>
-              Deck Completion: <Text style={modalHeaderMonospaceTextStyle}>{deckCompletionPercent}%</Text>
+          <View style={[modalHeaderStyle, { borderColor: deckDarkColor }]}>
+            <Text style={[modalHeaderTextStyle, { color: deckDarkColor }]}>
+              Deck Completion: <Text style={[modalHeaderMonospaceTextStyle, { color: deckDarkColor }]}>{deckCompletionPercent}%</Text>
             </Text>
-            <Text style={modalHeaderTextStyle}>
-              Words Seen: <Text style={modalHeaderMonospaceTextStyle}>{wordsSeenCount}/{deck.wordIds.length}</Text>
+            <Text style={[modalHeaderTextStyle, { color: deckDarkColor }]}>
+              Words Seen: <Text style={[modalHeaderMonospaceTextStyle, { color: deckDarkColor }]}>{wordsSeenCount}/{deck.wordIds.length}</Text>
             </Text>
           </View>
           {
@@ -184,13 +184,16 @@ export default function DeckBoxModal({
                   textShadowOffset: { width: 0, height: 0 },
                   textShadowRadius: 0,
                   fontFamily: 'lexend-400',
-                  opacity: 1,
-                  lineHeight: 24
+                  lineHeight: 32,
+                  textDecorationLine: 'underline',
+                  textDecorationStyle: 'dotted',
+                  textDecorationColor: 'transparent',
                 }
 
                 switch (progress) {
                   case "unseen":
-                    wordStyle.opacity = 0;
+                    wordStyle.color = 'transparent';
+                    wordStyle.textDecorationColor = colors.light.border;
                     break;
                   // case "fnew":
                   //   break;
@@ -209,7 +212,9 @@ export default function DeckBoxModal({
                 return (
                   <Text
                     key={key}
-                    style={[modalText, wordStyle]}>{text + spaceMaybeButNotAlways}
+                    style={modalText}>
+                    <Text style={wordStyle}>{text}</Text>
+                    {spaceMaybeButNotAlways}
                   </Text>
                 )
               })}
@@ -262,7 +267,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   modalView: {
-    maxHeight: '60%',
+    maxHeight: '65%',
     display: 'flex',
     justifyContent: 'space-between',
     position: 'relative',
@@ -272,11 +277,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 12,
     borderTopWidth: 12,
     borderRadius: 12,
+    backgroundColor: colors.light.lighterBackground,
     borderColor: colors.light.background,
     shadowColor: colors.light.border,
     shadowOffset: {
       width: 0,
-      height: 16,
+      height: 8,
     },
     shadowOpacity: 1,
     shadowRadius: 0,
@@ -288,51 +294,58 @@ const styles = StyleSheet.create({
   modalScrollView: {
     borderColor: colors.light.background,
     backgroundColor: colors.dark.background,
-    paddingBottom: 32
   },
   modalTitleStyle: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    backgroundColor: colors.light.background,
-    padding: 8,
-    paddingTop: 0,
+    backgroundColor: colors.light.lighterBackground,
+    paddingTop: 8,
+    borderWidth: 2,
+    borderBottomWidth: 0,
+    borderTopRightRadius: 8,
+    borderTopLeftRadius: 8,
     width: '100%',
   },
   modalHeaderStyle: {
-    backgroundColor: colors.dark.background,
+    backgroundColor: colors.light.lighterBackground,
     borderColor: colors.light.background,
     padding: 8,
     gap: 4,
-    borderBottomWidth: 2,
+    borderRightWidth: 2,
+    borderLeftWidth: 2,
   },
   modalHeaderTextStyle: {
-    color: colors.light.text,
+    color: colors.dark.text,
     fontFamily: 'lexend-600',
     fontSize: 14,
     textAlign: 'center',
   },
   modalHeaderMonospaceTextStyle: {
-    color: colors.light.text,
+    color: colors.dark.text,
     fontFamily: 'azeret-mono-600',
     fontSize: 14,
   },
   modalText: {
-    textAlign: 'center',
+    textAlign: 'left',
   },
   buttonCloseContainer: {
     width: '100%',
-    backgroundColor: colors.dark.background
+    backgroundColor: colors.dark.background,
+    borderBottomRightRadius: 8,
+    borderBottomLeftRadius: 8
   },
   buttonClose: {
     alignItems: 'center',
     backgroundColor: colors.light.lighterBackground,
     justifyContent: 'center',
-    padding: 12,
+    padding: 16,
     borderWidth: 2,
     borderTopWidth: 0,
     borderColor: colors.dark.border,
+    borderBottomRightRadius: 8,
+    borderBottomLeftRadius: 8
   },
   buttonCloseContent: {
     alignItems: 'center',
