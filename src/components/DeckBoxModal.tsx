@@ -5,7 +5,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from '
 import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
 import type { DeckRankCounts } from "../db/queries/getDeckRankCounts";
-import type { WordRankKey } from "../util/wordRanks";
+import type { WordProgressKey } from "../util/wordRanks";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import SVGArrowDownToLine from "./SVG/SVGArrowDownToLine";
 
@@ -19,7 +19,7 @@ interface DeckBoxModalProps {
   modalVisible: boolean;
   rankCounts: DeckRankCounts;
   setModalVisible: (modalVisible: boolean) => void;
-  wordRankKeyByWordId: Record<string, WordRankKey>;
+  wordProgressKeyByWordId: Record<string, WordProgressKey>;
 }
 
 /**
@@ -30,7 +30,7 @@ export default function DeckBoxModal({
   modalVisible,
   rankCounts,
   setModalVisible,
-  wordRankKeyByWordId,
+  wordProgressKeyByWordId,
 }: DeckBoxModalProps) {
 
   /**
@@ -60,7 +60,7 @@ export default function DeckBoxModal({
   /**
    * Header deck completion percentage 
    */
-  const wordsSeenCount = rankCounts.bronze + rankCounts.silver + rankCounts.gold + rankCounts.diamond;
+  const wordsSeenCount = rankCounts.seen;
   const deckCompletionTotal = deck.wordIds.length * 4;
   const deckCompletionCount = rankCounts.bronze + (rankCounts.silver * 2) + (rankCounts.gold * 3) + (rankCounts.diamond * 4);
   const deckCompletionPercent = deckCompletionTotal === 0
@@ -172,38 +172,37 @@ export default function DeckBoxModal({
               {deck.story && deck.story.map(({ text, wordId, after }, index) => {
                 const key = `${index}-${wordId ?? text}`;
                 const spaceMaybeButNotAlways = after ?? ' ';
-                let rank = wordRankKeyByWordId[wordId ?? '']
+                const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
+                const progressColor = progress === 'unseen'
+                  ? colors.dark.border
+                  : colors.light.rank[progress];
 
                 const wordStyle: any = {
                   fontSize: 16,
-                  color: colors.light.rank[rank],
-                  textShadowColor: colors.light.rank[rank],
+                  color: progressColor,
+                  textShadowColor: progressColor,
                   textShadowOffset: { width: 0, height: 0 },
                   textShadowRadius: 0,
-                  fontFamily: 'azeret-mono-600',
+                  fontFamily: 'lexend-400',
+                  opacity: 1,
+                  lineHeight: 24
                 }
 
-                switch (rank) {
-                  case "fnew":
-                    wordStyle.color = colors.light.rank.fnew;
-                    wordStyle.opacity = 0.05;
+                switch (progress) {
+                  case "unseen":
+                    wordStyle.opacity = 0;
                     break;
-                  case "bronze":
-                    wordStyle.opacity = 1;
-                    break;
-                  case "silver":
-                    wordStyle.fontFamily = 'lexend-600';
-                    wordStyle.opacity = 0.85;
+                  // case "fnew":
+                  //   break;
+                  // case "bronze":
+                  //   break;
+                  // case "silver":
+                  //   break;
+                  case "gold":
                     wordStyle.textShadowRadius = 8;
                     break;
-                  case "gold":
-                    wordStyle.fontFamily = 'lexend-700';
-                    wordStyle.opacity = 1;
-                    wordStyle.textShadowRadius = 16;
-                    break;
                   case "diamond":
-                    wordStyle.opacity = 1;
-                    wordStyle.textShadowRadius = 24;
+                    wordStyle.textShadowRadius = 16;
                     break;
                 }
 

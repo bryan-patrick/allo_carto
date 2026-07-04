@@ -14,7 +14,10 @@ type RankIconProps = Omit<ComponentProps<typeof MaterialIcons>, "name"> & {
   score?: number;
 };
 
-function getRankColor(score: number = 0) {
+function getRankColor(score: number = 0, isDark = false) {
+  if (isDark) {
+    return colors.dark.rank[getWordRankDefinition(score).key];
+  }
   return colors.light.rank[getWordRankDefinition(score).key];
 }
 
@@ -31,7 +34,7 @@ export function RankIcon({ rank, score = 0, size = 12, color, ...props }: RankIc
   return (
     <MaterialIcons
       {...props}
-      color={color ?? colors.light.rank[rankDefinition.key]}
+      color={color ?? colors.dark.rank[rankDefinition.key]}
       size={size}
       name={rankDefinition.iconName}
     />
@@ -49,12 +52,26 @@ export default function WordRank() {
   const [currentScore] = useState(currentCard.correctCount);
   const [nextScore] = useState(currentCard.correctCount + 1);
 
-  const currentRankColor = useMemo(() =>
-    ({ color: getRankColor(currentScore) }),
+  const currentRankDarkColor = useMemo(() =>
+    ({ color: getRankColor(currentScore, true) }),
     [currentScore]);
 
-  const nextRankColor = useMemo(() =>
-    ({ color: getRankColor(nextScore) }),
+  const nextRankDarkColor = useMemo(() =>
+    ({ color: getRankColor(nextScore, true) }),
+    [nextScore]);
+
+  const currentRankBackgroundColor = useMemo(() =>
+  ({
+    backgroundColor: getRankColor(currentScore),
+    borderColor: getRankColor(currentScore, true),
+  }),
+    [currentScore]);
+
+  const nextRankBackgroundColor = useMemo(() =>
+  ({
+    backgroundColor: getRankColor(nextScore),
+    borderColor: getRankColor(nextScore, true),
+  }),
     [nextScore]);
 
   /**
@@ -83,11 +100,11 @@ export default function WordRank() {
    */
   useEffect(() => {
     if (currentCard.correctCount !== currentScore) {
-      translateY.value = withDelay(600,
+      translateY.value = withDelay(400,
         withSpring(-44, {
-          stiffness: 180,
-          damping: 40,
-          mass: 2,
+          stiffness: 400,
+          damping: 20,
+          mass: 1,
         })
       );
     }
@@ -103,11 +120,14 @@ export default function WordRank() {
   return (
     <View style={wordRankContainer}>
       <Animated.View style={[animationContainer, containerY]}>
-        <Animated.View style={currentContainer}>
+        <Animated.View style={[
+          currentContainer,
+          currentRankBackgroundColor
+        ]}>
           <Animated.Text
             style={[
               scoreText,
-              currentRankColor,
+              currentRankDarkColor,
             ]}
           >
             {currentScore}
@@ -118,11 +138,14 @@ export default function WordRank() {
             size={20}
           />
         </Animated.View>
-        <Animated.View style={nextContainer}>
+        <Animated.View style={[
+          nextContainer,
+          nextRankBackgroundColor
+        ]}>
           <Animated.Text
             style={[
               scoreText,
-              nextRankColor,
+              nextRankDarkColor,
             ]}
           >
             {nextScore}
@@ -145,9 +168,7 @@ const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>(
   wordRankContainer: {
     display: 'flex',
     height: 22,
-    backgroundColor: colors.dark.primary,
-    paddingLeft: 4,
-    paddingRight: 4
+    backgroundColor: colors.dark.background,
   },
   animationContainer: {
     display: 'flex',
@@ -160,8 +181,11 @@ const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>(
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingLeft: 8,
+    paddingRight: 4,
     height: 22,
-    gap: 4
+    gap: 4,
+    borderLeftWidth: 1
   },
   nextContainer: {
     display: 'flex',
@@ -169,7 +193,8 @@ const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>(
     justifyContent: 'center',
     alignItems: 'center',
     height: 22,
-    gap: 4
+    gap: 4,
+    borderLeftWidth: 1
   },
   scoreText: {
     fontSize: 16,

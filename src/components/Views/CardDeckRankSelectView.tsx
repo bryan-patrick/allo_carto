@@ -7,6 +7,10 @@ import { getDeck } from "../../db/interface";
 import type { DeckRankCounts } from '../../db/queries/getDeckRankCounts';
 import getDeckRankCounts, { emptyDeckRankCounts } from '../../db/queries/getDeckRankCounts';
 import { useUserContext } from "../../db/useUserContext";
+import {
+  EARLY_RANK_UNLOCK_COUNT,
+  getDeckRankSelectionState
+} from '../../util/deckRankProgression';
 import { WordRankDefinition, WordRankKey, wordRankDefinitions } from '../../util/wordRanks';
 import { useCardDeck } from "../CardDeck/useCardDeck";
 import GradientText from '../GradientText';
@@ -14,11 +18,40 @@ import LinkButton from "../LinkButton";
 import LockOverlay from '../LockOverlay';
 import { RankIcon } from '../WordRank';
 
+/**
+ * Typing
+ */
+interface LockedAccessibilityHintProps {
+  deckWordCount: number;
+  rankCounts: DeckRankCounts;
+  rankKey: WordRankKey;
+  rankName: string;
+}
+
+function getLockedAccessibilityHint({
+  deckWordCount,
+  rankCounts,
+  rankKey,
+  rankName,
+}: LockedAccessibilityHintProps): string {
+  const currentRankCount = rankCounts[rankKey] ?? 0;
+  let hint = `Complete the earliest active rank to keep progressing. The next rank can unlock early when ${EARLY_RANK_UNLOCK_COUNT} cards reach it. You currently have ${currentRankCount}.`;
+
+  if (rankKey === 'diamond') {
+    hint = `Diamond unlocks when every card in this deck reaches Diamond. You currently have ${currentRankCount}/${deckWordCount}.`;
+  }
+
+  if (currentRankCount === 0) {
+    hint = `${rankName} unlocks once cards move into that rank.`;
+  }
+
+  return hint;
+}
+
 export default function CardDeckRankSelectView() {
   const user = useUserContext();
   const { cardDeckState, cardDeckDispatch } = useCardDeck();
   const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
-  const unlockAmount = 5;
 
   /**
    * Styles
@@ -53,6 +86,9 @@ export default function CardDeckRankSelectView() {
     cardDeckDispatch
   ]);
 
+  /**
+   * Load rank counts
+   */
   useEffect(() => {
     let isCurrent = true;
 
@@ -93,8 +129,11 @@ export default function CardDeckRankSelectView() {
   const { colors: deckColors, title } = cardDeckState.cardDeck;
   const gradientDark = deckColors?.dark ?? '#000000';
   const gradientLight = deckColors?.light ?? '#ffffff';
-  const unlockText = `You need ${unlockAmount} cards to unlock a rank`;
+  const deckWordCount = cardDeckState.cardDeck.wordIds.length;
 
+  /**
+   * Render the view
+   */
   return (
     <View style={selectContainerStyle}>
       <View style={innerCardStyle}>
@@ -106,14 +145,28 @@ export default function CardDeckRankSelectView() {
             text={title}
             fontWeight={700}
           />
-          <Text style={rankSelectTitleText}>{unlockText}</Text>
         </View>
         <View style={rankButtonContainer}>
           {
             wordRankDefinitions.map((item: WordRankDefinition) => {
+              /**
+               * Rank vars
+               */
               const { key, name } = item;
-              const isLocked = rankCounts[key] < unlockAmount;
+              const rankCount = rankCounts[key];
+              const rankSelectionState = getDeckRankSelectionState({
+                deckWordCount,
+                rankCounts,
+                rankKey: key,
+              });
+              const isRankComplete = rankSelectionState === 'complete';
+              const isRankLocked = rankSelectionState === 'locked';
+              const isRankAvailable = rankSelectionState === 'available';
+              const isRankButtonDisabled = !isRankAvailable;
 
+              /**
+               * Rank styles
+               */
               const rankButtonStyle = {
                 backgroundColor: colors.light.rank[key],
                 padding: 8,
@@ -124,11 +177,22 @@ export default function CardDeckRankSelectView() {
                 color: colors.dark.text
               }
 
+              /**
+               * Select container
+               */
               return (
                 <View key={key} style={rankSelectContainerStyle}>
                   <LockOverlay
-                    isLocked={isLocked}
-                    lockedAccessibilityHint={`${unlockText} You currently have ${rankCounts[key]}.`}
+                    completeAccessibilityHint={`No cards remain in ${name}.`}
+                    completeAccessibilityLabel={`${name} rank complete`}
+                    isComplete={isRankComplete}
+                    isLocked={isRankLocked}
+                    lockedAccessibilityHint={getLockedAccessibilityHint({
+                      deckWordCount,
+                      rankCounts,
+                      rankKey: key,
+                      rankName: name,
+                    })}
                     lockedAccessibilityLabel={`${name} rank locked`}
                     overlayStyle={rankLockOverlayStyle}
                   >
@@ -137,10 +201,10 @@ export default function CardDeckRankSelectView() {
                       style={rankButtonStyle}
                       arrowColor={colors.dark.text}
                       useArrow={false}
-                      disabled={isLocked}
+                      disabled={isRankButtonDisabled}
                       SVGElement={<RankIcon size={32} rank={key} color={colors.dark.rank[key]} />}
                     >
-                      <Text style={rankButtonTextStyle}>{name} ({rankCounts[key]})</Text>
+                      <Text style={rankButtonTextStyle}>{name} ({rankCount})</Text>
                     </LinkButton>
                   </LockOverlay>
                 </View>

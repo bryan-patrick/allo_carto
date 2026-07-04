@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   chapterContainerStyle: {
     margin: containerMargin,
     display: 'flex',
-    gap: 24,
+    gap: 32,
   },
   chapterTitleContainerStyle: {
     gap: 4,
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   placeContainerStyle: {
     display: 'flex',
-    borderRadius: 16,
+    borderRadius: 8,
     padding: 8,
     backgroundColor: colors.light.background
   },

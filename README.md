@@ -95,6 +95,7 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 - Mailing link on cards to email me with bad translations
 - Completion steps (Results -> Experience gain + coins -> )
 - Look into how to use the dynamic island
+- fix the min amount problem for reverse dir cards (fnew has 4 left)
 
 ## Free art and assets credits
 

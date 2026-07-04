@@ -4,6 +4,8 @@ import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import WordCard from '@/src/components/WordCard/WordCard';
 import WordCardContainer from '@/src/components/WordCard/WordCardContainer';
 import WordCardSelection from '@/src/components/WordCard/WordCardSelection';
+import { incrementSeenCount } from '@/src/db/queries/incrementSeenCount';
+import { UserContext } from '@/src/db/userContext';
 import getFillerWords from '@/src/util/getFillerWords';
 import { render, waitFor } from '@testing-library/react-native';
 
@@ -11,6 +13,7 @@ import { render, waitFor } from '@testing-library/react-native';
  * Mock the util
  */
 jest.mock('@/src/util/getFillerWords');
+jest.mock('@/src/db/queries/incrementSeenCount');
 jest.mock('@/src/components/CardDeck/useCardDeck');
 
 /**
@@ -35,6 +38,7 @@ jest.mock('@/src/components/WordCard/WordCardButton', () => {
 });
 
 const mockGetFillerWords = jest.mocked(getFillerWords);
+const mockIncrementSeenCount = jest.mocked(incrementSeenCount);
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockWordCard = jest.mocked(WordCard);
 const mockWordCardSelection = jest.mocked(WordCardSelection);
@@ -45,6 +49,8 @@ const mockWordCardSelection = jest.mocked(WordCardSelection);
 describe('<WordCardContainer />', () => {
   beforeEach(() => {
     mockGetFillerWords.mockReset();
+    mockIncrementSeenCount.mockReset();
+    mockIncrementSeenCount.mockResolvedValue();
     mockWordCard.mockClear();
     mockWordCardSelection.mockClear();
 
@@ -201,6 +207,41 @@ describe('<WordCardContainer />', () => {
         correctWords: ['how much'],
         words: ['how much', 'market', 'clue', 'hidden'],
       });
+    });
+  });
+
+  test('increments the seen count when the card is current', async () => {
+    mockGetFillerWords
+      .mockResolvedValueOnce(['coffee', 'tea'])
+      .mockResolvedValueOnce(['The', 'A']);
+
+    const word: Word = {
+      id: 'word_noun_cafe',
+      frenchWord: 'cafe',
+      frenchArticle: 'le',
+      englishArticle: 'The',
+      englishWords: ['coffee'],
+      pronunciation: 'ka-fay',
+      isVulgar: false,
+      CEFR: 'A1',
+      partOfSpeech: 'noun',
+      correctCount: 14,
+    };
+
+    render(
+      <UserContext.Provider value={{ id: 'user_one', name: 'Tester', isMonHomme: 1 }}>
+        <WordCardContainer
+          word={word}
+          isCurrent={true}
+        />
+      </UserContext.Provider>,
+    );
+
+    await waitFor(() => {
+      expect(mockIncrementSeenCount).toHaveBeenCalledWith(
+        'user_one',
+        'word_noun_cafe',
+      );
     });
   });
 });
