@@ -22,11 +22,11 @@ const colors = {
 			C2: '#2D1A1B',
 		},
 		rank: {
-			fnew: '#292929',
-			bronze: '#2B2117',
+			fnew: '#2b2b2b',
+			bronze: '#503D2B',
 			silver: '#303946',
 			gold: '#322A20',
-			diamond: '#26333B',
+			diamond: '#2B4469',
 		},
 	},
 	light: {
@@ -53,7 +53,7 @@ const colors = {
 			bronze: '#f4d2b1',
 			silver: '#e1e7ef',
 			gold: '#ffd196',
-			diamond: '#c6e9ff',
+			diamond: '#CBE0FF',
 		},
 	},
 	rarity: {

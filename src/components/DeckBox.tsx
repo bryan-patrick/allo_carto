@@ -7,8 +7,8 @@ import getDeckRankCounts, {
 } from "@/src/db/queries/getDeckRankCounts";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from 'expo-router';
-import { useCallback, useEffect, useState } from "react";
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from "react";
 import { ImageBackground, Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import colors from "../app/colors";
@@ -164,38 +164,19 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
   }, [user?.id, deck.story]);
 
   /**
-   * Load initial deck progress data
+   * Refresh deck progress data when the deck list is focused.
+   * This keeps the story blips updated after reviewing a deck
+   * and returning to the deck box.
    */
-  useEffect(() => {
-    let isCurrent = true;
-
-    async function loadInitialRankCounts() {
-      if (isCurrent) await loadRankCounts();
-    }
-
-    loadInitialRankCounts();
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [loadRankCounts]);
-
-  /**
-   * Load initial story rank data
-   */
-  useEffect(() => {
-    let isCurrent = true;
-
-    async function loadInitialStoryWordRanks() {
-      if (isCurrent) await loadStoryWordRanks();
-    }
-
-    loadInitialStoryWordRanks();
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [loadStoryWordRanks]);
+  useFocusEffect(
+    useCallback(() => {
+      loadRankCounts();
+      loadStoryWordRanks();
+    }, [
+      loadRankCounts,
+      loadStoryWordRanks,
+    ])
+  );
 
   /**
    * ReviewDeck handler
@@ -323,6 +304,9 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
             >
               <View style={buttonOpenContent}>
                 <Text style={[buttonOpenText, { color: deckColors?.dark }]}>Show Story</Text>
+                <Text style={[storyProgressTextStyle, { color: deckColors?.dark }]}>
+                  ({deckCompletionPercent}%)
+                </Text>
                 <Animated.View style={animatedStoryButtonIconStyle}>
                   <SVGArrowUpFromLine
                     color={deckColors?.dark}
@@ -331,29 +315,26 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
                   />
                 </Animated.View>
               </View>
-            </AnimatedPressable>
-            {
-              /**
-               * Story Progress
-               */
-            }
-            <View style={storyProgressStyle}>
-              <Text style={[storyProgressTextStyle, { color: deckColors?.dark }]}>
-                {deckCompletionPercent}%
-              </Text>
-              <View style={plopContainerStyle}>
-                {deck.story?.map(({ wordId, text }, index) => {
-                  const rank = wordRankKeyByWordId[wordId ?? ''] ?? 'fnew';
+              {
+                /**
+                 * Story Progress
+                 */
+              }
+              <View style={storyProgressStyle}>
+                <View style={plopContainerStyle}>
+                  {deck.story?.map(({ wordId, text }, index) => {
+                    const rank = wordRankKeyByWordId[wordId ?? ''] ?? 'fnew';
 
-                  return (
-                    <View
-                      key={`plop-${index}-${wordId}-${text}`}
-                      style={[plopStyle, plopStyleByRank[rank]]}
-                    />
-                  )
-                })}
+                    return (
+                      <View
+                        key={`plop-${index}-${wordId}-${text}`}
+                        style={[plopStyle, plopStyleByRank[rank]]}
+                      />
+                    )
+                  })}
+                </View>
               </View>
-            </View>
+            </AnimatedPressable>
           </View>
           {
             /**
@@ -439,7 +420,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.background,
     overflow: 'hidden',
     borderRadius: 24,
-    borderWidth: 6,
+    borderWidth: 8,
     marginRight: 8,
     marginLeft: 8,
     padding: 4,
@@ -448,8 +429,8 @@ const styles = StyleSheet.create({
   },
   cardBorderInnerStyle: {
     borderRadius: 16,
-    borderWidth: 2,
-    borderColor: colors.light.border,
+    borderWidth: 1,
+    borderColor: colors.dark.border,
   },
   cardHeaderStyle: {
     position: 'relative',
@@ -458,7 +439,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
-    borderColor: colors.light.border,
+    borderColor: colors.dark.border,
   },
   titleContainer: {
   },
@@ -497,6 +478,7 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     paddingBottom: 2,
     borderColor: colors.dark.border,
+    borderBottomWidth: 1
   },
   CEFRLabelStyle: {
     fontSize: 14,
@@ -521,6 +503,7 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 4,
     paddingBottom: 4,
+    borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: colors.dark.border
   },
@@ -543,16 +526,16 @@ const styles = StyleSheet.create({
   },
   buttonOpen: {
     alignItems: 'center',
-    padding: 8,
+    paddingVertical: 4,
+    gap: 2,
     borderTopWidth: 1,
     backgroundColor: colors.light.lighterBackground,
     borderColor: colors.dark.border,
-    shadowColor: colors.light.border,
   },
   buttonOpenContent: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 8,
+    gap: 4,
   },
   buttonOpenText: {
     color: colors.dark.text,
@@ -562,13 +545,10 @@ const styles = StyleSheet.create({
   },
   storyProgressStyle: {
     alignItems: 'center',
-    borderColor: colors.light.border,
+    borderColor: colors.dark.border,
     backgroundColor: colors.light.lighterBackground,
     flexDirection: 'row',
     paddingHorizontal: 16,
-    paddingTop: 0,
-    paddingBottom: 4,
-    gap: 8,
   },
   storyProgressTextStyle: {
     fontFamily: 'azeret-mono-600',
@@ -581,9 +561,9 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   plopStyle: {
-    width: 6,
+    width: 8,
     height: 4,
-    borderRadius: 2,
     borderWidth: 1,
+    borderRadius: 1
   },
 })

@@ -180,30 +180,27 @@ export default function DeckBoxModal({
                   textShadowColor: colors.light.rank[rank],
                   textShadowOffset: { width: 0, height: 0 },
                   textShadowRadius: 0,
-                  fontFamily: 'azeret-mono-600',
+                  fontFamily: 'lexend-400',
+                  lineHeight: 24
                 }
 
                 switch (rank) {
                   case "fnew":
-                    wordStyle.color = colors.light.rank.fnew;
                     wordStyle.opacity = 0.05;
                     break;
                   case "bronze":
-                    wordStyle.opacity = 1;
+                    wordStyle.opacity = 0.6;
                     break;
                   case "silver":
-                    wordStyle.fontFamily = 'lexend-600';
-                    wordStyle.opacity = 0.85;
-                    wordStyle.textShadowRadius = 8;
+                    wordStyle.opacity = 1;
                     break;
                   case "gold":
-                    wordStyle.fontFamily = 'lexend-700';
                     wordStyle.opacity = 1;
-                    wordStyle.textShadowRadius = 16;
+                    wordStyle.textShadowRadius = 8;
                     break;
                   case "diamond":
                     wordStyle.opacity = 1;
-                    wordStyle.textShadowRadius = 24;
+                    wordStyle.textShadowRadius = 16;
                     break;
                 }
 

@@ -1,3 +1,4 @@
+import colors from "@/src/app/colors";
 import sharedStyles from "@/src/app/sharedStyles";
 import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { StyleSheet } from 'react-native';
@@ -8,6 +9,7 @@ import { type Word } from "../CardDeck/cardDeckTypes";
 import { useCardDeck } from "../CardDeck/useCardDeck";
 import WordCard from "./WordCard";
 import WordCardButton from "./WordCardButton";
+import SVGRightArrow from "../SVG/SVGRightArrow";
 import { initialWordCardState, WordCardUIContext } from "./wordCardContext";
 import WordCardSelection from "./WordCardSelection";
 import { wordCardUIReducer } from "./wordCardUIReducer";
@@ -59,6 +61,12 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
    * Destructure styles
    */
   const { container } = wordCardContainerStyles;
+  const isNextCardButton =
+    cardState.stage === 'CORRECT' ||
+    cardState.stage === 'INCORRECT';
+  const nextCardArrowColor = cardState.progress === 'SUCCESS'
+    ? colors.dark.text
+    : colors.light.text;
 
   /**
     * Side effects
@@ -162,12 +170,16 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
           articleWords={articleWords}
           fillerWords={fillerWords}
         />
-        <WordCardButton>
-          {
-            cardState.stage === 'CORRECT' ||
-              cardState.stage === 'INCORRECT'
-              ? 'Next card →' : 'Check'
-          }
+        <WordCardButton
+          SVGElement={isNextCardButton ? (
+            <SVGRightArrow
+              color={nextCardArrowColor}
+              height="24"
+              width="24"
+            />
+          ) : undefined}
+        >
+          {isNextCardButton ? 'Next card' : 'Check'}
         </WordCardButton>
       </Animated.View>
     </WordCardUIContext.Provider >
