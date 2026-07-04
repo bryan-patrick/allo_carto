@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     borderColor: colors.light.border
   },
   imageStyle: {
-    height: 175,
+    height: 150,
   },
   wordsFlexRows: {
     display: 'flex',
