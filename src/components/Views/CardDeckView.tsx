@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
-import WordCardContainer from '../WordCard/WordCardContainer';
 import { Word } from '../CardDeck/cardDeckTypes';
+import DeckProgress from '../WordCard/DeckProgress';
+import WordCardContainer from '../WordCard/WordCardContainer';
 
 /**
  * Typing
@@ -20,17 +21,20 @@ export default function CardDeckView({ currentCard }: CardDeckViewProps) {
    * Render the card deck
    */
   return ((
-    <Animated.View
-      key={currentCard.id}
-      entering={SlideInRight.duration(200)}
-      exiting={SlideOutLeft.duration(200)}
-      style={wordCardAnimatedView}
-    >
-      <WordCardContainer
-        word={currentCard}
-        isCurrent={true}
-      />
-    </Animated.View>
+    <>
+      <DeckProgress />
+      <Animated.View
+        key={currentCard.id}
+        entering={SlideInRight.duration(200)}
+        exiting={SlideOutLeft.duration(200)}
+        style={wordCardAnimatedView}
+      >
+        <WordCardContainer
+          word={currentCard}
+          isCurrent={true}
+        />
+      </Animated.View>
+    </>
   ));
 }
 

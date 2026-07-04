@@ -282,7 +282,7 @@ const mappedWordsStyles = StyleSheet.create({
     borderColor: 'transparent',
     padding: 14,
     maxWidth: '50%',
-    minWidth: 70,
+    minWidth: 80,
     backgroundColor: colors.light.background,
   },
   wcsText: {

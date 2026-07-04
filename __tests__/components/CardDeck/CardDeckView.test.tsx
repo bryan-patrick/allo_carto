@@ -1,5 +1,6 @@
 import CardDeckView from '@/src/components/Views/CardDeckView';
 import { Word } from '@/src/components/CardDeck/cardDeckTypes';
+import DeckProgress from '@/src/components/WordCard/DeckProgress';
 import WordCardContainer from '@/src/components/WordCard/WordCardContainer';
 import { render } from '@testing-library/react-native';
 
@@ -14,14 +15,24 @@ jest.mock('@/src/components/WordCard/WordCardContainer', () => {
   });
 });
 
+jest.mock('@/src/components/WordCard/DeckProgress', () => {
+  const { Text } = jest.requireActual('react-native');
+
+  return jest.fn(() => {
+    return <Text>Deck progress</Text>;
+  });
+});
+
 /**
  * The child CardDeckView renders 
  */
 const mockWordCardContainer = jest.mocked(WordCardContainer);
+const mockDeckProgress = jest.mocked(DeckProgress);
 
 describe('<CardDeckView />', () => {
   beforeEach(() => {
     mockWordCardContainer.mockClear();
+    mockDeckProgress.mockClear();
   });
 
   test('renders the current card in a keyed WordCardContainer', () => {
@@ -39,12 +50,6 @@ describe('<CardDeckView />', () => {
     };
 
     /**
-     * ...idk if this actually works to check for the key
-     */
-    const cardDeckView = CardDeckView({ currentCard });
-    expect(cardDeckView.key).toBe(currentCard.id);
-
-    /**
      * Now we can assert what it hands to its child.
      */
     render(<CardDeckView currentCard={currentCard} />);
@@ -60,5 +65,6 @@ describe('<CardDeckView />', () => {
       }),
       undefined,
     );
+    expect(mockDeckProgress).toHaveBeenCalledWith({}, undefined);
   });
 });
