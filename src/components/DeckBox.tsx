@@ -38,6 +38,10 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
   const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
   const [wordRankKeyByWordId, setWordRankKeyByWordId] = useState<Record<string, WordRankKey>>({});
   const [modalVisible, setModalVisible] = useState(false);
+
+  /**
+   * Deck vars
+   */
   const {
     title,
     description,
@@ -77,68 +81,83 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     buttonOpenText,
   } = styles;
 
-
-  useEffect(() => {
-    let isCurrent = true;
-
-    async function loadRankCounts() {
-      try {
-        if (!user?.id) {
-          setRankCounts(emptyDeckRankCounts);
-          return;
-        }
-
-        const counts = await getDeckRankCounts({
-          userId: user.id,
-          wordIds: deck.wordIds,
-        });
-
-        if (isCurrent) setRankCounts(counts);
-
-      } catch (error) {
-        console.error('Could not retrieve deck rank counts:', error);
+  /**
+   * Data loaders
+   */
+  const loadRankCounts = useCallback(async () => {
+    try {
+      if (!user?.id) {
+        setRankCounts(emptyDeckRankCounts);
+        return;
       }
+
+      const counts = await getDeckRankCounts({
+        userId: user.id,
+        wordIds: deck.wordIds,
+      });
+
+      setRankCounts(counts);
+
+    } catch (error) {
+      console.error('Could not retrieve deck rank counts:', error);
     }
-
-    loadRankCounts();
-
-    return () => {
-      isCurrent = false;
-    };
   }, [user?.id, deck.wordIds]);
 
-  useEffect(() => {
-    let isCurrent = true;
+  const loadStoryWordRanks = useCallback(async () => {
+    try {
+      if (user?.id) {
+        const storyWordRankKeyByWordId = await getWordRanksById({
+          userId: user.id,
+          story: deck.story,
+        });
 
-    async function loadStoryWordRanks() {
-      try {
-        if (user?.id) {
-          const storyWordRankKeyByWordId = await getWordRanksById({
-            userId: user.id,
-            story: deck.story,
-          });
-
-          if (isCurrent) setWordRankKeyByWordId(storyWordRankKeyByWordId);
-        }
-
-        if (!user?.id && isCurrent) {
-          setWordRankKeyByWordId({});
-        }
-
-      } catch (error) {
-        console.error('Could not retrieve story word ranks:', error);
+        setWordRankKeyByWordId(storyWordRankKeyByWordId);
+        return;
       }
+
+      setWordRankKeyByWordId({});
+
+    } catch (error) {
+      console.error('Could not retrieve story word ranks:', error);
     }
-
-    loadStoryWordRanks();
-
-    return () => {
-      isCurrent = false;
-    };
   }, [user?.id, deck.story]);
 
   /**
-   * Handlers
+   * Load initial deck progress data
+   */
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadInitialRankCounts() {
+      if (isCurrent) await loadRankCounts();
+    }
+
+    loadInitialRankCounts();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [loadRankCounts]);
+
+  /**
+   * Load initial story rank data
+   */
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadInitialStoryWordRanks() {
+      if (isCurrent) await loadStoryWordRanks();
+    }
+
+    loadInitialStoryWordRanks();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [loadStoryWordRanks]);
+
+  /**
+   * ReviewDeck handler
    */
   const handleDeckSelect = useCallback(async (selectedDeck: CardDeck) => {
     if (user?.id) {
@@ -180,7 +199,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
   }));
 
   /**
-   * Side effects
+   * StoryButton press animation handlers
    */
   function handleStoryPressIn() {
     storyButtonTranslateY.value = withTiming(-6, {
@@ -202,6 +221,18 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
       duration: 140,
       easing: Easing.out(Easing.ease),
     });
+  }
+
+  /**
+   * Refresh story data and show modal
+   */
+  async function handleShowStory() {
+    await Promise.all([
+      loadRankCounts(),
+      loadStoryWordRanks(),
+    ]);
+
+    setModalVisible(true);
   }
 
   /**
@@ -246,7 +277,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               }]}
               onPressIn={handleStoryPressIn}
               onPressOut={handleStoryPressOut}
-              onPress={() => setModalVisible(true)}
+              onPress={handleShowStory}
               hitSlop={4}
             >
               <View style={buttonOpenContent}>
@@ -261,6 +292,11 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               </View>
             </AnimatedPressable>
           </View>
+          {
+            /**
+             * CEFR Bar
+             */
+          }
           <LinearGradient
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -270,9 +306,19 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
             <Text style={CEFRLabelStyle}>CEFR</Text>
             <Text style={CEFRTextStyle}>{CEFR.join(' - ')}</Text>
           </LinearGradient>
+          {
+            /**
+             * Deck Image
+             */
+          }
           <View style={imageContainerStyle}>
             <ImageBackground source={image} style={imageStyle} />
           </View>
+          {
+            /**
+             * Rank Counts
+             */
+          }
           <View style={[badgeContainerStyle, { backgroundColor: deckColors?.light ?? colors.dark.primary }]}>
             <View style={badgeCountContainerStyle}>
               <Text style={badgeCountTextStyle}>{rankCounts.fnew}</Text>
@@ -295,6 +341,11 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               <MaterialIcons color={colors.light.text} size={badgeIconSize} name="diamond" />
             </View>
           </View>
+          {
+            /**
+             * Review Link
+             */
+          }
           <View style={cardFooterStyle}>
             <LinkButton
               handler={() => handleDeckSelect(deck)}
