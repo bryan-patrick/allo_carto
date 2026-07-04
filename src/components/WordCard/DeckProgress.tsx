@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     width: 8,
     flexShrink: 1,
     borderWidth: 1,
+    borderRadius: 2,
     borderColor: colors.light.background
   }
 });
