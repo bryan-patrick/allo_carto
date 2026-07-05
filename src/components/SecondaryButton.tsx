@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: colors.dark.border,
     backgroundColor: colors.dark.primary,
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 2,
     paddingHorizontal: 16,
     paddingVertical: 8,
