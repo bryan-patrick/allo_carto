@@ -51,6 +51,16 @@ describe('getDeck', () => {
 			wordIds: ['word_one', 'word_two'],
 			words: [],
 			wordChoices: [],
+			colors: {
+				dark: {
+					primary: '#000000',
+					secondary: '#000000',
+				},
+				light: {
+					primary: '#ffffff',
+					secondary: '#ffffff',
+				},
+			},
 		};
 
 		mockGetAllAsync
@@ -84,6 +94,16 @@ describe('getDeck', () => {
 			wordIds: ['word_one', 'word_two'],
 			words: [],
 			wordChoices: [],
+			colors: {
+				dark: {
+					primary: '#000000',
+					secondary: '#000000',
+				},
+				light: {
+					primary: '#ffffff',
+					secondary: '#ffffff',
+				},
+			},
 		};
 
 		mockGetAllAsync.mockResolvedValueOnce([]);

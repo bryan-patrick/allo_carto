@@ -125,9 +125,7 @@ export default function CardDeckRankSelectView() {
     user?.id
   ]);
 
-  const { colors: deckColors, title } = cardDeckState.cardDeck;
-  const gradientDark = deckColors?.dark ?? '#000000';
-  const gradientLight = deckColors?.light ?? '#ffffff';
+  const { title } = cardDeckState.cardDeck;
   const deckWordCount = cardDeckState.cardDeck.wordIds.length;
 
   /**
@@ -140,7 +138,7 @@ export default function CardDeckRankSelectView() {
           <View style={titleRowStyle}>
             <Text style={rankSelectTitleText}>Select the deck rank for</Text>
             <GradientText
-              colors={[gradientDark, gradientLight]}
+              colors={[cardDeckState.cardDeck.colors.dark.primary, cardDeckState.cardDeck.colors.dark.secondary]}
               fontSize={20}
               text={title}
               fontWeight={700}

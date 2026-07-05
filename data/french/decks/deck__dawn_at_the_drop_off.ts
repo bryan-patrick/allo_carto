@@ -13,8 +13,14 @@ export const DeckDawnAtTheDropOff: CardDeck = {
 	image: dawnDropOff,
 	wordChoices: [],
 	colors: {
-		dark: '#33141A',
-		light: '#912741',
+		dark: {
+			primary: '#33141A',
+			secondary: '#912741',
+		},
+		light: {
+			primary: '#ffefef',
+			secondary: '#ffffff',
+		},
 	},
 	story: [
 		{ text: 'Je', wordId: 'word_pronoun_je' },

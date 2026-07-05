@@ -47,7 +47,7 @@ export default function CardDeckSelect() {
         <FlatList
           contentContainerStyle={cardGridStyle}
           data={decks}
-          renderItem={({ item }) => <DeckBox deck={item} />}
+          renderItem={({ item }) => <DeckBox deck={item} placeId={placeId} />}
           keyExtractor={(deck, index) => `${deck.title}-${index}`}
         />
       )}

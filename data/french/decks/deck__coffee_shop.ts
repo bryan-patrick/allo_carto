@@ -20,6 +20,16 @@ export const DeckCoffeeShop: CardDeck = {
 	words: [],
 	image: coffeeHouse,
 	wordChoices: [],
+	colors: {
+		dark: {
+			primary: '#1C5B5E',
+			secondary: '#762D3D',
+		},
+		light: {
+			primary: '#ffffff',
+			secondary: '#ffffff',
+		},
+	},
 	wordIds: [
 		'word_interjection_salut',
 		'word_noun_cafe',

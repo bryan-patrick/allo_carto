@@ -39,8 +39,6 @@ export default function DeckResultsView() {
   const { cardDeckState } = useCardDeck();
   const { title } = cardDeckState.cardDeck;
   const { correctWords, incorrectWords } = cardDeckState;
-  const deckColorDark = cardDeckState.cardDeck.colors?.dark ?? colors.dark.primary;
-  const deckColorLight = cardDeckState.cardDeck.colors?.light ?? colors.light.primary;
   const isFirstLetterAVowel = englishVowels.includes(title.split('')[0].toLowerCase());
   const resultsTitleArticle = isFirstLetterAVowel ? 'an' : 'a'
   const placeId = findDeckPlaceId(cardDeckState.cardDeck);
@@ -66,8 +64,6 @@ export default function DeckResultsView() {
     deckDetailsContainerStyle,
     resultsContainerStyle,
     wordsFlexRows,
-    imageContainerStyle,
-    imageStyle,
     finishedLinkStyle
   } = styles;
 
@@ -82,18 +78,12 @@ export default function DeckResultsView() {
             <Text style={titleStyle}>Good job! You completed {resultsTitleArticle} </Text>
             <GradientText
               text={title}
-              colors={[deckColorDark, deckColorLight]}
+              colors={[cardDeckState.cardDeck.colors.dark.primary, cardDeckState.cardDeck.colors.dark.secondary]}
               fontSize={20}
               fontWeight={600}
             />
             <Text style={titleStyle}> deck.</Text>
           </View>
-          {/* <View style={imageContainerStyle}>
-            <ImageBackground
-              source={cardDeckState.cardDeck.image}
-              style={imageStyle}
-            />
-          </View> */}
         </View>
         <View style={wordsFlexRows}>
           <ResultsList

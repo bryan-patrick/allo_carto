@@ -130,6 +130,12 @@ export default function AppLayout() {
                   headerBackButtonDisplayMode: 'minimal',
                   headerTitle: 'Rank Select'
                 }} />
+                <Stack.Screen name="(routes)/ViewCards" options={{
+                  headerShown: true,
+                  headerBackTitle: 'Back',
+                  headerBackButtonDisplayMode: 'minimal',
+                  headerTitle: 'View Cards'
+                }} />
                 <Stack.Screen name="(routes)/DeckResults" options={{
                   headerShown: true,
                   headerTitle: 'Results',
