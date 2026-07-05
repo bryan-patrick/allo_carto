@@ -9,6 +9,16 @@ export const DeckClocksAndTime: CardDeck = {
 	words: [],
 	image: clocksImage,
 	wordChoices: [],
+	colors: {
+		dark: {
+			primary: '#1C5B5E',
+			secondary: '#762D3D',
+		},
+		light: {
+			primary: '#ffffff',
+			secondary: '#ffffff',
+		},
+	},
 	wordIds: [
 		'word_noun_horloge',
 		'word_noun_montre',

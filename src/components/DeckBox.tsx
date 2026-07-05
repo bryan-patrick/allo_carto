@@ -79,16 +79,13 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     title,
     description,
     CEFR,
-    image,
-    colors: deckColors
+    image
   } = deck;
   const badgeIconSize = 16;
   const CEFRGradientLight: readonly [string, string] = [
     colors.light.CEFR[CEFR[0]],
     colors.light.CEFR[CEFR.at(-1)!],
   ];
-  const deckDarkPrimary = deckColors?.dark.primary ?? colors.dark.primary;
-  const deckDarkSecondary = deckColors?.dark.secondary ?? colors.dark.secondary;
 
   /**
    * Destructure styles
@@ -100,7 +97,6 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     cardHeaderStyle,
     titleContainer,
     gradientTextContainer,
-    titleStyle,
     descriptionStyle,
     CEFRGradientStyle,
     CEFRLabelStyle,
@@ -275,17 +271,12 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
           <View style={cardHeaderStyle}>
             <View style={titleContainer}>
               <View style={gradientTextContainer}>
-                {deckColors?.dark && deckColors.light && (
-                  <GradientText
-                    fontSize={20}
-                    fontWeight={700}
-                    colors={[deckDarkPrimary, deckDarkSecondary]}
-                    text={title}
-                  />
-                )}
-                {!deckColors?.dark && !deckColors?.light && (
-                  <Text style={titleStyle}>{title}</Text>
-                )}
+                <GradientText
+                  fontSize={20}
+                  fontWeight={700}
+                  colors={[deck.colors.dark.primary, deck.colors.dark.secondary]}
+                  text={title}
+                />
               </View>
             </View>
             <Text style={descriptionStyle}>{description}</Text>
@@ -303,7 +294,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
             />
             <AnimatedPressable
               style={[buttonOpen, animatedStoryButtonStyle, {
-                borderColor: deckDarkPrimary,
+                borderColor: deck.colors.dark.primary,
               }]}
               onPressIn={handleStoryPressIn}
               onPressOut={handleStoryPressOut}
@@ -312,16 +303,18 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
             >
               <View style={buttonOpenContent}>
                 <View style={buttonOpenTitleStyle}>
-                  <Text style={[buttonOpenText, { color: deckDarkPrimary }]}>Show Story</Text>
+                  <Text style={[buttonOpenText, {
+                    color: deck.colors.dark.primary
+                  }]}>Show Story</Text>
                   <Animated.View style={animatedStoryButtonIconStyle}>
                     <SVGArrowUpFromLine
-                      color={deckDarkPrimary}
+                      color={deck.colors.dark.primary}
                       height="18px"
                       width="18px"
                     />
                   </Animated.View>
                 </View>
-                <Text style={[storyProgressTextStyle, { color: deckDarkPrimary }]}>
+                <Text style={[storyProgressTextStyle, { color: deck.colors.dark.primary }]}>
                   ({deckCompletionPercent}%)
                 </Text>
               </View>
@@ -373,7 +366,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
              * Rank Counts
              */
           }
-          <View style={[badgeContainerStyle, { backgroundColor: deckDarkSecondary }]}>
+          <View style={[badgeContainerStyle, { backgroundColor: deck.colors.dark.secondary }]}>
             <View style={badgeCountContainerStyle}>
               <Text style={badgeCountTextStyle}>{rankCounts.fnew}</Text>
               <MaterialIcons color={colors.light.text} size={badgeIconSize} name="fiber-new" />
@@ -403,7 +396,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
           <View style={cardFooterStyle}>
             <LinkButton
               handler={() => handleDeckSelect(deck)}
-              deckColors={deckColors}
+              deckColors={deck.colors}
             >
               Review this deck
             </LinkButton>

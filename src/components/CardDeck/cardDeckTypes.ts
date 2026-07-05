@@ -31,7 +31,7 @@ export interface CardDeck {
 	image: ImageSourcePropType | undefined;
 	wordChoices: DeckWordChoice[];
 	place?: string;
-	colors?: DeckColors;
+	colors: DeckColors;
 	story?: StorySegment[];
 }
 

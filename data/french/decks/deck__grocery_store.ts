@@ -19,6 +19,16 @@ export const DeckGroceryStore: CardDeck = {
 	words: [],
 	image: airportOiseau,
 	wordChoices: [],
+	colors: {
+		dark: {
+			primary: '#1C5B5E',
+			secondary: '#762D3D',
+		},
+		light: {
+			primary: '#ffffff',
+			secondary: '#ffffff',
+		},
+	},
 	wordIds: [
 		'word_interjection_salut',
 		'word_interjection_bonjour',

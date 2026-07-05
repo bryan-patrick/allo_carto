@@ -8,10 +8,7 @@ import WordRank from "../WordRank";
  * WordCardHeader Component
  */
 export default function WordCardHeader() {
-  const { /*cardDeckState,*/ currentCard } = useCardDeck();
-
-  // const gradientLight = cardDeckState.cardDeck.colors?.light.primary ?? colors.light.primary;
-  // const gradientDark = cardDeckState.cardDeck.colors?.dark.primary ?? colors.dark.primary;
+  const { currentCard } = useCardDeck();
 
   /**
    * Destructure styles

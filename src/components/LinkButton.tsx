@@ -77,7 +77,7 @@ export default function LinkButton({
   let currentLinkTextStyles = linkText;
   let deckColorStyles = {};
 
-  if (deckColors?.dark && deckColors.light) {
+  if (deckColors) {
     deckColorStyles = {
       backgroundColor: deckColors.dark.secondary,
       shadowColor: deckColors.dark.primary,
