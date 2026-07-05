@@ -314,9 +314,9 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
             />
             <View style={[storyProgressContainerStyle]}>
               <View style={[storyProgressHeaderStyle, { borderColor: deck.colors.dark.primary }]}>
-                <Text style={storyProgressTitleStyle}>Story Progress</Text>
+                <Text style={[storyProgressTitleStyle, { color: deck.colors.dark.primary }]}>Story Progress</Text>
                 <Text style={[storyProgressTextStyle, { color: deck.colors.dark.primary }]}>
-                  ({deckCompletionPercent}%)
+                  {deckCompletionPercent}%
                 </Text>
               </View>
               {
@@ -517,8 +517,8 @@ const styles = StyleSheet.create({
   },
   storyProgressContainerStyle: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
+    paddingVertical: 16,
+    gap: 8,
   },
   storyProgressHeaderStyle: {
     display: 'flex',
@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   storyProgressTitleStyle: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: 'lexend-600'
   },
   storyProgressStyle: {
@@ -536,8 +536,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   storyProgressTextStyle: {
-    fontFamily: 'azeret-mono-600',
-    fontSize: 14,
+    fontFamily: 'lexend-600',
+    fontSize: 16,
   },
   storyProgressButtonContainerStyle: {
     display: 'flex',
