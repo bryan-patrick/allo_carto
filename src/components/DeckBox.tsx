@@ -253,6 +253,55 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
             <Text style={descriptionStyle}>{description}</Text>
             {
               /**
+               * CEFR Bar
+               */
+            }
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              colors={CEFRGradientLight}
+              style={CEFRGradientStyle}
+            >
+              <Text style={CEFRLabelStyle}>CEFR</Text>
+              <Text style={CEFRTextStyle}>{CEFR.join(' - ')}</Text>
+            </LinearGradient>
+            {
+              /**
+               * Deck Image
+               */
+            }
+            <View style={imageContainerStyle}>
+              <ImageBackground source={image} style={imageStyle} />
+            </View>
+            {
+              /**
+               * Rank Counts
+               */
+            }
+            <View style={[badgeContainerStyle, { backgroundColor: deck.colors.dark.secondary }]}>
+              <View style={badgeCountContainerStyle}>
+                <Text style={badgeCountTextStyle}>{rankCounts.fnew}</Text>
+                <MaterialIcons color={colors.light.text} size={badgeIconSize} name="fiber-new" />
+              </View>
+              <View style={badgeCountContainerStyle}>
+                <Text style={badgeCountTextStyle}>{rankCounts.bronze}</Text>
+                <MaterialIcons color={colors.light.text} size={badgeIconSize} name="stars" />
+              </View>
+              <View style={badgeCountContainerStyle}>
+                <Text style={badgeCountTextStyle}>{rankCounts.silver}</Text>
+                <MaterialIcons color={colors.light.text} size={badgeIconSize} name="military-tech" />
+              </View>
+              <View style={badgeCountContainerStyle}>
+                <Text style={badgeCountTextStyle}>{rankCounts.gold}</Text>
+                <MaterialIcons color={colors.light.text} size={badgeIconSize} name="emoji-events" />
+              </View>
+              <View style={badgeCountContainerStyle}>
+                <Text style={badgeCountTextStyle}>{rankCounts.diamond}</Text>
+                <MaterialIcons color={colors.light.text} size={badgeIconSize} name="diamond" />
+              </View>
+            </View>
+            {
+              /**
                * Modal
                */
             }
@@ -329,55 +378,6 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
                   View Cards
                 </SecondaryButton>
               </View>
-            </View>
-          </View>
-          {
-            /**
-             * CEFR Bar
-             */
-          }
-          <LinearGradient
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            colors={CEFRGradientLight}
-            style={CEFRGradientStyle}
-          >
-            <Text style={CEFRLabelStyle}>CEFR</Text>
-            <Text style={CEFRTextStyle}>{CEFR.join(' - ')}</Text>
-          </LinearGradient>
-          {
-            /**
-             * Deck Image
-             */
-          }
-          <View style={imageContainerStyle}>
-            <ImageBackground source={image} style={imageStyle} />
-          </View>
-          {
-            /**
-             * Rank Counts
-             */
-          }
-          <View style={[badgeContainerStyle, { backgroundColor: deck.colors.dark.secondary }]}>
-            <View style={badgeCountContainerStyle}>
-              <Text style={badgeCountTextStyle}>{rankCounts.fnew}</Text>
-              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="fiber-new" />
-            </View>
-            <View style={badgeCountContainerStyle}>
-              <Text style={badgeCountTextStyle}>{rankCounts.bronze}</Text>
-              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="stars" />
-            </View>
-            <View style={badgeCountContainerStyle}>
-              <Text style={badgeCountTextStyle}>{rankCounts.silver}</Text>
-              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="military-tech" />
-            </View>
-            <View style={badgeCountContainerStyle}>
-              <Text style={badgeCountTextStyle}>{rankCounts.gold}</Text>
-              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="emoji-events" />
-            </View>
-            <View style={badgeCountContainerStyle}>
-              <Text style={badgeCountTextStyle}>{rankCounts.diamond}</Text>
-              <MaterialIcons color={colors.light.text} size={badgeIconSize} name="diamond" />
             </View>
           </View>
           {
@@ -468,6 +468,7 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     paddingBottom: 2,
     borderColor: colors.dark.border,
+    borderTopWidth: 1,
     borderBottomWidth: 1
   },
   CEFRLabelStyle: {
@@ -515,7 +516,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 8,
   },
   storyProgressContainerStyle: {
-    borderTopWidth: 1,
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 12,

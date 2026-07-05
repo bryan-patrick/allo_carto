@@ -56,7 +56,6 @@ export default function SecondaryButton({
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
     top: top.value,
-    borderRadius: 8,
     shadowOffset: {
       width: 0,
       height: shadowOffsetHeight.value,
@@ -130,7 +129,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: colors.dark.border,
     backgroundColor: colors.dark.primary,
-    borderRadius: 6,
+    borderRadius: 4,
     borderWidth: 2,
     paddingHorizontal: 16,
     paddingVertical: 8,
