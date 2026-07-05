@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
   completeOverlayStyle: {
     backgroundColor: colors.light.success,
     borderColor: colors.dark.success,
+    opacity: 0.75
   },
   containerStyle: {
     position: 'relative',
