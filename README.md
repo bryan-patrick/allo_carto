@@ -81,21 +81,15 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 ## TODO
 
 - App icon and cleaning out the images dir
-- Deck progress (progress bar, count, etc.)
 - Rank indicator while doing a deck
-- accessibility roles
 - SVG chapter and progress map (visual and data)
-- Place hero image frame (like a polaroid or something? Idk)
+- Place hero image frame (like a polaroid or something? Idk. I was thinking travel polaroids, with like a handwritten location / date or something)
 - Deck count on place selection view
 - Word count per day/history feature along with words learned per day delta
 - You should probably get rid of the undraw SVG on the "Learn more words!" card
 - Card Collection page
 - Fix portrait orientation (landscape should be disabled)
-- Add "repeat deck" on the results view
-- Mailing link on cards to email me with bad translations
-- Completion steps (Results -> Experience gain + coins -> )
 - Look into how to use the dynamic island
-- fix the min amount problem for reverse dir cards (fnew has 4 left)
 
 ## Free art and assets credits
 
