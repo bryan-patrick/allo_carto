@@ -10,8 +10,14 @@ export const DeckStreetMarketTreasureHunt: CardDeck = {
 	image: streetMarketTreasureHunt,
 	wordChoices: [],
 	colors: {
-		dark: '#3A2421',
-		light: '#925314',
+		dark: {
+			primary: '#3A2421',
+			secondary: '#925314',
+		},
+		light: {
+			primary: '#ffffff',
+			secondary: '#ffffff',
+		},
 	},
 	wordIds: [
 		'word_noun_marche',

@@ -66,7 +66,6 @@ export default function DeckBoxModal({
   const deckCompletionPercent = deckCompletionTotal === 0
     ? 0
     : Math.round((deckCompletionCount / deckCompletionTotal) * 100);
-  const deckDarkColor = deck.colors?.dark ?? colors.dark.background;
 
   /**
    * Animation vars
@@ -143,18 +142,18 @@ export default function DeckBoxModal({
         <View style={modalView}>
           <View style={modalTitleStyle}>
             <GradientText
-              colors={[deck.colors?.dark ?? '', deck.colors?.light ?? '']}
+              colors={[deck.colors.dark.primary, deck.colors.dark.secondary]}
               fontSize={18}
               fontWeight={700}
               text={deck.title}
             />
           </View>
-          <View style={[modalHeaderStyle, { borderColor: deckDarkColor }]}>
-            <Text style={[modalHeaderTextStyle, { color: deckDarkColor }]}>
-              Deck Completion: <Text style={[modalHeaderMonospaceTextStyle, { color: deckDarkColor }]}>{deckCompletionPercent}%</Text>
+          <View style={[modalHeaderStyle, { borderColor: deck.colors.dark.primary }]}>
+            <Text style={[modalHeaderTextStyle, { color: deck.colors.dark.primary }]}>
+              Deck Completion: <Text style={[modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary }]}>{deckCompletionPercent}%</Text>
             </Text>
-            <Text style={[modalHeaderTextStyle, { color: deckDarkColor }]}>
-              Words Seen: <Text style={[modalHeaderMonospaceTextStyle, { color: deckDarkColor }]}>{wordsSeenCount}/{deck.wordIds.length}</Text>
+            <Text style={[modalHeaderTextStyle, { color: deck.colors.dark.primary }]}>
+              Words Seen: <Text style={[modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary }]}>{wordsSeenCount}/{deck.wordIds.length}</Text>
             </Text>
           </View>
           {
@@ -228,15 +227,15 @@ export default function DeckBoxModal({
           }
           <Animated.View style={buttonCloseContainer}>
             <AnimatedPressable
-              style={[buttonClose, animatedButtonStyle, { borderColor: deckDarkColor }]}
+              style={[buttonClose, animatedButtonStyle, { borderColor: deck.colors.dark.primary }]}
               onPressIn={handlePressIn}
               onPressOut={handlePressOut}
               onPress={() => setModalVisible(!modalVisible)}>
               <View style={buttonCloseContent}>
-                <Text style={[buttonCloseText, { color: deckDarkColor }]}>Hide Story</Text>
+                <Text style={[buttonCloseText, { color: deck.colors.dark.primary }]}>Hide Story</Text>
                 <Animated.View style={animatedButtonIconStyle}>
                   <SVGArrowDownToLine
-                    color={deckDarkColor}
+                    color={deck.colors.dark.primary}
                     height="20px"
                     width="20px"
                   />

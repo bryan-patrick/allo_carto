@@ -10,8 +10,14 @@ export const DeckElevatorEpics: CardDeck = {
 	words: [],
 	wordChoices: [],
 	colors: {
-		dark: '#500B25',
-		light: '#8A184B',
+		dark: {
+			primary: '#500B25',
+			secondary: '#8A184B',
+		},
+		light: {
+			primary: '#ffffff',
+			secondary: '#ffffff',
+		},
 	},
 	wordIds: [
 		'word_noun_bouton',

@@ -73,6 +73,16 @@ export const mockCardDeck: CardDeck = {
 	wordIds: mockWords.map(word => word.id),
 	words: mockWords,
 	image: undefined,
+	colors: {
+		dark: {
+			primary: '#111111',
+			secondary: '#333333',
+		},
+		light: {
+			primary: '#ffffff',
+			secondary: '#ffffff',
+		},
+	},
 	wordChoices: mockWords.map(word => ({
 		englishWords: word.englishWords,
 		partOfSpeech: word.partOfSpeech,

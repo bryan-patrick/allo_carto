@@ -14,8 +14,14 @@ export const DeckLostRoomKeys: CardDeck = {
 	image: lostRoomKeys,
 	wordChoices: [],
 	colors: {
-		dark: '#402E0F',
-		light: '#634718',
+		dark: {
+			primary: '#402E0F',
+			secondary: '#634718',
+		},
+		light: {
+			primary: '#ffffff',
+			secondary: '#ffffff',
+		},
 	},
 	wordIds: [
 		'word_noun_cle',

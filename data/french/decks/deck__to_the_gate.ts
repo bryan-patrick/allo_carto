@@ -14,8 +14,14 @@ export const DeckToTheGate: CardDeck = {
 	image: toTheGate,
 	wordChoices: [],
 	colors: {
-		dark: '#31223A',
-		light: '#583C68',
+		dark: {
+			primary: '#31223A',
+			secondary: '#583C68',
+		},
+		light: {
+			primary: '#ffffff',
+			secondary: '#ffffff',
+		},
 	},
 	wordIds: [
 		'word_verb_entrer',

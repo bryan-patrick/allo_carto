@@ -4,7 +4,7 @@ import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import colors from '../app/colors';
-import { DeckColors } from './CardDeck/cardDeckTypes';
+import type { DeckColors } from './CardDeck/cardDeckTypes';
 import SVGRightArrow from './SVG/SVGRightArrow';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -69,19 +69,14 @@ export default function LinkButton({
     linkButton,
     linkText,
     linkTextRow,
-    hoveredLinkButton,
-    hoveredLinkText,
-    pressedLinkText
   } = styles;
-  let currentLinkButtonStyles = linkButton;
-  let currentLinkTextStyles = linkText;
   let deckColorStyles = {};
 
-  if (deckColors?.dark && deckColors.light) {
+  if (deckColors) {
     deckColorStyles = {
-      backgroundColor: deckColors.light,
-      shadowColor: deckColors.dark,
-      borderColor: deckColors.dark
+      backgroundColor: deckColors.dark.secondary,
+      shadowColor: deckColors.dark.primary,
+      borderColor: deckColors.dark.primary
     };
   }
 
@@ -94,7 +89,6 @@ export default function LinkButton({
     href
   });
 
-  const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
 
   /**
@@ -103,12 +97,9 @@ export default function LinkButton({
   const top = useSharedValue(0);
   const shadowOffsetHeight = useSharedValue(8);
 
-  const animatedContainerStyle = useAnimatedStyle(() => ({
+  const animatedButtonStyle = useAnimatedStyle(() => ({
     top: top.value,
-    borderRadius: 8
-  }));
-
-  const animatedShadowStyle = useAnimatedStyle(() => ({
+    borderRadius: 8,
     shadowOffset: {
       width: 0,
       height: shadowOffsetHeight.value
@@ -162,16 +153,6 @@ export default function LinkButton({
   }
 
   /**
-   * Pressed styles before hovered styles
-   */
-  if (isPressed) {
-    currentLinkTextStyles = { ...linkText, ...pressedLinkText };
-  } else if (isHovered) {
-    currentLinkButtonStyles = { ...linkButton, ...hoveredLinkButton };
-    currentLinkTextStyles = { ...linkText, ...hoveredLinkText };
-  }
-
-  /**
    * Pull in props when used for a navigation link button.
    */
   let allTheProps = { ...pressableProps, ...props };
@@ -187,7 +168,7 @@ export default function LinkButton({
 
     return (
       <View style={linkTextRow}>
-        <Text style={currentLinkTextStyles}>{labelText}</Text>
+        <Text style={linkText}>{labelText}</Text>
         {useArrow && (
           <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={arrowColor} />
         )}
@@ -199,20 +180,16 @@ export default function LinkButton({
    * Render the thing
    */
   return (
-    <Animated.View style={animatedContainerStyle}>
-      <AnimatedPressable
-        {...allTheProps}
-        onHoverIn={() => setIsHovered(true)}
-        onHoverOut={() => setIsHovered(false)}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        style={[currentLinkButtonStyles, deckColorStyles, animatedShadowStyle, style]}
-        disabled={disabled}
-      >
-        {SVGElement}
-        <LinkText />
-      </AnimatedPressable>
-    </Animated.View>
+    <AnimatedPressable
+      {...allTheProps}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={[linkButton, deckColorStyles, animatedButtonStyle, style]}
+      disabled={disabled}
+    >
+      {SVGElement}
+      <LinkText />
+    </AnimatedPressable>
   );
 };
 
@@ -244,13 +221,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 4,
   },
-  hoveredLinkButton: {
-    borderRadius: 4,
-    borderWidth: 2,
-  },
-  hoveredLinkText: {
-    color: colors.light.text,
-  },
-  pressedLinkText: {
-  }
 })

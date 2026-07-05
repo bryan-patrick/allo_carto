@@ -31,7 +31,7 @@ const colors = {
 	},
 	light: {
 		primary: '#7BADA6',
-		secondary: '#E09FAD',
+		secondary: '#d0e2df',
 		text: '#F7F7F7',
 		background: '#ACC3BB',
 		border: '#465B5D',
