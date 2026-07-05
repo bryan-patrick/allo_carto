@@ -126,8 +126,8 @@ export default function CardDeckRankSelectView() {
   ]);
 
   const { colors: deckColors, title } = cardDeckState.cardDeck;
-  const gradientDark = deckColors?.dark ?? '#000000';
-  const gradientLight = deckColors?.light ?? '#ffffff';
+  const gradientDark = deckColors?.dark.primary ?? '#000000';
+  const gradientLight = deckColors?.dark.secondary ?? '#ffffff';
   const deckWordCount = cardDeckState.cardDeck.wordIds.length;
 
   /**

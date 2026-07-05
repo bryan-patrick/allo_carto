@@ -87,6 +87,8 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     colors.light.CEFR[CEFR[0]],
     colors.light.CEFR[CEFR.at(-1)!],
   ];
+  const deckDarkPrimary = deckColors?.dark.primary ?? colors.dark.primary;
+  const deckDarkSecondary = deckColors?.dark.secondary ?? colors.dark.secondary;
 
   /**
    * Destructure styles
@@ -277,7 +279,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
                   <GradientText
                     fontSize={20}
                     fontWeight={700}
-                    colors={[deckColors.dark, deckColors.light]}
+                    colors={[deckDarkPrimary, deckDarkSecondary]}
                     text={title}
                   />
                 )}
@@ -301,7 +303,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
             />
             <AnimatedPressable
               style={[buttonOpen, animatedStoryButtonStyle, {
-                borderColor: deckColors?.dark,
+                borderColor: deckDarkPrimary,
               }]}
               onPressIn={handleStoryPressIn}
               onPressOut={handleStoryPressOut}
@@ -310,16 +312,16 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
             >
               <View style={buttonOpenContent}>
                 <View style={buttonOpenTitleStyle}>
-                  <Text style={[buttonOpenText, { color: deckColors?.dark }]}>Show Story</Text>
+                  <Text style={[buttonOpenText, { color: deckDarkPrimary }]}>Show Story</Text>
                   <Animated.View style={animatedStoryButtonIconStyle}>
                     <SVGArrowUpFromLine
-                      color={deckColors?.dark}
+                      color={deckDarkPrimary}
                       height="18px"
                       width="18px"
                     />
                   </Animated.View>
                 </View>
-                <Text style={[storyProgressTextStyle, { color: deckColors?.dark }]}>
+                <Text style={[storyProgressTextStyle, { color: deckDarkPrimary }]}>
                   ({deckCompletionPercent}%)
                 </Text>
               </View>
@@ -371,7 +373,7 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
              * Rank Counts
              */
           }
-          <View style={[badgeContainerStyle, { backgroundColor: deckColors?.light ?? colors.dark.primary }]}>
+          <View style={[badgeContainerStyle, { backgroundColor: deckDarkSecondary }]}>
             <View style={badgeCountContainerStyle}>
               <Text style={badgeCountTextStyle}>{rankCounts.fnew}</Text>
               <MaterialIcons color={colors.light.text} size={badgeIconSize} name="fiber-new" />
@@ -444,9 +446,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     display: 'flex',
     borderBottomWidth: 1,
-    borderRadius: 8,
-    borderBottomRightRadius: 0,
-    borderBottomLeftRadius: 0,
+    paddingBottom: 16,
     borderColor: colors.dark.border,
   },
   titleContainer: {
@@ -534,12 +534,18 @@ const styles = StyleSheet.create({
   },
   buttonOpen: {
     alignItems: 'flex-start',
-    borderTopWidth: 1,
-    backgroundColor: colors.light.background,
+    borderWidth: 1,
+    backgroundColor: '#d8cbbd',
     borderColor: colors.dark.border,
     gap: 8,
+    borderRadius: 8,
     paddingHorizontal: 16,
-    paddingVertical: 8
+    paddingVertical: 8,
+    marginHorizontal: 16,
+    shadowColor: colors.dark.border,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
   },
   buttonOpenContent: {
     display: 'flex',
@@ -566,7 +572,6 @@ const styles = StyleSheet.create({
   storyProgressStyle: {
     alignItems: 'center',
     borderColor: colors.dark.border,
-    backgroundColor: colors.light.background,
     flexDirection: 'row',
   },
   storyProgressTextStyle: {

@@ -17,8 +17,14 @@ export const DeckTroubleInTheTerminal: CardDeck = {
 	image: troubleInTerminal,
 	wordChoices: [],
 	colors: {
-		dark: '#072725',
-		light: '#065653',
+		dark: {
+			primary: '#072725',
+			secondary: '#065653',
+		},
+		light: {
+			primary: '#ffffff',
+			secondary: '#ffffff',
+		},
 	},
 	wordIds: [
 		'word_verb_entrer',

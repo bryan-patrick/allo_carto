@@ -4,7 +4,7 @@ import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import colors from '../app/colors';
-import { DeckColors } from './CardDeck/cardDeckTypes';
+import type { DeckColors } from './CardDeck/cardDeckTypes';
 import SVGRightArrow from './SVG/SVGRightArrow';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -79,9 +79,9 @@ export default function LinkButton({
 
   if (deckColors?.dark && deckColors.light) {
     deckColorStyles = {
-      backgroundColor: deckColors.light,
-      shadowColor: deckColors.dark,
-      borderColor: deckColors.dark
+      backgroundColor: deckColors.dark.secondary,
+      shadowColor: deckColors.dark.primary,
+      borderColor: deckColors.dark.primary
     };
   }
 
