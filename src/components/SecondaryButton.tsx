@@ -106,6 +106,7 @@ export default function SecondaryButton({
       ]}
       onPressIn={handleOnPressIn}
       onPressOut={handleOnPressOut}
+      hitSlop={4}
     >
       <View style={buttonTextRowStyle}>
         <Text style={[
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 2,
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     gap: 8,
     shadowColor: colors.dark.border,
     shadowOffset: { width: 0, height: 6 },
