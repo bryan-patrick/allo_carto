@@ -278,7 +278,12 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
                * Rank Counts
                */
             }
-            <View style={[badgeContainerStyle, { backgroundColor: deck.colors.dark.secondary }]}>
+            <LinearGradient
+              style={[badgeContainerStyle]}
+              colors={[deck.colors.dark.secondary, deck.colors.dark.primary]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
               <View style={badgeCountContainerStyle}>
                 <Text style={badgeCountTextStyle}>{rankCounts.fnew}</Text>
                 <MaterialIcons color={colors.light.text} size={badgeIconSize} name="fiber-new" />
@@ -299,7 +304,7 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
                 <Text style={badgeCountTextStyle}>{rankCounts.diamond}</Text>
                 <MaterialIcons color={colors.light.text} size={badgeIconSize} name="diamond" />
               </View>
-            </View>
+            </LinearGradient>
             {
               /**
                * Modal
