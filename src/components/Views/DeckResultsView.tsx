@@ -64,8 +64,6 @@ export default function DeckResultsView() {
     deckDetailsContainerStyle,
     resultsContainerStyle,
     wordsFlexRows,
-    imageContainerStyle,
-    imageStyle,
     finishedLinkStyle
   } = styles;
 
@@ -86,12 +84,6 @@ export default function DeckResultsView() {
             />
             <Text style={titleStyle}> deck.</Text>
           </View>
-          {/* <View style={imageContainerStyle}>
-            <ImageBackground
-              source={cardDeckState.cardDeck.image}
-              style={imageStyle}
-            />
-          </View> */}
         </View>
         <View style={wordsFlexRows}>
           <ResultsList

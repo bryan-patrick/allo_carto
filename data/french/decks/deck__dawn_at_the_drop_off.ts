@@ -18,7 +18,7 @@ export const DeckDawnAtTheDropOff: CardDeck = {
 			secondary: '#912741',
 		},
 		light: {
-			primary: '#ffffff',
+			primary: '#ffefef',
 			secondary: '#ffffff',
 		},
 	},

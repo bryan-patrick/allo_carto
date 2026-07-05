@@ -9,8 +9,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from "react";
-import { ImageBackground, Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { ImageBackground, StyleSheet, Text, View, type ViewStyle } from "react-native";
 import colors from "../app/colors";
 import sharedStyles from "../app/sharedStyles";
 import { useUserContext } from "../db/useUserContext";
@@ -18,9 +17,9 @@ import type { WordProgressKey } from "../util/wordRanks";
 import type { CardDeck } from "./CardDeck/cardDeckTypes";
 import DeckBoxModal from "./DeckBoxModal";
 import GradientText from "./GradientText";
+import SecondaryButton from "./SecondaryButton";
 import SVGArrowUpFromLine from "./SVG/SVGArrowUpFromLine";
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+import SVGRightArrow from "./SVG/SVGRightArrow";
 
 const plopStyleByProgress: Record<WordProgressKey, ViewStyle> = {
   unseen: {
@@ -60,12 +59,13 @@ const plopStyleByProgress: Record<WordProgressKey, ViewStyle> = {
  */
 interface SelectCardDeckProps {
   deck: CardDeck;
+  placeId?: string;
 }
 
 /**
  * DeckBox component
  */
-export default function DeckBox({ deck }: SelectCardDeckProps) {
+export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
   const user = useUserContext();
   const { cardDeckDispatch } = useCardDeck();
   const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
@@ -107,12 +107,14 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     badgeCountContainerStyle,
     badgeCountTextStyle,
     cardFooterStyle,
-    buttonOpen,
-    buttonOpenContent,
-    buttonOpenTitleStyle,
-    buttonOpenText,
+    storyProgressContainerStyle,
+    storyProgressHeaderStyle,
+    storyProgressTitleStyle,
     storyProgressStyle,
     storyProgressTextStyle,
+    storyProgressButtonContainerStyle,
+    storyProgressButtonStyle,
+    storyProgressButtonTextStyle,
     plopContainerStyle,
     plopStyle,
   } = styles;
@@ -203,53 +205,6 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
   ]);
 
   /**
-   * Animation vars
-   */
-  const storyButtonTranslateY = useSharedValue(0);
-  const storyButtonIconTranslateY = useSharedValue(0);
-
-  const animatedStoryButtonStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: storyButtonTranslateY.value,
-      },
-    ],
-  }));
-
-  const animatedStoryButtonIconStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: storyButtonIconTranslateY.value,
-      },
-    ],
-  }));
-
-  /**
-   * StoryButton press animation handlers
-   */
-  function handleStoryPressIn() {
-    storyButtonTranslateY.value = withTiming(-6, {
-      duration: 100,
-      easing: Easing.inOut(Easing.ease),
-    });
-    storyButtonIconTranslateY.value = withTiming(-4, {
-      duration: 100,
-      easing: Easing.inOut(Easing.ease),
-    });
-  }
-
-  function handleStoryPressOut() {
-    storyButtonTranslateY.value = withTiming(0, {
-      duration: 140,
-      easing: Easing.out(Easing.ease),
-    });
-    storyButtonIconTranslateY.value = withTiming(0, {
-      duration: 140,
-      easing: Easing.out(Easing.ease),
-    });
-  }
-
-  /**
    * Refresh story data and show modal
    */
   async function handleShowStory() {
@@ -259,6 +214,19 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
     ]);
 
     setModalVisible(true);
+  }
+
+  /**
+   * Open the full card list for this deck.
+   */
+  function handleViewCards() {
+    router.push({
+      pathname: '/ViewCards',
+      params: {
+        deckTitle: deck.title,
+        placeId,
+      },
+    });
   }
 
   /**
@@ -274,7 +242,10 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
                 <GradientText
                   fontSize={20}
                   fontWeight={700}
-                  colors={[deck.colors.dark.primary, deck.colors.dark.secondary]}
+                  colors={[
+                    deck.colors.dark.primary,
+                    deck.colors.dark.secondary
+                  ]}
                   text={title}
                 />
               </View>
@@ -292,28 +263,9 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
               setModalVisible={setModalVisible}
               wordProgressKeyByWordId={wordProgressKeyByWordId}
             />
-            <AnimatedPressable
-              style={[buttonOpen, animatedStoryButtonStyle, {
-                borderColor: deck.colors.dark.primary,
-              }]}
-              onPressIn={handleStoryPressIn}
-              onPressOut={handleStoryPressOut}
-              onPress={handleShowStory}
-              hitSlop={4}
-            >
-              <View style={buttonOpenContent}>
-                <View style={buttonOpenTitleStyle}>
-                  <Text style={[buttonOpenText, {
-                    color: deck.colors.dark.primary
-                  }]}>Show Story</Text>
-                  <Animated.View style={animatedStoryButtonIconStyle}>
-                    <SVGArrowUpFromLine
-                      color={deck.colors.dark.primary}
-                      height="18px"
-                      width="18px"
-                    />
-                  </Animated.View>
-                </View>
+            <View style={[storyProgressContainerStyle]}>
+              <View style={[storyProgressHeaderStyle, { borderColor: deck.colors.dark.primary }]}>
+                <Text style={storyProgressTitleStyle}>Story Progress</Text>
                 <Text style={[storyProgressTextStyle, { color: deck.colors.dark.primary }]}>
                   ({deckCompletionPercent}%)
                 </Text>
@@ -337,7 +289,47 @@ export default function DeckBox({ deck }: SelectCardDeckProps) {
                   })}
                 </View>
               </View>
-            </AnimatedPressable>
+              <View style={storyProgressButtonContainerStyle}>
+                <SecondaryButton
+                  style={[storyProgressButtonStyle, {
+                    backgroundColor: deck.colors.dark.secondary,
+                    borderColor: deck.colors.dark.primary,
+                    shadowColor: deck.colors.dark.primary,
+                  }]}
+                  textStyle={storyProgressButtonTextStyle}
+                  onPress={handleShowStory}
+                  hitSlop={4}
+                  SVGElement={
+                    <SVGArrowUpFromLine
+                      color={colors.light.text}
+                      height="14px"
+                      width="14px"
+                    />
+                  }
+                >
+                  Show Story
+                </SecondaryButton>
+                <SecondaryButton
+                  style={[storyProgressButtonStyle, {
+                    backgroundColor: deck.colors.dark.secondary,
+                    borderColor: deck.colors.dark.primary,
+                    shadowColor: deck.colors.dark.primary,
+                  }]}
+                  textStyle={storyProgressButtonTextStyle}
+                  onPress={handleViewCards}
+                  hitSlop={4}
+                  SVGElement={
+                    <SVGRightArrow
+                      height="14px"
+                      width="14px"
+                      color={colors.light.text}
+                    />
+                  }
+                >
+                  View Cards
+                </SecondaryButton>
+              </View>
+            </View>
           </View>
           {
             /**
@@ -424,8 +416,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 24,
     borderWidth: 8,
-    marginRight: 8,
-    marginLeft: 8,
     padding: 4,
     borderColor: colors.light.border,
     boxShadow: `0 20px 0 ${colors.dark.border}`,
@@ -439,7 +429,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     display: 'flex',
     borderBottomWidth: 1,
-    paddingBottom: 16,
     borderColor: colors.dark.border,
   },
   titleContainer: {
@@ -525,42 +514,21 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },
-  buttonOpen: {
-    alignItems: 'flex-start',
-    borderWidth: 1,
-    backgroundColor: '#d8cbbd',
-    borderColor: colors.dark.border,
-    gap: 8,
-    borderRadius: 8,
+  storyProgressContainerStyle: {
+    borderTopWidth: 1,
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginHorizontal: 16,
-    shadowColor: colors.dark.border,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
+    paddingVertical: 12,
+    gap: 12,
   },
-  buttonOpenContent: {
+  storyProgressHeaderStyle: {
     display: 'flex',
-    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
-    gap: 4,
+    alignContent: 'center',
   },
-  buttonOpenTitleStyle: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4
-  },
-  buttonOpenText: {
-    color: colors.dark.text,
-    fontFamily: 'lexend-600',
-    fontSize: 16,
-  },
-  storyProgressContainerStyle: {
-    backgroundColor: colors.dark.primary
+  storyProgressTitleStyle: {
+    fontSize: 14,
+    fontFamily: 'lexend-600'
   },
   storyProgressStyle: {
     alignItems: 'center',
@@ -571,15 +539,27 @@ const styles = StyleSheet.create({
     fontFamily: 'azeret-mono-600',
     fontSize: 14,
   },
+  storyProgressButtonContainerStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    gap: 16,
+  },
+  storyProgressButtonStyle: {
+    flexGrow: 1
+  },
+  storyProgressButtonTextStyle: {
+    fontSize: 12,
+  },
   plopContainerStyle: {
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 2,
+    gap: 1,
   },
   plopStyle: {
-    width: 8,
-    height: 4,
+    width: 10,
+    height: 5,
     borderWidth: 1,
   },
 })
