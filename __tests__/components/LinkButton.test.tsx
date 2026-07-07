@@ -64,4 +64,21 @@ describe('<LinkButton />', () => {
       }),
     );
   });
+
+  test('runs handler on press instead of press in', () => {
+    const handler = jest.fn();
+    const { getByText } = render(
+      <LinkButton handler={handler}>
+        Testing handler
+      </LinkButton>
+    );
+
+    fireEvent(getByText('Testing handler'), 'pressIn');
+
+    expect(handler).not.toHaveBeenCalled();
+
+    fireEvent.press(getByText('Testing handler'));
+
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
 });

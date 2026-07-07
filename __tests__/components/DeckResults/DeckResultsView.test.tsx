@@ -145,7 +145,7 @@ describe('<DeckResultsView />', () => {
      * Pressing the finish link should pop back to deck select, so back
      * does not land on completed results again.
      */
-    fireEvent(getByText('Finish'), 'pressIn');
+    fireEvent.press(getByText('Finish'));
     expect(mockRouterDismissTo).toHaveBeenCalledWith({
       pathname: '/CardDeckSelect',
       params: { placeId: 'aeroport-oiseau' },
