@@ -8,6 +8,7 @@ import type { DeckColors } from './CardDeck/cardDeckTypes';
 import SVGRightArrow from './SVG/SVGRightArrow';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const linkButtonShadowHeight = 8;
 
 /**
  * Audio Import
@@ -19,7 +20,7 @@ const tapAudio = require('@/src/app/assets/sounds/tap.wav');
  */
 interface LinkButtonProps extends Omit<PressableProps, 'style'> {
   SVGElement?: ReactElement;
-  handler?: Function;
+  handler?: () => Promise<void> | void;
   children?: ReactNode;
   params?: Record<string, string | string[] | undefined>;
   screen?: string;
@@ -95,7 +96,7 @@ export default function LinkButton({
    * Animation vars
    */
   const top = useSharedValue(0);
-  const shadowOffsetHeight = useSharedValue(8);
+  const shadowOffsetHeight = useSharedValue(linkButtonShadowHeight);
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
     top: top.value,
@@ -122,7 +123,7 @@ export default function LinkButton({
       });
     } else {
       top.value = 0;
-      shadowOffsetHeight.value = 8;
+      shadowOffsetHeight.value = linkButtonShadowHeight;
     }
 
   }, [isPressed, shadowOffsetHeight, top])
@@ -140,19 +141,6 @@ export default function LinkButton({
   }
 
   /**
-   * Side effects
-   */
-  function handlePressIn() {
-    setIsPressed(true);
-    playTapSound();
-    handler();
-  }
-
-  function handlePressOut() {
-    setIsPressed(false);
-  }
-
-  /**
    * Pull in props when used for a navigation link button.
    */
   let allTheProps = { ...pressableProps, ...props };
@@ -160,6 +148,13 @@ export default function LinkButton({
   if (screen) {
     allTheProps = { ...pressableProps, ...props, ...linkProps };
   }
+
+  const {
+    onPress: buttonPress,
+    onPressIn: buttonPressIn,
+    onPressOut: buttonPressOut,
+    ...buttonProps
+  } = allTheProps;
 
   function LinkText() {
     const labelText = typeof children === 'string'
@@ -181,9 +176,20 @@ export default function LinkButton({
    */
   return (
     <AnimatedPressable
-      {...allTheProps}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
+      {...buttonProps}
+      onPress={(event) => {
+        handler();
+        buttonPress?.(event);
+      }}
+      onPressIn={(event) => {
+        setIsPressed(true);
+        playTapSound();
+        buttonPressIn?.(event);
+      }}
+      onPressOut={(event) => {
+        setIsPressed(false);
+        buttonPressOut?.(event);
+      }}
       style={[linkButton, deckColorStyles, animatedButtonStyle, style]}
       disabled={disabled}
     >
@@ -204,10 +210,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dark.primary,
     borderRadius: 8,
     borderWidth: 2,
+    marginBottom: linkButtonShadowHeight,
     padding: 16,
     gap: 8,
     shadowColor: colors.dark.border,
-    shadowOffset: { width: 0, height: 8 },
+    shadowOffset: { width: 0, height: linkButtonShadowHeight },
     shadowOpacity: 1,
     shadowRadius: 0,
   },

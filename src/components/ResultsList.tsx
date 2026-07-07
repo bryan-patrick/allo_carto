@@ -97,8 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: colors.light.border,
-    paddingTop: 1,
-    paddingBottom: 1
+    paddingVertical: 1
   },
   checkMarKContainerStyle: {
     display: 'flex',

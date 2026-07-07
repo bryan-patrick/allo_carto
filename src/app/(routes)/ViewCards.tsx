@@ -49,5 +49,5 @@ export default function ViewCards() {
     placeId,
   });
 
-  return <ViewCardsView deck={deck} deckTitle={deckTitle} />
+  return <ViewCardsView deck={deck} />
 }

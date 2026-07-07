@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   placeContainerStyle: {
     display: 'flex',
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 8,
     backgroundColor: colors.light.background
   },
@@ -135,8 +135,7 @@ const styles = StyleSheet.create({
     marginTop: 16
   },
   placeDescriptionTextStyle: {
-    paddingRight: 16,
-    paddingLeft: 16,
+    paddingHorizontal: 16,
     paddingTop: 8,
     fontFamily: 'lexend-400',
     fontSize: 16,

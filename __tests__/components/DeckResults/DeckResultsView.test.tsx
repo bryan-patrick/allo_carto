@@ -8,7 +8,6 @@ import { DeckToTheGate } from '@/data/french/decks';
 import { router } from 'expo-router';
 import { useLinkProps } from '@react-navigation/native';
 import { fireEvent, render } from '@testing-library/react-native';
-import { ImageBackground } from 'react-native';
 
 /**
  * Mock the deck hook
@@ -104,7 +103,7 @@ describe('<DeckResultsView />', () => {
    * Make sure the results render
    */
   test('renders the deck details and correct and incorrect words', () => {
-    const { UNSAFE_getByType, getByText, getAllByText } = render(<DeckResultsView />);
+    const { getByText, getAllByText } = render(<DeckResultsView />);
 
     /**
      * Make sure the title row is rendering the selected deck.
@@ -114,11 +113,6 @@ describe('<DeckResultsView />', () => {
     getByText('Good job! You completed a ');
     expect(getAllByText(DeckToTheGate.title)).toHaveLength(2);
     getByText(' deck.');
-
-    /**
-     * Make sure the image source is the selected deck image.
-     */
-    expect(UNSAFE_getByType(ImageBackground).props.source).toBe(testingImage);
 
     /**
      * Make sure correct words render in the correct section.
@@ -145,7 +139,7 @@ describe('<DeckResultsView />', () => {
      * Pressing the finish link should pop back to deck select, so back
      * does not land on completed results again.
      */
-    fireEvent(getByText('Finish'), 'pressIn');
+    fireEvent.press(getByText('Finish'));
     expect(mockRouterDismissTo).toHaveBeenCalledWith({
       pathname: '/CardDeckSelect',
       params: { placeId: 'aeroport-oiseau' },

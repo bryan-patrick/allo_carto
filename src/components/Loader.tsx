@@ -214,9 +214,8 @@ const styles = StyleSheet.create({
     borderColor: colors.dark.border,
     borderWidth: 4,
     borderRadius: 12,
-    padding: 20,
-    paddingTop: 40,
-    paddingBottom: 40,
+    paddingHorizontal: 20,
+    paddingVertical: 40,
     transform: [{
       translateX: 0,
     }],
