@@ -152,9 +152,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   ChapterSelectButtonStyle: {
-    padding: 14,
-    paddingRight: 48,
-    paddingLeft: 48,
+    paddingHorizontal: 48,
+    paddingVertical: 14,
     marginBottom: 4,
   },
   ChapterSelectButtonTextStyle: {

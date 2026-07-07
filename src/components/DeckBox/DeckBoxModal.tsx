@@ -1,15 +1,12 @@
 import GradientText from "@/src/components/GradientText";
-import { useEffect, useState } from "react";
-import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import colors from "../app/colors";
-import sharedStyles from "../app/sharedStyles";
-import type { DeckRankCounts } from "../db/queries/getDeckRankCounts";
-import type { WordProgressKey } from "../util/wordRanks";
-import type { CardDeck } from "./CardDeck/cardDeckTypes";
-import SVGArrowDownToLine from "./SVG/SVGArrowDownToLine";
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+import { Alert, Modal, ScrollView, StyleSheet, Text, View } from "react-native";
+import colors from "../../app/colors";
+import sharedStyles from "../../app/sharedStyles";
+import type { DeckRankCounts } from "../../db/queries/getDeckRankCounts";
+import type { WordProgressKey } from "../../util/wordRanks";
+import type { CardDeck } from "../CardDeck/cardDeckTypes";
+import SecondaryButton from "../SecondaryButton";
+import SVGArrowDownToLine from "../SVG/SVGArrowDownToLine";
 
 /**
  * Typing
@@ -46,16 +43,10 @@ export default function DeckBoxModal({
     modalScrollView,
     modalTextContentStyle,
     modalText,
-    buttonCloseContainer,
+    modalFooterStyle,
     buttonClose,
-    buttonCloseContent,
     buttonCloseText,
   } = styles;
-
-  /**
-   * State/prop vars
-   */
-  const [isPressed, setIsPressed] = useState(false);
 
   /**
    * Header deck completion percentage 
@@ -66,65 +57,6 @@ export default function DeckBoxModal({
   const deckCompletionPercent = deckCompletionTotal === 0
     ? 0
     : Math.round((deckCompletionCount / deckCompletionTotal) * 100);
-
-  /**
-   * Animation vars
-   */
-  const top = useSharedValue(0);
-  const iconTranslateY = useSharedValue(0);
-
-  const animatedButtonStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: top.value,
-      },
-    ],
-  }));
-
-  const animatedButtonIconStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: iconTranslateY.value,
-      },
-    ],
-  }));
-
-  /**
-   * Handle animations on pressed
-   */
-  useEffect(() => {
-    if (isPressed) {
-      top.value = withTiming(6, {
-        duration: 100,
-        easing: Easing.inOut(Easing.ease),
-      });
-      iconTranslateY.value = withTiming(4, {
-        duration: 100,
-        easing: Easing.inOut(Easing.ease),
-      });
-    } else {
-      top.value = withTiming(0, {
-        duration: 140,
-        easing: Easing.out(Easing.ease),
-      });
-      iconTranslateY.value = withTiming(0, {
-        duration: 140,
-        easing: Easing.out(Easing.ease),
-      });
-    }
-
-  }, [iconTranslateY, isPressed, top])
-
-  /**
-   * Side effects
-   */
-  function handlePressIn() {
-    setIsPressed(true);
-  }
-
-  function handlePressOut() {
-    setIsPressed(false);
-  }
 
   /**
    * Render the modal
@@ -194,10 +126,6 @@ export default function DeckBoxModal({
                     wordStyle.color = 'transparent';
                     wordStyle.textDecorationColor = colors.light.border;
                     break;
-                  // case "fnew":
-                  //   break;
-                  // case "bronze":
-                  //   break;
                   case "silver":
                     wordStyle.textShadowRadius = 4;
                     break;
@@ -222,27 +150,28 @@ export default function DeckBoxModal({
           </ScrollView>
           {
             /**
-             * Modal Close Button
+             * Modal footer
              */
           }
-          <Animated.View style={buttonCloseContainer}>
-            <AnimatedPressable
-              style={[buttonClose, animatedButtonStyle, { borderColor: deck.colors.dark.primary }]}
-              onPressIn={handlePressIn}
-              onPressOut={handlePressOut}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <View style={buttonCloseContent}>
-                <Text style={[buttonCloseText, { color: deck.colors.dark.primary }]}>Hide Story</Text>
-                <Animated.View style={animatedButtonIconStyle}>
-                  <SVGArrowDownToLine
-                    color={deck.colors.dark.primary}
-                    height="20px"
-                    width="20px"
-                  />
-                </Animated.View>
-              </View>
-            </AnimatedPressable>
-          </Animated.View>
+          <View style={modalFooterStyle}>
+            <SecondaryButton
+              style={[buttonClose, {
+                borderColor: deck.colors.dark.primary,
+                shadowColor: deck.colors.dark.primary,
+              }]}
+              textStyle={[buttonCloseText, { color: deck.colors.dark.primary }]}
+              onPress={() => setModalVisible(!modalVisible)}
+              SVGElement={
+                <SVGArrowDownToLine
+                  color={deck.colors.dark.primary}
+                  height="20px"
+                  width="20px"
+                />
+              }
+            >
+              Hide Story
+            </SecondaryButton>
+          </View>
         </View>
       </View>
     </Modal>
@@ -260,11 +189,11 @@ const { containerMargin } = sharedStyles
 const styles = StyleSheet.create({
   centeredView: {
     position: 'relative',
-    flex: 1,
     padding: containerMargin,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    flex: 1,
   },
   modalView: {
     maxHeight: '65%',
@@ -273,10 +202,10 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     margin: containerMargin,
-    borderWidth: 8,
-    borderBottomWidth: 12,
-    borderTopWidth: 12,
-    borderRadius: 12,
+    borderWidth: 4,
+    borderBottomWidth: 4,
+    borderTopWidth: 4,
+    borderRadius: 16,
     backgroundColor: colors.light.background,
     borderColor: colors.light.background,
     shadowColor: colors.light.border,
@@ -289,7 +218,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTextContentStyle: {
-    padding: 16,
+    padding: 8,
   },
   modalScrollView: {
     borderColor: colors.light.background,
@@ -304,8 +233,8 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     borderWidth: 2,
     borderBottomWidth: 0,
-    borderTopRightRadius: 8,
-    borderTopLeftRadius: 8,
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12,
     width: '100%',
   },
   modalHeaderStyle: {
@@ -334,32 +263,19 @@ const styles = StyleSheet.create({
     lineHeight: 32,
     textAlign: 'left',
   },
-  buttonCloseContainer: {
+  modalFooterStyle: {
     width: '100%',
-    backgroundColor: colors.dark.background,
-    borderBottomRightRadius: 8,
-    borderBottomLeftRadius: 8
-  },
-  buttonClose: {
-    alignItems: 'center',
     backgroundColor: colors.light.background,
-    justifyContent: 'center',
-    padding: 16,
+    padding: 12,
     borderWidth: 2,
     borderTopWidth: 0,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
     borderColor: colors.dark.border,
-    borderBottomRightRadius: 8,
-    borderBottomLeftRadius: 8
   },
-  buttonCloseContent: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
+  buttonClose: {
+    padding: 16,
   },
   buttonCloseText: {
-    color: colors.dark.border,
-    fontFamily: 'lexend-600',
-    textAlign: 'center',
-    fontSize: 16,
   },
 })

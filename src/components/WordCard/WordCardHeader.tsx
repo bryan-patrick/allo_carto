@@ -74,8 +74,7 @@ const styles = StyleSheet.create({
   },
   cardCEFRLevel: {
     width: '100%',
-    paddingRight: 8,
-    paddingLeft: 8,
+    paddingHorizontal: 8,
     fontFamily: 'azeret-mono-600',
     fontSize: 14,
     borderColor: colors.light.border,

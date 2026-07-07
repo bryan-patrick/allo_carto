@@ -20,6 +20,7 @@ interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'
   children?: ReactNode;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  type?: 'primary' | 'secondary';
 }
 
 /**
@@ -52,7 +53,7 @@ export default function SecondaryButton({
    * Animation vars
    */
   const top = useSharedValue(0);
-  const shadowOffsetHeight = useSharedValue(8);
+  const shadowOffsetHeight = useSharedValue(4);
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
     top: top.value,
@@ -67,7 +68,7 @@ export default function SecondaryButton({
    */
   useEffect(() => {
     if (isPressed) {
-      top.value = withTiming(6, {
+      top.value = withTiming(4, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
       });
@@ -78,7 +79,7 @@ export default function SecondaryButton({
       });
     } else {
       top.value = 0;
-      shadowOffsetHeight.value = 6;
+      shadowOffsetHeight.value = 4;
     }
 
   }, [isPressed, shadowOffsetHeight, top]);
@@ -129,17 +130,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: colors.dark.border,
-    backgroundColor: colors.dark.primary,
     borderRadius: 6,
-    borderWidth: 2,
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 12,
     gap: 8,
-    shadowColor: colors.dark.border,
-    shadowOffset: { width: 0, height: 6 },
-    marginBottom: 6, // Match shadow offset height
     shadowOpacity: 1,
     shadowRadius: 0,
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 4 },
+    backgroundColor: colors.light.background,
+    shadowColor: colors.dark.border,
+    marginBottom: 4, // Match shadow offset height
+    color: colors.dark.primary,
   },
   buttonTextRowStyle: {
     alignItems: 'center',
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   buttonTextStyle: {
-    color: colors.light.text,
+    color: colors.dark.text,
     fontFamily: 'lexend-600',
     fontSize: 16,
   },
