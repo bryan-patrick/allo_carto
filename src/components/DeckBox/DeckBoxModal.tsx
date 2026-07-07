@@ -189,11 +189,11 @@ const { containerMargin } = sharedStyles
 const styles = StyleSheet.create({
   centeredView: {
     position: 'relative',
-    flex: 1,
     padding: containerMargin,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    flex: 1,
   },
   modalView: {
     maxHeight: '65%',
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTextContentStyle: {
-    padding: 16,
+    padding: 8,
   },
   modalScrollView: {
     borderColor: colors.light.background,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   modalFooterStyle: {
     width: '100%',
     backgroundColor: colors.light.background,
-    padding: 8,
+    padding: 12,
     borderWidth: 2,
     borderTopWidth: 0,
     borderBottomLeftRadius: 12,

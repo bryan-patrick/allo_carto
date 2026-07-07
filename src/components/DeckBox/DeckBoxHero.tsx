@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   imageStyle: {
     display: 'flex',
     justifyContent: 'flex-end',
-    height: 100,
+    height: 140,
   },
   badgeContainerStyle: {
     display: 'flex',

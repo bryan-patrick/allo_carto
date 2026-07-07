@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   cardInnerStyle: {
     backgroundColor: colors.light.background,
     borderRadius: 24,
-    borderWidth: 6,
+    borderWidth: 4,
     borderColor: colors.light.border,
     boxShadow: `0 20px 0 ${colors.dark.border}`,
   },
