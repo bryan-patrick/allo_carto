@@ -61,10 +61,8 @@ export default function DeckResultsView() {
   const {
     titleStyle,
     titleRowStyle,
-    deckDetailsContainerStyle,
     resultsContainerStyle,
     wordsFlexRows,
-    finishedLinkStyle
   } = styles;
 
   /**
@@ -73,7 +71,7 @@ export default function DeckResultsView() {
   return (
     <ScrollView>
       <View style={resultsContainerStyle}>
-        <View style={deckDetailsContainerStyle}>
+        <View>
           <View style={titleRowStyle}>
             <Text style={titleStyle}>Good job! You completed {resultsTitleArticle} </Text>
             <GradientText
@@ -95,7 +93,7 @@ export default function DeckResultsView() {
             isCorrect={false}
           />
         </View>
-        <LinkButton handler={handleFinish} style={finishedLinkStyle}>Finish</LinkButton>
+        <LinkButton handler={handleFinish}>Finish</LinkButton>
       </View>
     </ScrollView>
   )
@@ -119,33 +117,20 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 6,
     borderColor: colors.light.border,
+    padding: 16,
+    gap: 16
   },
-  deckDetailsContainerStyle: {},
   titleRowStyle: {
     alignItems: 'baseline',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 16,
-    paddingBottom: 0
   },
   titleStyle: {
     fontSize: 20,
     fontFamily: 'lexend-400',
   },
-  imageContainerStyle: {
-    borderTopWidth: 2,
-    borderBottomWidth: 2,
-    borderColor: colors.light.border
-  },
-  imageStyle: {
-    height: 150,
-  },
   wordsFlexRows: {
     display: 'flex',
-    gap: 8,
-    padding: 16,
+    gap: 16
   },
-  finishedLinkStyle: {
-    margin: 16
-  }
 })
