@@ -49,6 +49,7 @@ export default function CardDeckSelect() {
           data={decks}
           renderItem={({ item }) => <DeckBox deck={item} placeId={placeId} />}
           keyExtractor={(deck, index) => `${deck.title}-${index}`}
+          overScrollMode="always"
         />
       )}
       {decks.length === 0 && (
