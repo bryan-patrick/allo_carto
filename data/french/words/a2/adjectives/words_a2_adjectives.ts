@@ -7,6 +7,7 @@ export const words_a2_adjectives: Word[] = [
 		englishWords: ['tired'],
 		isVulgar: false,
 		lemmaId: 'fatigue',
+		form: 'masculine',
 		partOfSpeech: 'adjective',
 		CEFR: 'A2',
 		gender: 'Masculine',

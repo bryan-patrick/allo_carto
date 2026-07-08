@@ -17,17 +17,25 @@ export const sharedWordCardStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 8,
-    paddingVertical: 16,
+    paddingVertical: 8,
     marginTop: 16,
     gap: 8,
   },
   wordId: {
     color: colors.dark.text,
-    fontSize: 22,
+    fontSize: 20,
     fontFamily: 'lexend-600',
   },
+  wordMetaContainer: {
+    display: 'flex',
+    flexDirection: 'row'
+  },
   wordPronunciation: {
-    fontSize: 18,
+    fontSize: 16,
+    color: colors.dark.text
+  },
+  wordForm: {
+    fontSize: 16,
     color: colors.dark.text
   },
   answerSlotContainer: {
@@ -39,9 +47,10 @@ export const sharedWordCardStyles = StyleSheet.create({
     color: 'transparent',
     borderBottomWidth: 2,
     fontFamily: 'lexend-600',
-    fontSize: 18,
+    fontSize: 16,
     paddingHorizontal: 12,
     paddingVertical: 8,
+    marginVertical: 4
   },
   answerSlotSuccess: {
     color: colors.dark.success,
@@ -59,7 +68,7 @@ export const sharedWordCardStyles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     height: 'auto',
-    marginTop: 24,
+    marginTop: 16,
     borderTopWidth: 1,
     borderTopColor: colors.light.border,
   },

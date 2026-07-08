@@ -249,6 +249,7 @@ export const words_a1_nouns: Word[] = [
 		lemmaId: 'musique',
 		frenchArticle: 'la',
 		englishArticle: 'the',
+		form: 'feminine',
 		partOfSpeech: 'noun',
 		CEFR: 'A1',
 		gender: 'Feminine',

@@ -5,6 +5,18 @@ import { ImageSourcePropType } from 'react-native';
  */
 export type CardRarity = 'Common' | 'Rare' | 'Epic' | 'Legendary';
 export type CEFR = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+export type WordForm =
+	| 'article'
+	| 'contraction'
+	| 'feminine'
+	| 'imperfect'
+	| 'infinitive'
+	| 'masculine'
+	| 'past participle'
+	| 'plural'
+	| 'possessive'
+	| 'present'
+	| 'pronoun';
 
 export interface DeckColors {
 	dark: Record<'primary' | 'secondary', string>;
@@ -53,7 +65,7 @@ export interface Word {
 	isVulgar: boolean;
 	CEFR: CEFR;
 	lemmaId?: string;
-	form?: string;
+	form?: WordForm;
 	tense?: string;
 	gender?: 'Feminine' | 'Masculine';
 	partOfSpeech?: string;
