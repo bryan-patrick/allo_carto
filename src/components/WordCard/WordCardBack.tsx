@@ -50,6 +50,8 @@ const WordCardBack = memo(function WordCardBackMemo({
     answerSlot,
     feedbackContainer,
     feedbackText,
+    wordMetaContainer,
+    wordForm
   } = sharedWordCardStyles;
 
   /**
@@ -60,12 +62,25 @@ const WordCardBack = memo(function WordCardBackMemo({
     pronunciation,
     englishArticle,
     frenchArticle,
-    frenchWord
+    frenchWord,
+    form,
+    partOfSpeech
   } = currentCard;
+
   const displayedFrenchWord = formatFrenchWordWithArticle({
     article: frenchArticle,
     word: frenchWord,
   });
+
+  const formCapitalized = (form ?? '')
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+  const partOfSpeechCapitalized = (partOfSpeech ?? '')
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
   /**
    * Render the back of the WordCard
@@ -80,6 +95,18 @@ const WordCardBack = memo(function WordCardBackMemo({
       <View style={cardMain}>
         <Text style={wordId}>{displayedFrenchWord}</Text>
         <Text style={wordPronunciation}>({pronunciation})</Text>
+        <View style={wordMetaContainer}>
+          {partOfSpeech && (
+            <Text style={[wordForm, {
+              borderRightWidth: 1,
+              marginRight: 8,
+              paddingRight: 8
+            }]}>{partOfSpeechCapitalized}</Text>
+          )}
+          {form && (
+            <Text style={wordForm}>{formCapitalized}</Text>
+          )}
+        </View>
       </View>
       <View style={answerSlotContainer}>
         {englishArticle && (

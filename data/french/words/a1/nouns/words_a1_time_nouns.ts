@@ -56,6 +56,7 @@ export const words_time_single: Word[] = [
 		isVulgar: false,
 		CEFR: 'A1',
 		lemmaId: 'reveil',
+		form: 'masculine',
 		partOfSpeech: 'noun',
 		gender: 'Masculine',
 		correctCount: 0,

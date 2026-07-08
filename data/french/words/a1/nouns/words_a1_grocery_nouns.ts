@@ -414,6 +414,7 @@ export const words_a1_grocery_nouns: Word[] = [
 		lemmaId: 'sac',
 		frenchArticle: 'un',
 		englishArticle: 'a',
+		form: 'masculine',
 		partOfSpeech: 'noun',
 		CEFR: 'A1',
 		gender: 'Masculine',
