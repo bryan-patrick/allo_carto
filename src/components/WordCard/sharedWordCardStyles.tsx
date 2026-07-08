@@ -23,7 +23,7 @@ export const sharedWordCardStyles = StyleSheet.create({
   },
   wordId: {
     color: colors.dark.text,
-    fontSize: 20,
+    fontSize: 22,
     fontFamily: 'lexend-600',
   },
   wordMetaContainer: {
@@ -31,26 +31,29 @@ export const sharedWordCardStyles = StyleSheet.create({
     flexDirection: 'row'
   },
   wordPronunciation: {
-    fontSize: 16,
-    color: colors.dark.text
+    fontSize: 18,
+    color: colors.dark.text,
+    fontFamily: 'lexend-400',
   },
   wordForm: {
-    fontSize: 16,
-    color: colors.dark.text
+    fontSize: 18,
+    color: colors.dark.text,
+    fontFamily: 'lexend-400',
   },
   answerSlotContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 8,
+    fontFamily: 'lexend-400',
   },
   answerSlot: {
     color: 'transparent',
     borderBottomWidth: 2,
     fontFamily: 'lexend-600',
-    fontSize: 16,
+    fontSize: 18,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    marginVertical: 4
+    marginVertical: 8
   },
   answerSlotSuccess: {
     color: colors.dark.success,
