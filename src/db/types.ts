@@ -10,7 +10,7 @@ export interface WordRow {
 	isVulgar: number;
 	CEFR: CEFR;
 	lemmaId?: string;
-	form?: string;
+	form?: Word['form'];
 	tense?: string;
 	gender?: Word['gender'];
 	partOfSpeech?: string;
