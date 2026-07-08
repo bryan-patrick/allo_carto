@@ -131,6 +131,6 @@ const styles = StyleSheet.create({
   },
   wordsFlexRows: {
     display: 'flex',
-    gap: 16
+    gap: 8
   },
 })

@@ -91,7 +91,7 @@ export const words_a1_verbs: Word[] = [
 		englishWords: ['to wait'],
 		isVulgar: false,
 		lemmaId: 'attendre',
-		form: 'Infinitive',
+		form: 'infinitive',
 		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'ah-tahdr',

@@ -280,7 +280,7 @@ const mappedWordsStyles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 8,
     borderColor: 'transparent',
-    padding: 14,
+    padding: 12,
     maxWidth: '50%',
     minWidth: 80,
     backgroundColor: colors.light.background,
@@ -289,6 +289,7 @@ const mappedWordsStyles = StyleSheet.create({
     textAlign: 'center',
     color: colors.dark.text,
     fontFamily: 'lexend-600',
+    fontSize: 14
   },
   highlightSuccess: {
     backgroundColor: colors.light.success,

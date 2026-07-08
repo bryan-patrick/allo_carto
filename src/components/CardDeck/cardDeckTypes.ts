@@ -6,17 +6,17 @@ import { ImageSourcePropType } from 'react-native';
 export type CardRarity = 'Common' | 'Rare' | 'Epic' | 'Legendary';
 export type CEFR = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 export type WordForm =
-	| 'Article'
-	| 'Contraction'
-	| 'Feminine'
-	| 'Imperfect'
-	| 'Infinitive'
-	| 'Masculine'
-	| 'Past participle'
-	| 'Plural'
-	| 'Possessive'
-	| 'Present'
-	| 'Pronoun';
+	| 'article'
+	| 'contraction'
+	| 'feminine'
+	| 'imperfect'
+	| 'infinitive'
+	| 'masculine'
+	| 'past participle'
+	| 'plural'
+	| 'possessive'
+	| 'present'
+	| 'pronoun';
 
 export interface DeckColors {
 	dark: Record<'primary' | 'secondary', string>;
