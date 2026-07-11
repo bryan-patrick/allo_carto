@@ -5,50 +5,91 @@ import { wordRankDefinitions } from './wordRanks';
  * Typing
  */
 type RankCounts = Record<WordRankKey, number>;
-export type DeckRankSelectionState = 'available' | 'complete' | 'locked';
 
-/**
- * Rank progression vars
- */
+export type DeckRankCompletion = 'incomplete' | 'soft' | 'full';
+
+export interface DeckRankProgress {
+	completion: DeckRankCompletion;
+	isSelectable: boolean;
+	isUnlocked: boolean;
+	progressCount: number;
+	unlockCount: number;
+}
+
 const rankKeys = wordRankDefinitions.map(({ key }) => key);
 
 /**
- * Return the highest rank every card in a deck has completed.
- *
- * A rank is complete once every card has advanced beyond it. Diamond is the
- * highest rank and cannot be advanced beyond, so the highest possible
- * completed rank is Gold.
+ * Get the number of cards needed to unlock the next rank.
  */
-export function getHighestCompletedDeckRank(
-	rankCounts: RankCounts,
-): WordRankKey | null {
-	let result: WordRankKey | null = null;
-	const lastCompletableRankIndex = rankKeys.length - 2;
-	const deckWordCount = rankKeys.reduce((total, rankKey) => {
-		return total + (rankCounts[rankKey] ?? 0);
-	}, 0);
+export function getDeckRankUnlockCount(deckWordCount: number): number {
+	return Math.ceil(Math.max(deckWordCount, 0) / 2);
+}
 
-	for (
-		let rankIndex = lastCompletableRankIndex;
-		rankIndex >= 0 && result === null && deckWordCount > 0;
-		rankIndex--
-	) {
-		let cardsAtOrBelowRank = 0;
+function getCardsAfterRank(rankCounts: RankCounts, rankIndex: number): number {
+	let result = 0;
 
-		for (let i = 0; i <= rankIndex; i++) {
-			cardsAtOrBelowRank += rankCounts[rankKeys[i]] ?? 0;
-		}
-
-		if (cardsAtOrBelowRank === 0) {
-			result = rankKeys[rankIndex];
-		}
+	for (let index = rankIndex + 1; index < rankKeys.length; index++) {
+		result += rankCounts[rankKeys[index]] ?? 0;
 	}
 
 	return result;
 }
 
 /**
- * Check whether a completed deck rank satisfies another deck's prerequisite.
+ * Get the highest softly completed rank in a deck.
+ *
+ * A rank is softly complete once at least half the deck has advanced beyond
+ * it. Diamond has no following rank, so reaching Diamond counts as its
+ * progress instead. Soft completion is used for deck prerequisites.
+ */
+export function getHighestSoftCompletedDeckRank(
+	rankCounts: RankCounts,
+): WordRankKey | null {
+	const deckWordCount = rankKeys.reduce((total, rankKey) => {
+		return total + (rankCounts[rankKey] ?? 0);
+	}, 0);
+	const unlockCount = getDeckRankUnlockCount(deckWordCount);
+
+	for (let rankIndex = rankKeys.length - 1; rankIndex >= 0; rankIndex--) {
+		const progressCount =
+			rankKeys[rankIndex] === 'diamond' ?
+				(rankCounts.diamond ?? 0)
+			:	getCardsAfterRank(rankCounts, rankIndex);
+
+		if (deckWordCount > 0 && progressCount >= unlockCount) {
+			return rankKeys[rankIndex];
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Return the highest rank every card in a deck has fully completed.
+ */
+export function getHighestFullyCompletedDeckRank(
+	rankCounts: RankCounts,
+): WordRankKey | null {
+	const deckWordCount = rankKeys.reduce((total, rankKey) => {
+		return total + (rankCounts[rankKey] ?? 0);
+	}, 0);
+
+	for (let rankIndex = rankKeys.length - 1; rankIndex >= 0; rankIndex--) {
+		const progressCount =
+			rankKeys[rankIndex] === 'diamond' ?
+				(rankCounts.diamond ?? 0)
+			:	getCardsAfterRank(rankCounts, rankIndex);
+
+		if (deckWordCount > 0 && progressCount === deckWordCount) {
+			return rankKeys[rankIndex];
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Check if the user's rank progress is enough to unlock the next deck.
  */
 export function doesCompletedRankMeetRequirement({
 	completedRank,
@@ -57,29 +98,20 @@ export function doesCompletedRankMeetRequirement({
 	completedRank: WordRankKey | null;
 	requiredRank: WordRankKey | null;
 }): boolean {
-	let result = false;
-	const completedRankIndex = completedRank ? rankKeys.indexOf(completedRank) : -1;
-	const requiredRankIndex = requiredRank ? rankKeys.indexOf(requiredRank) : -1;
+	if (requiredRank === null) return true;
 
-	if (requiredRank === null) {
-		result = true;
-	}
+	const completedRankIndex =
+		completedRank ? rankKeys.indexOf(completedRank) : -1;
+	const requiredRankIndex = rankKeys.indexOf(requiredRank);
 
-	if (
-		requiredRank !== null &&
-		completedRankIndex >= requiredRankIndex &&
-		requiredRankIndex >= 0
-	) {
-		result = true;
-	}
-
-	return result;
+	return requiredRankIndex >= 0 && completedRankIndex >= requiredRankIndex;
 }
 
 /**
- * Deck rank progression
+ * Check the user's progress for one rank.
+ * A rank can still be played after it is soft complete if it has cards left.
  */
-export function getDeckRankSelectionState({
+export function getDeckRankProgress({
 	deckWordCount,
 	rankCounts,
 	rankKey,
@@ -87,65 +119,30 @@ export function getDeckRankSelectionState({
 	deckWordCount: number;
 	rankCounts: RankCounts;
 	rankKey: WordRankKey;
-}): DeckRankSelectionState {
-	/**
-	 * A rank button can be:
-	 * - available: the user can select it
-	 * - complete: there are no cards left
-	 * - locked: the user needs to finish an earlier rank first
-	 */
-	let result: DeckRankSelectionState = 'locked';
-	let totalCardsAfterThisRank: number = 0;
-	const rankIndex: number = rankKeys.findIndex(key => key === rankKey);
-	const rankCount: number = rankCounts[rankKey] ?? 0;
-	const diamondCount: number = rankCounts.diamond ?? 0;
-	const earliestRankWithCardsIndex: number = rankKeys.findIndex(key => {
-		return (rankCounts[key] ?? 0) > 0;
-	});
+}): DeckRankProgress {
+	const rankIndex = rankKeys.indexOf(rankKey);
+	const rankCount = rankCounts[rankKey] ?? 0;
+	const unlockCount = getDeckRankUnlockCount(deckWordCount);
+	const cardsAfterRank = getCardsAfterRank(rankCounts, rankIndex);
+	const cardsAtOrAboveRank = rankCount + cardsAfterRank;
+	const progressCount =
+		rankKey === 'diamond' ? cardsAtOrAboveRank : cardsAfterRank;
+	const isUnlocked =
+		deckWordCount > 0 && (rankIndex === 0 || cardsAtOrAboveRank >= unlockCount);
 
-	/**
-	 * Start at current rank and add up all the cards after
-	 */
-	for (let i = rankIndex + 1; i < rankKeys.length; i++) {
-		const key = rankKeys[i];
-		totalCardsAfterThisRank += rankCounts[key] ?? 0;
+	let completion: DeckRankCompletion = 'incomplete';
+
+	if (deckWordCount > 0 && progressCount === deckWordCount) {
+		completion = 'full';
+	} else if (deckWordCount > 0 && progressCount >= unlockCount) {
+		completion = 'soft';
 	}
 
-	/**
-	 * Diamond is the last rank.
-	 * It only unlocks when every card is already diamond.
-	 */
-	if (rankKey === 'diamond') {
-		if (deckWordCount > 0 && diamondCount === deckWordCount) {
-			result = 'available';
-		}
-	}
-
-	/**
-	 * Empty ranks can mean two things.
-	 * 1. It is fully completed or 2. It hasn't been touched yet.
-	 *
-	 * If cards exist after this rank, then this rank was cleared
-	 * and should show the checkmark.
-	 *
-	 * If no cards exist after this rank, then the user has not
-	 * reached this rank yet, so keep it locked.
-	 */
-	if (rankKey !== 'diamond' && rankCount === 0 && totalCardsAfterThisRank > 0) {
-		result = 'complete';
-	}
-
-	/**
-	 * Only let the user work on the earliest rank
-	 * that still has cards in it.
-	 */
-	if (
-		rankKey !== 'diamond' &&
-		rankCount > 0 &&
-		rankIndex === earliestRankWithCardsIndex
-	) {
-		result = 'available';
-	}
-
-	return result;
+	return {
+		completion,
+		isSelectable: isUnlocked && rankCount > 0,
+		isUnlocked,
+		progressCount,
+		unlockCount,
+	};
 }
