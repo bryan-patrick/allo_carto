@@ -109,6 +109,8 @@ describe('<WordCard />', () => {
     expect(mockWordCardBack).toHaveBeenCalledWith(
       expect.objectContaining({
         wordCardBackFlippedStyle: expect.any(Object),
+        articleWidthStyle: expect.any(Object),
+        wordWidthStyle: expect.any(Object),
       }),
       undefined,
     );

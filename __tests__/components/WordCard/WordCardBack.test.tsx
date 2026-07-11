@@ -71,6 +71,8 @@ describe('<WordCardBack />', () => {
     const { getByText } = render(
       <WordCardBack
         wordCardBackFlippedStyle={{}}
+        articleWidthStyle={{}}
+        wordWidthStyle={{}}
         feedbackStyle={{}}
         articleSlotStyle={{}}
         wordSlotStyle={{}}
