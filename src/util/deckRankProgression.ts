@@ -36,11 +36,7 @@ function getCardsAfterRank(rankCounts: RankCounts, rankIndex: number): number {
 }
 
 /**
- * Get the highest softly completed rank in a deck.
- *
- * A rank is softly complete once at least half the deck has advanced beyond
- * it. Diamond has no following rank, so reaching Diamond counts as its
- * progress instead. Soft completion is used for deck prerequisites.
+ * Find the highest earned rank reached by at least half of the deck's cards.
  */
 export function getHighestSoftCompletedDeckRank(
 	rankCounts: RankCounts,
@@ -50,11 +46,9 @@ export function getHighestSoftCompletedDeckRank(
 	}, 0);
 	const unlockCount = getDeckRankUnlockCount(deckWordCount);
 
-	for (let rankIndex = rankKeys.length - 1; rankIndex >= 0; rankIndex--) {
-		const progressCount =
-			rankKeys[rankIndex] === 'diamond' ?
-				(rankCounts.diamond ?? 0)
-			:	getCardsAfterRank(rankCounts, rankIndex);
+	for (let rankIndex = rankKeys.length - 1; rankIndex > 0; rankIndex--) {
+		const rankCount = rankCounts[rankKeys[rankIndex]] ?? 0;
+		const progressCount = rankCount + getCardsAfterRank(rankCounts, rankIndex);
 
 		if (deckWordCount > 0 && progressCount >= unlockCount) {
 			return rankKeys[rankIndex];
