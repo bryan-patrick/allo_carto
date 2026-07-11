@@ -39,8 +39,8 @@ export default function WordCardButton({
   const user = useUserContext();
   const { cardState, wordCardUIDispatch } = useWordCardUI();
   const { cardDeckDispatch, currentCard } = useCardDeck();
-  const [pressableStateStyle, setPressableStateStyle] = useState<ViewStyle | null>({});
-  const [textStateStyle, setTextStateStyle] = useState<TextStyle | null>({});
+  const [ pressableStateStyle, setPressableStateStyle ] = useState<ViewStyle | null>({});
+  const [ textStateStyle, setTextStateStyle ] = useState<TextStyle | null>({});
 
   /**
    * Style vars
@@ -80,7 +80,7 @@ export default function WordCardButton({
   /**
    * State/prop vars
    */
-  const [isPressed, setIsPressed] = useState(false);
+  const [ isPressed, setIsPressed ] = useState(false);
 
   const isDisabled = useMemo(() => {
     if (
@@ -176,7 +176,7 @@ export default function WordCardButton({
   const handlePressIn = useCallback(() => {
     setIsPressed(true);
     checkAnswer();
-  }, [checkAnswer]);
+  }, [ checkAnswer ]);
 
   const handlePressOut = useCallback(() => {
     setIsPressed(false);
@@ -202,13 +202,13 @@ export default function WordCardButton({
       shadowOffsetHeight.value = 8;
     }
 
-  }, [isPressed, shadowOffsetHeight, top]);
+  }, [ isPressed, shadowOffsetHeight, top ]);
 
   /**
    * Render the WordCard
    */
   return (
-    <Animated.View style={[containerStyles, animatedContainerStyle]}>
+    <Animated.View style={[ containerStyles, animatedContainerStyle ]}>
       <AnimatedPressable
         {...props}
         disabled={isDisabled}
@@ -222,7 +222,7 @@ export default function WordCardButton({
           isDisabled && disabledPressable
         ]}
       >
-        <View style={textRow}>
+        <View style={textRow} testID="word-card-button-content">
           <Text
             style={[
               textStyles,
@@ -277,6 +277,10 @@ const wordCardButtonStyles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 8,
+    /**
+     * Keep the button the same height before and after its 24px arrow appears.
+     */
+    minHeight: 24,
   },
   successText: {
     color: colors.dark.text

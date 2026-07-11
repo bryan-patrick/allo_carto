@@ -9,6 +9,7 @@ import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
 import { incrementCorrectCount } from '@/src/db/queries/incrementCorrectCount';
 import { fireEvent, render } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import {
   impactAsync,
   ImpactFeedbackStyle,
@@ -118,6 +119,21 @@ describe('<WordCardButton />', () => {
       type: 'CHECK_ANSWER',
       currentCard,
     });
+  });
+
+  test('reserves space for the next-card arrow before it appears', () => {
+    mockDeckState();
+    mockUseWordCardUI.mockReturnValue({
+      cardState: initialWordCardState,
+      wordCardUIDispatch: jest.fn(),
+    });
+
+    const { getByTestId } = render(<WordCardButton>Check</WordCardButton>);
+    const textRowStyle = StyleSheet.flatten(
+      getByTestId('word-card-button-content').props.style,
+    );
+
+    expect(textRowStyle.minHeight).toBe(24);
   });
 
   test('increments score and fires success haptics after a correct answer', () => {
