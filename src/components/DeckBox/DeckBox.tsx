@@ -38,7 +38,9 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
   const [ wordProgressKeyByWordId, setWordProgressKeyByWordId ] = useState<Record<string, WordProgressKey>>({});
   const [ modalVisible, setModalVisible ] = useState(false);
 
-  const unlockCriteriaMsg = deck.requiredPreviousDeckRank ? `${deck.requiredPreviousDeckRank?.toUpperCase()} required on the previous deck to unlock.` : '';
+  const unlockCriteriaMsg = deck.requiredPreviousDeckRank
+    ? `Get half of the previous deck's cards to ${deck.requiredPreviousDeckRank.toUpperCase()} to unlock.`
+    : '';
 
   /**
    * Destructure styles

@@ -1,6 +1,7 @@
 import {
 	doesCompletedRankMeetRequirement,
-	getHighestCompletedDeckRank,
+	getHighestFullyCompletedDeckRank,
+	getHighestSoftCompletedDeckRank,
 } from '@/src/util/deckRankProgression';
 import type { WordRankKey } from '@/src/util/wordRanks';
 
@@ -17,51 +18,54 @@ function makeRankCounts(overrides: Partial<RankCounts> = {}): RankCounts {
 	};
 }
 
-const completedRankCases: [ WordRankKey, RankCounts ][] = [
-	['fnew', makeRankCounts({ bronze: 2, silver: 1 })],
-	['bronze', makeRankCounts({ silver: 2, gold: 1 })],
-	['silver', makeRankCounts({ gold: 2, diamond: 1 })],
-	['gold', makeRankCounts({ diamond: 3 })],
-];
-
-describe('highest completed deck rank', () => {
-	it('returns null when the deck is empty or still has New cards', () => {
+describe('deck completion ranks', () => {
+	it('returns null before half the deck advances', () => {
+		expect(getHighestSoftCompletedDeckRank(makeRankCounts())).toBeNull();
 		expect(
-			getHighestCompletedDeckRank(makeRankCounts()),
-		).toBeNull();
-		expect(
-			getHighestCompletedDeckRank(makeRankCounts({ fnew: 1, bronze: 2 })),
+			getHighestSoftCompletedDeckRank(makeRankCounts({ fnew: 2, bronze: 1 })),
 		).toBeNull();
 	});
 
-	it.each(completedRankCases)('returns %s as the highest completed rank', (rank, rankCounts) => {
-		expect(getHighestCompletedDeckRank(rankCounts)).toBe(rank);
+	it('returns the highest softly completed rank', () => {
+		expect(
+			getHighestSoftCompletedDeckRank(makeRankCounts({ fnew: 2, bronze: 2 })),
+		).toBe('fnew');
+		expect(
+			getHighestSoftCompletedDeckRank(makeRankCounts({ fnew: 1, silver: 2 })),
+		).toBe('bronze');
+		expect(
+			getHighestSoftCompletedDeckRank(makeRankCounts({ gold: 2, diamond: 2 })),
+		).toBe('diamond');
 	});
 
-	it('compares completed ranks with deck requirements', () => {
+	it('tracks full completion separately', () => {
 		expect(
-			doesCompletedRankMeetRequirement({
-				completedRank: null,
-				requiredRank: null,
-			}),
-		).toBe(true);
+			getHighestFullyCompletedDeckRank(makeRankCounts({ bronze: 3 })),
+		).toBe('fnew');
 		expect(
-			doesCompletedRankMeetRequirement({
-				completedRank: 'silver',
-				requiredRank: 'bronze',
-			}),
-		).toBe(true);
+			getHighestFullyCompletedDeckRank(makeRankCounts({ silver: 3 })),
+		).toBe('bronze');
 		expect(
-			doesCompletedRankMeetRequirement({
-				completedRank: 'fnew',
-				requiredRank: 'bronze',
-			}),
-		).toBe(false);
-		expect(
-			doesCompletedRankMeetRequirement({
-				completedRank: null,
-				requiredRank: 'fnew',
-			}),
-		).toBe(false);
+			getHighestFullyCompletedDeckRank(makeRankCounts({ diamond: 3 })),
+		).toBe('diamond');
+	});
+
+	it('uses soft completion for deck requirements', () => {
+		expect(doesCompletedRankMeetRequirement({
+			completedRank: null,
+			requiredRank: null,
+		})).toBe(true);
+		expect(doesCompletedRankMeetRequirement({
+			completedRank: 'silver',
+			requiredRank: 'bronze',
+		})).toBe(true);
+		expect(doesCompletedRankMeetRequirement({
+			completedRank: 'fnew',
+			requiredRank: 'bronze',
+		})).toBe(false);
+		expect(doesCompletedRankMeetRequirement({
+			completedRank: null,
+			requiredRank: 'fnew',
+		})).toBe(false);
 	});
 });

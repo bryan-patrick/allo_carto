@@ -1,4 +1,7 @@
-import { getDeckRankSelectionState } from '@/src/util/deckRankProgression';
+import {
+	getDeckRankProgress,
+	getDeckRankUnlockCount,
+} from '@/src/util/deckRankProgression';
 import type { WordRankKey } from '@/src/util/wordRanks';
 
 const deckWordCount = 50;
@@ -17,145 +20,139 @@ function makeRankCounts(
 }
 
 describe('deck rank progression', () => {
-	it('keeps the earliest active rank available even below the old minimum', () => {
-		const rankCounts = makeRankCounts({
-			fnew: 4,
-			bronze: deckWordCount - 4,
-		});
-
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'fnew',
-			}),
-		).toBe('available');
+	it('rounds the halfway unlock threshold up', () => {
+		expect(getDeckRankUnlockCount(0)).toBe(0);
+		expect(getDeckRankUnlockCount(50)).toBe(25);
+		expect(getDeckRankUnlockCount(51)).toBe(26);
 	});
 
-	it('locks the next rank while the earliest active rank still has cards', () => {
+	it('starts New as available and keeps later ranks locked', () => {
+		const rankCounts = makeRankCounts({ fnew: deckWordCount });
+
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'fnew',
+		})).toMatchObject({
+			completion: 'incomplete',
+			isSelectable: true,
+			isUnlocked: true,
+		});
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'bronze',
+		})).toMatchObject({
+			completion: 'incomplete',
+			isSelectable: false,
+			isUnlocked: false,
+		});
+	});
+
+	it('softly completes a rank at halfway and keeps it playable', () => {
+		const rankCounts = makeRankCounts({ fnew: 25, bronze: 25 });
+
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'fnew',
+		})).toMatchObject({
+			completion: 'soft',
+			isSelectable: true,
+			isUnlocked: true,
+			progressCount: 25,
+			unlockCount: 25,
+		});
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'bronze',
+		})).toMatchObject({
+			completion: 'incomplete',
+			isSelectable: true,
+			isUnlocked: true,
+		});
+	});
+
+	it('allows multiple unlocked ranks while locking the next threshold', () => {
 		const rankCounts = makeRankCounts({
 			fnew: 10,
 			bronze: 20,
 			silver: 20,
 		});
 
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'fnew',
-			}),
-		).toBe('available');
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'bronze',
-			}),
-		).toBe('locked');
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'silver',
-			}),
-		).toBe('locked');
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'fnew',
+		}).completion).toBe('soft');
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'bronze',
+		})).toMatchObject({ isSelectable: true, isUnlocked: true });
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'silver',
+		})).toMatchObject({ isSelectable: false, isUnlocked: false });
 	});
 
-	it('unlocks the next rank after the earlier rank is complete', () => {
-		const rankCounts = makeRankCounts({
-			bronze: 15,
-			silver: 20,
-			gold: 15,
-		});
+	it('distinguishes full completion from soft completion', () => {
+		const rankCounts = makeRankCounts({ silver: deckWordCount });
 
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'fnew',
-			}),
-		).toBe('complete');
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'bronze',
-			}),
-		).toBe('available');
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'silver',
-			}),
-		).toBe('locked');
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'gold',
-			}),
-		).toBe('locked');
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'fnew',
+		})).toMatchObject({ completion: 'full', isSelectable: false });
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'bronze',
+		})).toMatchObject({ completion: 'full', isSelectable: false });
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'silver',
+		})).toMatchObject({ completion: 'incomplete', isSelectable: true });
 	});
 
-	it('marks cleared ranks complete instead of locked', () => {
-		const rankCounts = makeRankCounts({
-			silver: deckWordCount,
-		});
+	it('does not select an unlocked rank until it contains cards', () => {
+		const rankCounts = makeRankCounts({ fnew: 25, silver: 25 });
 
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'fnew',
-			}),
-		).toBe('complete');
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'bronze',
-			}),
-		).toBe('complete');
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts,
+			rankKey: 'bronze',
+		})).toMatchObject({
+			completion: 'soft',
+			isSelectable: false,
+			isUnlocked: true,
+		});
 	});
 
-	it('keeps unreached empty ranks locked', () => {
-		const rankCounts = makeRankCounts({
-			fnew: deckWordCount,
-		});
+	it('softly and fully completes Diamond using cards at Diamond', () => {
+		const softCounts = makeRankCounts({ gold: 25, diamond: 25 });
+		const fullCounts = makeRankCounts({ diamond: deckWordCount });
 
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'silver',
-			}),
-		).toBe('locked');
-	});
-
-	it('unlocks diamond only when every deck card is diamond', () => {
-		const partialDiamondCounts = makeRankCounts({
-			gold: 1,
-			diamond: deckWordCount - 1,
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts: softCounts,
+			rankKey: 'diamond',
+		})).toMatchObject({
+			completion: 'soft',
+			isSelectable: true,
+			isUnlocked: true,
 		});
-		const completeDiamondCounts = makeRankCounts({
-			diamond: deckWordCount,
+		expect(getDeckRankProgress({
+			deckWordCount,
+			rankCounts: fullCounts,
+			rankKey: 'diamond',
+		})).toMatchObject({
+			completion: 'full',
+			isSelectable: true,
+			isUnlocked: true,
 		});
-
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts: partialDiamondCounts,
-				rankKey: 'diamond',
-			}),
-		).toBe('locked');
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts: completeDiamondCounts,
-				rankKey: 'diamond',
-			}),
-		).toBe('available');
 	});
 });
