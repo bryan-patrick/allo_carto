@@ -10,7 +10,6 @@ export type DeckRankSelectionState = 'available' | 'complete' | 'locked';
 /**
  * Rank progression vars
  */
-export const EARLY_RANK_UNLOCK_COUNT = 20;
 const rankKeys = wordRankDefinitions.map(({ key }) => key);
 
 /**
@@ -29,7 +28,7 @@ export function getDeckRankSelectionState({
 	 * A rank button can be:
 	 * - available: the user can select it
 	 * - complete: there are no cards left
-	 * - locked: the rank is too far ahead
+	 * - locked: the user needs to finish an earlier rank first
 	 */
 	let result: DeckRankSelectionState = 'locked';
 	let totalCardsAfterThisRank: number = 0;
@@ -50,7 +49,7 @@ export function getDeckRankSelectionState({
 
 	/**
 	 * Diamond is the last rank.
-	 * It should not unlock early like the other ranks.
+	 * It only unlocks when every card is already diamond.
 	 */
 	if (rankKey === 'diamond') {
 		if (deckWordCount > 0 && diamondCount === deckWordCount) {
@@ -73,25 +72,14 @@ export function getDeckRankSelectionState({
 	}
 
 	/**
-	 * Always let the user finish the earliest
-	 * rank that still has cards in it.
+	 * Only let the user work on the earliest rank
+	 * that still has cards in it.
 	 */
 	if (
 		rankKey !== 'diamond' &&
 		rankCount > 0 &&
 		rankIndex === earliestRankWithCardsIndex
 	) {
-		result = 'available';
-	}
-
-	/**
-	 * Let the user preview the next rank once enough cards have
-	 * moved into it, but do not unlock any ranks beyond that.
-	 */
-	const isNextRank = rankIndex === earliestRankWithCardsIndex + 1;
-	const isEarlyUnlocked = rankCount >= EARLY_RANK_UNLOCK_COUNT;
-
-	if (rankKey !== 'diamond' && rankCount > 0 && isNextRank && isEarlyUnlocked) {
 		result = 'available';
 	}
 

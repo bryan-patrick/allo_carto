@@ -3,6 +3,7 @@ import { Alert, Modal, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../../app/colors";
 import sharedStyles from "../../app/sharedStyles";
 import type { DeckRankCounts } from "../../db/queries/getDeckRankCounts";
+import { getDeckCompletionPercent } from "../../util/deckCompletion";
 import type { WordProgressKey } from "../../util/wordRanks";
 import type { CardDeck } from "../CardDeck/cardDeckTypes";
 import SecondaryButton from "../SecondaryButton";
@@ -52,11 +53,10 @@ export default function DeckBoxModal({
    * Header deck completion percentage 
    */
   const wordsSeenCount = rankCounts.seen;
-  const deckCompletionTotal = deck.wordIds.length * 4;
-  const deckCompletionCount = rankCounts.bronze + (rankCounts.silver * 2) + (rankCounts.gold * 3) + (rankCounts.diamond * 4);
-  const deckCompletionPercent = deckCompletionTotal === 0
-    ? 0
-    : Math.round((deckCompletionCount / deckCompletionTotal) * 100);
+  const deckCompletionPercent = getDeckCompletionPercent({
+    deckWordCount: deck.wordIds.length,
+    rankCounts,
+  });
 
   /**
    * Render the modal
@@ -74,18 +74,18 @@ export default function DeckBoxModal({
         <View style={modalView}>
           <View style={modalTitleStyle}>
             <GradientText
-              colors={[deck.colors.dark.primary, deck.colors.dark.secondary]}
+              colors={[ deck.colors.dark.primary, deck.colors.dark.secondary ]}
               fontSize={18}
               fontWeight={700}
               text={deck.title}
             />
           </View>
-          <View style={[modalHeaderStyle, { borderColor: deck.colors.dark.primary }]}>
-            <Text style={[modalHeaderTextStyle, { color: deck.colors.dark.primary }]}>
-              Deck Completion: <Text style={[modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary }]}>{deckCompletionPercent}%</Text>
+          <View style={[ modalHeaderStyle, { borderColor: deck.colors.dark.primary } ]}>
+            <Text style={[ modalHeaderTextStyle, { color: deck.colors.dark.primary } ]}>
+              Deck Completion: <Text style={[ modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary } ]}>{deckCompletionPercent}%</Text>
             </Text>
-            <Text style={[modalHeaderTextStyle, { color: deck.colors.dark.primary }]}>
-              Words Seen: <Text style={[modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary }]}>{wordsSeenCount}/{deck.wordIds.length}</Text>
+            <Text style={[ modalHeaderTextStyle, { color: deck.colors.dark.primary } ]}>
+              Words Seen: <Text style={[ modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary } ]}>{wordsSeenCount}/{deck.wordIds.length}</Text>
             </Text>
           </View>
           {
@@ -103,10 +103,10 @@ export default function DeckBoxModal({
               {deck.story && deck.story.map(({ text, wordId, after }, index) => {
                 const key = `${index}-${wordId ?? text}`;
                 const spaceMaybeButNotAlways = after ?? ' ';
-                const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
+                const progress = wordProgressKeyByWordId[ wordId ?? '' ] ?? 'unseen';
                 const progressColor = progress === 'unseen'
                   ? colors.dark.border
-                  : colors.light.rank[progress];
+                  : colors.light.rank[ progress ];
 
                 const wordStyle: any = {
                   fontSize: 16,
@@ -119,21 +119,24 @@ export default function DeckBoxModal({
                   textDecorationLine: 'underline',
                   textDecorationStyle: 'dotted',
                   textDecorationColor: 'transparent',
-                }
+                };
 
                 switch (progress) {
                   case "unseen":
                     wordStyle.color = 'transparent';
                     wordStyle.textDecorationColor = colors.light.border;
                     break;
+                  case "fnew":
+                    wordStyle.opacity = 0.1;
+                    wordStyle.color = '#8DABAF';
+                    break;
                   case "silver":
-                    wordStyle.textShadowRadius = 4;
                     break;
                   case "gold":
-                    wordStyle.textShadowRadius = 8;
+                    wordStyle.textShadowRadius = 2;
                     break;
                   case "diamond":
-                    wordStyle.textShadowRadius = 16;
+                    wordStyle.textShadowRadius = 8;
                     break;
                 }
 
@@ -144,7 +147,7 @@ export default function DeckBoxModal({
                     <Text style={wordStyle}>{text}</Text>
                     {spaceMaybeButNotAlways}
                   </Text>
-                )
+                );
               })}
             </Text>
           </ScrollView>
@@ -155,11 +158,11 @@ export default function DeckBoxModal({
           }
           <View style={modalFooterStyle}>
             <SecondaryButton
-              style={[buttonClose, {
+              style={[ buttonClose, {
                 borderColor: deck.colors.dark.primary,
                 shadowColor: deck.colors.dark.primary,
-              }]}
-              textStyle={[buttonCloseText, { color: deck.colors.dark.primary }]}
+              } ]}
+              textStyle={[ buttonCloseText, { color: deck.colors.dark.primary } ]}
               onPress={() => setModalVisible(!modalVisible)}
               SVGElement={
                 <SVGArrowDownToLine
@@ -181,7 +184,7 @@ export default function DeckBoxModal({
 /**
  * Destructure shared styles
  */
-const { containerMargin } = sharedStyles
+const { containerMargin } = sharedStyles;
 
 /**
  * Styles
@@ -278,4 +281,4 @@ const styles = StyleSheet.create({
   },
   buttonCloseText: {
   },
-})
+});

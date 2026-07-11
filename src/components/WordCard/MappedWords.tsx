@@ -60,9 +60,14 @@ const MappedButton = memo(function MappedButtonMemo({
     boxShadow: buttonBoxShadow.value,
   }));
 
-  const timing = useMemo(() => ({
+  const selectionTiming = useMemo(() => ({
     duration: 70,
     easing: Easing.inOut(Easing.bounce)
+  }), []);
+
+  const answerRevealTiming = useMemo(() => ({
+    duration: 320,
+    easing: Easing.out(Easing.cubic)
   }), []);
 
   /**
@@ -73,16 +78,16 @@ const MappedButton = memo(function MappedButtonMemo({
       case 'SUCCESS':
       case 'DANGER':
         if (isCorrectWord) {
-          buttonY.value = withTiming(-6, timing);
-          buttonBackgroundColor.value = withTiming(colors.light.success, timing);
+          buttonY.value = withTiming(-6, answerRevealTiming);
+          buttonBackgroundColor.value = withTiming(colors.light.success, answerRevealTiming);
         } else {
-          buttonBackgroundColor.value = withTiming(colors.light.border, timing);
-          buttonY.value = withTiming(0, timing);
+          buttonBackgroundColor.value = withTiming(colors.light.border, answerRevealTiming);
+          buttonY.value = withTiming(0, answerRevealTiming);
         }
 
         if (isSelectedWrong) {
-          buttonY.value = withTiming(0, timing);
-          buttonBackgroundColor.value = withTiming(colors.light.background, timing);
+          buttonY.value = withTiming(0, answerRevealTiming);
+          buttonBackgroundColor.value = withTiming(colors.light.background, answerRevealTiming);
         }
 
         buttonBoxShadow.value = `0 6px 0 0 ${colors.dark.border}`
@@ -90,11 +95,11 @@ const MappedButton = memo(function MappedButtonMemo({
       default:
         if (isActive) {
           buttonBackgroundColor.value = colors.dark.primaryActive;
-          buttonY.value = withTiming(6, timing);
+          buttonY.value = withTiming(6, selectionTiming);
           buttonBoxShadow.value = `0 0 0 0 transparent`;
         } else {
-          buttonY.value = withTiming(0, timing);
-          buttonBackgroundColor.value = withTiming(colors.light.background, timing);
+          buttonY.value = withTiming(0, selectionTiming);
+          buttonBackgroundColor.value = withTiming(colors.light.background, selectionTiming);
           buttonBoxShadow.value = `0 6px 0 0 ${colors.light.border}`
         }
         break;
@@ -104,7 +109,8 @@ const MappedButton = memo(function MappedButtonMemo({
     isSelectedWrong,
     progress,
     isActive,
-    timing,
+    selectionTiming,
+    answerRevealTiming,
     buttonY,
     buttonBackgroundColor,
     buttonBoxShadow
@@ -280,7 +286,7 @@ const mappedWordsStyles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 8,
     borderColor: 'transparent',
-    padding: 12,
+    padding: 14,
     maxWidth: '50%',
     minWidth: 80,
     backgroundColor: colors.light.background,

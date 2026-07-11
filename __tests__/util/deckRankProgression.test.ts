@@ -1,7 +1,4 @@
-import {
-	EARLY_RANK_UNLOCK_COUNT,
-	getDeckRankSelectionState,
-} from '@/src/util/deckRankProgression';
+import { getDeckRankSelectionState } from '@/src/util/deckRankProgression';
 import type { WordRankKey } from '@/src/util/wordRanks';
 
 const deckWordCount = 50;
@@ -35,13 +32,50 @@ describe('deck rank progression', () => {
 		).toBe('available');
 	});
 
-	it('unlocks only the next rank early once enough cards have moved into it', () => {
+	it('locks the next rank while the earliest active rank still has cards', () => {
 		const rankCounts = makeRankCounts({
 			fnew: 10,
-			bronze: EARLY_RANK_UNLOCK_COUNT,
-			silver: EARLY_RANK_UNLOCK_COUNT,
+			bronze: 20,
+			silver: 20,
 		});
 
+		expect(
+			getDeckRankSelectionState({
+				deckWordCount,
+				rankCounts,
+				rankKey: 'fnew',
+			}),
+		).toBe('available');
+		expect(
+			getDeckRankSelectionState({
+				deckWordCount,
+				rankCounts,
+				rankKey: 'bronze',
+			}),
+		).toBe('locked');
+		expect(
+			getDeckRankSelectionState({
+				deckWordCount,
+				rankCounts,
+				rankKey: 'silver',
+			}),
+		).toBe('locked');
+	});
+
+	it('unlocks the next rank after the earlier rank is complete', () => {
+		const rankCounts = makeRankCounts({
+			bronze: 15,
+			silver: 20,
+			gold: 15,
+		});
+
+		expect(
+			getDeckRankSelectionState({
+				deckWordCount,
+				rankCounts,
+				rankKey: 'fnew',
+			}),
+		).toBe('complete');
 		expect(
 			getDeckRankSelectionState({
 				deckWordCount,
@@ -56,29 +90,6 @@ describe('deck rank progression', () => {
 				rankKey: 'silver',
 			}),
 		).toBe('locked');
-	});
-
-	it('waits for the earliest rank to clear before unlocking beyond the early rank', () => {
-		const rankCounts = makeRankCounts({
-			bronze: 15,
-			silver: EARLY_RANK_UNLOCK_COUNT,
-			gold: 15,
-		});
-
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'bronze',
-			}),
-		).toBe('available');
-		expect(
-			getDeckRankSelectionState({
-				deckWordCount,
-				rankCounts,
-				rankKey: 'silver',
-			}),
-		).toBe('available');
 		expect(
 			getDeckRankSelectionState({
 				deckWordCount,
