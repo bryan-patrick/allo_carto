@@ -138,7 +138,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.primary
   },
   unlockCriteriaTextStyle: {
-    fontFamily: 'lexend-400',
+    fontFamily: 'lexend-600',
+    fontSize: 16,
     textAlign: 'center',
     color: colors.dark.text,
   }

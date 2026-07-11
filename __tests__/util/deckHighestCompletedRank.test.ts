@@ -19,23 +19,35 @@ function makeRankCounts(overrides: Partial<RankCounts> = {}): RankCounts {
 }
 
 describe('deck completion ranks', () => {
-	it('returns null before half the deck advances', () => {
+	it('returns null before half the deck reaches Bronze', () => {
 		expect(getHighestSoftCompletedDeckRank(makeRankCounts())).toBeNull();
 		expect(
 			getHighestSoftCompletedDeckRank(makeRankCounts({ fnew: 2, bronze: 1 })),
 		).toBeNull();
 	});
 
-	it('returns the highest softly completed rank', () => {
+	it('counts cards at the required rank or higher', () => {
 		expect(
 			getHighestSoftCompletedDeckRank(makeRankCounts({ fnew: 2, bronze: 2 })),
-		).toBe('fnew');
+		).toBe('bronze');
 		expect(
 			getHighestSoftCompletedDeckRank(makeRankCounts({ fnew: 1, silver: 2 })),
-		).toBe('bronze');
+		).toBe('silver');
 		expect(
 			getHighestSoftCompletedDeckRank(makeRankCounts({ gold: 2, diamond: 2 })),
 		).toBe('diamond');
+	});
+
+	it('meets a Bronze requirement when half the cards reach Bronze', () => {
+		const completedRank = getHighestSoftCompletedDeckRank(
+			makeRankCounts({ fnew: 25, bronze: 25 }),
+		);
+
+		expect(completedRank).toBe('bronze');
+		expect(doesCompletedRankMeetRequirement({
+			completedRank,
+			requiredRank: 'bronze',
+		})).toBe(true);
 	});
 
 	it('tracks full completion separately', () => {
