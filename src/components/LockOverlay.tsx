@@ -43,7 +43,8 @@ export default function LockOverlay({
     completeOverlayStyle,
     containerStyle,
     overlayStyle,
-    unlockCriteriaStyle
+    unlockCriteriaContainerStyle,
+    unlockCriteriaTextStyle,
   } = styles;
 
   /**
@@ -100,7 +101,9 @@ export default function LockOverlay({
             />
           )}
           {unlockCriteria && (
-            <Text style={unlockCriteriaStyle}>{unlockCriteria}</Text>
+            <View style={unlockCriteriaContainerStyle}>
+              <Text style={unlockCriteriaTextStyle}>{unlockCriteria}</Text>
+            </View>
           )}
         </Pressable>
       )}
@@ -128,12 +131,15 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     zIndex: 10,
   },
-  unlockCriteriaStyle: {
+  unlockCriteriaContainerStyle: {
+    width: '100%',
     padding: 16,
-    textAlign: 'center',
-    fontFamily: 'lexend-400',
-    color: colors.dark.text,
     marginVertical: 16,
     backgroundColor: colors.light.primary
+  },
+  unlockCriteriaTextStyle: {
+    fontFamily: 'lexend-400',
+    textAlign: 'center',
+    color: colors.dark.text,
   }
 });
