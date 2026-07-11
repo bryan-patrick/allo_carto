@@ -35,7 +35,7 @@ export default function DeckBoxHeader({ deck }: DeckBoxHeaderProps) {
       </View>
       <Text style={descriptionStyle}>{deck.description}</Text>
     </View>
-  )
+  );
 }
 
 /**
@@ -44,7 +44,7 @@ export default function DeckBoxHeader({ deck }: DeckBoxHeaderProps) {
 const styles = StyleSheet.create({
   cardHeaderStyle: {
     padding: 16,
-    gap: 4,
+    gap: 8,
   },
   titleContainer: {
   },

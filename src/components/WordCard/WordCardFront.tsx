@@ -112,9 +112,9 @@ const WordCardFront = memo(function WordCardFrontMemo({
         <View style={wordMetaContainer}>
           {partOfSpeech && (
             <Text style={[wordForm, {
-              borderRightWidth: 1,
-              marginRight: 8,
-              paddingRight: 8
+              borderRightWidth: formCapitalized ? 1 : 0,
+              marginRight: formCapitalized ? 8 : 0,
+              paddingRight: formCapitalized ? 8 : 0
             }]}>{partOfSpeechCapitalized}</Text>
           )}
           {form && (

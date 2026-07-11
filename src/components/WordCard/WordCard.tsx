@@ -213,6 +213,8 @@ export default function WordCard({ isCurrent }: WordCardProps) {
       />
       <WordCardBack
         wordCardBackFlippedStyle={wordCardBackFlippedStyle}
+        articleWidthStyle={articleWidthStyle}
+        wordWidthStyle={wordWidthStyle}
         feedbackStyle={feedbackStyle}
         articleSlotStyle={articleSlotStyle}
         wordSlotStyle={wordSlotStyle}
