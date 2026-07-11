@@ -3,6 +3,8 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 const streetMarketTreasureHunt = require('@/src/app/assets/images/decks/street-market-treasure-hunt.jpg');
 
 export const DeckStreetMarketTreasureHunt: CardDeck = {
+	id: 'deck__street_market_treasure_hunt',
+	requiredPreviousDeckRank: 'bronze',
 	title: 'Street Market Treasure Hunt',
 	description: 'Glittering gold, trinkets and baubles.',
 	CEFR: ['A1', 'C1'],

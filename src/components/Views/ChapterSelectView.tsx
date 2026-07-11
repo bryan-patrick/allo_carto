@@ -53,11 +53,11 @@ export default function ChapterSelectView() {
                 </ChapterSelectButton>
               </View>
             </View>
-          )
+          );
         })
       }
     </ScrollView >
-  )
+  );
 }
 
 /**
@@ -72,7 +72,7 @@ function ChapterSelectButton({ chapterId, children }: ChapterSelectButtonProps) 
   /**
    * Destructure styles
    */
-  const { ChapterSelectButtonStyle } = styles
+  const { ChapterSelectButtonStyle } = styles;
 
   return (
     <LinkButton
@@ -84,14 +84,14 @@ function ChapterSelectButton({ chapterId, children }: ChapterSelectButtonProps) 
     >
       {children}
     </LinkButton>
-  )
+  );
 }
 
 /**
  * Encore ploousssss typing
  */
 interface ChapterMetaProps {
-  ts?: string
+  ts?: string;
 }
 
 function ChapterMeta({ ts }: ChapterMetaProps) {
@@ -109,10 +109,10 @@ function ChapterMeta({ ts }: ChapterMetaProps) {
         <Text style={metaDataStyle}>0/12</Text>
       </View>
     </View>
-  )
+  );
 }
 
-const { containerMargin } = sharedStyles
+const { containerMargin } = sharedStyles;
 
 /**
  * Styles

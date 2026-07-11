@@ -3,6 +3,7 @@ import {
   makeMockCardDeck,
   makeMockCardDeckState,
 } from '@/src/components/CardDeck/mockCardDeck';
+import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckProgress from '@/src/components/WordCard/DeckProgress';
 import { render } from '@testing-library/react-native';
@@ -14,14 +15,14 @@ const mockUseCardDeck = jest.mocked(useCardDeck);
 
 describe('<DeckProgress />', () => {
   test('marks incorrect words with danger fill and adds progressive rarity glow', () => {
-    const words = [
+    const words: Word[] = [
       {
         id: 'word_fnew',
         frenchWord: 'bonjour',
         englishWords: ['hello'],
         pronunciation: 'bohn-zhoor',
         isVulgar: false,
-        CEFR: 'A1' as const,
+        CEFR: 'A1',
         correctCount: 0,
       },
       {
@@ -30,9 +31,9 @@ describe('<DeckProgress />', () => {
         englishWords: ['cat'],
         pronunciation: 'shah',
         isVulgar: false,
-        CEFR: 'A1' as const,
+        CEFR: 'A1',
         correctCount: 7,
-        rarity: 'Rare' as const,
+        rarity: 'Rare',
       },
       {
         id: 'word_diamond_current',
@@ -40,9 +41,9 @@ describe('<DeckProgress />', () => {
         englishWords: ['dog'],
         pronunciation: 'shee-ehn',
         isVulgar: false,
-        CEFR: 'A1' as const,
+        CEFR: 'A1',
         correctCount: 15,
-        rarity: 'Legendary' as const,
+        rarity: 'Legendary',
       },
     ];
 
@@ -76,14 +77,14 @@ describe('<DeckProgress />', () => {
   });
 
   test('fills a correct word before moving to the next card', () => {
-    const words = [
+    const words: Word[] = [
       {
         id: 'word_fnew',
         frenchWord: 'bonjour',
         englishWords: ['hello'],
         pronunciation: 'bohn-zhoor',
         isVulgar: false,
-        CEFR: 'A1' as const,
+        CEFR: 'A1',
         correctCount: 0,
       },
       {
@@ -92,9 +93,9 @@ describe('<DeckProgress />', () => {
         englishWords: ['cat'],
         pronunciation: 'shah',
         isVulgar: false,
-        CEFR: 'A1' as const,
+        CEFR: 'A1',
         correctCount: 12,
-        rarity: 'Epic' as const,
+        rarity: 'Epic',
       },
     ];
 

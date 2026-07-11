@@ -12,6 +12,8 @@ const airportOiseau = require('@/src/app/assets/images/decks/grocery-store.jpg')
  * I might nix it and keep to things that are smaller
  */
 export const DeckGroceryStore: CardDeck = {
+	id: 'deck__grocery_store',
+	requiredPreviousDeckRank: null,
 	title: 'Grocery Store Adventures',
 	CEFR: ['A1', 'C1'],
 	description:
