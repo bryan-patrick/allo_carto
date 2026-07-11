@@ -161,14 +161,8 @@ export default function CardDeckRankSelectView() {
                   rankKey: key,
                 });
                 const isRankFullyComplete = rankProgress.completion === 'full';
-                const isRankSoftComplete = rankProgress.completion === 'soft';
                 const isRankLocked = !rankProgress.isUnlocked;
                 const isRankButtonDisabled = !rankProgress.isSelectable;
-                const completionText = isRankSoftComplete
-                  ? ' · Soft complete'
-                  : isRankFullyComplete && rankProgress.isSelectable
-                    ? ' · Full complete'
-                    : '';
 
                 /**
                  * Rank styles
@@ -203,10 +197,8 @@ export default function CardDeckRankSelectView() {
                       overlayStyle={rankLockOverlayStyle}
                     >
                       <LinkButton
-                        accessibilityHint={isRankSoftComplete
-                          ? `${name} is softly complete and remains available to practice.`
-                          : `Practice the ${name} cards in this deck.`}
-                        accessibilityLabel={`${name}, ${rankCount} cards${isRankSoftComplete ? ', soft complete' : isRankFullyComplete ? ', full complete' : ''}`}
+                        accessibilityHint={`Practice the ${name} cards in this deck.`}
+                        accessibilityLabel={`${name}, ${rankCount} cards${isRankFullyComplete ? ', full complete' : ''}`}
                         handler={() => handleLevelSelect(key)}
                         style={rankButtonStyle}
                         arrowColor={colors.dark.text}
@@ -214,7 +206,7 @@ export default function CardDeckRankSelectView() {
                         disabled={isRankButtonDisabled}
                         SVGElement={<RankIcon size={32} rank={key} color={colors.dark.rank[ key ]} />}
                       >
-                        <Text style={rankButtonTextStyle}>{name} ({rankCount}){completionText}</Text>
+                        <Text style={rankButtonTextStyle}>{name} ({rankCount})</Text>
                       </LinkButton>
                     </LockOverlay>
                   </View>
