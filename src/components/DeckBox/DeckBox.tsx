@@ -163,8 +163,8 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
    */
   return (
     <View style={cardStyle}>
-      <LockOverlay isLocked={isLocked} unlockCriteria={unlockCriteriaMsg}>
-        <View style={cardInnerStyle}>
+      <View style={cardInnerStyle}>
+        <LockOverlay isLocked={isLocked} unlockCriteria={unlockCriteriaMsg}>
           <View style={cardInnerBorder}>
             <DeckBoxHeader deck={deck} />
             <DeckBoxHero
@@ -186,8 +186,8 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
               handleDeckSelect={handleDeckSelect}
             />
           </View>
-        </View>
-      </LockOverlay >
+        </LockOverlay >
+      </View>
     </View>
   );
 }
@@ -204,7 +204,6 @@ const styles = StyleSheet.create({
   cardStyle: {
     margin: containerMargin,
     borderRadius: 22,
-    overflow: 'hidden',
   },
   cardInnerStyle: {
     borderRadius: 22,
@@ -212,6 +211,7 @@ const styles = StyleSheet.create({
     borderColor: colors.light.border,
     backgroundColor: colors.light.background,
     boxShadow: `0 20px 0 ${colors.dark.border}`,
+    overflow: 'hidden'
   },
   cardInnerBorder: {
     borderWidth: 3,

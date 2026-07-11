@@ -131,8 +131,9 @@ const styles = StyleSheet.create({
   unlockCriteriaStyle: {
     padding: 16,
     textAlign: 'center',
+    fontFamily: 'lexend-400',
     color: colors.dark.text,
     marginVertical: 16,
-    backgroundColor: colors.light.warning
+    backgroundColor: colors.light.primary
   }
 });

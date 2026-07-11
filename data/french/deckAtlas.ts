@@ -86,13 +86,9 @@ export const deckAtlas: DeckAtlas = {
 
 /**
  * Get every playable deck in progression order.
- *
- * The atlas is the source of truth for progression: chapters contain places,
- * and places contain decks. Keeping the flattening here prevents lock logic
- * from having to know about that structure.
  */
 export function getDecks(atlas: DeckAtlas = deckAtlas): CardDeck[] {
-	return atlas.chapters.flatMap((chapter) =>
-		chapter.places.flatMap((place) => place.decks),
+	return atlas.chapters.flatMap(chapter =>
+		chapter.places.flatMap(place => place.decks),
 	);
 }
