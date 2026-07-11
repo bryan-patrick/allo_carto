@@ -1,6 +1,9 @@
-import { getDB } from '../connection';
 import { getWordRankSqlCountSelect, WordRankKey } from '../../util/wordRanks';
+import { getDB } from '../connection';
 
+/**
+ * Typing
+ */
 export type DeckRankCounts = Record<WordRankKey, number> & {
 	seen: number;
 };
@@ -10,6 +13,9 @@ interface GetDeckRankCountsProps {
 	wordIds: string[];
 }
 
+/**
+ * Deck rank counts init
+ */
 export const emptyDeckRankCounts: DeckRankCounts = {
 	seen: 0,
 	fnew: 0,

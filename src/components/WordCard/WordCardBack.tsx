@@ -13,7 +13,7 @@ import WordCardHeader from "./WordCardHeader";
  * Typing
  */
 interface WordCardBackProps {
-  wordCardBackFlippedStyle: AnimatedStyle<ViewStyle>
+  wordCardBackFlippedStyle: AnimatedStyle<ViewStyle>;
   wordWidthStyle: AnimatedStyle<TextStyle>;
   articleWidthStyle: AnimatedStyle<TextStyle>;
   feedbackStyle: TextStyle;
@@ -76,7 +76,7 @@ const WordCardBack = memo(function WordCardBackMemo({
     word: frenchWord,
   });
   const displayedArticle = cardState.selectedArticle ?? englishArticle;
-  const displayedWord = cardState.selectedWord ?? englishWords[0];
+  const displayedWord = cardState.selectedWord ?? englishWords[ 0 ];
 
   const formCapitalized = (form ?? '')
     .split(' ')
@@ -103,11 +103,11 @@ const WordCardBack = memo(function WordCardBackMemo({
         <Text style={wordPronunciation}>({pronunciation})</Text>
         <View style={wordMetaContainer}>
           {partOfSpeech && (
-            <Text style={[wordForm, {
-              borderRightWidth: 1,
-              marginRight: 8,
-              paddingRight: 8
-            }]}>{partOfSpeechCapitalized}</Text>
+            <Text style={[ wordForm, {
+              borderRightWidth: formCapitalized ? 1 : 0,
+              marginRight: formCapitalized ? 8 : 0,
+              paddingRight: formCapitalized ? 8 : 0
+            } ]}>{partOfSpeechCapitalized}</Text>
           )}
           {form && (
             <Text style={wordForm}>{formCapitalized}</Text>
@@ -139,12 +139,12 @@ const WordCardBack = memo(function WordCardBackMemo({
         </Animated.Text>
       </View>
       <View style={feedbackContainer}>
-        <Text style={[feedbackText, feedbackStyle]}>
-          {FEEDBACK_TEXT_BACK[cardState.feedbackKey] ?? ''}
+        <Text style={[ feedbackText, feedbackStyle ]}>
+          {FEEDBACK_TEXT_BACK[ cardState.feedbackKey ] ?? ''}
         </Text>
       </View>
     </Animated.View>
-  )
+  );
 });
 
 /**

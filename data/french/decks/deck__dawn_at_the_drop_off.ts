@@ -6,6 +6,8 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 const dawnDropOff = require('@/src/app/assets/images/decks/dawn-at-the-drop-off.jpg');
 
 export const DeckDawnAtTheDropOff: CardDeck = {
+	id: 'deck__dawn_at_the_drop_off',
+	requiredPreviousDeckRank: null,
 	title: 'Dawn at the Drop Off',
 	description: 'The start of our journey. Cat included.',
 	CEFR: ['A1', 'A2'],

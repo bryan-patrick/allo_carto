@@ -13,6 +13,70 @@ export type DeckRankSelectionState = 'available' | 'complete' | 'locked';
 const rankKeys = wordRankDefinitions.map(({ key }) => key);
 
 /**
+ * Return the highest rank every card in a deck has completed.
+ *
+ * A rank is complete once every card has advanced beyond it. Diamond is the
+ * highest rank and cannot be advanced beyond, so the highest possible
+ * completed rank is Gold.
+ */
+export function getHighestCompletedDeckRank(
+	rankCounts: RankCounts,
+): WordRankKey | null {
+	let result: WordRankKey | null = null;
+	const lastCompletableRankIndex = rankKeys.length - 2;
+	const deckWordCount = rankKeys.reduce((total, rankKey) => {
+		return total + (rankCounts[rankKey] ?? 0);
+	}, 0);
+
+	for (
+		let rankIndex = lastCompletableRankIndex;
+		rankIndex >= 0 && result === null && deckWordCount > 0;
+		rankIndex--
+	) {
+		let cardsAtOrBelowRank = 0;
+
+		for (let i = 0; i <= rankIndex; i++) {
+			cardsAtOrBelowRank += rankCounts[rankKeys[i]] ?? 0;
+		}
+
+		if (cardsAtOrBelowRank === 0) {
+			result = rankKeys[rankIndex];
+		}
+	}
+
+	return result;
+}
+
+/**
+ * Check whether a completed deck rank satisfies another deck's prerequisite.
+ */
+export function doesCompletedRankMeetRequirement({
+	completedRank,
+	requiredRank,
+}: {
+	completedRank: WordRankKey | null;
+	requiredRank: WordRankKey | null;
+}): boolean {
+	let result = false;
+	const completedRankIndex = completedRank ? rankKeys.indexOf(completedRank) : -1;
+	const requiredRankIndex = requiredRank ? rankKeys.indexOf(requiredRank) : -1;
+
+	if (requiredRank === null) {
+		result = true;
+	}
+
+	if (
+		requiredRank !== null &&
+		completedRankIndex >= requiredRankIndex &&
+		requiredRankIndex >= 0
+	) {
+		result = true;
+	}
+
+	return result;
+}
+
+/**
  * Deck rank progression
  */
 export function getDeckRankSelectionState({

@@ -3,6 +3,8 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 const clocksImage = require('@/src/app/assets/images/decks/clock-gears.jpg');
 
 export const DeckClocksAndTime: CardDeck = {
+	id: 'deck__clocks_and_time',
+	requiredPreviousDeckRank: null,
 	title: 'Clocks & Time',
 	description: 'Ding dong',
 	CEFR: ['A1', 'A2'],

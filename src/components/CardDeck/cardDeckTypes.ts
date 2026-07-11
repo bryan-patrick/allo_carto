@@ -1,3 +1,4 @@
+import { WordRankKey } from '@/src/util/wordRanks';
 import { ImageSourcePropType } from 'react-native';
 
 /**
@@ -33,6 +34,7 @@ export interface StorySegment {
 }
 
 export interface CardDeck {
+	id: string;
 	title: string;
 	CEFR: CEFR[];
 	description: string;
@@ -43,6 +45,7 @@ export interface CardDeck {
 	place?: string;
 	colors: DeckColors;
 	story?: StorySegment[];
+	requiredPreviousDeckRank: WordRankKey | null;
 }
 
 /**

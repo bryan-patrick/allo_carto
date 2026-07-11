@@ -6,6 +6,8 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 const toTheGate = require('@/src/app/assets/images/decks/to-the-gate.jpg');
 
 export const DeckToTheGate: CardDeck = {
+	id: 'deck__to_the_gate',
+	requiredPreviousDeckRank: 'bronze',
 	title: 'To the Gate!',
 	description:
 		'Plane terms, getting on the flight down the walkway, gate announcements, finding seats, people watching etc.',

@@ -1,6 +1,6 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ReactNode } from "react";
-import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import colors from "../app/colors";
 import SVGCheck from "./SVG/SVGCheck";
 
@@ -17,6 +17,7 @@ interface LockOverlayProps {
   lockedAccessibilityLabel?: string;
   overlayStyle?: StyleProp<ViewStyle>;
   style?: StyleProp<ViewStyle>;
+  unlockCriteria?: string;
 }
 
 /**
@@ -28,6 +29,7 @@ export default function LockOverlay({
   completeAccessibilityLabel = 'Complete content',
   isComplete = false,
   isLocked,
+  unlockCriteria,
   lockedAccessibilityHint,
   lockedAccessibilityLabel = 'Locked content',
   overlayStyle: customOverlayStyle,
@@ -41,6 +43,7 @@ export default function LockOverlay({
     completeOverlayStyle,
     containerStyle,
     overlayStyle,
+    unlockCriteriaStyle
   } = styles;
 
   /**
@@ -67,7 +70,7 @@ export default function LockOverlay({
    * Render LockOverlay
    */
   return (
-    <View style={[containerStyle, style]}>
+    <View style={[ containerStyle, style ]}>
       {children}
       {showOverlay && (
         <Pressable
@@ -96,6 +99,9 @@ export default function LockOverlay({
               width="32"
             />
           )}
+          {unlockCriteria && (
+            <Text style={unlockCriteriaStyle}>{unlockCriteria}</Text>
+          )}
         </Pressable>
       )}
     </View>
@@ -120,7 +126,14 @@ const styles = StyleSheet.create({
     backgroundColor: `#333333dd`,
     justifyContent: 'center',
     overflow: 'hidden',
-    borderWidth: 1,
     zIndex: 10,
   },
+  unlockCriteriaStyle: {
+    padding: 16,
+    textAlign: 'center',
+    fontFamily: 'lexend-400',
+    color: colors.dark.text,
+    marginVertical: 16,
+    backgroundColor: colors.light.primary
+  }
 });

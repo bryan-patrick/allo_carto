@@ -83,3 +83,12 @@ export const deckAtlas: DeckAtlas = {
 		},
 	],
 };
+
+/**
+ * Get every playable deck in progression order.
+ */
+export function getDecks(atlas: DeckAtlas = deckAtlas): CardDeck[] {
+	return atlas.chapters.flatMap(chapter =>
+		chapter.places.flatMap(place => place.decks),
+	);
+}
