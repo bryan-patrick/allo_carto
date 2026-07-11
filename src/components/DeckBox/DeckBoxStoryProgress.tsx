@@ -79,10 +79,10 @@ export default function DeckBoxStoryProgress({
   } = styles;
 
   return (
-    <View style={[storyProgressContainerStyle]}>
-      <View style={[storyProgressHeaderStyle, { borderColor: deck.colors.dark.primary }]}>
-        <Text style={[storyProgressTitleStyle, { color: deck.colors.dark.primary }]}>Story Progress</Text>
-        <Text style={[storyProgressTextStyle, { color: deck.colors.dark.primary }]}>
+    <View style={[ storyProgressContainerStyle ]}>
+      <View style={[ storyProgressHeaderStyle, { borderColor: deck.colors.dark.primary } ]}>
+        <Text style={[ storyProgressTitleStyle, { color: deck.colors.dark.primary } ]}>Story Progress</Text>
+        <Text style={[ storyProgressTextStyle, { color: deck.colors.dark.primary } ]}>
           {deckCompletionPercent}%
         </Text>
       </View>
@@ -94,26 +94,26 @@ export default function DeckBoxStoryProgress({
       <View style={storyProgressStyle}>
         <View style={plopContainerStyle}>
           {deck.story?.map(({ wordId, text }, index) => {
-            const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
+            const progress = wordProgressKeyByWordId[ wordId ?? '' ] ?? 'unseen';
 
             return (
               <View
                 key={`plop-${index}-${wordId}-${text}`}
-                style={[plopStyle, plopStyleByProgress[progress]]}
+                style={[ plopStyle, plopStyleByProgress[ progress ] ]}
               />
-            )
+            );
           })}
         </View>
       </View>
       <View style={storyProgressButtonContainerStyle}>
         <SecondaryButton
-          style={[storyProgressButtonStyle, {
+          style={[ storyProgressButtonStyle, {
             borderColor: deck.colors.dark.primary,
             shadowColor: deck.colors.dark.primary,
-          }]}
-          textStyle={[storyProgressButtonTextStyle, {
+          } ]}
+          textStyle={[ storyProgressButtonTextStyle, {
             color: deck.colors.dark.primary,
-          }]}
+          } ]}
           onPress={handleShowStory}
           hitSlop={4}
           SVGElement={
@@ -139,13 +139,13 @@ export default function DeckBoxStoryProgress({
           wordProgressKeyByWordId={wordProgressKeyByWordId}
         />
         <SecondaryButton
-          style={[storyProgressButtonStyle, {
+          style={[ storyProgressButtonStyle, {
             borderColor: deck.colors.dark.primary,
             shadowColor: deck.colors.dark.primary,
-          }]}
-          textStyle={[storyProgressButtonTextStyle, {
+          } ]}
+          textStyle={[ storyProgressButtonTextStyle, {
             color: deck.colors.dark.primary,
-          }]}
+          } ]}
           onPress={handleViewCards}
           hitSlop={4}
           SVGElement={
@@ -160,7 +160,7 @@ export default function DeckBoxStoryProgress({
         </SecondaryButton>
       </View>
     </View>
-  )
+  );
 }
 
 /**

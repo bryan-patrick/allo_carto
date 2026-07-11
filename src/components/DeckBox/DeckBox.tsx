@@ -10,6 +10,7 @@ import { StyleSheet, View } from "react-native";
 import colors from "../../app/colors";
 import sharedStyles from "../../app/sharedStyles";
 import { useUserContext } from "../../db/useUserContext";
+import { getDeckCompletionPercent } from "../../util/deckCompletion";
 import type { WordProgressKey } from "../../util/wordRanks";
 import type { CardDeck } from "../CardDeck/cardDeckTypes";
 import DeckBoxFooter from "./DeckBoxFooter";
@@ -31,9 +32,9 @@ interface SelectCardDeckProps {
 export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
   const user = useUserContext();
   const { cardDeckDispatch } = useCardDeck();
-  const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
-  const [wordProgressKeyByWordId, setWordProgressKeyByWordId] = useState<Record<string, WordProgressKey>>({});
-  const [modalVisible, setModalVisible] = useState(false);
+  const [ rankCounts, setRankCounts ] = useState<DeckRankCounts>(emptyDeckRankCounts);
+  const [ wordProgressKeyByWordId, setWordProgressKeyByWordId ] = useState<Record<string, WordProgressKey>>({});
+  const [ modalVisible, setModalVisible ] = useState(false);
 
   /**
    * Destructure styles
@@ -41,16 +42,16 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
   const {
     cardStyle,
     cardInnerStyle,
+    cardInnerBorder
   } = styles;
 
   /**
    * Deck completion
    */
-  const deckCompletionTotal = deck.wordIds.length * 4;
-  const deckCompletionCount = rankCounts.bronze + (rankCounts.silver * 2) + (rankCounts.gold * 3) + (rankCounts.diamond * 4);
-  const deckCompletionPercent = deckCompletionTotal === 0
-    ? 0
-    : Math.round((deckCompletionCount / deckCompletionTotal) * 100);
+  const deckCompletionPercent = getDeckCompletionPercent({
+    deckWordCount: deck.wordIds.length,
+    rankCounts,
+  });
 
   /**
    * Data loaders
@@ -72,7 +73,7 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
     } catch (error) {
       console.error('Could not retrieve deck rank counts:', error);
     }
-  }, [user?.id, deck.wordIds]);
+  }, [ user?.id, deck.wordIds ]);
 
   const loadStoryWordProgress = useCallback(async () => {
     try {
@@ -91,7 +92,7 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
     } catch (error) {
       console.error('Could not retrieve story word progress:', error);
     }
-  }, [user?.id, deck.story]);
+  }, [ user?.id, deck.story ]);
 
   /**
    * The story blips weren't updating when returning
@@ -159,25 +160,27 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
   return (
     <View style={cardStyle}>
       <View style={cardInnerStyle}>
-        <DeckBoxHeader deck={deck} />
-        <DeckBoxHero
-          deck={deck}
-          rankCounts={rankCounts}
-        />
-        <DeckBoxStoryProgress
-          deck={deck}
-          deckCompletionPercent={deckCompletionPercent}
-          handleShowStory={handleShowStory}
-          handleViewCards={handleViewCards}
-          modalVisible={modalVisible}
-          rankCounts={rankCounts}
-          setModalVisible={setModalVisible}
-          wordProgressKeyByWordId={wordProgressKeyByWordId}
-        />
-        <DeckBoxFooter
-          deck={deck}
-          handleDeckSelect={handleDeckSelect}
-        />
+        <View style={cardInnerBorder}>
+          <DeckBoxHeader deck={deck} />
+          <DeckBoxHero
+            deck={deck}
+            rankCounts={rankCounts}
+          />
+          <DeckBoxStoryProgress
+            deck={deck}
+            deckCompletionPercent={deckCompletionPercent}
+            handleShowStory={handleShowStory}
+            handleViewCards={handleViewCards}
+            modalVisible={modalVisible}
+            rankCounts={rankCounts}
+            setModalVisible={setModalVisible}
+            wordProgressKeyByWordId={wordProgressKeyByWordId}
+          />
+          <DeckBoxFooter
+            deck={deck}
+            handleDeckSelect={handleDeckSelect}
+          />
+        </View>
       </View>
     </View>
   );
@@ -186,7 +189,7 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 /**
  * Destructure shared styles
  */
-const { containerMargin } = sharedStyles
+const { containerMargin } = sharedStyles;
 
 /**
  * Styles
@@ -196,10 +199,15 @@ const styles = StyleSheet.create({
     margin: containerMargin,
   },
   cardInnerStyle: {
-    backgroundColor: colors.light.background,
-    borderRadius: 24,
+    borderRadius: 22,
     borderWidth: 4,
     borderColor: colors.light.border,
+    backgroundColor: colors.light.background,
     boxShadow: `0 20px 0 ${colors.dark.border}`,
   },
-})
+  cardInnerBorder: {
+    borderWidth: 3,
+    borderRadius: 18,
+    borderColor: colors.dark.border
+  }
+});

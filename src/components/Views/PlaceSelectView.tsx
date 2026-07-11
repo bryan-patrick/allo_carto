@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   placeContainerStyle: {
     display: 'flex',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 8,
     backgroundColor: colors.light.background
   },

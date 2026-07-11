@@ -120,7 +120,7 @@ const { containerMargin } = sharedStyles
 const styles = StyleSheet.create({
   chapterContainerStyle: {
     display: 'flex',
-    borderRadius: 8,
+    borderRadius: 16,
     margin: containerMargin,
     flexDirection: 'column',
     justifyContent: 'center',
