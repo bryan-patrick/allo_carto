@@ -1,5 +1,5 @@
 import type { WordRankKey } from '@/src/util/wordRanks';
-import { getHighestCompletedDeckRank } from '../../util/deckRankProgression';
+import { getHighestSoftCompletedDeckRank } from '../../util/deckRankProgression';
 import getDeckRankCounts from './getDeckRankCounts';
 
 /**
@@ -11,13 +11,13 @@ interface GetDeckHighestCompletedRankProps {
 }
 
 /**
- * Get the highest rank the user has completed for a deck.
+ * Get the highest rank the user has softly completed for a deck.
  */
-export default async function getDeckHighestCompletedRank({
+export default async function getDeckHighestSoftCompletedRank({
 	userId,
 	wordIds,
 }: GetDeckHighestCompletedRankProps): Promise<WordRankKey | null> {
 	const rankCounts = await getDeckRankCounts({ userId, wordIds });
 
-	return getHighestCompletedDeckRank(rankCounts);
+	return getHighestSoftCompletedDeckRank(rankCounts);
 }

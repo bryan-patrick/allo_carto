@@ -2,7 +2,7 @@ import type { DeckPlace } from "@/data/french/deckAtlas";
 import { deckAtlas, getDecks } from "@/data/french/deckAtlas";
 import type { CardDeck } from "@/src/components/CardDeck/cardDeckTypes";
 import DeckBox from "@/src/components/DeckBox";
-import { getDeckHighestCompletedRank } from "@/src/db/interface";
+import { getDeckHighestSoftCompletedRank } from "@/src/db/interface";
 import { useUserContext } from "@/src/db/useUserContext";
 import { doesCompletedRankMeetRequirement } from "@/src/util/deckRankProgression";
 import type { WordRankKey } from "@/src/util/wordRanks";
@@ -82,7 +82,7 @@ export default function CardDeckSelect() {
              */
             const allFinishedRanks = await Promise.all(
               orderedDecks.map(async (deck) => {
-                const completedRank = await getDeckHighestCompletedRank({
+                const completedRank = await getDeckHighestSoftCompletedRank({
                   userId: user.id,
                   wordIds: deck.wordIds,
                 });
