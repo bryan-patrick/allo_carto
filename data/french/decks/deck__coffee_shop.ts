@@ -13,6 +13,8 @@ const coffeeHouse = require('@/src/app/assets/images/decks/ae-coffee-house.jpg')
  * to be about a coffee shop.
  */
 export const DeckCoffeeShop: CardDeck = {
+	id: 'deck__coffee_shop',
+	requiredPreviousDeckRank: null,
 	title: 'Coffee Shop',
 	description:
 		'Explore french where water meets beans. Words related to everything in a coffee house.',

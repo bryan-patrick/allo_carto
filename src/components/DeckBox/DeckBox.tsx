@@ -13,6 +13,7 @@ import { useUserContext } from "../../db/useUserContext";
 import { getDeckCompletionPercent } from "../../util/deckCompletion";
 import type { WordProgressKey } from "../../util/wordRanks";
 import type { CardDeck } from "../CardDeck/cardDeckTypes";
+import LockOverlay from "../LockOverlay";
 import DeckBoxFooter from "./DeckBoxFooter";
 import DeckBoxHeader from "./DeckBoxHeader";
 import DeckBoxHero from "./DeckBoxHero";
@@ -24,17 +25,20 @@ import DeckBoxStoryProgress from "./DeckBoxStoryProgress";
 interface SelectCardDeckProps {
   deck: CardDeck;
   placeId?: string;
+  isLocked: boolean;
 }
 
 /**
  * DeckBox component
  */
-export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
+export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps) {
   const user = useUserContext();
   const { cardDeckDispatch } = useCardDeck();
   const [ rankCounts, setRankCounts ] = useState<DeckRankCounts>(emptyDeckRankCounts);
   const [ wordProgressKeyByWordId, setWordProgressKeyByWordId ] = useState<Record<string, WordProgressKey>>({});
   const [ modalVisible, setModalVisible ] = useState(false);
+
+  const unlockCriteriaMsg = deck.requiredPreviousDeckRank ? `${deck.requiredPreviousDeckRank?.toUpperCase()} required on the previous deck to unlock.` : '';
 
   /**
    * Destructure styles
@@ -159,29 +163,31 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
    */
   return (
     <View style={cardStyle}>
-      <View style={cardInnerStyle}>
-        <View style={cardInnerBorder}>
-          <DeckBoxHeader deck={deck} />
-          <DeckBoxHero
-            deck={deck}
-            rankCounts={rankCounts}
-          />
-          <DeckBoxStoryProgress
-            deck={deck}
-            deckCompletionPercent={deckCompletionPercent}
-            handleShowStory={handleShowStory}
-            handleViewCards={handleViewCards}
-            modalVisible={modalVisible}
-            rankCounts={rankCounts}
-            setModalVisible={setModalVisible}
-            wordProgressKeyByWordId={wordProgressKeyByWordId}
-          />
-          <DeckBoxFooter
-            deck={deck}
-            handleDeckSelect={handleDeckSelect}
-          />
+      <LockOverlay isLocked={isLocked} unlockCriteria={unlockCriteriaMsg}>
+        <View style={cardInnerStyle}>
+          <View style={cardInnerBorder}>
+            <DeckBoxHeader deck={deck} />
+            <DeckBoxHero
+              deck={deck}
+              rankCounts={rankCounts}
+            />
+            <DeckBoxStoryProgress
+              deck={deck}
+              deckCompletionPercent={deckCompletionPercent}
+              handleShowStory={handleShowStory}
+              handleViewCards={handleViewCards}
+              modalVisible={modalVisible}
+              rankCounts={rankCounts}
+              setModalVisible={setModalVisible}
+              wordProgressKeyByWordId={wordProgressKeyByWordId}
+            />
+            <DeckBoxFooter
+              deck={deck}
+              handleDeckSelect={handleDeckSelect}
+            />
+          </View>
         </View>
-      </View>
+      </LockOverlay >
     </View>
   );
 }
@@ -197,6 +203,8 @@ const { containerMargin } = sharedStyles;
 const styles = StyleSheet.create({
   cardStyle: {
     margin: containerMargin,
+    borderRadius: 22,
+    overflow: 'hidden',
   },
   cardInnerStyle: {
     borderRadius: 22,
@@ -208,6 +216,6 @@ const styles = StyleSheet.create({
   cardInnerBorder: {
     borderWidth: 3,
     borderRadius: 18,
-    borderColor: colors.dark.border
+    borderColor: colors.dark.border,
   }
 });

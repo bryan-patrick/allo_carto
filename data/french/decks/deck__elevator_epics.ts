@@ -3,6 +3,8 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 const elevatorEpics = require('@/src/app/assets/images/decks/elevator-epics.jpg');
 
 export const DeckElevatorEpics: CardDeck = {
+	id: 'deck__elevator_epics',
+	requiredPreviousDeckRank: 'bronze',
 	title: 'Elevator Epics',
 	description: 'Epic stories from random people in elevators.',
 	CEFR: ['A1', 'A2', 'B1'],

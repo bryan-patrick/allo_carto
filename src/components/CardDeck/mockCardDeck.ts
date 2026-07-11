@@ -67,6 +67,8 @@ export const mockWords: Word[] = [
  * Mock deck
  */
 export const mockCardDeck: CardDeck = {
+	id: 'deck__testing',
+	requiredPreviousDeckRank: null,
 	title: 'Testing deck',
 	description: 'A deck for tests',
 	CEFR: ['A1'],
