@@ -14,6 +14,8 @@ import WordCardHeader from "./WordCardHeader";
  */
 interface WordCardBackProps {
   wordCardBackFlippedStyle: AnimatedStyle<ViewStyle>
+  wordWidthStyle: AnimatedStyle<TextStyle>;
+  articleWidthStyle: AnimatedStyle<TextStyle>;
   feedbackStyle: TextStyle;
   articleSlotStyle: TextStyle;
   wordSlotStyle: TextStyle;
@@ -24,6 +26,8 @@ interface WordCardBackProps {
  */
 const WordCardBack = memo(function WordCardBackMemo({
   wordCardBackFlippedStyle,
+  wordWidthStyle,
+  articleWidthStyle,
   feedbackStyle,
   articleSlotStyle,
   wordSlotStyle
@@ -71,6 +75,8 @@ const WordCardBack = memo(function WordCardBackMemo({
     article: frenchArticle,
     word: frenchWord,
   });
+  const displayedArticle = cardState.selectedArticle ?? englishArticle;
+  const displayedWord = cardState.selectedWord ?? englishWords[0];
 
   const formCapitalized = (form ?? '')
     .split(' ')
@@ -110,19 +116,27 @@ const WordCardBack = memo(function WordCardBackMemo({
       </View>
       <View style={answerSlotContainer}>
         {englishArticle && (
-          <Text
+          <Animated.Text
             numberOfLines={1}
-            style={[answerSlot, articleSlotStyle]}
+            style={[
+              answerSlot,
+              articleSlotStyle,
+              articleWidthStyle,
+            ]}
           >
-            {englishArticle}
-          </Text>
+            {displayedArticle}
+          </Animated.Text>
         )}
-        <Text
+        <Animated.Text
           numberOfLines={1}
-          style={[answerSlot, wordSlotStyle]}
+          style={[
+            answerSlot,
+            wordSlotStyle,
+            wordWidthStyle,
+          ]}
         >
-          {englishWords[0]}
-        </Text>
+          {displayedWord}
+        </Animated.Text>
       </View>
       <View style={feedbackContainer}>
         <Text style={[feedbackText, feedbackStyle]}>

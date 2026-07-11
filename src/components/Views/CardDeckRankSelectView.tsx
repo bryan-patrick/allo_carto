@@ -7,10 +7,7 @@ import { getDeck } from "../../db/interface";
 import type { DeckRankCounts } from '../../db/queries/getDeckRankCounts';
 import getDeckRankCounts, { emptyDeckRankCounts } from '../../db/queries/getDeckRankCounts';
 import { useUserContext } from "../../db/useUserContext";
-import {
-  EARLY_RANK_UNLOCK_COUNT,
-  getDeckRankSelectionState
-} from '../../util/deckRankProgression';
+import { getDeckRankSelectionState } from '../../util/deckRankProgression';
 import { WordRankDefinition, WordRankKey, wordRankDefinitions } from '../../util/wordRanks';
 import { useCardDeck } from "../CardDeck/useCardDeck";
 import GradientText from '../GradientText';
@@ -35,14 +32,14 @@ function getLockedAccessibilityHint({
   rankName,
 }: LockedAccessibilityHintProps): string {
   const currentRankCount = rankCounts[rankKey] ?? 0;
-  let hint = `Complete the earliest active rank to keep progressing. The next rank can unlock early when ${EARLY_RANK_UNLOCK_COUNT} cards reach it. You currently have ${currentRankCount}.`;
+  let hint = `Finish the current available rank before starting ${rankName}. You currently have ${currentRankCount} cards in ${rankName}.`;
 
   if (rankKey === 'diamond') {
     hint = `Diamond unlocks when every card in this deck reaches Diamond. You currently have ${currentRankCount}/${deckWordCount}.`;
   }
 
   if (currentRankCount === 0) {
-    hint = `${rankName} unlocks once cards move into that rank.`;
+    hint = `${rankName} unlocks after the earlier ranks are complete.`;
   }
 
   return hint;
@@ -144,7 +141,7 @@ export default function CardDeckRankSelectView() {
               fontWeight={700}
             />
           </View>
-          <Text style={deckDescriptionStyle}>Get 20 words to the next rank to unlock it early. Finish a rank to unlock more!</Text>
+          <Text style={deckDescriptionStyle}>Finish the current rank to unlock the next one.</Text>
           <View style={rankButtonContainer}>
             {
               wordRankDefinitions.map((item: WordRankDefinition) => {

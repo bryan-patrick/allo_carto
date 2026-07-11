@@ -49,7 +49,7 @@ const colors = {
 		},
 		rank: {
 			fnew: '#b7b7b7',
-			bronze: '#f4d2b1',
+			bronze: '#CA9E86',
 			silver: '#e1e7ef',
 			gold: '#ffd196',
 			diamond: '#CBE0FF',

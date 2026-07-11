@@ -31,12 +31,12 @@ export const sharedWordCardStyles = StyleSheet.create({
     flexDirection: 'row'
   },
   wordPronunciation: {
-    fontSize: 18,
+    fontSize: 16,
     color: colors.dark.text,
     fontFamily: 'lexend-400',
   },
   wordForm: {
-    fontSize: 18,
+    fontSize: 16,
     color: colors.dark.text,
     fontFamily: 'lexend-400',
   },
@@ -78,6 +78,8 @@ export const sharedWordCardStyles = StyleSheet.create({
   feedbackText: {
     textAlign: 'center',
     fontSize: 16,
+    lineHeight: 20,
+    minHeight: 36,
     fontFamily: 'lexend-600',
     paddingHorizontal: 4,
     paddingVertical: 8,
