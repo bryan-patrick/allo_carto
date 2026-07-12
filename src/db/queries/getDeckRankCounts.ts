@@ -1,12 +1,17 @@
-import { getWordRankSqlCountSelect, WordRankKey } from '../../util/wordRanks';
+import { getWordRankSqlCountSelect } from '../../util/wordRanks';
 import { getDB } from '../connection';
 
 /**
  * Typing
  */
-export type DeckRankCounts = Record<WordRankKey, number> & {
+export interface DeckRankCounts {
 	seen: number;
-};
+	fnew: number;
+	bronze: number;
+	silver: number;
+	gold: number;
+	diamond: number;
+}
 
 interface GetDeckRankCountsProps {
 	userId: string;
