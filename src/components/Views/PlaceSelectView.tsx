@@ -164,7 +164,7 @@ export default function PlaceSelectView() {
                   screen={'(routes)/CardDeckSelect'}
                   params={{ placeId }}
                 >
-                  <Text style={placeSelectButtonTextStyle}>View decks</Text>
+                  <Text style={placeSelectButtonTextStyle}>View Decks</Text>
                 </LinkButton>
               </View>
             );
@@ -192,7 +192,9 @@ const styles = StyleSheet.create({
   chapterTitleContainerStyle: {
     paddingHorizontal: containerMargin,
     paddingVertical: 16,
-    backgroundColor: colors.dark.text
+    backgroundColor: colors.dark.text,
+    borderBottomWidth: 1,
+    borderColor: colors.dark.text
   },
   chapterIndexStyle: {
     textAlign: 'center',
@@ -210,14 +212,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     backgroundColor: colors.dark.text,
     gap: 8,
-    paddingBottom: 16
+    paddingBottom: 8,
   },
   placeContainerStyle: {
     padding: containerMargin,
-    gap: 24,
+    gap: containerMargin,
     marginHorizontal: 8,
-    borderRadius: 8,
     backgroundColor: colors.dark.background,
+    borderRadius: 8
   },
   placeTitleTextStyle: {
     color: colors.light.text,
@@ -228,7 +230,7 @@ const styles = StyleSheet.create({
   polaroidContainerStyle: {
     display: 'flex',
     backgroundColor: colors.light.polaroid,
-    borderRadius: 4,
+    borderRadius: 2,
     borderWidth: 1,
     borderColor: colors.light.border,
     // shadowColor: colors.dark.text,
@@ -240,7 +242,7 @@ const styles = StyleSheet.create({
   },
   polaroid: {
     backgroundColor: colors.light.text,
-    borderRadius: 4,
+    borderRadius: 2,
     borderWidth: 1,
     borderColor: colors.light.border,
     padding: 12,
