@@ -67,6 +67,8 @@ export default function ChapterSelectView() {
  * Destructure styles
  */
   const {
+    chapterWelcomeContainerStyle,
+    chapterWelcomeTextStyle,
     scrollViewContainerStyle,
     chapterContainerStyle,
     chapterContainerInnerStyle,
@@ -78,8 +80,13 @@ export default function ChapterSelectView() {
     chapterImageStyle
   } = styles;
 
+  /**
+   * Build the scrollview. 
+   * Special note that ScrollView style has the bg color
+   * because of bounce (user pulling the scroll down into overflow).
+   */
   return (
-    <ScrollView contentContainerStyle={scrollViewContainerStyle}>
+    <ScrollView style={{ backgroundColor: colors.dark.text }} contentContainerStyle={scrollViewContainerStyle}>
       {
         /**
          * Map the chapters
@@ -111,14 +118,14 @@ export default function ChapterSelectView() {
                 </View>
                 <ChapterMeta progressPercent={progressPercent} />
                 <ChapterSelectButton chapterId={chapterId}>
-                  <Text style={ChapterSelectButtonTextStyle}>Select</Text>
+                  <Text style={ChapterSelectButtonTextStyle}>View This Chapter</Text>
                 </ChapterSelectButton>
               </View>
             </View>
           );
         })
       }
-    </ScrollView >
+    </ScrollView>
   );
 }
 
@@ -178,11 +185,22 @@ function ChapterMeta({ progressPercent }: ChapterMetaProps) {
  * Styles
  */
 const styles = StyleSheet.create({
+  chapterWelcomeContainerStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    backgroundColor: colors.dark.text,
+  },
+  chapterWelcomeTextStyle: {
+    fontSize: 20,
+    fontFamily: 'lexend-600',
+    color: colors.light.text
+  },
   scrollViewContainerStyle: {
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
-    paddingVertical: 8,
+    paddingVertical: 16,
     backgroundColor: colors.dark.text,
   },
   chapterContainerStyle: {
@@ -195,9 +213,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.dark.background,
     paddingVertical: 32,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    paddingHorizontal: 24,
     gap: 16,
+    borderRadius: 8
   },
   chapterTitleContainerStyle: {
     flexShrink: 1, // Need this for long titles
