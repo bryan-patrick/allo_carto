@@ -25,7 +25,7 @@ interface LinkButtonProps extends Omit<PressableProps, 'style'> {
   params?: Record<string, string | string[] | undefined>;
   screen?: string;
   href?: string;
-  props?: any
+  props?: any;
   deckColors?: DeckColors;
   arrowSize?: number;
   useArrow?: boolean;
@@ -61,7 +61,7 @@ export default function LinkButton({
 
   useEffect(() => {
     tapPlayer.volume = 0.2;
-  }, [tapPlayer]);
+  }, [ tapPlayer ]);
 
   /**
    * Destructure styles
@@ -90,7 +90,7 @@ export default function LinkButton({
     href
   });
 
-  const [isPressed, setIsPressed] = useState(false);
+  const [ isPressed, setIsPressed ] = useState(false);
 
   /**
    * Animation vars
@@ -100,7 +100,6 @@ export default function LinkButton({
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
     top: top.value,
-    borderRadius: 8,
     shadowOffset: {
       width: 0,
       height: shadowOffsetHeight.value
@@ -126,7 +125,7 @@ export default function LinkButton({
       shadowOffsetHeight.value = linkButtonShadowHeight;
     }
 
-  }, [isPressed, shadowOffsetHeight, top])
+  }, [ isPressed, shadowOffsetHeight, top ]);
 
   /**
    * Action handlers
@@ -190,7 +189,7 @@ export default function LinkButton({
         setIsPressed(false);
         buttonPressOut?.(event);
       }}
-      style={[linkButton, deckColorStyles, animatedButtonStyle, style]}
+      style={[ linkButton, deckColorStyles, animatedButtonStyle, style ]}
       disabled={disabled}
     >
       {SVGElement}
@@ -228,4 +227,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 4,
   },
-})
+});
