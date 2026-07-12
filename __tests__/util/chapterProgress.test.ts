@@ -1,7 +1,7 @@
 import type { DeckChapter } from '@/data/french/deckAtlas';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import getDeckRankCounts from '@/src/db/queries/getDeckRankCounts';
-import getChapterProgressPercent from '@/src/util/chapterProgress';
+import getChapterProgressPercent from '@/src/util/getDecksProgress';
 
 jest.mock('@/src/db/queries/getDeckRankCounts', () => jest.fn());
 

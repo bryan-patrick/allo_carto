@@ -29,8 +29,8 @@ export default function AppLayout() {
   /**
    * State
    */
-  const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
-  const [user, setUser] = useState<UserRow | null>(null);
+  const [ cardDeckState, cardDeckDispatch ] = useReducer(cardDeckReducer, initialCardDeckState);
+  const [ user, setUser ] = useState<UserRow | null>(null);
 
   /**
    * Load our fonts
@@ -41,6 +41,7 @@ export default function AppLayout() {
     'lexend-700': require('./assets/fonts/lexend-700.ttf'),
     'azeret-mono-400': require('./assets/fonts/azeret-mono-400.ttf'),
     'azeret-mono-600': require('./assets/fonts/azeret-mono-600.ttf'),
+    'shadows-400': require('./assets/fonts/shadows-400.ttf'),
   });
 
   /**
@@ -110,25 +111,25 @@ export default function AppLayout() {
                   headerShown: true,
                   headerBackTitle: 'Back',
                   headerBackButtonDisplayMode: 'minimal',
-                  headerTitle: 'Chapter Select'
+                  headerTitle: 'Choose Chapter'
                 }} />
                 <Stack.Screen name="(routes)/PlaceSelect" options={{
                   headerShown: true,
                   headerBackTitle: 'Home',
-                  headerTitle: 'Select a Chapter and Place',
+                  headerTitle: 'Choose Place',
                   headerBackButtonDisplayMode: 'minimal',
                 }} />
                 <Stack.Screen name="(routes)/CardDeckSelect" options={{
                   headerShown: true,
                   headerBackTitle: 'Back',
                   headerBackButtonDisplayMode: 'minimal',
-                  headerTitle: 'Deck Select'
+                  headerTitle: 'Choose Deck'
                 }} />
                 <Stack.Screen name="(routes)/CardDeckRankSelect" options={{
                   headerShown: true,
                   headerBackTitle: 'Back',
                   headerBackButtonDisplayMode: 'minimal',
-                  headerTitle: 'Rank Select'
+                  headerTitle: 'Select a Rank'
                 }} />
                 <Stack.Screen name="(routes)/ViewCards" options={{
                   headerShown: true,
@@ -147,5 +148,5 @@ export default function AppLayout() {
         </CardDeckContext>
       </ThemeProvider>
     </UserContext>
-  )
+  );
 }
