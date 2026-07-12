@@ -241,17 +241,16 @@ const styles = StyleSheet.create({
   chapterImageContainerStyle: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
     shadowColor: colors.dark.text,
     shadowOffset: { width: 8, height: 8 },
     marginRight: 8, // Match the shadow offset width
     marginBottom: 8, // Match the shadow offset height
     shadowOpacity: 1,
     shadowRadius: 0,
+    height: 300
   },
   chapterImageStyle: {
-    height: 270,
+    height: '100%',
     width: '100%',
   }
 });
