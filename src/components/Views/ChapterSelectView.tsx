@@ -1,7 +1,7 @@
 import type { DeckChapter } from "@/data/french/deckAtlas";
 import { deckAtlas } from "@/data/french/deckAtlas";
 import { useUserContext } from "@/src/db/useUserContext";
-import getChapterProgressPercent from "@/src/util/chapterProgress";
+import getChapterProgressPercent from "@/src/util/getDecksProgress";
 import { useFocusEffect } from "expo-router";
 import { ReactNode, useCallback, useState } from "react";
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
+    paddingVertical: 8,
     backgroundColor: colors.dark.text,
   },
   chapterContainerStyle: {
@@ -195,6 +196,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dark.background,
     paddingVertical: 32,
     paddingHorizontal: 16,
+    borderRadius: 8,
     gap: 16,
   },
   chapterTitleContainerStyle: {
@@ -211,7 +213,7 @@ const styles = StyleSheet.create({
   chapterTitleStyle: {
     color: colors.light.text,
     fontFamily: 'lexend-600',
-    fontSize: 18,
+    fontSize: 20,
   },
   ChapterSelectButtonStyle: {
     paddingHorizontal: 48,
@@ -247,7 +249,7 @@ const styles = StyleSheet.create({
     marginBottom: 8, // Match the shadow offset height
     shadowOpacity: 1,
     shadowRadius: 0,
-    height: 300
+    height: 280
   },
   chapterImageStyle: {
     height: '100%',

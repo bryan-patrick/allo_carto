@@ -33,6 +33,7 @@ const colors = {
 		primary: '#7BADA6',
 		secondary: '#d0e2df',
 		text: '#F7F7F7',
+		polaroid: '#EAEAEA',
 		background: '#ACC3BB',
 		border: '#465B5D',
 		secondaryBorder: '#6B474B',
