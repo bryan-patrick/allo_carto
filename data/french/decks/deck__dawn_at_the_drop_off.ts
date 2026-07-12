@@ -1,8 +1,5 @@
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 
-/*
- * TODO: curate actual words for this deck
- */
 const dawnDropOff = require('@/src/app/assets/images/decks/dawn-at-the-drop-off.jpg');
 
 export const DeckDawnAtTheDropOff: CardDeck = {

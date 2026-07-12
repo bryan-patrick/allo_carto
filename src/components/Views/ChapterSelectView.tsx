@@ -1,31 +1,85 @@
 import type { DeckChapter } from "@/data/french/deckAtlas";
 import { deckAtlas } from "@/data/french/deckAtlas";
-import { ReactNode } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useUserContext } from "@/src/db/useUserContext";
+import getChapterProgressPercent from "@/src/util/chapterProgress";
+import { useFocusEffect } from "expo-router";
+import { ReactNode, useCallback, useState } from "react";
+import { ImageBackground, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../../app/colors";
-import sharedStyles from "../../app/sharedStyles";
 import LinkButton from "../LinkButton";
+
+/**
+ * Typing
+ */
+interface ChapterProgressById {
+  [ chapterId: string ]: number;
+}
 
 /**
  * ChapterSelectView component
  */
 export default function ChapterSelectView() {
+  const user = useUserContext();
   const { chapters } = deckAtlas;
+  const [ chapterProgressById, setChapterProgressById ] = useState<ChapterProgressById>({});
+
+  /**
+   * Refresh chapter progress whenever this view opens.
+   * Same pattern we've used before to avoid race conditions.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      let shouldUpdateState = true;
+
+      async function getChapterProgress() {
+        const result: ChapterProgressById = {};
+
+        try {
+          if (user?.id) {
+            for (const chapter of chapters) {
+              const progressPercent: number = await getChapterProgressPercent({
+                chapter,
+                userId: user.id,
+              });
+
+              result[ chapter.id ] = progressPercent;
+            }
+          }
+        } catch (error) {
+          console.error('Could not retrieve chapter progress:', error);
+        }
+
+        if (shouldUpdateState) {
+          setChapterProgressById(result);
+        }
+      }
+
+      setChapterProgressById({});
+      getChapterProgress();
+
+      return () => {
+        shouldUpdateState = false;
+      };
+    }, [ chapters, user?.id ])
+  );
 
   /**
  * Destructure styles
  */
   const {
+    scrollViewContainerStyle,
     chapterContainerStyle,
-    chapterConatainerInnerStyle,
+    chapterContainerInnerStyle,
     chapterTitleContainerStyle,
     chapterIndexStyle,
     chapterTitleStyle,
-    ChapterSelectButtonTextStyle
+    ChapterSelectButtonTextStyle,
+    chapterImageContainerStyle,
+    chapterImageStyle
   } = styles;
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={scrollViewContainerStyle}>
       {
         /**
          * Map the chapters
@@ -35,19 +89,27 @@ export default function ChapterSelectView() {
           /**
            * Destructure the chapters
            */
-          const { id: chapterId, name, chapterName } = chapter;
+          const { id: chapterId, name, chapterName, image } = chapter;
+
+          /**
+           * Completion
+           */
+          const progressPercent = chapterProgressById[ chapterId ] ?? 0;
 
           /**
            * Render the individual chapter sections
            */
           return (
             <View style={chapterContainerStyle} key={`${index}-${chapterId}`}>
-              <View style={chapterConatainerInnerStyle}>
+              <View style={chapterContainerInnerStyle}>
                 <View style={chapterTitleContainerStyle}>
                   <Text style={chapterIndexStyle}>{chapterName}</Text>
                   <Text style={chapterTitleStyle}>{name}</Text>
                 </View>
-                <ChapterMeta />
+                <View style={chapterImageContainerStyle}>
+                  <ImageBackground style={chapterImageStyle} source={image} />
+                </View>
+                <ChapterMeta progressPercent={progressPercent} />
                 <ChapterSelectButton chapterId={chapterId}>
                   <Text style={ChapterSelectButtonTextStyle}>Select</Text>
                 </ChapterSelectButton>
@@ -91,10 +153,10 @@ function ChapterSelectButton({ chapterId, children }: ChapterSelectButtonProps) 
  * Encore ploousssss typing
  */
 interface ChapterMetaProps {
-  ts?: string;
+  progressPercent: number;
 }
 
-function ChapterMeta({ ts }: ChapterMetaProps) {
+function ChapterMeta({ progressPercent }: ChapterMetaProps) {
   const {
     metaContainerStyle,
     metaRowStyle,
@@ -105,49 +167,49 @@ function ChapterMeta({ ts }: ChapterMetaProps) {
   return (
     <View style={metaContainerStyle}>
       <View style={metaRowStyle}>
-        <Text style={metaTextStyle}>Decks completed:</Text>
-        <Text style={metaDataStyle}>0/12</Text>
+        <Text style={metaTextStyle}>Chapter progress:&nbsp;</Text>
+        <Text style={metaDataStyle}>{progressPercent}%</Text>
       </View>
     </View>
   );
 }
 
-const { containerMargin } = sharedStyles;
-
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-  chapterContainerStyle: {
+  scrollViewContainerStyle: {
     display: 'flex',
-    borderRadius: 16,
-    margin: containerMargin,
+    flexDirection: 'column',
+    gap: 8,
+    backgroundColor: colors.dark.text,
+  },
+  chapterContainerStyle: {
+    marginHorizontal: 8,
+  },
+  chapterContainerInnerStyle: {
+    display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    color: colors.light.text,
-    padding: 24,
-    marginBottom: 0,
-    backgroundColor: colors.light.background
-  },
-  chapterConatainerInnerStyle: {
-    gap: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.dark.background,
+    paddingVertical: 32,
+    paddingHorizontal: 16,
+    gap: 16,
   },
   chapterTitleContainerStyle: {
-    flexShrink: 1, // Need these for long
+    flexShrink: 1, // Need this for long titles
     wordWrap: 'wrap', // titles to handle overflow
   },
   chapterIndexStyle: {
     fontSize: 12,
-    color: colors.dark.text,
+    color: colors.light.text,
     fontFamily: 'lexend-400',
     textTransform: 'uppercase',
     textAlign: 'center',
   },
   chapterTitleStyle: {
-    color: colors.dark.text,
+    color: colors.light.text,
     fontFamily: 'lexend-600',
     fontSize: 18,
   },
@@ -167,9 +229,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   metaTextStyle: {
+    color: colors.light.text,
+    fontFamily: 'lexend-600'
     //backgroundColor: 'blue'
   },
   metaDataStyle: {
+    color: colors.light.text,
+    fontFamily: 'lexend-600'
     //backgroundColor: 'turquoise'
+  },
+  chapterImageContainerStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.dark.text,
+    shadowOffset: { width: 8, height: 8 },
+    marginRight: 8, // Match the shadow offset width
+    marginBottom: 8, // Match the shadow offset height
+    shadowOpacity: 1,
+    shadowRadius: 0,
+  },
+  chapterImageStyle: {
+    height: 270,
+    width: '100%',
   }
 });
