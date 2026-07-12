@@ -7,7 +7,7 @@ const colors = {
 		primaryActive: '#6C8384',
 		secondary: '#762D3D',
 		text: '#121212',
-		background: '#131A1B',
+		background: '#161C1D',
 		border: '#1B2B31',
 		secondaryBorder: '#382326',
 		success: '#054C3E',
