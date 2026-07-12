@@ -83,94 +83,96 @@ export default function PlaceSelectView() {
    * Render the card grid
    */
   return (
-    <ScrollView>
-      <View style={chapterContainerStyle}>
-        <View style={chapterTitleContainerStyle}>
-          <Text style={chapterIndexStyle}>{chapterName}</Text>
-          <Text style={chapterTitleStyle}>{name}</Text>
-        </View>
-        {
-          /**
-           * Map the places
-           */
-          places.map((place: DeckPlace, index: number) => {
-            const isEven = index % 2 === 0;
-            const rotate = isEven ? '-5deg' : '5deg';
-            const reverseRotate = isEven ? '5deg' : '-5deg';
-
+    <View style={{ backgroundColor: colors.dark.text }}>
+      <View style={chapterTitleContainerStyle}>
+        <Text style={chapterIndexStyle}>{chapterName}</Text>
+        <Text style={chapterTitleStyle}>{name}</Text>
+      </View>
+      <ScrollView>
+        <View style={chapterContainerStyle}>
+          {
             /**
-             * Destructure the place data
+             * Map the places
              */
-            const { id: placeId, name, description, image } = place;
-            const progressPercent = placeProgressById[ placeId ] ?? 0;
+            places.map((place: DeckPlace, index: number) => {
+              const isEven = index % 2 === 0;
+              const rotate = isEven ? '-5deg' : '5deg';
+              const reverseRotate = isEven ? '5deg' : '-5deg';
 
-            /**
-             * Render the place view/card
-             */
-            return (
-              <View key={placeId} style={placeContainerStyle}>
-                <View style={placeTitleContainerStyle}>
-                  <Text style={placeTitleTextStyle}>{name}</Text>
-                </View>
-                <View
-                  style={[ polaroidContainerStyle, { transform: [ { rotate: reverseRotate } ] } ]}
-                >
-                  <View style={[ polaroid, { transform: [ { rotate } ] } ]}>
-                    <View style={polaroidInnerStyle}>
-                      <Image
-                        source={image}
-                        style={placeImageStyle}
-                      />
-                      <View>
-                        <View style={placeNameContainerStyle}>
-                          <Text style={placeDescriptionTextStyle}>{description}</Text>
+              /**
+               * Destructure the place data
+               */
+              const { id: placeId, name, description, image } = place;
+              const progressPercent = placeProgressById[ placeId ] ?? 0;
+
+              /**
+               * Render the place view/card
+               */
+              return (
+                <View key={placeId} style={placeContainerStyle}>
+                  <View style={placeTitleContainerStyle}>
+                    <Text style={placeTitleTextStyle}>{name}</Text>
+                  </View>
+                  <View
+                    style={[ polaroidContainerStyle, { transform: [ { rotate: reverseRotate } ] } ]}
+                  >
+                    <View style={[ polaroid, { transform: [ { rotate } ] } ]}>
+                      <View style={polaroidInnerStyle}>
+                        <Image
+                          source={image}
+                          style={placeImageStyle}
+                        />
+                        <View>
+                          <View style={placeNameContainerStyle}>
+                            <Text style={placeDescriptionTextStyle}>{description}</Text>
+                          </View>
                         </View>
-                      </View>
-                      <View style={progressContainerStyle}>
-                        <Text style={progressTextStyle}>Progress {progressPercent}%</Text>
-                        <View style={progressBarsContainer}>
-                          <LinearGradient
-                            style={[ progressBarStyle, { width: `${progressPercent}%`, borderRightWidth: 1 } ]}
-                            colors={[
-                              '#E6320D', '#E6320D',
-                              '#F17E06', '#F17E06',
-                              '#F8BA26', '#F8BA26',
-                              '#78BA34', '#78BA34',
-                              '#3791CF', '#3791CF'
-                            ]}
-                            locations={[ 0, 0.2, 0.2, 0.4, 0.4, 0.6, 0.6, 0.8, 0.8, 1 ]}
-                          />
-                          <LinearGradient
-                            style={[ progressBarStyle, { position: 'absolute', width: '100%', opacity: 0.15 } ]}
-                            colors={[
-                              '#E6320D', '#E6320D',
-                              '#F17E06', '#F17E06',
-                              '#F8BA26', '#F8BA26',
-                              '#78BA34', '#78BA34',
-                              '#3791CF', '#3791CF'
-                            ]}
-                            locations={[ 0, 0.2, 0.2, 0.4, 0.4, 0.6, 0.6, 0.8, 0.8, 1 ]}
-                          />
+                        <View style={progressContainerStyle}>
+                          <Text style={progressTextStyle}>Progress {progressPercent}%</Text>
+                          <View style={progressBarsContainer}>
+                            <LinearGradient
+                              style={[ progressBarStyle, { width: `${progressPercent}%`, borderRightWidth: 1 } ]}
+                              colors={[
+                                '#E6320D', '#E6320D',
+                                '#F17E06', '#F17E06',
+                                '#F8BA26', '#F8BA26',
+                                '#78BA34', '#78BA34',
+                                '#3791CF', '#3791CF'
+                              ]}
+                              locations={[ 0, 0.2, 0.2, 0.4, 0.4, 0.6, 0.6, 0.8, 0.8, 1 ]}
+                            />
+                            <LinearGradient
+                              style={[ progressBarStyle, { position: 'absolute', width: '100%', opacity: 0.15 } ]}
+                              colors={[
+                                '#E6320D', '#E6320D',
+                                '#F17E06', '#F17E06',
+                                '#F8BA26', '#F8BA26',
+                                '#78BA34', '#78BA34',
+                                '#3791CF', '#3791CF'
+                              ]}
+                              locations={[ 0, 0.2, 0.2, 0.4, 0.4, 0.6, 0.6, 0.8, 0.8, 1 ]}
+                            />
+                          </View>
                         </View>
                       </View>
                     </View>
                   </View>
+                  <LinkButton
+                    hitSlop={10}
+                    arrowSize={16}
+                    style={placeSelectButtonStyle}
+                    screen={'(routes)/CardDeckSelect'}
+                    params={{ placeId }}
+                  >
+                    <Text style={placeSelectButtonTextStyle}>View decks</Text>
+                  </LinkButton>
                 </View>
-                <LinkButton
-                  hitSlop={10}
-                  arrowSize={16}
-                  style={placeSelectButtonStyle}
-                  screen={'(routes)/CardDeckSelect'}
-                  params={{ placeId }}
-                >
-                  <Text style={placeSelectButtonTextStyle}>View decks</Text>
-                </LinkButton>
-              </View>
-            );
-          })
-        }
-      </View>
-    </ScrollView>
+              );
+            })
+          }
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -191,8 +193,9 @@ const styles = StyleSheet.create({
     paddingBottom: 16
   },
   chapterTitleContainerStyle: {
-    marginHorizontal: containerMargin,
-    marginVertical: 16
+    paddingHorizontal: containerMargin,
+    paddingVertical: 16,
+    backgroundColor: colors.dark.text
   },
   placeContainerStyle: {
     padding: containerMargin,
