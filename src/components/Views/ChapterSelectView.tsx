@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dark.background,
     paddingVertical: 32,
     paddingHorizontal: 16,
-    gap: 8,
+    gap: 16,
   },
   chapterTitleContainerStyle: {
     flexShrink: 1, // Need this for long titles
@@ -242,10 +242,16 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    shadowColor: colors.dark.text,
+    shadowOffset: { width: 8, height: 8 },
+    marginRight: 8, // Match the shadow offset width
+    marginBottom: 8, // Match the shadow offset height
+    shadowOpacity: 1,
+    shadowRadius: 0,
   },
   chapterImageStyle: {
-    height: 340,
+    height: 270,
     width: '100%',
   }
 });
