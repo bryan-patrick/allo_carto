@@ -43,8 +43,8 @@ export default function DeckBoxHeader({ deck }: DeckBoxHeaderProps) {
  */
 const styles = StyleSheet.create({
   cardHeaderStyle: {
-    padding: 16,
-    gap: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
   },
   titleContainer: {
   },
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   descriptionStyle: {
     color: colors.dark.text,
     wordWrap: 'wrap',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'lexend-400',
   },
 });
