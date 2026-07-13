@@ -66,6 +66,7 @@ export default function DeckBoxModal({
       animationType="slide"
       presentationStyle="fullScreen"
       backdropColor={colors.dark.text}
+      transparent={false}
       visible={modalVisible}
       onRequestClose={() => {
         Alert.alert('Modal has been closed.');
