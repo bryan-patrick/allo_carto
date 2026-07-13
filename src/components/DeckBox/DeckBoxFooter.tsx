@@ -40,7 +40,8 @@ export default function DeckBoxFooter({
  */
 const styles = StyleSheet.create({
   cardFooterStyle: {
-    padding: 16,
+    paddingHorizontal: 16,
+    marginBottom: 16,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },

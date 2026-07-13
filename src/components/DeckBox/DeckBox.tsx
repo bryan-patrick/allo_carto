@@ -164,9 +164,9 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
    * Render the card grid
    */
   return (
-    <View style={cardStyle}>
-      <View style={cardInnerStyle}>
-        <LockOverlay isLocked={isLocked} unlockCriteria={unlockCriteriaMsg}>
+    <LockOverlay isLocked={isLocked} unlockCriteria={unlockCriteriaMsg}>
+      <View style={cardStyle}>
+        <View style={[ cardInnerStyle ]}>
           <View style={cardInnerBorder}>
             <DeckBoxHeader deck={deck} />
             <DeckBoxHero
@@ -188,9 +188,9 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
               handleDeckSelect={handleDeckSelect}
             />
           </View>
-        </LockOverlay >
-      </View>
-    </View>
+        </View>
+      </View >
+    </LockOverlay >
   );
 }
 
@@ -204,20 +204,23 @@ const { containerMargin } = sharedStyles;
  */
 const styles = StyleSheet.create({
   cardStyle: {
-    margin: containerMargin,
-    borderRadius: 22,
-  },
-  cardInnerStyle: {
-    borderRadius: 22,
-    borderWidth: 4,
-    borderColor: colors.light.border,
-    backgroundColor: colors.light.background,
-    boxShadow: `0 20px 0 ${colors.dark.border}`,
+    padding: containerMargin,
+    backgroundColor: colors.dark.background,
+    borderRadius: 8,
     overflow: 'hidden'
   },
+  cardInnerStyle: {
+    borderRadius: 16,
+    backgroundColor: colors.light.background,
+    shadowOffset: { width: 0, height: 16 },
+    marginBottom: 8,
+    shadowOpacity: 1,
+    shadowColor: colors.dark.border,
+    shadowRadius: 0,
+  },
   cardInnerBorder: {
-    borderWidth: 3,
-    borderRadius: 18,
-    borderColor: colors.dark.border,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: colors.light.border
   }
 });

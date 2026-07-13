@@ -179,11 +179,13 @@ export default function CardDeckSelect() {
       </View>
       {decks.length > 0 && (
         <FlatList
+          // BG color is for scroll bounce
+          style={{ backgroundColor: colors.dark.text }}
           contentContainerStyle={cardGridStyle}
-          data={decks}
           renderItem={({ item }) => <DeckBox deck={item} placeId={placeId} isLocked={getIsDeckLocked(item)} />}
           keyExtractor={(deck) => deck.id}
           overScrollMode="always"
+          data={decks}
         />
       )}
       {decks.length === 0 && (
@@ -204,24 +206,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: colors.dark.text
   },
   deckNameTextStyle: {
     textAlign: 'center',
     width: '100%',
     fontFamily: 'lexend-600',
-    fontSize: 20,
+    fontSize: 18,
     color: colors.light.text,
   },
   deckDescriptionTextStyle: {
     textAlign: 'center',
     width: '100%',
     fontFamily: 'lexend-400',
-    fontSize: 16,
-    paddingTop: 8,
+    fontSize: 14,
+    paddingTop: 4,
     color: colors.light.text,
   },
   cardGridStyle: {
     display: 'flex',
+    backgroundColor: colors.dark.text,
+    gap: 8,
+    margin: 8
   },
   noDecksContainerStyle: {
     display: 'flex',

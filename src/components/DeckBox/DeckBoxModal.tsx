@@ -64,7 +64,9 @@ export default function DeckBoxModal({
   return (
     <Modal
       animationType="slide"
-      transparent={true}
+      presentationStyle="fullScreen"
+      backdropColor={colors.dark.text}
+      transparent={false}
       visible={modalVisible}
       onRequestClose={() => {
         Alert.alert('Modal has been closed.');
@@ -80,11 +82,23 @@ export default function DeckBoxModal({
               text={deck.title}
             />
           </View>
-          <View style={[ modalHeaderStyle, { borderColor: deck.colors.dark.primary } ]}>
-            <Text style={[ modalHeaderTextStyle, { color: deck.colors.dark.primary } ]}>
-              Deck Completion: <Text style={[ modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary } ]}>{deckCompletionPercent}%</Text>
+          <View style={[
+            modalHeaderStyle,
+            { borderColor: deck.colors.dark.primary }
+          ]}>
+            <Text style={[
+              modalHeaderTextStyle,
+              { color: deck.colors.dark.primary }
+            ]}>
+              Deck Completion: <Text style={[
+                modalHeaderMonospaceTextStyle,
+                { color: deck.colors.dark.primary }
+              ]}>{deckCompletionPercent}%</Text>
             </Text>
-            <Text style={[ modalHeaderTextStyle, { color: deck.colors.dark.primary } ]}>
+            <Text style={[
+              modalHeaderTextStyle,
+              { color: deck.colors.dark.primary }
+            ]}>
               Words Seen: <Text style={[ modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary } ]}>{wordsSeenCount}/{deck.wordIds.length}</Text>
             </Text>
           </View>
@@ -192,33 +206,18 @@ const { containerMargin } = sharedStyles;
 const styles = StyleSheet.create({
   centeredView: {
     position: 'relative',
-    padding: containerMargin,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    padding: 8,
     flex: 1,
   },
   modalView: {
-    maxHeight: '65%',
     display: 'flex',
     justifyContent: 'space-between',
     position: 'relative',
     width: '100%',
     margin: containerMargin,
-    borderWidth: 4,
-    borderBottomWidth: 4,
-    borderTopWidth: 4,
-    borderRadius: 16,
-    backgroundColor: colors.light.background,
-    borderColor: colors.light.background,
-    shadowColor: colors.light.border,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 5,
   },
   modalTextContentStyle: {
     padding: 8,
@@ -267,8 +266,8 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   modalFooterStyle: {
-    width: '100%',
     backgroundColor: colors.light.background,
+    width: '100%',
     padding: 12,
     borderWidth: 2,
     borderTopWidth: 0,

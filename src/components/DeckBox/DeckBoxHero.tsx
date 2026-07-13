@@ -21,14 +21,13 @@ export default function DeckBoxHero({
     CEFR,
     image,
   } = deck;
-  const badgeIconSize = 16;
-  const CEFRGradientLight: readonly [string, string] = [
-    colors.light.CEFR[CEFR[0]],
-    colors.light.CEFR[CEFR.at(-1)!],
+  const badgeIconSize = 14;
+  const CEFRGradientLight: readonly [ string, string ] = [
+    colors.light.CEFR[ CEFR[ 0 ] ],
+    colors.light.CEFR[ CEFR.at(-1)! ],
   ];
 
   const {
-    heroSectionStyle,
     CEFRGradientStyle,
     CEFRLabelStyle,
     CEFRTextStyle,
@@ -40,7 +39,7 @@ export default function DeckBoxHero({
   } = styles;
 
   return (
-    <View style={heroSectionStyle}>
+    <View>
       {
         /**
          * CEFR Bar
@@ -69,7 +68,7 @@ export default function DeckBoxHero({
          */
       }
       <LinearGradient
-        style={[badgeContainerStyle]}
+        style={[ badgeContainerStyle ]}
         colors={[
           deck.colors.dark.secondary,
           deck.colors.dark.primary,
@@ -99,15 +98,13 @@ export default function DeckBoxHero({
         </View>
       </LinearGradient>
     </View>
-  )
+  );
 }
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-  heroSectionStyle: {
-  },
   CEFRGradientStyle: {
     display: 'flex',
     flexDirection: 'row',
@@ -116,18 +113,17 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: '100%',
     paddingHorizontal: 16,
-    paddingVertical: 2,
-    borderColor: colors.dark.border,
     borderTopWidth: 1,
     borderBottomWidth: 1,
+    borderColor: colors.light.border
   },
   CEFRLabelStyle: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'lexend-400',
   },
   CEFRTextStyle: {
     fontFamily: 'lexend-400',
-    fontSize: 14,
+    fontSize: 12,
     color: colors.dark.text,
   },
   imageContainerStyle: {
@@ -135,23 +131,23 @@ const styles = StyleSheet.create({
   imageStyle: {
     display: 'flex',
     justifyContent: 'flex-end',
-    height: 140,
+    height: 120,
   },
   badgeContainerStyle: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 4,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: colors.dark.border,
+    paddingVertical: 1,
+    borderColor: colors.light.border
   },
   badgeCountContainerStyle: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 2,
   },
   badgeCountTextStyle: {
     fontFamily: 'azeret-mono-600',
