@@ -79,8 +79,8 @@ export default function DeckBoxStoryProgress({
   } = styles;
 
   return (
-    <View style={[ storyProgressContainerStyle ]}>
-      <View style={[ storyProgressHeaderStyle, { borderColor: deck.colors.dark.primary } ]}>
+    <View style={storyProgressContainerStyle}>
+      <View style={storyProgressHeaderStyle}>
         <Text style={[ storyProgressTitleStyle, { color: deck.colors.dark.primary } ]}>Story Progress</Text>
         <Text style={[ storyProgressTextStyle, { color: deck.colors.dark.primary } ]}>
           {deckCompletionPercent}%
@@ -126,11 +126,6 @@ export default function DeckBoxStoryProgress({
         >
           Show Story
         </SecondaryButton>
-        {
-          /**
-           * Modal
-           */
-        }
         <DeckBoxModal
           deck={deck}
           modalVisible={modalVisible}
@@ -169,9 +164,11 @@ export default function DeckBoxStoryProgress({
 const styles = StyleSheet.create({
   storyProgressContainerStyle: {
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    gap: 12,
+    borderColor: colors.light.border,
+    marginBottom: 12,
+    gap: 8,
   },
   storyProgressHeaderStyle: {
     display: 'flex',
@@ -180,23 +177,22 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   storyProgressTitleStyle: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'lexend-600',
-  },
-  storyProgressStyle: {
-    alignItems: 'center',
-    borderColor: colors.dark.border,
-    flexDirection: 'row',
   },
   storyProgressTextStyle: {
     fontFamily: 'lexend-600',
-    fontSize: 16,
+    fontSize: 14,
+  },
+  storyProgressStyle: {
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   storyProgressButtonContainerStyle: {
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
-    gap: 12,
+    gap: 8,
   },
   storyProgressButtonStyle: {
     flexGrow: 1,
@@ -212,7 +208,8 @@ const styles = StyleSheet.create({
   },
   plopStyle: {
     width: 10,
-    height: 5,
+    height: 4,
     borderWidth: 1,
+    borderColor: colors.dark.border
   },
 });

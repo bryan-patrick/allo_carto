@@ -47,7 +47,7 @@ export default function SecondaryButton({
   /**
    * State vars
    */
-  const [isPressed, setIsPressed] = useState(false);
+  const [ isPressed, setIsPressed ] = useState(false);
 
   /**
    * Animation vars
@@ -82,7 +82,7 @@ export default function SecondaryButton({
       shadowOffsetHeight.value = 4;
     }
 
-  }, [isPressed, shadowOffsetHeight, top]);
+  }, [ isPressed, shadowOffsetHeight, top ]);
 
   /**
    * Handlers
@@ -119,7 +119,7 @@ export default function SecondaryButton({
         {SVGElement}
       </View>
     </AnimatedPressable>
-  )
+  );
 }
 
 /**
@@ -130,10 +130,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: colors.dark.border,
-    borderRadius: 6,
-    paddingHorizontal: 16,
+    borderRadius: 4,
+    paddingHorizontal: 8,
     paddingVertical: 12,
-    gap: 8,
     shadowOpacity: 1,
     shadowRadius: 0,
     borderWidth: 1,
@@ -142,11 +141,13 @@ const styles = StyleSheet.create({
     shadowColor: colors.dark.border,
     marginBottom: 4, // Match shadow offset height
     color: colors.dark.primary,
+    gap: 8,
   },
   buttonTextRowStyle: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 4,
+    fontSize: 12
   },
   buttonTextStyle: {
     color: colors.dark.text,
