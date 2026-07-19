@@ -70,6 +70,7 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 ## TODO
 
 - App icon and cleaning out the images dir
+- Later ranks need input fields instead of multi choice. Maybe a prestige?
 - Rank indicator while doing a deck
 - SVG chapter and progress map (visual and data)
 - Place hero image frame (like a polaroid or something? Idk. I was thinking travel polaroids, with like a handwritten location / date or something)
