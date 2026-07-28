@@ -2,10 +2,16 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { CardDeck } from '../../CardDeck/cardDeckTypes';
 import GradientText from '../../GradientText';
 
+/**
+ * Typing
+ */
 interface RankSelectHeaderProps {
   cardDeck: CardDeck;
 }
 
+/**
+ * Component rank select header
+ */
 export default function RankSelectHeader({ cardDeck }: RankSelectHeaderProps) {
   const { title } = cardDeck;
   const {
@@ -14,6 +20,9 @@ export default function RankSelectHeader({ cardDeck }: RankSelectHeaderProps) {
     descriptionTextStyle,
   } = styles;
 
+  /**
+   * Render the component
+   */
   return (
     <>
       <View style={titleRowStyle}>
@@ -32,6 +41,9 @@ export default function RankSelectHeader({ cardDeck }: RankSelectHeaderProps) {
   );
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
   titleRowStyle: {
     alignItems: 'center',

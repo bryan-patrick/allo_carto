@@ -12,9 +12,6 @@ interface ChapterSelectButtonProps {
  * Chapter select button
  */
 export default function ChapterSelectButton({ chapterId }: ChapterSelectButtonProps) {
-  /**
-   * Destructure the styles
-   */
   const {
     chapterSelectButtonStyle,
     chapterSelectButtonTextStyle,

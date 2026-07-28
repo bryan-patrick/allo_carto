@@ -8,6 +8,9 @@ import type { WordRankDefinition, WordRankKey } from '@/src/util/wordRanks';
 import { wordRankDefinitions } from '@/src/util/wordRanks';
 import { StyleSheet, Text, View } from 'react-native';
 
+/**
+ * Typing
+ */
 interface RankButtonProps {
   deckWordCount: number;
   handleRankSelect: (rank: WordRankKey) => Promise<void>;
@@ -22,6 +25,9 @@ interface LockedAccessibilityHintProps {
   rankName: string;
 }
 
+/**
+ * Component rank button
+ */
 export default function RankButton({
   deckWordCount,
   handleRankSelect,
@@ -48,6 +54,9 @@ export default function RankButton({
     rankButtonTextStyle,
   } = styles;
 
+  /**
+   * Render the rank button
+   */
   return (
     <View style={rankButtonContainerStyle}>
       <LockOverlay
@@ -81,6 +90,9 @@ export default function RankButton({
   );
 }
 
+/**
+ * Helper to get the a11y text
+ */
 function getLockedAccessibilityHint({
   deckWordCount,
   rankCounts,
@@ -105,6 +117,9 @@ function getLockedAccessibilityHint({
   return result;
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
   rankButtonContainerStyle: {
     flexGrow: 1,
