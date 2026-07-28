@@ -2,11 +2,6 @@
 
 ![App preview](preview.jpg)
 
-## Dev Notes
-
-- May 15, 2026 | Started rebuilding in React Native. I preserved the flutter version under branch `v1-flutter`.
-- June 30, 2026 | Merged the first story into the app. This shifts the application from being a "flashcard" app into something much more progression based, which will be much more fun and useful. im really pretty stoked about how it is turning out!
-
 Pronunciations aren't official, they're just kinda like this:
 
 - `an` / `en`: `ahn`
@@ -72,16 +67,12 @@ The final `n` usually means do the french nasal sound but idk, it's confusing so
 
 https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 
-## Roadmap
-
-- DB sqlite? Nous besoin quelque chose sur le frontend. Ce sera cree avec decks premiere et les words apre.
-- Rarate et styles des cartes. Les cartes plus rares ont des styles plus cool.
-- Idea pour deck du rare, quand un personne besoin mots nouveaux, cest bonne pour mots le personne ne trouve pa
-
 ## TODO
 
 - App icon and cleaning out the images dir
 - Rank indicator while doing a deck (probably on the top bar somewhere)
+- Later ranks need input fields instead of multi choice. Maybe a prestige?
+- Rank indicator while doing a deck
 - SVG chapter and progress map (visual and data)
 - Place hero image frame (like a polaroid or something? Idk. I was thinking travel polaroids, with like a handwritten location / date or something)
 - Deck count on place selection view
