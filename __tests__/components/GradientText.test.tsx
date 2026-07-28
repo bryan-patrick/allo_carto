@@ -1,6 +1,6 @@
 import GradientText from '@/src/components/GradientText';
 import { render } from '@testing-library/react-native';
-import { StyleSheet } from 'react-native';
+import { processColor, StyleSheet } from 'react-native';
 
 describe('<GradientText />', () => {
   it('renders text through a masked linear gradient', async () => {
@@ -22,13 +22,14 @@ describe('<GradientText />', () => {
      * Make sure the library pieces are wired together.
      */
     expect(getByTestId('gradient-text-mask')).toBeTruthy();
-    expect(getByTestId('gradient-text-fill').props).toEqual(
-      expect.objectContaining({
-        colors: ['#111111', '#eeeeee'],
-        end: { x: 1, y: 0 },
-        start: { x: 0, y: 0 },
-      })
+    const gradientFill = getByTestId('gradient-text-fill');
+
+    expect(gradientFill).toHaveProp(
+      'colors',
+      ['#111111', '#eeeeee'].map(processColor),
     );
+    expect(gradientFill).toHaveProp('endPoint', [1, 0]);
+    expect(gradientFill).toHaveProp('startPoint', [0, 0]);
 
     /**
      * Make sure both the mask and measured gradient text share typography.

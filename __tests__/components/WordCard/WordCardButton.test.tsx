@@ -92,7 +92,7 @@ describe('<WordCardButton />', () => {
     /**
      * No selected article or selected word
      */
-    expect(getByTestId('word-card-button').props.disabled).toBe(true);
+    expect(getByTestId('word-card-button')).toBeDisabled();
   });
 
   test('checks the current answer on press in', async () => {

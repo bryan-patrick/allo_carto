@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   scrollViewContainerStyle: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 8,
-    paddingVertical: 16,
+    gap: 24,
+    paddingVertical: 24,
   },
 });
