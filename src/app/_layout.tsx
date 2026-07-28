@@ -1,7 +1,7 @@
-import { ThemeProvider } from "@react-navigation/native";
 import { setAudioModeAsync } from "expo-audio";
 import { useFonts } from 'expo-font';
 import { Stack } from "expo-router";
+import { ThemeProvider } from "expo-router/react-navigation";
 import { SQLiteProvider, type SQLiteDatabase } from "expo-sqlite";
 import { Suspense, useCallback, useEffect, useReducer, useState } from "react";
 import { CardDeckContext, initialCardDeckState } from "../components/CardDeck/cardDeckContext";

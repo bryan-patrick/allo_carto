@@ -1,5 +1,5 @@
-import { useLinkProps } from '@react-navigation/native';
 import { useAudioPlayer } from 'expo-audio';
+import { useLinkProps } from 'expo-router/react-navigation';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -60,6 +60,8 @@ export default function LinkButton({
   const tapPlayer = useAudioPlayer(tapAudio);
 
   useEffect(() => {
+    // Expo Audio sets the player volume by assigning this property.
+    // eslint-disable-next-line react-hooks/immutability
     tapPlayer.volume = 0.2;
   }, [ tapPlayer ]);
 
@@ -99,10 +101,10 @@ export default function LinkButton({
   const shadowOffsetHeight = useSharedValue(linkButtonShadowHeight);
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
-    top: top.value,
+    top: top.get(),
     shadowOffset: {
       width: 0,
-      height: shadowOffsetHeight.value
+      height: shadowOffsetHeight.get()
     },
   }));
 
@@ -111,18 +113,18 @@ export default function LinkButton({
    */
   useEffect(() => {
     if (isPressed) {
-      top.value = withTiming(6, {
+      top.set(withTiming(6, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
-      });
+      }));
 
-      shadowOffsetHeight.value = withTiming(0, {
+      shadowOffsetHeight.set(withTiming(0, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
-      });
+      }));
     } else {
-      top.value = 0;
-      shadowOffsetHeight.value = linkButtonShadowHeight;
+      top.set(0);
+      shadowOffsetHeight.set(linkButtonShadowHeight);
     }
 
   }, [ isPressed, shadowOffsetHeight, top ]);
@@ -155,20 +157,9 @@ export default function LinkButton({
     ...buttonProps
   } = allTheProps;
 
-  function LinkText() {
-    const labelText = typeof children === 'string'
-      ? children.replace(/\s*→\s*$/, '')
-      : children;
-
-    return (
-      <View style={linkTextRow}>
-        <Text style={linkText}>{labelText}</Text>
-        {useArrow && (
-          <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={arrowColor} />
-        )}
-      </View>
-    );
-  }
+  const labelText = typeof children === 'string'
+    ? children.replace(/\s*→\s*$/, '')
+    : children;
 
   /**
    * Render the thing
@@ -193,7 +184,12 @@ export default function LinkButton({
       disabled={disabled}
     >
       {SVGElement}
-      <LinkText />
+      <View style={linkTextRow}>
+        <Text style={linkText}>{labelText}</Text>
+        {useArrow && (
+          <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={arrowColor} />
+        )}
+      </View>
     </AnimatedPressable>
   );
 };

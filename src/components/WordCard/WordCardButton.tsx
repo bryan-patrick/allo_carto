@@ -7,8 +7,8 @@ import {
   notificationAsync,
   NotificationFeedbackType,
 } from 'expo-haptics';
-import { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { Pressable, PressableProps, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { ReactElement, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { Pressable, PressableProps, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import { useWordCardUI } from './useWordCardUI';
@@ -39,8 +39,6 @@ export default function WordCardButton({
   const user = useUserContext();
   const { cardState, wordCardUIDispatch } = useWordCardUI();
   const { cardDeckDispatch, currentCard } = useCardDeck();
-  const [ pressableStateStyle, setPressableStateStyle ] = useState<ViewStyle | null>({});
-  const [ textStateStyle, setTextStateStyle ] = useState<TextStyle | null>({});
 
   /**
    * Style vars
@@ -56,26 +54,12 @@ export default function WordCardButton({
     disabledText,
   } = wordCardButtonStyles;
 
-  /**
-   * Eval current style
-   */
-  useLayoutEffect(() => {
-    switch (cardState.progress) {
-      case 'PENDING':
-        setPressableStateStyle({});
-        setTextStateStyle({});
-        break;
-      case 'SUCCESS': {
-        setPressableStateStyle(successPressable);
-        setTextStateStyle(successText);
-        break;
-      }
-    }
-  }, [
-    successText,
-    successPressable,
-    cardState.progress,
-  ]);
+  const pressableStateStyle = cardState.progress === 'SUCCESS'
+    ? successPressable
+    : null;
+  const textStateStyle = cardState.progress === 'SUCCESS'
+    ? successText
+    : null;
 
   /**
    * State/prop vars
@@ -103,14 +87,14 @@ export default function WordCardButton({
   const shadowOffsetHeight = useSharedValue(8);
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
-    top: top.value,
+    top: top.get(),
     borderRadius: 8
   }));
 
   const animatedShadowStyle = useAnimatedStyle(() => ({
     shadowOffset: {
       width: 0,
-      height: shadowOffsetHeight.value
+      height: shadowOffsetHeight.get()
     },
   }));
 
@@ -188,18 +172,18 @@ export default function WordCardButton({
    */
   useEffect(() => {
     if (isPressed) {
-      top.value = withTiming(6, {
+      top.set(withTiming(6, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
-      });
+      }));
 
-      shadowOffsetHeight.value = withTiming(0, {
+      shadowOffsetHeight.set(withTiming(0, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
-      });
+      }));
     } else {
-      top.value = 0;
-      shadowOffsetHeight.value = 8;
+      top.set(0);
+      shadowOffsetHeight.set(8);
     }
 
   }, [ isPressed, shadowOffsetHeight, top ]);

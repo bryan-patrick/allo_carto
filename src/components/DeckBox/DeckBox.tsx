@@ -32,7 +32,7 @@ interface SelectCardDeckProps {
  * DeckBox component
  */
 export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps) {
-  const user = useUserContext();
+  const userId = useUserContext()?.id;
   const { cardDeckDispatch } = useCardDeck();
   const [ rankCounts, setRankCounts ] = useState<DeckRankCounts>(emptyDeckRankCounts);
   const [ wordProgressKeyByWordId, setWordProgressKeyByWordId ] = useState<Record<string, WordProgressKey>>({});
@@ -64,13 +64,13 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
    */
   const loadRankCounts = useCallback(async () => {
     try {
-      if (!user?.id) {
+      if (!userId) {
         setRankCounts(emptyDeckRankCounts);
         return;
       }
 
       const counts = await getDeckRankCounts({
-        userId: user.id,
+        userId,
         wordIds: deck.wordIds,
       });
 
@@ -79,13 +79,13 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
     } catch (error) {
       console.error('Could not retrieve deck rank counts:', error);
     }
-  }, [ user?.id, deck.wordIds ]);
+  }, [ userId, deck.wordIds ]);
 
   const loadStoryWordProgress = useCallback(async () => {
     try {
-      if (user?.id) {
+      if (userId) {
         const storyWordProgressKeyByWordId = await getWordProgressById({
-          userId: user.id,
+          userId,
           story: deck.story,
         });
 
@@ -98,7 +98,7 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
     } catch (error) {
       console.error('Could not retrieve story word progress:', error);
     }
-  }, [ user?.id, deck.story ]);
+  }, [ userId, deck.story ]);
 
   /**
    * The story blips weren't updating when returning
@@ -119,10 +119,10 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
    * ReviewDeck handler
    */
   const handleDeckSelect = useCallback(async (selectedDeck: CardDeck) => {
-    if (user?.id) {
+    if (userId) {
       const deck = await getDeck({
         deck: selectedDeck,
-        userId: user.id
+        userId
       });
 
       if (deck) {
@@ -131,7 +131,7 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
       }
     }
   }, [
-    user?.id,
+    userId,
     cardDeckDispatch
   ]);
 

@@ -100,7 +100,7 @@ describe('<WordCardContainer />', () => {
       correctCount: 14,
     };
 
-    const { getByText, rerender } = render(
+    const { getByText, rerender } = await render(
       <WordCardContainer
         word={word}
         isCurrent={true}
@@ -154,7 +154,7 @@ describe('<WordCardContainer />', () => {
       currentCard: updatedCardDeck.words[0],
     });
 
-    rerender(
+    await rerender(
       <WordCardContainer
         word={word}
         isCurrent={true}
@@ -195,7 +195,7 @@ describe('<WordCardContainer />', () => {
       currentCard: word,
     });
 
-    render(
+    await render(
       <WordCardContainer
         word={word}
         isCurrent={true}
@@ -228,7 +228,7 @@ describe('<WordCardContainer />', () => {
       correctCount: 14,
     };
 
-    render(
+    await render(
       <UserContext.Provider value={{ id: 'user_one', name: 'Tester', isMonHomme: 1 }}>
         <WordCardContainer
           word={word}

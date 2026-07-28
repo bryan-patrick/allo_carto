@@ -70,6 +70,7 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 ## TODO
 
 - App icon and cleaning out the images dir
+- Rank indicator while doing a deck (probably on the top bar somewhere)
 - Later ranks need input fields instead of multi choice. Maybe a prestige?
 - Rank indicator while doing a deck
 - SVG chapter and progress map (visual and data)
@@ -80,6 +81,11 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 - Card Collection page
 - Fix portrait orientation (landscape should be disabled)
 - Look into how to use the dynamic island
+- Locked chapters don't show images
+- Words should only mean what they mean for that deck; no multiple meanings per deck unless the word actually shows up in the deck twice and means two different things.
+- We need a key for the story view since new words just kind of look broken...Maybe a different way to view the words? We need to think about this
+- Replace the placeholder images on chapters - when I become a better sketch artist.
+- Multi-colored chapter spines (prop and imgs)
 
 ## Free art and assets credits
 

@@ -33,7 +33,7 @@ describe('<WordCardSelection />', () => {
     mockUseWordCardUI.mockReset();
   });
 
-  test('renders article and word choices with dispatch handlers', () => {
+  test('renders article and word choices with dispatch handlers', async () => {
     const wordCardUIDispatch = jest.fn();
 
     mockUseWordCardUI.mockReturnValue({
@@ -45,7 +45,7 @@ describe('<WordCardSelection />', () => {
       wordCardUIDispatch,
     });
 
-    render(
+    await render(
       <WordCardSelection
         articleWords={['The', 'A']}
         fillerWords={['coffee', 'tea']}

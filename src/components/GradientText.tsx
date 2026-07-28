@@ -23,6 +23,7 @@ export default function GradientText({ colors, fontSize, fontWeight = 400, text 
 
   return (
     <MaskedView
+      testID="gradient-text-mask"
       maskElement={
         <Text style={textStyle}>
           {text}
@@ -30,6 +31,7 @@ export default function GradientText({ colors, fontSize, fontWeight = 400, text 
       }
     >
       <LinearGradient
+        testID="gradient-text-fill"
         colors={colors as any}
         end={{ x: 1, y: 0 }}
         start={{ x: 0, y: 0 }}

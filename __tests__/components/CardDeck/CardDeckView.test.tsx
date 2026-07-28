@@ -35,7 +35,7 @@ describe('<CardDeckView />', () => {
     mockDeckProgress.mockClear();
   });
 
-  test('renders the current card in a keyed WordCardContainer', () => {
+  test('renders the current card in a keyed WordCardContainer', async () => {
     /**
      * Je vuex un cafe sil te plait
      */
@@ -52,7 +52,7 @@ describe('<CardDeckView />', () => {
     /**
      * Now we can assert what it hands to its child.
      */
-    render(<CardDeckView currentCard={currentCard} />);
+    await render(<CardDeckView currentCard={currentCard} />);
 
     /**
      * CardDeckView should pass the current card through.

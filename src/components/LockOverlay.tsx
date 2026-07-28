@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   overlayStyle: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     backgroundColor: `#333333dd`,
     justifyContent: 'center',

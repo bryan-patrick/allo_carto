@@ -6,7 +6,7 @@ import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckResultsView from '@/src/components/Views/DeckResultsView';
 import { DeckToTheGate } from '@/data/french/decks';
 import { router } from 'expo-router';
-import { useLinkProps } from '@react-navigation/native';
+import { useLinkProps } from 'expo-router/react-navigation';
 import { fireEvent, render } from '@testing-library/react-native';
 
 /**
@@ -17,7 +17,7 @@ jest.mock('@/src/components/CardDeck/useCardDeck');
 /**
  * Mock navigation so we can check the link press.
  */
-jest.mock('@react-navigation/native', () => ({
+jest.mock('expo-router/react-navigation', () => ({
   useLinkProps: jest.fn(() => ({})),
 }));
 
@@ -102,8 +102,8 @@ describe('<DeckResultsView />', () => {
   /**
    * Make sure the results render
    */
-  test('renders the deck details and correct and incorrect words', () => {
-    const { getByText, getAllByText } = render(<DeckResultsView />);
+  test('renders the deck details and correct and incorrect words', async () => {
+    const { getByText, getAllByText } = await render(<DeckResultsView />);
 
     /**
      * Make sure the title row is rendering the selected deck.
@@ -132,14 +132,14 @@ describe('<DeckResultsView />', () => {
   /**
    * Make sure the finish button goes back to deck select
    */
-  test('dismisses results back to the selected place deck list when pressing finish', () => {
-    const { getByText } = render(<DeckResultsView />);
+  test('dismisses results back to the selected place deck list when pressing finish', async () => {
+    const { getByText } = await render(<DeckResultsView />);
 
     /**
      * Pressing the finish link should pop back to deck select, so back
      * does not land on completed results again.
      */
-    fireEvent.press(getByText('Finish'));
+    await fireEvent.press(getByText('Finish'));
     expect(mockRouterDismissTo).toHaveBeenCalledWith({
       pathname: '/CardDeckSelect',
       params: { placeId: 'aeroport-oiseau' },
