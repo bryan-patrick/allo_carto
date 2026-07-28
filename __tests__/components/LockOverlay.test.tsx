@@ -17,8 +17,8 @@ describe('<LockOverlay />', () => {
     mockSVGCheck.mockClear();
   });
 
-  test('renders children without an overlay when unlocked', () => {
-    const { getByText, queryByTestId } = render(
+  test('renders children without an overlay when unlocked', async () => {
+    const { getByText, queryByTestId } = await render(
       <LockOverlay isLocked={false}>
         <Text>Unlocked content</Text>
       </LockOverlay>
@@ -29,8 +29,8 @@ describe('<LockOverlay />', () => {
     expect(mockMaterialIcon).not.toHaveBeenCalled();
   });
 
-  test('renders a soft lock overlay when locked', () => {
-    const { getByLabelText, getByTestId, getByText } = render(
+  test('renders a soft lock overlay when locked', async () => {
+    const { getByLabelText, getByTestId, getByText } = await render(
       <LockOverlay
         isLocked
         lockedAccessibilityHint="Earn more cards to unlock this."
@@ -52,8 +52,8 @@ describe('<LockOverlay />', () => {
     );
   });
 
-  test('renders a success check overlay when complete', () => {
-    const { getByLabelText, getByTestId, getByText } = render(
+  test('renders a success check overlay when complete', async () => {
+    const { getByLabelText, getByTestId, getByText } = await render(
       <LockOverlay
         completeAccessibilityHint="No cards remain here."
         completeAccessibilityLabel="New rank complete"
@@ -78,9 +78,9 @@ describe('<LockOverlay />', () => {
     );
   });
 
-  test('captures presses on the overlay when locked', () => {
+  test('captures presses on the overlay when locked', async () => {
     const handleChildPress = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <LockOverlay isLocked>
         <Pressable onPress={handleChildPress}>
           <Text>Locked button</Text>
@@ -88,7 +88,7 @@ describe('<LockOverlay />', () => {
       </LockOverlay>
     );
 
-    fireEvent.press(getByTestId('lock-overlay'));
+    await fireEvent.press(getByTestId('lock-overlay'));
 
     expect(handleChildPress).not.toHaveBeenCalled();
   });

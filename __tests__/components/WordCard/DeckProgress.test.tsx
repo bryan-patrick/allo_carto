@@ -14,7 +14,7 @@ jest.mock('@/src/components/CardDeck/useCardDeck');
 const mockUseCardDeck = jest.mocked(useCardDeck);
 
 describe('<DeckProgress />', () => {
-  test('marks incorrect words with danger fill and adds progressive rarity glow', () => {
+  test('marks incorrect words with danger fill and adds progressive rarity glow', async () => {
     const words: Word[] = [
       {
         id: 'word_fnew',
@@ -57,7 +57,7 @@ describe('<DeckProgress />', () => {
       currentCard: words[2],
     });
 
-    const { getByTestId } = render(<DeckProgress />);
+    const { getByTestId } = await render(<DeckProgress />);
     const wrongBlipStyle = StyleSheet.flatten(
       getByTestId('progress-blip-word_silver_wrong').props.style,
     );
@@ -76,7 +76,7 @@ describe('<DeckProgress />', () => {
     expect(currentBlipStyle.shadowOpacity).toBe(0);
   });
 
-  test('fills a correct word before moving to the next card', () => {
+  test('fills a correct word before moving to the next card', async () => {
     const words: Word[] = [
       {
         id: 'word_fnew',
@@ -109,7 +109,7 @@ describe('<DeckProgress />', () => {
       currentCard: words[1],
     });
 
-    const { getByTestId } = render(<DeckProgress />);
+    const { getByTestId } = await render(<DeckProgress />);
     const currentBlipStyle = StyleSheet.flatten(
       getByTestId('progress-blip-word_gold_current').props.style,
     );

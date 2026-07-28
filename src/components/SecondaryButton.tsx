@@ -56,10 +56,10 @@ export default function SecondaryButton({
   const shadowOffsetHeight = useSharedValue(4);
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
-    top: top.value,
+    top: top.get(),
     shadowOffset: {
       width: 0,
-      height: shadowOffsetHeight.value,
+      height: shadowOffsetHeight.get(),
     },
   }));
 
@@ -68,18 +68,18 @@ export default function SecondaryButton({
    */
   useEffect(() => {
     if (isPressed) {
-      top.value = withTiming(4, {
+      top.set(withTiming(4, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
-      });
+      }));
 
-      shadowOffsetHeight.value = withTiming(0, {
+      shadowOffsetHeight.set(withTiming(0, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
-      });
+      }));
     } else {
-      top.value = 0;
-      shadowOffsetHeight.value = 4;
+      top.set(0);
+      shadowOffsetHeight.set(4);
     }
 
   }, [ isPressed, shadowOffsetHeight, top ]);

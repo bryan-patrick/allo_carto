@@ -80,7 +80,7 @@ export default function WordRank() {
   const translateY = useSharedValue(0);
 
   const containerY = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }]
+    transform: [{ translateY: translateY.get() }]
   }));
 
   /**
@@ -100,13 +100,13 @@ export default function WordRank() {
    */
   useEffect(() => {
     if (currentCard.correctCount !== currentScore) {
-      translateY.value = withDelay(400,
+      translateY.set(withDelay(400,
         withSpring(-44, {
           stiffness: 1200,
           damping: 30,
           mass: 1,
         })
-      );
+      ));
     }
   }, [
     currentScore,

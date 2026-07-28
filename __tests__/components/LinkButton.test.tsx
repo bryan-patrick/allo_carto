@@ -1,13 +1,13 @@
 import LinkButton from '@/src/components/LinkButton';
-import { useLinkProps } from '@react-navigation/native';
 import { fireEvent, render } from '@testing-library/react-native';
+import { useLinkProps } from 'expo-router/react-navigation';
 
 const mockLinkPress = jest.fn();
 
 /**
  * Mock navigation so we can check the link press
  */
-jest.mock('@react-navigation/native', () => ({
+jest.mock('expo-router/react-navigation', () => ({
   useLinkProps: jest.fn(() => ({
     onPress: mockLinkPress,
   })),
@@ -36,8 +36,8 @@ describe('<LinkButton />', () => {
     mockUseLinkProps.mockClear();
   });
 
-  test('renders text and presses the link', () => {
-    const { getByText } = render(
+  test('renders text and presses the link', async () => {
+    const { getByText } = await render(
       <LinkButton screen="TestingScreen">
         Testing link text
       </LinkButton>
@@ -51,7 +51,7 @@ describe('<LinkButton />', () => {
     /**
      * Pressing the visible text should trigger the link press.
      */
-    fireEvent.press(linkText);
+    await fireEvent.press(linkText);
 
     expect(mockLinkPress).toHaveBeenCalled();
 
@@ -65,19 +65,19 @@ describe('<LinkButton />', () => {
     );
   });
 
-  test('runs handler on press instead of press in', () => {
+  test('runs handler on press instead of press in', async () => {
     const handler = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <LinkButton handler={handler}>
         Testing handler
       </LinkButton>
     );
 
-    fireEvent(getByText('Testing handler'), 'pressIn');
+    await fireEvent(getByText('Testing handler'), 'pressIn');
 
     expect(handler).not.toHaveBeenCalled();
 
-    fireEvent.press(getByText('Testing handler'));
+    await fireEvent.press(getByText('Testing handler'));
 
     expect(handler).toHaveBeenCalledTimes(1);
   });

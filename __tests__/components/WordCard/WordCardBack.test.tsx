@@ -57,7 +57,7 @@ describe('<WordCardBack />', () => {
     });
   });
 
-  test('renders the back of the current card', () => {
+  test('renders the back of the current card', async () => {
     mockUseWordCardUI.mockReturnValue({
       cardState: {
         ...initialWordCardState,
@@ -68,7 +68,7 @@ describe('<WordCardBack />', () => {
       wordCardUIDispatch: jest.fn(),
     });
 
-    const { getByText } = render(
+    const { getByText } = await render(
       <WordCardBack
         wordCardBackFlippedStyle={{}}
         articleWidthStyle={{}}

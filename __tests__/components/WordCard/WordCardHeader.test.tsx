@@ -58,8 +58,8 @@ describe('<WordCardHeader />', () => {
   /**
    * Make sure the CEFR and rank render
    */
-  test('renders the current card level and word rank', () => {
-    const { getByText } = render(<WordCardHeader />);
+  test('renders the current card level and word rank', async () => {
+    const { getByText } = await render(<WordCardHeader />);
 
     /**
      * Does the header render the card level?

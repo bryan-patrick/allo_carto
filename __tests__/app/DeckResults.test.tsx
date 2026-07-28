@@ -26,8 +26,8 @@ describe('<DeckResults />', () => {
   /**
    * Make sure the route renders the view
    */
-  test('renders the deck results view', () => {
-    const { getByText } = render(<DeckResults />);
+  test('renders the deck results view', async () => {
+    const { getByText } = await render(<DeckResults />);
 
     /**
      * The route parent should hand off to the actual results view.

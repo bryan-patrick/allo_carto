@@ -10,7 +10,7 @@ import { ReactNode } from 'react';
  * Test the hook
  */
 describe('useWordCardUI', () => {
-  test('returns the word card UI context', () => {
+  test('returns the word card UI context', async () => {
     const cardState = {
       ...initialWordCardState,
       selectedWord: 'coffee',
@@ -31,7 +31,7 @@ describe('useWordCardUI', () => {
     /**
      * Check the two state props
      */
-    const { result } = renderHook(() => useWordCardUI(), { wrapper: Wrapper });
+    const { result } = await renderHook(() => useWordCardUI(), { wrapper: Wrapper });
     expect(result.current.cardState).toBe(cardState);
     expect(result.current.wordCardUIDispatch).toBe(wordCardUIDispatch);
   });

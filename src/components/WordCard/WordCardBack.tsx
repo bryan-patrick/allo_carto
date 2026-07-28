@@ -157,7 +157,7 @@ export default WordCardBack;
  */
 const wordCardBackStyles = StyleSheet.create({
   cardBack: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 10,
     height: '100%',
     backfaceVisibility: 'hidden',

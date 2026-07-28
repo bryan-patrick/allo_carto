@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useMemo } from 'react';
 import { type LayoutChangeEvent, StyleSheet, TextStyle, View } from 'react-native';
 import {
   Easing,
@@ -36,9 +36,6 @@ export default function WordCard({ isCurrent }: WordCardProps) {
    */
   const { cardState } = useWordCardUI();
   const { cardDeckState, cardDeckDispatch } = useContext(CardDeckContext);
-  const [feedbackStyle, setFeedbackStyle] = useState({});
-  const [articleSlotStyle, setArticleSlotStyle] = useState<TextStyle>({});
-  const [wordSlotStyle, setWordSlotStyle] = useState<TextStyle>({});
 
   /**
    * Styles
@@ -52,6 +49,33 @@ export default function WordCard({ isCurrent }: WordCardProps) {
     answerSlotError
   } = sharedWordCardStyles;
   const { wordCard } = wordCardStyles;
+
+  const hasArticleMistake =
+    cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
+  const hasWordMistake =
+    cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
+
+  let feedbackStyle: TextStyle = {};
+  let articleSlotStyle: TextStyle = {};
+  let wordSlotStyle: TextStyle = {};
+
+  switch (cardState.progress) {
+    case 'SUCCESS':
+      feedbackStyle = feedbackSuccess;
+      articleSlotStyle = answerSlotSuccess;
+      wordSlotStyle = answerSlotSuccess;
+      break;
+    case 'WARNING':
+      feedbackStyle = feedbackWarning;
+      if (hasArticleMistake) articleSlotStyle = answerSlotWarning;
+      if (hasWordMistake) wordSlotStyle = answerSlotWarning;
+      break;
+    case 'DANGER':
+      feedbackStyle = feedbackError;
+      articleSlotStyle = hasArticleMistake ? answerSlotError : answerSlotSuccess;
+      wordSlotStyle = hasWordMistake ? answerSlotError : answerSlotSuccess;
+      break;
+  }
 
   /**
    * Animation vars
@@ -73,24 +97,24 @@ export default function WordCard({ isCurrent }: WordCardProps) {
    * Animation styles
    */
   const articleWidthStyle = useAnimatedStyle(() => ({
-    width: articleWidth.value
+    width: articleWidth.get()
   }));
 
   const wordWidthStyle = useAnimatedStyle(() => ({
-    width: wordWidth.value
+    width: wordWidth.get()
   }));
 
   const wordCardFrontFlippedStyle = useAnimatedStyle(() => ({
     transform: [
       { perspective: 1000 },
-      { rotateY: `-${flipDegrees.value}deg` }
+      { rotateY: `-${flipDegrees.get()}deg` }
     ]
   }))
 
   const wordCardBackFlippedStyle = useAnimatedStyle(() => ({
     transform: [
       { perspective: 1000 },
-      { rotateY: `-${180 + flipDegrees.value}deg` }
+      { rotateY: `-${180 + flipDegrees.get()}deg` }
     ]
   }))
 
@@ -99,11 +123,11 @@ export default function WordCard({ isCurrent }: WordCardProps) {
    * And the flip (These are side effects).
    */
   const handleArticleWidth = (event: LayoutChangeEvent) => {
-    articleWidth.value = withTiming(event.nativeEvent.layout.width, timing);
+    articleWidth.set(withTiming(event.nativeEvent.layout.width, timing));
   };
 
   const handleWordWidth = (event: LayoutChangeEvent) => {
-    wordWidth.value = withTiming(event.nativeEvent.layout.width, timing);
+    wordWidth.set(withTiming(event.nativeEvent.layout.width, timing));
   };
 
   /**
@@ -113,11 +137,11 @@ export default function WordCard({ isCurrent }: WordCardProps) {
     const shouldFlip =
       cardState.progress === 'SUCCESS'
 
-    flipDegrees.value = withTiming(
+    flipDegrees.set(withTiming(
       shouldFlip ? 180 : 0, {
-      duration: shouldFlip ? flipDuration.value : 0,
+      duration: shouldFlip ? flipDuration.get() : 0,
       easing: Easing.inOut(Easing.cubic)
-    });
+    }));
   }, [
     flipDegrees,
     flipDuration,
@@ -143,58 +167,6 @@ export default function WordCard({ isCurrent }: WordCardProps) {
     cardState.stage,
     cardDeckDispatch
   ]);
-
-  /**
-   * Handle slots and feedback styles.
-   * Then update our card state.
-   * 
-   * (The slots are the things on the
-   * front of the card with a border 
-   * bottom where the words go)
-   */
-  useLayoutEffect(() => {
-    const hasArticleMistake =
-      (cardState.mistake === 'ARTICLE') ||
-      (cardState.mistake === 'BOTH');
-
-    const hasWordMistake =
-      (cardState.mistake === 'WORD') ||
-      (cardState.mistake === 'BOTH');
-
-    switch (cardState.progress) {
-      case 'PENDING':
-        setArticleSlotStyle({});
-        setWordSlotStyle({});
-        setFeedbackStyle({});
-        break;
-      case 'SUCCESS':
-        setArticleSlotStyle(answerSlotSuccess);
-        setWordSlotStyle(answerSlotSuccess);
-        setFeedbackStyle(feedbackSuccess);
-        break;
-      case 'WARNING':
-        setFeedbackStyle(feedbackWarning);
-        if (hasArticleMistake) setArticleSlotStyle(answerSlotWarning);
-        if (hasWordMistake) setWordSlotStyle(answerSlotWarning)
-        break;
-      case 'DANGER':
-        setFeedbackStyle(feedbackError);
-        setArticleSlotStyle(answerSlotSuccess);
-        setWordSlotStyle(answerSlotSuccess);
-        if (hasArticleMistake) setArticleSlotStyle(answerSlotError);
-        if (hasWordMistake) setWordSlotStyle(answerSlotError)
-        break;
-    }
-  }, [
-    feedbackSuccess,
-    answerSlotSuccess,
-    cardState.progress,
-    cardState.mistake,
-    answerSlotError,
-    answerSlotWarning,
-    feedbackError,
-    feedbackWarning,
-  ])
 
   /**
    * Render the card
@@ -234,7 +206,7 @@ const wordCardStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardBack: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: colors.light.border,
     zIndex: 10,
     height: '100%',

@@ -64,7 +64,7 @@ describe('<WordCardFront />', () => {
   /**
    * Test the text and selected answers
    */
-  test('renders the front of the current card', () => {
+  test('renders the front of the current card', async () => {
     mockUseWordCardUI.mockReturnValue({
       cardState: {
         ...initialWordCardState,
@@ -77,7 +77,7 @@ describe('<WordCardFront />', () => {
       wordCardUIDispatch: jest.fn(),
     });
 
-    const { getByText, getAllByText } = render(
+    const { getByText, getAllByText } = await render(
       <WordCardFront
         handleWordWidth={jest.fn()}
         handleArticleWidth={jest.fn()}

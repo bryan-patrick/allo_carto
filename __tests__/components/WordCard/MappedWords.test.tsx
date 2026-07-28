@@ -55,9 +55,9 @@ describe('<MappedWords />', () => {
   /**
    * Test a press
    */
-  test('renders words and calls the handler with the pressed word', () => {
+  test('renders words and calls the handler with the pressed word', async () => {
     const handler = jest.fn();
-    const { getByText } = render(
+    const { getByText } = await render(
       <MappedWords
         words={['coffee', 'tea']}
         activeWord="coffee"
@@ -70,7 +70,7 @@ describe('<MappedWords />', () => {
      */
     getByText('coffee');
     getByText('tea');
-    fireEvent.press(getByText('tea'));
+    await fireEvent.press(getByText('tea'));
     expect(handler).toHaveBeenCalledWith('tea');
   });
 });

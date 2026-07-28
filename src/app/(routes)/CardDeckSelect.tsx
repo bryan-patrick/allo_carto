@@ -20,7 +20,7 @@ const orderedDecks = getDecks();
  */
 export default function CardDeckSelect() {
   const { placeId } = useLocalSearchParams<{ placeId?: string; }>();
-  const user = useUserContext();
+  const userId = useUserContext()?.id;
   const [ completedRankByDeckId, setCompletedRankByDeckId ] = useState<CompletedRankByDeckId | null>(null);
 
   /**
@@ -76,14 +76,14 @@ export default function CardDeckSelect() {
         let result: CompletedRankByDeckId = {};
 
         try {
-          if (user?.id) {
+          if (userId) {
             /**
              * Ask the database for every deck's finished rank.
              */
             const allFinishedRanks = await Promise.all(
               orderedDecks.map(async (deck) => {
                 const completedRank = await getDeckHighestSoftCompletedRank({
-                  userId: user.id,
+                  userId,
                   wordIds: deck.wordIds,
                 });
 
@@ -136,7 +136,7 @@ export default function CardDeckSelect() {
       return () => {
         shouldUpdateState = false;
       };
-    }, [ user?.id ])
+    }, [ userId ])
   );
 
   /**
