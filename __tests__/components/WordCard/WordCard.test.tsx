@@ -54,13 +54,11 @@ const mockWordCardFront = jest.mocked(WordCardFront);
 const mockWordCardBack = jest.mocked(WordCardBack);
 const mockRouterPush = jest.mocked(router.push);
 
-function renderWithAFakeDispatchSoWeCanDoActions(
+async function renderWithAFakeDispatchSoWeCanDoActions(
   children: ReactNode,
   cardDeckDispatch = jest.fn(),
 ) {
-  return {
-    cardDeckDispatch,
-    ...render(
+  const renderResult = await render(
       <CardDeckContext.Provider
         value={{
           cardDeckState: initialCardDeckState,
@@ -69,7 +67,11 @@ function renderWithAFakeDispatchSoWeCanDoActions(
       >
         {children}
       </CardDeckContext.Provider>,
-    ),
+    );
+
+  return {
+    cardDeckDispatch,
+    ...renderResult,
   };
 }
 
@@ -84,13 +86,13 @@ describe('<WordCard />', () => {
   /**
    * Make sure the cards are rendering
    */
-  test('renders the front and back card faces', () => {
+  test('renders the front and back card faces', async () => {
     mockUseWordCardUI.mockReturnValue({
       cardState: initialWordCardState,
       wordCardUIDispatch: jest.fn(),
     });
 
-    const { getByText } = renderWithAFakeDispatchSoWeCanDoActions(<WordCard isCurrent={true} />);
+    const { getByText } = await renderWithAFakeDispatchSoWeCanDoActions(<WordCard isCurrent={true} />);
 
     getByText('Word card front');
     getByText('Word card back');
@@ -128,7 +130,7 @@ describe('<WordCard />', () => {
       wordCardUIDispatch: jest.fn(),
     });
 
-    renderWithAFakeDispatchSoWeCanDoActions(<WordCard isCurrent={true} />);
+    await renderWithAFakeDispatchSoWeCanDoActions(<WordCard isCurrent={true} />);
 
     /**
      * Make sure we go to the finished deck.

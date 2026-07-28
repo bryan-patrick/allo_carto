@@ -7,8 +7,8 @@ import { render } from '@testing-library/react-native';
  * LinkCard component test
  */
 describe('<LinkCard />', () => {
-  test('The loader is rendering the correct text', () => {
-    const { getByText } = render(
+  test('The loader is rendering the correct text', async () => {
+    const { getByText } = await render(
       <LinkCard
         title="Testing title"
         description="Testing description"
@@ -44,21 +44,23 @@ const mockLinkButton = jest.mocked(LinkButton);
 /**
  * Test whether our props are getting passed to LinkButton
  */
-render(
-  <LinkCard
-    title="Testing title"
-    description="Testing description"
-    screen="Testing screen"
-    linkText="Testing link text"
-    SVGElement={<SVGBarista />}
-  />
-);
+test('passes navigation props to LinkButton', async () => {
+  await render(
+    <LinkCard
+      title="Testing title"
+      description="Testing description"
+      screen="Testing screen"
+      linkText="Testing link text"
+      SVGElement={<SVGBarista />}
+    />
+  );
 
-expect(mockLinkButton).toHaveBeenCalledWith(
-  expect.objectContaining({
-    screen: 'Testing screen',
-    params: { href: '/' },
-    children: 'Testing link text',
-  }),
-  undefined,
-);
+  expect(mockLinkButton).toHaveBeenCalledWith(
+    expect.objectContaining({
+      screen: 'Testing screen',
+      params: { href: '/' },
+      children: 'Testing link text',
+    }),
+    undefined,
+  );
+});

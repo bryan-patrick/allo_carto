@@ -29,7 +29,7 @@ function mockState(currentIndex = 0): CardDeckStateProps {
 }
 
 describe('useCardDeck', () => {
-  test('returns the card deck state, dispatch, and current card', () => {
+  test('returns the card deck state, dispatch, and current card', async () => {
     const cardDeckState = mockState(1);
     const cardDeckDispatch = jest.fn();
 
@@ -44,7 +44,7 @@ describe('useCardDeck', () => {
       );
     }
 
-    const { result } = renderHook(() => useCardDeck(), { wrapper: ContextWrapper });
+    const { result } = await renderHook(() => useCardDeck(), { wrapper: ContextWrapper });
 
     expect(result.current.cardDeckState).toBe(cardDeckState);
     expect(result.current.cardDeckDispatch).toBe(cardDeckDispatch);

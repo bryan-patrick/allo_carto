@@ -1,12 +1,30 @@
-import type { PropsWithChildren } from 'react';
+import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-export default function Book({ children }: PropsWithChildren) {
-  return <View style={styles.book}>{children}</View>;
+/**
+ * Typing
+ */
+interface BookProps {
+  children: ReactNode;
 }
 
+/**
+ * Book component (chapter select)
+ */
+export default function Book({ children }: BookProps) {
+  const { bookStyle } = styles;
+
+  /**
+   * Render the component
+   */
+  return <View style={bookStyle}>{children}</View>;
+}
+
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
-  book: {
+  bookStyle: {
     borderRadius: 16,
     display: 'flex',
     flexDirection: 'row',

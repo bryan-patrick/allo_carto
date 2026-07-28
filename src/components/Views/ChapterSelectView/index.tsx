@@ -8,14 +8,24 @@ import { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import Chapter from './Chapter';
 
+/**
+ * Typing
+ */
 interface ChapterProgressById {
   [ chapterId: string ]: number;
 }
 
+/**
+ * Component chapter select view
+ */
 export default function ChapterSelectView() {
   const user = useUserContext();
   const { chapters } = deckAtlas;
   const [ chapterProgressById, setChapterProgressById ] = useState<ChapterProgressById>({});
+  const {
+    scrollViewStyle,
+    scrollViewContainerStyle,
+  } = styles;
 
   useFocusEffect(
     useCallback(() => {
@@ -53,10 +63,13 @@ export default function ChapterSelectView() {
     }, [ chapters, user?.id ])
   );
 
+  /**
+   * Render the component
+   */
   return (
     <ScrollView
-      contentContainerStyle={styles.scrollViewContainer}
-      style={styles.scrollView}
+      style={scrollViewStyle}
+      contentContainerStyle={scrollViewContainerStyle}
     >
       {chapters.map((chapter: DeckChapter) => (
         <Chapter
@@ -69,11 +82,14 @@ export default function ChapterSelectView() {
   );
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
-  scrollView: {
+  scrollViewStyle: {
     backgroundColor: colors.dark.text,
   },
-  scrollViewContainer: {
+  scrollViewContainerStyle: {
     display: 'flex',
     flexDirection: 'column',
     gap: 8,

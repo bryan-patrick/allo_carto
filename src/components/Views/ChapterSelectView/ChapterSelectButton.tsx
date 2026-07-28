@@ -1,31 +1,51 @@
 import LinkButton from '@/src/components/LinkButton';
 import { StyleSheet, Text } from 'react-native';
 
+/**
+ * Typing
+ */
 interface ChapterSelectButtonProps {
   chapterId: string;
 }
 
+/**
+ * Chapter select button
+ */
 export default function ChapterSelectButton({ chapterId }: ChapterSelectButtonProps) {
+  /**
+   * Destructure the styles
+   */
+  const {
+    chapterSelectButtonStyle,
+    chapterSelectButtonTextStyle,
+  } = styles;
+
+  /**
+   * Render the component
+   */
   return (
     <LinkButton
       arrowSize={16}
       hitSlop={10}
       params={{ chapterId }}
       screen="(routes)/PlaceSelect"
-      style={styles.button}
+      style={chapterSelectButtonStyle}
     >
-      <Text style={styles.text}>View This Chapter</Text>
+      <Text style={chapterSelectButtonTextStyle}>View This Chapter</Text>
     </LinkButton>
   );
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
-  button: {
+  chapterSelectButtonStyle: {
     marginBottom: 4,
     paddingHorizontal: 48,
     paddingVertical: 14,
   },
-  text: {
+  chapterSelectButtonTextStyle: {
     fontSize: 14,
   },
 });

@@ -38,8 +38,8 @@ describe('<WordRank />', () => {
   /**
    * Look for current and next scores
    */
-  test('renders the current score and next score', () => {
-    const { getByText } = render(<WordRank />);
+  test('renders the current score and next score', async () => {
+    const { getByText } = await render(<WordRank />);
 
     getByText('14');
     getByText('15');
@@ -49,8 +49,8 @@ describe('<WordRank />', () => {
    * Make sure the next icon also renders
    * diamond is the name of the MUI icon
    */
-  test('renders the rank icon for a score', () => {
-    render(<RankIcon score={15} />);
+  test('renders the rank icon for a score', async () => {
+    await render(<RankIcon score={15} />);
 
     expect(mockMaterialIcon).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'diamond' }),
@@ -58,8 +58,8 @@ describe('<WordRank />', () => {
     );
   });
 
-  test('renders the rank icon for a rank name', () => {
-    render(<RankIcon rank="silver" />);
+  test('renders the rank icon for a rank name', async () => {
+    await render(<RankIcon rank="silver" />);
 
     expect(mockMaterialIcon).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'military-tech' }),

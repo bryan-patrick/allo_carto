@@ -1,5 +1,5 @@
-import { useLinkProps } from '@react-navigation/native';
 import { useAudioPlayer } from 'expo-audio';
+import { useLinkProps } from 'expo-router/react-navigation';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';

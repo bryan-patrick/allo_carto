@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 16,
     marginHorizontal: 16,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   spineStyle: {
     width: 40,

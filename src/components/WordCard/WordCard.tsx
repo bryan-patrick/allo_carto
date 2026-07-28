@@ -234,7 +234,7 @@ const wordCardStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardBack: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: colors.light.border,
     zIndex: 10,
     height: '100%',

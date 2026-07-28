@@ -8,27 +8,45 @@ import Cover from './Cover';
 import Crease from './Crease';
 import Spine from './Spine';
 
+/**
+ * Typing
+ */
 interface ChapterProps {
   chapter: DeckChapter;
   progressPercent: number;
 }
 
+/**
+ * Chapter component
+ */
 export default function Chapter({ chapter, progressPercent }: ChapterProps) {
   const { chapterName, image, name } = chapter;
+  const {
+    chapterContainerStyle,
+    chapterContainerInnerStyle,
+    chapterTitleContainerStyle,
+    chapterNameStyle,
+    chapterTitleStyle,
+    chapterImageContainerStyle,
+    chapterImageStyle,
+  } = styles;
 
+  /**
+   * Render the component
+   */
   return (
     <Book>
       <Spine />
       <Crease />
       <Cover>
-        <View style={styles.container}>
-          <View style={styles.inner}>
-            <View style={styles.titleContainer}>
-              <Text style={styles.chapterName}>{chapterName}</Text>
-              <Text style={styles.title}>{name}</Text>
+        <View style={chapterContainerStyle}>
+          <View style={chapterContainerInnerStyle}>
+            <View style={chapterTitleContainerStyle}>
+              <Text style={chapterNameStyle}>{chapterName}</Text>
+              <Text style={chapterTitleStyle}>{name}</Text>
             </View>
-            <View style={styles.imageContainer}>
-              <ImageBackground source={image} style={styles.image} />
+            <View style={chapterImageContainerStyle}>
+              <ImageBackground source={image} style={chapterImageStyle} />
             </View>
             <ChapterMeta progressPercent={progressPercent} />
             <ChapterSelectButton chapterId={chapter.id} />
@@ -39,11 +57,14 @@ export default function Chapter({ chapter, progressPercent }: ChapterProps) {
   );
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
-  container: {
+  chapterContainerStyle: {
     marginHorizontal: 8,
   },
-  inner: {
+  chapterContainerInnerStyle: {
     alignItems: 'center',
     borderRadius: 8,
     display: 'flex',
@@ -53,24 +74,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 16,
   },
-  titleContainer: {
+  chapterTitleContainerStyle: {
     flexShrink: 1,
     wordWrap: 'wrap',
   },
-  chapterName: {
+  chapterNameStyle: {
     color: colors.dark.text,
     fontFamily: 'lexend-400',
     fontSize: 12,
     textAlign: 'center',
     textTransform: 'uppercase',
   },
-  title: {
+  chapterTitleStyle: {
     color: colors.dark.text,
     fontFamily: 'lexend-600',
     fontSize: 20,
     textAlign: 'center',
   },
-  imageContainer: {
+  chapterImageContainerStyle: {
     display: 'flex',
     flexDirection: 'row',
     marginBottom: 8,
@@ -79,7 +100,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 1,
   },
-  image: {
+  chapterImageStyle: {
     height: 200,
     width: 260,
   },

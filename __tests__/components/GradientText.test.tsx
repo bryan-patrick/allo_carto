@@ -1,15 +1,13 @@
 import GradientText from '@/src/components/GradientText';
-import MaskedView from '@react-native-masked-view/masked-view';
 import { render } from '@testing-library/react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 describe('<GradientText />', () => {
-  it('renders text through a masked linear gradient', () => {
+  it('renders text through a masked linear gradient', async () => {
     /**
      * Render the thing.
      */
-    const { UNSAFE_getAllByType, UNSAFE_getByType } = render(
+    const { getAllByText, getByTestId } = await render(
         <GradientText
           colors={['#111111', '#eeeeee']}
           fontSize={20}
@@ -18,13 +16,13 @@ describe('<GradientText />', () => {
         />
     );
 
-    const textNodes = UNSAFE_getAllByType(Text);
+    const textNodes = getAllByText('Bonjour');
 
     /**
      * Make sure the library pieces are wired together.
      */
-    expect(UNSAFE_getByType(MaskedView)).toBeTruthy();
-    expect(UNSAFE_getByType(LinearGradient).props).toEqual(
+    expect(getByTestId('gradient-text-mask')).toBeTruthy();
+    expect(getByTestId('gradient-text-fill').props).toEqual(
       expect.objectContaining({
         colors: ['#111111', '#eeeeee'],
         end: { x: 1, y: 0 },

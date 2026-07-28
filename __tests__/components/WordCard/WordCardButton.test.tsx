@@ -78,24 +78,24 @@ describe('<WordCardButton />', () => {
     mockUseWordCardUI.mockReset();
   });
 
-  test('disables itself until the answer has been selected', () => {
+  test('disables itself until the answer has been selected', async () => {
     mockDeckState();
     mockUseWordCardUI.mockReturnValue({
       cardState: initialWordCardState,
       wordCardUIDispatch: jest.fn(),
     });
 
-    const { UNSAFE_getByProps } = render(
-      <WordCardButton>Check</WordCardButton>,
+    const { getByTestId } = await render(
+      <WordCardButton testID="word-card-button">Check</WordCardButton>,
     );
 
     /**
      * No selected article or selected word
      */
-    UNSAFE_getByProps({ disabled: true });
+    expect(getByTestId('word-card-button').props.disabled).toBe(true);
   });
 
-  test('checks the current answer on press in', () => {
+  test('checks the current answer on press in', async () => {
     const wordCardUIDispatch = jest.fn();
     const { currentCard } = mockDeckState();
 
@@ -108,12 +108,12 @@ describe('<WordCardButton />', () => {
       wordCardUIDispatch,
     });
 
-    const { getByText } = render(<WordCardButton>Check</WordCardButton>);
+    const { getByText } = await render(<WordCardButton>Check</WordCardButton>);
 
     /**
      * The component checks on press in.
      */
-    fireEvent(getByText('Check'), 'pressIn');
+    await fireEvent(getByText('Check'), 'pressIn');
 
     expect(wordCardUIDispatch).toHaveBeenCalledWith({
       type: 'CHECK_ANSWER',
@@ -121,14 +121,14 @@ describe('<WordCardButton />', () => {
     });
   });
 
-  test('reserves space for the next-card arrow before it appears', () => {
+  test('reserves space for the next-card arrow before it appears', async () => {
     mockDeckState();
     mockUseWordCardUI.mockReturnValue({
       cardState: initialWordCardState,
       wordCardUIDispatch: jest.fn(),
     });
 
-    const { getByTestId } = render(<WordCardButton>Check</WordCardButton>);
+    const { getByTestId } = await render(<WordCardButton>Check</WordCardButton>);
     const textRowStyle = StyleSheet.flatten(
       getByTestId('word-card-button-content').props.style,
     );
@@ -136,7 +136,7 @@ describe('<WordCardButton />', () => {
     expect(textRowStyle.minHeight).toBe(24);
   });
 
-  test('increments score and fires success haptics after a correct answer', () => {
+  test('increments score and fires success haptics after a correct answer', async () => {
     const cardDeckDispatch = jest.fn();
     mockDeckState(cardDeckDispatch);
 
@@ -152,7 +152,7 @@ describe('<WordCardButton />', () => {
       wordCardUIDispatch: jest.fn(),
     });
 
-    render(<WordCardButton>Next card</WordCardButton>);
+    await render(<WordCardButton>Next card</WordCardButton>);
 
     /**
      * Make sure setting the card state called the action
