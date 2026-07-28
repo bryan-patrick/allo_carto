@@ -16,7 +16,7 @@ import RankSelectHeader from './RankSelectHeader';
  * View card deck rank select
  */
 export default function CardDeckRankSelectView() {
-  const user = useUserContext();
+  const userId = useUserContext()?.id;
   const { cardDeckState, cardDeckDispatch } = useCardDeck();
   const [ rankCounts, setRankCounts ] = useState<DeckRankCounts>(emptyDeckRankCounts);
   const { cardDeck } = cardDeckState;
@@ -28,10 +28,10 @@ export default function CardDeckRankSelectView() {
   } = styles;
 
   const handleRankSelect = useCallback(async (rank: WordRankKey) => {
-    if (user?.id) {
+    if (userId) {
       const deck = await getDeck({
         deck: cardDeck,
-        userId: user.id,
+        userId,
         rank,
       });
 
@@ -41,7 +41,7 @@ export default function CardDeckRankSelectView() {
       }
     }
   }, [
-    user?.id,
+    userId,
     cardDeck,
     cardDeckDispatch,
   ]);
@@ -51,13 +51,13 @@ export default function CardDeckRankSelectView() {
 
     async function loadRankCounts() {
       try {
-        if (!user?.id) {
+        if (!userId) {
           setRankCounts(emptyDeckRankCounts);
           return;
         }
 
         const counts = await getDeckRankCounts({
-          userId: user.id,
+          userId,
           wordIds: cardDeck.wordIds,
         });
 
@@ -76,7 +76,7 @@ export default function CardDeckRankSelectView() {
     };
   }, [
     cardDeck.wordIds,
-    user?.id,
+    userId,
   ]);
 
   /**

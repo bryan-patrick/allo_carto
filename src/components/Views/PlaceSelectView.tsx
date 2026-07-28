@@ -36,7 +36,7 @@ const polaroidColorStops: NonNullable<LinearGradientProps[ 'locations' ]> = [
  * PlaceSelectView component
  */
 export default function PlaceSelectView() {
-  const user = useUserContext();
+  const userId = useUserContext()?.id;
   const [ placeProgressById, setPlaceProgressById ] = useState<PlaceProgressById>({});
 
   /**
@@ -76,11 +76,11 @@ export default function PlaceSelectView() {
         const result: PlaceProgressById = {};
 
         try {
-          if (user?.id) {
+          if (userId) {
             for (const place of places) {
               result[ place.id ] = await getDecksProgress({
                 decks: place.decks,
-                userId: user.id,
+                userId,
               });
             }
           }
@@ -97,7 +97,7 @@ export default function PlaceSelectView() {
       return () => {
         shouldUpdateState = false;
       };
-    }, [ places, user?.id ])
+    }, [ places, userId ])
   );
 
   /**

@@ -156,8 +156,8 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   const currentPosition = useSharedValue(isCurrent ? 0 : 1000);
   const currentOpacity = useSharedValue(isCurrent ? 1 : 0);
   const positionStyle = useAnimatedStyle(() => ({
-    left: currentPosition.value,
-    opacity: currentOpacity.value
+    left: currentPosition.get(),
+    opacity: currentOpacity.get()
   }));
 
   /**
@@ -165,19 +165,19 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
    */
   useLayoutEffect(() => {
     if (isCurrent) {
-      currentPosition.value = withTiming(0, {
+      currentPosition.set(withTiming(0, {
         duration: 250
-      });
-      currentOpacity.value = withTiming(1.0, {
+      }));
+      currentOpacity.set(withTiming(1.0, {
         duration: 100
-      });
+      }));
     } else {
-      currentPosition.value = withTiming(500, {
+      currentPosition.set(withTiming(500, {
         duration: 500
-      });
-      currentOpacity.value = withTiming(0, {
+      }));
+      currentOpacity.set(withTiming(0, {
         duration: 250
-      });
+      }));
     }
   }, [isCurrent, currentPosition, currentOpacity]);
 

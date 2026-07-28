@@ -19,7 +19,7 @@ interface ChapterProgressById {
  * Component chapter select view
  */
 export default function ChapterSelectView() {
-  const user = useUserContext();
+  const userId = useUserContext()?.id;
   const { chapters } = deckAtlas;
   const [ chapterProgressById, setChapterProgressById ] = useState<ChapterProgressById>({});
   const {
@@ -35,11 +35,11 @@ export default function ChapterSelectView() {
         const result: ChapterProgressById = {};
 
         try {
-          if (user?.id) {
+          if (userId) {
             for (const chapter of chapters) {
               const progressPercent = await getChapterProgressPercent({
                 chapter,
-                userId: user.id,
+                userId,
               });
 
               result[ chapter.id ] = progressPercent;
@@ -60,7 +60,7 @@ export default function ChapterSelectView() {
       return () => {
         shouldUpdateState = false;
       };
-    }, [ chapters, user?.id ])
+    }, [ chapters, userId ])
   );
 
   /**
