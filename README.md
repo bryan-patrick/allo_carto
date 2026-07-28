@@ -90,6 +90,7 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 - Card Collection page
 - Fix portrait orientation (landscape should be disabled)
 - Look into how to use the dynamic island
+- Locked chapters don't show images
 
 ## Free art and assets credits
 

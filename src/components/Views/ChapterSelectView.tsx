@@ -15,6 +15,10 @@ interface ChapterProgressById {
   [ chapterId: string ]: number;
 }
 
+interface BookPartProps {
+  children: ReactNode;
+}
+
 /**
  * ChapterSelectView component
  */
@@ -64,11 +68,9 @@ export default function ChapterSelectView() {
   );
 
   /**
- * Destructure styles
- */
+   * Destructure styles
+   */
   const {
-    chapterWelcomeContainerStyle,
-    chapterWelcomeTextStyle,
     scrollViewContainerStyle,
     chapterContainerStyle,
     chapterContainerInnerStyle,
@@ -94,12 +96,12 @@ export default function ChapterSelectView() {
         chapters.map((chapter: DeckChapter, index) => {
 
           /**
-           * Destructure the chapters
+           * Destructure the current chapter
            */
           const { id: chapterId, name, chapterName, image } = chapter;
 
           /**
-           * Completion
+           * Completion percentage
            */
           const progressPercent = chapterProgressById[ chapterId ] ?? 0;
 
@@ -107,25 +109,96 @@ export default function ChapterSelectView() {
            * Render the individual chapter sections
            */
           return (
-            <View style={chapterContainerStyle} key={`${index}-${chapterId}`}>
-              <View style={chapterContainerInnerStyle}>
-                <View style={chapterTitleContainerStyle}>
-                  <Text style={chapterIndexStyle}>{chapterName}</Text>
-                  <Text style={chapterTitleStyle}>{name}</Text>
-                </View>
-                <View style={chapterImageContainerStyle}>
-                  <ImageBackground style={chapterImageStyle} source={image} />
-                </View>
-                <ChapterMeta progressPercent={progressPercent} />
-                <ChapterSelectButton chapterId={chapterId}>
-                  <Text style={ChapterSelectButtonTextStyle}>View This Chapter</Text>
-                </ChapterSelectButton>
-              </View>
+            <View key={`${index}-${chapterId}`}>
+              <Book>
+                <Spine />
+                <Crease />
+                <Cover>
+                  <View style={chapterContainerStyle}>
+                    <View style={chapterContainerInnerStyle}>
+                      <View style={chapterTitleContainerStyle}>
+                        <Text style={chapterIndexStyle}>{chapterName}</Text>
+                        <Text style={chapterTitleStyle}>{name}</Text>
+                      </View>
+                      <View style={chapterImageContainerStyle}>
+                        <ImageBackground style={chapterImageStyle} source={image} />
+                      </View>
+                      <ChapterMeta progressPercent={progressPercent} />
+                      <ChapterSelectButton chapterId={chapterId}>
+                        <Text style={ChapterSelectButtonTextStyle}>View This Chapter</Text>
+                      </ChapterSelectButton>
+                    </View>
+                  </View>
+                </Cover>
+              </Book>
+
             </View>
           );
         })
       }
     </ScrollView>
+  );
+}
+
+/**
+ * Three piece book background
+ */
+function Book({ children }: BookPartProps) {
+  const { bookStyle } = styles;
+
+  return <View style={bookStyle}>{children}</View>;
+}
+
+/**
+ * The spine of the book
+ */
+function Spine() {
+  const {
+    spineStyle,
+  } = styles;
+
+  return (
+    <ImageBackground
+      source={require('../../app/assets/images/book-parts/spine.jpg')}
+      style={spineStyle}
+      resizeMode="stretch"
+    />
+  );
+}
+
+/**
+ * The cover or background
+ */
+function Cover({ children }: BookPartProps) {
+  const {
+    coverStyle,
+  } = styles;
+
+  return (
+    <ImageBackground
+      source={require('../../app/assets/images/book-parts/cover.jpg')}
+      style={coverStyle}
+      resizeMode="stretch"
+    >
+      {children}
+    </ImageBackground>
+  );
+}
+
+/**
+ * This graphic separates the cover from the spine
+ */
+function Crease() {
+  const {
+    creaseStyle,
+  } = styles;
+
+  return (
+    <ImageBackground
+      source={require('../../app/assets/images/book-parts/crease.jpg')}
+      style={creaseStyle}
+      resizeMode="stretch"
+    />
   );
 }
 
@@ -185,11 +258,32 @@ function ChapterMeta({ progressPercent }: ChapterMetaProps) {
  * Styles
  */
 const styles = StyleSheet.create({
+  bookStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    borderRadius: 16,
+    marginHorizontal: 16,
+    overflow: 'hidden'
+  },
+  spineStyle: {
+    width: 40,
+  },
+  creaseStyle: {
+    width: 10,
+  },
+  coverStyle: {
+    flexShrink: 1,
+    flexGrow: 1,
+    height: '100%'
+  },
+  coverMiddleStyle: {
+    width: '100%',
+    justifyContent: 'center',
+  },
   chapterWelcomeContainerStyle: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    backgroundColor: colors.dark.text,
   },
   chapterWelcomeTextStyle: {
     fontSize: 20,
@@ -201,7 +295,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 8,
     paddingVertical: 16,
-    backgroundColor: colors.dark.text,
   },
   chapterContainerStyle: {
     marginHorizontal: 8,
@@ -211,9 +304,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.dark.background,
-    paddingVertical: 32,
-    paddingHorizontal: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
     gap: 16,
     borderRadius: 8
   },
@@ -223,14 +315,15 @@ const styles = StyleSheet.create({
   },
   chapterIndexStyle: {
     fontSize: 12,
-    color: colors.light.text,
+    color: colors.dark.text,
     fontFamily: 'lexend-400',
     textTransform: 'uppercase',
     textAlign: 'center',
   },
   chapterTitleStyle: {
-    color: colors.light.text,
+    color: colors.dark.text,
     fontFamily: 'lexend-600',
+    textAlign: 'center',
     fontSize: 20,
   },
   ChapterSelectButtonStyle: {
@@ -249,12 +342,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   metaTextStyle: {
-    color: colors.light.text,
+    color: colors.dark.text,
     fontFamily: 'lexend-600'
     //backgroundColor: 'blue'
   },
   metaDataStyle: {
-    color: colors.light.text,
+    color: colors.dark.text,
     fontFamily: 'lexend-600'
     //backgroundColor: 'turquoise'
   },
@@ -262,15 +355,13 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     shadowColor: colors.dark.text,
-    shadowOffset: { width: 8, height: 8 },
     marginRight: 8, // Match the shadow offset width
     marginBottom: 8, // Match the shadow offset height
     shadowOpacity: 1,
-    shadowRadius: 0,
-    height: 280
+    shadowRadius: 1,
   },
   chapterImageStyle: {
-    height: '100%',
-    width: '100%',
-  }
+    height: 200,
+    width: 260
+  },
 });
