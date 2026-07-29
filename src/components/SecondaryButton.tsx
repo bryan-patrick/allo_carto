@@ -14,6 +14,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from '
 import colors from '../app/colors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const secondaryButtonShadowHeight = 2;
 
 interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'> {
   SVGElement?: ReactNode;
@@ -53,7 +54,7 @@ export default function SecondaryButton({
    * Animation vars
    */
   const top = useSharedValue(0);
-  const shadowOffsetHeight = useSharedValue(4);
+  const shadowOffsetHeight = useSharedValue(secondaryButtonShadowHeight);
 
   const animatedButtonStyle = useAnimatedStyle(() => ({
     top: top.get(),
@@ -68,7 +69,7 @@ export default function SecondaryButton({
    */
   useEffect(() => {
     if (isPressed) {
-      top.set(withTiming(4, {
+      top.set(withTiming(2, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
       }));
@@ -79,7 +80,7 @@ export default function SecondaryButton({
       }));
     } else {
       top.set(0);
-      shadowOffsetHeight.set(4);
+      shadowOffsetHeight.set(secondaryButtonShadowHeight);
     }
 
   }, [ isPressed, shadowOffsetHeight, top ]);
@@ -136,10 +137,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 0,
     borderWidth: 1,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: secondaryButtonShadowHeight },
     backgroundColor: colors.light.background,
     shadowColor: colors.dark.border,
-    marginBottom: 4, // Match shadow offset height
+    marginBottom: secondaryButtonShadowHeight,
     color: colors.dark.primary,
     gap: 8,
   },

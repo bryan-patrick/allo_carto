@@ -8,7 +8,7 @@ import type { DeckColors } from './CardDeck/cardDeckTypes';
 import SVGRightArrow from './SVG/SVGRightArrow';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-const linkButtonShadowHeight = 8;
+const linkButtonShadowHeight = 2;
 
 /**
  * Audio Import
@@ -113,7 +113,7 @@ export default function LinkButton({
    */
   useEffect(() => {
     if (isPressed) {
-      top.set(withTiming(6, {
+      top.set(withTiming(2, {
         duration: 100,
         easing: Easing.inOut(Easing.ease),
       }));
@@ -137,7 +137,7 @@ export default function LinkButton({
       await tapPlayer.seekTo(0);
       tapPlayer.play();
     } catch {
-      // Shush warning
+      // Shush, warning
     }
   }
 
