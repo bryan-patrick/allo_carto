@@ -20,7 +20,7 @@ interface ChapterProps {
  * Chapter component
  */
 export default function Chapter({ chapter, progressPercent }: ChapterProps) {
-  const { chapterName, image, name } = chapter;
+  const { chapterName, image, name, color } = chapter;
   const {
     chapterContainerStyle,
     chapterContainerInnerStyle,
@@ -48,7 +48,7 @@ export default function Chapter({ chapter, progressPercent }: ChapterProps) {
             <View style={chapterImageContainerStyle}>
               <ImageBackground source={image} style={chapterImageStyle} />
             </View>
-            <ChapterMeta progressPercent={progressPercent} />
+            <ChapterMeta progressPercent={progressPercent} progressColor={color ?? '#000000'} />
             <ChapterSelectButton chapterId={chapter.id} />
           </View>
         </View>
