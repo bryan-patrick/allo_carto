@@ -1,6 +1,6 @@
 import { useAudioPlayer } from 'expo-audio';
 import { useLinkProps } from 'expo-router/react-navigation';
-import { ReactElement, ReactNode, useEffect, useState } from 'react';
+import { cloneElement, isValidElement, ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Pressable, PressableProps, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import colors from '../app/colors';
@@ -30,7 +30,12 @@ interface LinkButtonProps extends Omit<PressableProps, 'style'> {
   arrowSize?: number;
   useArrow?: boolean;
   arrowColor?: string;
+  color?: string;
+  contentPaddingHorizontal?: number;
+  contentPaddingVertical?: number;
+  fullwidth?: boolean;
   style?: StyleProp<ViewStyle>;
+  type?: 'fill' | 'outline';
 }
 
 /**
@@ -50,30 +55,49 @@ export default function LinkButton({
   arrowSize = 24,
   disabled = false,
   arrowColor = colors.light.text,
+  color,
+  contentPaddingHorizontal = 16,
+  contentPaddingVertical = 12,
   deckColors,
+  fullwidth = false,
+  type = 'fill',
   ...pressableProps
 }: LinkButtonProps) {
 
-  /**
-   * Sound effect
-   */
   const tapPlayer = useAudioPlayer(tapAudio);
-
-  useEffect(() => {
-    // Expo Audio sets the player volume by assigning this property.
-    // eslint-disable-next-line react-hooks/immutability
-    tapPlayer.volume = 0.2;
-  }, [ tapPlayer ]);
+  const linkProps = useLinkProps({
+    screen: screen ?? '',
+    params: params ?? {},
+    href
+  });
+  const [ isPressed, setIsPressed ] = useState(false);
+  const top = useSharedValue(0);
+  const shadowOffsetHeight = useSharedValue(linkButtonShadowHeight);
+  const animatedButtonStyle = useAnimatedStyle(() => ({
+    top: top.get(),
+    shadowOffset: {
+      width: 0,
+      height: shadowOffsetHeight.get()
+    },
+  }));
 
   /**
    * Destructure styles
    */
   const {
     linkButton,
+    fullwidthStyle,
     linkText,
     linkTextRow,
+    innerRow
   } = styles;
-  let deckColorStyles = {};
+
+  let allTheProps = { ...pressableProps, ...props };
+  let deckColorStyles: ViewStyle = {};
+  let typeStyle: ViewStyle = {};
+  let outlineTextStyle = {};
+  let iconElement = SVGElement;
+  let resolvedArrowColor = arrowColor;
 
   if (deckColors) {
     deckColorStyles = {
@@ -83,30 +107,47 @@ export default function LinkButton({
     };
   }
 
+  if (type === 'outline') {
+    typeStyle = { backgroundColor: 'transparent' };
+
+    if (color) {
+      typeStyle = {
+        backgroundColor: 'transparent',
+        borderColor: color,
+      };
+      outlineTextStyle = { color };
+      resolvedArrowColor = color;
+
+      if (isValidElement<{ color?: string; }>(SVGElement)) {
+        iconElement = cloneElement(SVGElement, { color });
+      }
+    }
+  } else if (color) {
+    typeStyle = { backgroundColor: color };
+  }
+
   /**
-   * State/prop vars
+   * Pull in props when used for a navigation link button.
    */
-  const linkProps = useLinkProps({
-    screen: screen ?? '',
-    params: params ?? {},
-    href
-  });
+  if (screen) {
+    allTheProps = { ...pressableProps, ...props, ...linkProps };
+  }
 
-  const [ isPressed, setIsPressed ] = useState(false);
+  const {
+    onPress: buttonPress,
+    onPressIn: buttonPressIn,
+    onPressOut: buttonPressOut,
+    ...buttonProps
+  } = allTheProps;
 
   /**
-   * Animation vars
+   * Sound effect
    */
-  const top = useSharedValue(0);
-  const shadowOffsetHeight = useSharedValue(linkButtonShadowHeight);
-
-  const animatedButtonStyle = useAnimatedStyle(() => ({
-    top: top.get(),
-    shadowOffset: {
-      width: 0,
-      height: shadowOffsetHeight.get()
-    },
-  }));
+  useEffect(() => {
+    // Expo Audio sets the player volume by assigning this property.
+    // eslint-disable-next-line react-hooks/immutability
+    tapPlayer.volume = 0.2;
+  }, [ tapPlayer ]);
 
   /**
    * Handle animations on pressed
@@ -142,26 +183,6 @@ export default function LinkButton({
   }
 
   /**
-   * Pull in props when used for a navigation link button.
-   */
-  let allTheProps = { ...pressableProps, ...props };
-
-  if (screen) {
-    allTheProps = { ...pressableProps, ...props, ...linkProps };
-  }
-
-  const {
-    onPress: buttonPress,
-    onPressIn: buttonPressIn,
-    onPressOut: buttonPressOut,
-    ...buttonProps
-  } = allTheProps;
-
-  const labelText = typeof children === 'string'
-    ? children.replace(/\s*→\s*$/, '')
-    : children;
-
-  /**
    * Render the thing
    */
   return (
@@ -180,15 +201,23 @@ export default function LinkButton({
         setIsPressed(false);
         buttonPressOut?.(event);
       }}
-      style={[ linkButton, deckColorStyles, animatedButtonStyle, style ]}
+      style={[ linkButton, deckColorStyles, animatedButtonStyle, fullwidth && fullwidthStyle, typeStyle, style ]}
       disabled={disabled}
     >
-      {SVGElement}
       <View style={linkTextRow}>
-        <Text style={linkText}>{labelText}</Text>
-        {useArrow && (
-          <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={arrowColor} />
-        )}
+        <View style={[
+          innerRow,
+          {
+            paddingHorizontal: contentPaddingHorizontal,
+            paddingVertical: contentPaddingVertical,
+          }
+        ]}>
+          {iconElement}
+          <Text style={[ linkText, outlineTextStyle ]}>{children}</Text>
+          {useArrow && (
+            <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={resolvedArrowColor} />
+          )}
+        </View>
       </View>
     </AnimatedPressable>
   );
@@ -198,6 +227,9 @@ export default function LinkButton({
  * Styles
  */
 const styles = StyleSheet.create({
+  fullwidthStyle: {
+    width: '100%',
+  },
   linkButton: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -205,7 +237,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dark.primary,
     borderRadius: 8,
     borderWidth: 2,
-    padding: 12,
     gap: 8,
     shadowColor: colors.dark.border,
     shadowOffset: { width: 0, height: linkButtonShadowHeight },
@@ -219,8 +250,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   linkTextRow: {
+    width: '100%',
+    padding: 2,
+  },
+  innerRow: {
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+    borderWidth: 1,
+    borderRadius: 6,
     alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row',
     gap: 4,
-  },
+  }
 });

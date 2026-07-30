@@ -50,7 +50,7 @@ export const deckAtlas: DeckAtlas = {
 			name: 'A Very French Travel Day',
 			chapterName: 'Chapter 1:',
 			image: aVeryFrenchTravelDay,
-			color: '#3c767d',
+			color: '#1d3d5d',
 			places: [
 				{
 					id: 'aeroport-oiseau',
@@ -78,7 +78,7 @@ export const deckAtlas: DeckAtlas = {
 			name: 'Lost and Secret Decks',
 			chapterName: 'Epilogue:',
 			image: lostAndSecretDecks,
-			color: '#7d3c5f',
+			color: '#683d21',
 			places: [
 				{
 					id: 'rue-saint-matou',

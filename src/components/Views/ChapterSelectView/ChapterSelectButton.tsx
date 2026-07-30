@@ -1,3 +1,4 @@
+import { DeckChapter } from '@/data/french/deckAtlas';
 import LinkButton from '@/src/components/LinkButton';
 import { StyleSheet, Text } from 'react-native';
 
@@ -5,15 +6,19 @@ import { StyleSheet, Text } from 'react-native';
  * Typing
  */
 interface ChapterSelectButtonProps {
-  chapterId: string;
+  chapter: DeckChapter;
 }
 
 /**
  * Chapter select button
  */
-export default function ChapterSelectButton({ chapterId }: ChapterSelectButtonProps) {
+export default function ChapterSelectButton({ chapter }: ChapterSelectButtonProps) {
+  const { id, color } = chapter;
+
+  /**
+   * Destructure styles
+   */
   const {
-    chapterSelectButtonStyle,
     chapterSelectButtonTextStyle,
   } = styles;
 
@@ -24,9 +29,10 @@ export default function ChapterSelectButton({ chapterId }: ChapterSelectButtonPr
     <LinkButton
       arrowSize={16}
       hitSlop={10}
-      params={{ chapterId }}
+      params={{ id }}
       screen="(routes)/PlaceSelect"
-      style={chapterSelectButtonStyle}
+      color={color}
+      fullwidth
     >
       <Text style={chapterSelectButtonTextStyle}>View This Chapter</Text>
     </LinkButton>
@@ -37,11 +43,6 @@ export default function ChapterSelectButton({ chapterId }: ChapterSelectButtonPr
  * Styles
  */
 const styles = StyleSheet.create({
-  chapterSelectButtonStyle: {
-    marginBottom: 4,
-    paddingHorizontal: 48,
-    paddingVertical: 14,
-  },
   chapterSelectButtonTextStyle: {
     fontSize: 14,
   },
