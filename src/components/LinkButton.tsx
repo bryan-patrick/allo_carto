@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   },
   innerRow: {
     borderColor: 'rgba(255, 255, 255, 0.25)',
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
