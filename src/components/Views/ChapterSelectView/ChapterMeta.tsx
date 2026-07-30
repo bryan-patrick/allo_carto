@@ -27,7 +27,7 @@ export default function ChapterMeta({ progressPercent, progressColor = '#08433f'
   return (
     <View>
       <View style={metaRowStyle}>
-        <Text style={metaTextStyle}>Chapter progress</Text>
+        <Text style={metaTextStyle}>Progress</Text>
         <View style={chapterProgressBarContainer}>
           <View style={[ chapterProgressBar, { backgroundColor: progressColor, width: `${progressPercent}%` } ]} />
           <View style={[ chapterProgressBar, { backgroundColor: progressColor, opacity: 0.25, width: '100%', position: 'absolute' } ]} />

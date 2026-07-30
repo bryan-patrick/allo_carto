@@ -29,6 +29,7 @@ export interface DeckChapter {
 	chapterName: string;
 	image?: ImageSourcePropType;
 	color?: string;
+	materialIconName?: string;
 }
 
 export interface DeckPlace {
@@ -50,7 +51,8 @@ export const deckAtlas: DeckAtlas = {
 			name: 'A Very French Travel Day',
 			chapterName: 'Chapter 1:',
 			image: aVeryFrenchTravelDay,
-			color: '#1d3d5d',
+			color: '#253749',
+			materialIconName: 'flight',
 			places: [
 				{
 					id: 'aeroport-oiseau',
@@ -78,7 +80,8 @@ export const deckAtlas: DeckAtlas = {
 			name: 'Lost and Secret Decks',
 			chapterName: 'Epilogue:',
 			image: lostAndSecretDecks,
-			color: '#683d21',
+			color: '#473022',
+			materialIconName: 'pets',
 			places: [
 				{
 					id: 'rue-saint-matou',
