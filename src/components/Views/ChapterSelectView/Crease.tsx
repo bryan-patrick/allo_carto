@@ -1,12 +1,13 @@
 import { ImageBackground, StyleSheet, View } from 'react-native';
-import chapterSelectSharedStyles from './sharedStyles';
 
 /**
  * The graphical Crease (of the book)
  */
 export default function Crease() {
+  /**
+   * Destructure styles
+   */
   const { creaseStyle, innerBorder } = styles;
-  const { borderStyle } = chapterSelectSharedStyles;
 
   /**
    * Render the component
@@ -15,8 +16,10 @@ export default function Crease() {
     <ImageBackground
       resizeMode="stretch"
       source={require('../../../app/assets/images/book-parts/crease.jpg')}
-      style={[ creaseStyle, borderStyle ]}
-    ><View style={innerBorder} /></ImageBackground>
+      style={creaseStyle}
+    >
+      <View style={innerBorder} />
+    </ImageBackground>
   );
 }
 
@@ -25,15 +28,15 @@ export default function Crease() {
  */
 const styles = StyleSheet.create({
   creaseStyle: {
-    width: 10,
+    width: 12,
     paddingTop: 8,
     paddingBottom: 8,
     display: 'flex'
   },
   innerBorder: {
-    borderTopWidth: 4,
-    borderBottomWidth: 4,
-    borderColor: 'rgba(0, 0, 0, 0.25)',
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: 'rgba(0, 0, 0, 0.4)',
     flexGrow: 1,
   }
 });

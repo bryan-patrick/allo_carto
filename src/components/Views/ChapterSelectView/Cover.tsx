@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
-import chapterSelectSharedStyles from './sharedStyles';
 
 /**
  * Typing
@@ -14,7 +13,6 @@ interface CoverProps {
  */
 export default function Cover({ children }: CoverProps) {
   const { coverStyle, coverInnerStyle } = styles;
-  const { borderStyle } = chapterSelectSharedStyles;
 
   /**
    * Render the component
@@ -23,7 +21,7 @@ export default function Cover({ children }: CoverProps) {
     <ImageBackground
       resizeMode="stretch"
       source={require('../../../app/assets/images/book-parts/cover.jpg')}
-      style={[ coverStyle, borderStyle ]}
+      style={coverStyle}
     >
       <View style={coverInnerStyle}>
         {children}
@@ -43,10 +41,10 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
   },
   coverInnerStyle: {
-    borderWidth: 4,
+    borderWidth: 2,
     borderBottomRightRadius: 8,
     borderTopRightRadius: 8,
     borderLeftWidth: 0,
-    borderColor: 'rgba(0, 0, 0, 0.2)',
+    borderColor: 'rgba(0, 0, 0, 0.4)',
   }
 });
