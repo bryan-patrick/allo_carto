@@ -36,7 +36,7 @@ export default function Chapter({ chapter, progressPercent }: ChapterProps) {
    */
   return (
     <Book>
-      <Spine />
+      <Spine color={color} />
       <Crease />
       <Cover>
         <View style={chapterContainerStyle}>
@@ -49,7 +49,7 @@ export default function Chapter({ chapter, progressPercent }: ChapterProps) {
               <ImageBackground source={image} style={chapterImageStyle} />
             </View>
             <ChapterMeta progressPercent={progressPercent} progressColor={color ?? '#000000'} />
-            <ChapterSelectButton chapterId={chapter.id} />
+            <ChapterSelectButton chapter={chapter} />
           </View>
         </View>
       </Cover>
