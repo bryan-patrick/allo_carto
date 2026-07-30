@@ -1,3 +1,4 @@
+import colors from '@/src/app/colors';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -25,10 +26,12 @@ export default function Book({ children }: BookProps) {
  */
 const styles = StyleSheet.create({
   bookStyle: {
-    borderRadius: 16,
+    borderColor: colors.dark.border,
+    borderRadius: 8,
+    overflow: 'hidden',
     display: 'flex',
     flexDirection: 'row',
     marginHorizontal: 16,
-    overflow: 'hidden',
+    marginBottom: 8,
   },
 });

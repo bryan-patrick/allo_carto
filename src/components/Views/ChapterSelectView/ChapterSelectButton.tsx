@@ -34,7 +34,7 @@ export default function ChapterSelectButton({ chapter }: ChapterSelectButtonProp
       color={color}
       fullwidth
     >
-      <Text style={chapterSelectButtonTextStyle}>View This Chapter</Text>
+      <Text style={chapterSelectButtonTextStyle}>Select Chapter</Text>
     </LinkButton>
   );
 }
