@@ -9,6 +9,9 @@ import {
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { ImageSourcePropType } from 'react-native';
 
+/**
+ * Image paths
+ */
 const aeroportOiseau = require('@/src/app/assets/images/places/aeroport-oiseau.jpg');
 const hotelChance = require('@/src/app/assets/images/places/hotel-chance.jpg');
 const rueSaintMatou = require('@/src/app/assets/images/places/rue-saint-matou.jpg');
@@ -42,7 +45,7 @@ export interface DeckPlace {
 
 /**
  * The idea is:
- * Chapter -> Place -> Situation (deck)
+ * Chapter -> Place -> Story (deck)
  */
 export const deckAtlas: DeckAtlas = {
 	chapters: [

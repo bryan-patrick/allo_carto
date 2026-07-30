@@ -1,6 +1,5 @@
 import type { DeckChapter } from '@/data/french/deckAtlas';
 import { deckAtlas } from '@/data/french/deckAtlas';
-import colors from '@/src/app/colors';
 import { useUserContext } from '@/src/db/useUserContext';
 import getChapterProgressPercent from '@/src/util/getDecksProgress';
 import { useFocusEffect } from 'expo-router';
@@ -88,7 +87,6 @@ export default function ChapterSelectView() {
  */
 const styles = StyleSheet.create({
   scrollViewStyle: {
-    backgroundColor: colors.dark.text,
   },
   scrollViewContainerStyle: {
     display: 'flex',
