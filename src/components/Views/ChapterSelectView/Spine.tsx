@@ -1,22 +1,39 @@
-import { Image, StyleSheet, View } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import chapterSelectSharedStyles from './sharedStyles';
 
+/**
+ * Typing
+ */
 interface SpineProps {
   color?: string;
+  index: number;
+  materialIconName?: string;
 }
 
 /**
  * The spine graphic component (of the book)
  */
-export default function Spine({ color }: SpineProps) {
-  const { spineColorStyle, spineImageStyle, spineStyle, spineShadeStyle } = styles;
+export default function Spine({ color, index, materialIconName }: SpineProps) {
+  /**
+   * Destructure styles
+  */
+  const { borderStyle } = chapterSelectSharedStyles;
+  const {
+    spineColorStyle,
+    spineImageStyle,
+    spineStyle,
+    spineInner,
+    borderContainer,
+    spineInnerText
+  } = styles;
 
   /**
    * Render the component
    */
   return (
-    <View style={spineStyle}>
-      <Image
-        resizeMode="stretch"
+    <View style={[ spineStyle, borderStyle, { borderColor: `${color}80` } ]}>
+      <ImageBackground
         source={require('../../../app/assets/images/book-parts/spine.jpg')}
         style={spineImageStyle}
       />
@@ -27,13 +44,16 @@ export default function Spine({ color }: SpineProps) {
           testID="spine-color-overlay"
         />
       )}
-      {color && (
-        <View
-          pointerEvents="none"
-          style={spineShadeStyle}
-          testID="spine-shade-overlay"
-        />
-      )}
+      <View style={spineInner}>
+        <View style={borderContainer}>
+          <MaterialIcons
+            color={'rgba(255, 255, 255, 0.6)'}
+            name={materialIconName as any ?? 'flight'}
+            size={32}
+          />
+          <Text style={spineInnerText}>{index + 1}</Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -43,10 +63,10 @@ export default function Spine({ color }: SpineProps) {
  */
 const styles = StyleSheet.create({
   spineColorStyle: {
+    position: 'absolute',
+    mixBlendMode: 'color',
     bottom: 0,
     left: 0,
-    mixBlendMode: 'color',
-    position: 'absolute',
     right: 0,
     top: 0,
   },
@@ -57,17 +77,32 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
   },
-  spineShadeStyle: {
-    backgroundColor: '#000000',
-    bottom: 0,
-    left: 0,
-    opacity: 0.4,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
   spineStyle: {
-    isolation: 'isolate',
-    width: 60,
+    width: 80,
   },
+  spineInner: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flexGrow: 1,
+    padding: 8,
+    paddingRight: 0,
+  },
+  borderContainer: {
+    borderWidth: 4,
+    borderRightWidth: 0,
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    flexGrow: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    width: '100%',
+    gap: 8
+  },
+  spineInnerText: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'azeret-mono-600',
+    fontSize: 16
+  }
 });

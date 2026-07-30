@@ -71,9 +71,10 @@ export default function ChapterSelectView() {
       style={scrollViewStyle}
       contentContainerStyle={scrollViewContainerStyle}
     >
-      {chapters.map((chapter: DeckChapter) => (
+      {chapters.map((chapter: DeckChapter, index) => (
         <Chapter
           chapter={chapter}
+          index={index}
           key={chapter.id}
           progressPercent={chapterProgressById[ chapter.id ] ?? 0}
         />

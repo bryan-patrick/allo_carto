@@ -13,14 +13,28 @@ import Spine from './Spine';
  */
 interface ChapterProps {
   chapter: DeckChapter;
+  index: number;
   progressPercent: number;
 }
 
 /**
  * Chapter component
  */
-export default function Chapter({ chapter, progressPercent }: ChapterProps) {
-  const { chapterName, image, name, color } = chapter;
+export default function Chapter({ chapter, progressPercent, index }: ChapterProps) {
+  /**
+   * Destructure chapter
+   */
+  const {
+    chapterName,
+    image,
+    name,
+    color,
+    materialIconName
+  } = chapter;
+
+  /**
+   * Destructure styles
+   */
   const {
     chapterContainerStyle,
     chapterContainerInnerStyle,
@@ -36,7 +50,7 @@ export default function Chapter({ chapter, progressPercent }: ChapterProps) {
    */
   return (
     <Book>
-      <Spine color={color} />
+      <Spine color={color} index={index} materialIconName={materialIconName} />
       <Crease />
       <Cover>
         <View style={chapterContainerStyle}>
@@ -45,7 +59,7 @@ export default function Chapter({ chapter, progressPercent }: ChapterProps) {
               <Text style={chapterNameStyle}>{chapterName}</Text>
               <Text style={chapterTitleStyle}>{name}</Text>
             </View>
-            <View style={chapterImageContainerStyle}>
+            <View style={[ chapterImageContainerStyle ]}>
               <ImageBackground source={image} style={chapterImageStyle} />
             </View>
             <ChapterMeta progressPercent={progressPercent} progressColor={color ?? '#000000'} />
@@ -65,14 +79,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   chapterContainerInnerStyle: {
-    alignItems: 'center',
-    borderRadius: 8,
     display: 'flex',
+    alignItems: 'center',
     flexDirection: 'column',
-    gap: 16,
     justifyContent: 'center',
     paddingHorizontal: 12,
     paddingVertical: 16,
+    gap: 16,
   },
   chapterTitleContainerStyle: {
     flexShrink: 1,
@@ -94,11 +107,6 @@ const styles = StyleSheet.create({
   chapterImageContainerStyle: {
     display: 'flex',
     flexDirection: 'row',
-    marginBottom: 8,
-    marginRight: 8,
-    shadowColor: colors.dark.text,
-    shadowOpacity: 1,
-    shadowRadius: 1,
   },
   chapterImageStyle: {
     height: 200,
