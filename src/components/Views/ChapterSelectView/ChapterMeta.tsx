@@ -30,7 +30,14 @@ export default function ChapterMeta({ progressPercent, progressColor = '#08433f'
         <Text style={metaTextStyle}>Progress</Text>
         <View style={chapterProgressBarContainer}>
           <View style={[ chapterProgressBar, { backgroundColor: progressColor, width: `${progressPercent}%` } ]} />
-          <View style={[ chapterProgressBar, { backgroundColor: progressColor, opacity: 0.25, width: '100%', position: 'absolute' } ]} />
+          <View style={[ chapterProgressBar, {
+            backgroundColor: `${progressColor}20`,
+            width: '100%',
+            borderWidth: 1,
+            borderColor: colors.dark.border,
+            position: 'absolute',
+            opacity: 0.4,
+          } ]} />
         </View>
         <Text style={metaDataStyle}>{progressPercent}%</Text>
       </View>
@@ -68,6 +75,6 @@ const styles = StyleSheet.create({
   },
   chapterProgressBar: {
     height: 8,
-    borderRadius: 4
+    borderRadius: 4,
   }
 });
