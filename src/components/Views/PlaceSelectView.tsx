@@ -62,9 +62,21 @@ export default function PlaceSelectView() {
     placeSelectButtonTextStyle
   } = styles;
 
-  const { chapterId } = useLocalSearchParams<{ chapterId?: string; }>();
+  const { id } = useLocalSearchParams<{ id?: string; }>();
   const { chapters } = deckAtlas;
-  const selectedChapter: DeckChapter = chapters.find((chapter) => chapter.id === chapterId)!;
+
+  const selectedChapter = chapters.find((chapter) => chapter.id === id);
+
+  if (!selectedChapter) {
+    return (
+      <View style={styles.viewStyle}>
+        <View style={styles.chapterTitleContainerStyle}>
+          <Text style={styles.chapterIndexStyle}>Unknown chapter</Text>
+          <Text style={styles.chapterTitleStyle}>Please go back and select a chapter.</Text>
+        </View>
+      </View>
+    );
+  }
 
   const { name, places, chapterName } = selectedChapter;
 
@@ -160,6 +172,8 @@ export default function PlaceSelectView() {
                 <LinkButton
                   hitSlop={10}
                   arrowSize={16}
+                  contentPaddingHorizontal={48}
+                  contentPaddingVertical={14}
                   style={placeSelectButtonStyle}
                   screen={'(routes)/CardDeckSelect'}
                   params={{ placeId }}
@@ -279,8 +293,6 @@ const styles = StyleSheet.create({
   },
   placeSelectButtonStyle: {
     alignSelf: 'center',
-    paddingHorizontal: 48,
-    paddingVertical: 14,
     marginBottom: 4,
   },
   placeSelectButtonTextStyle: {

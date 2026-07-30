@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { cloneElement, isValidElement, ReactNode, useEffect, useState } from 'react';
 import {
   GestureResponderEvent,
   Pressable,
@@ -19,9 +19,11 @@ const secondaryButtonShadowHeight = 2;
 interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'> {
   SVGElement?: ReactNode;
   children?: ReactNode;
+  color?: string;
+  fullwidth?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
-  type?: 'primary' | 'secondary';
+  type?: 'fill' | 'outline';
 }
 
 /**
@@ -30,10 +32,13 @@ interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'
 export default function SecondaryButton({
   SVGElement,
   children,
+  color,
+  fullwidth = false,
   style,
   textStyle,
   onPressIn,
   onPressOut,
+  type = 'fill',
   ...props
 }: SecondaryButtonProps) {
   /**
@@ -43,12 +48,27 @@ export default function SecondaryButton({
     buttonStyle,
     buttonTextRowStyle,
     buttonTextStyle,
+    fullwidthStyle,
   } = styles;
 
   /**
    * State vars
    */
   const [ isPressed, setIsPressed ] = useState(false);
+
+  const typeStyle = type === 'outline'
+    ? {
+      backgroundColor: 'transparent',
+      ...(color ? { borderColor: color } : {}),
+    }
+    : color
+      ? { backgroundColor: color }
+      : {};
+
+  const outlineTextStyle = type === 'outline' && color ? { color } : {};
+  const iconElement = type === 'outline' && color && isValidElement<{ color?: string }>(SVGElement)
+    ? cloneElement(SVGElement, { color })
+    : SVGElement;
 
   /**
    * Animation vars
@@ -104,6 +124,8 @@ export default function SecondaryButton({
       style={[
         buttonStyle,
         animatedButtonStyle,
+        fullwidth && fullwidthStyle,
+        typeStyle,
         style,
       ]}
       onPressIn={handleOnPressIn}
@@ -114,10 +136,11 @@ export default function SecondaryButton({
         <Text style={[
           buttonTextStyle,
           textStyle,
+          outlineTextStyle,
         ]}>
           {children}
         </Text>
-        {SVGElement}
+        {iconElement}
       </View>
     </AnimatedPressable>
   );
@@ -127,6 +150,9 @@ export default function SecondaryButton({
  * Styles
  */
 const styles = StyleSheet.create({
+  fullwidthStyle: {
+    width: '100%',
+  },
   buttonStyle: {
     alignItems: 'center',
     justifyContent: 'center',

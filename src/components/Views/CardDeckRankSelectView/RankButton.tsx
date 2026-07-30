@@ -50,7 +50,6 @@ export default function RankButton({
   const {
     rankButtonContainerStyle,
     rankLockOverlayStyle,
-    rankButtonStyle,
     rankButtonTextStyle,
   } = styles;
 
@@ -78,9 +77,11 @@ export default function RankButton({
           accessibilityHint={`Practice the ${name} cards in this deck.`}
           accessibilityLabel={`${name}, ${rankCount} cards${isRankFullyComplete ? ', full complete' : ''}`}
           arrowColor={colors.dark.text}
+          contentPaddingHorizontal={8}
+          contentPaddingVertical={8}
           disabled={isRankButtonDisabled}
           handler={() => handleRankSelect(key)}
-          style={[ rankButtonStyle, rankButtonColorStyle ]}
+          style={rankButtonColorStyle}
           useArrow={false}
         >
           <Text style={rankButtonTextStyle}>{name} ({rankCount})</Text>
@@ -128,10 +129,6 @@ const styles = StyleSheet.create({
   },
   rankLockOverlayStyle: {
     borderRadius: 8,
-  },
-  rankButtonStyle: {
-    gap: 4,
-    padding: 8,
   },
   rankButtonTextStyle: {
     color: colors.dark.text,
