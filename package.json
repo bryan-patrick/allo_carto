@@ -15,6 +15,7 @@
 		"start": "expo start",
 		"android": "expo run:android",
 		"ios": "clear; reset; expo start --ios",
+		"ios:multi": "node ./scripts/ios-multi.js",
 		"release": "npx expo run:ios --configuration Release --simulator \"iPhone 17 Pro\"",
 		"web": "expo start --web",
 		"lint": "expo lint",
