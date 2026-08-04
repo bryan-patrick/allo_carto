@@ -7,6 +7,9 @@ import colors from '../app/colors';
 import type { DeckColors } from './CardDeck/cardDeckTypes';
 import SVGRightArrow from './SVG/SVGRightArrow';
 
+/**
+ * Creats the JSX <AnimatedPressable> we need to animate the component
+ */
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const linkButtonShadowHeight = 2;
 
@@ -88,7 +91,6 @@ export default function LinkButton({
     linkButton,
     fullwidthStyle,
     linkText,
-    linkTextRow,
     innerRow
   } = styles;
 
@@ -127,7 +129,7 @@ export default function LinkButton({
   }
 
   /**
-   * Pull in props when used for a navigation link button.
+   * Pull in props when used for a navigation link.
    */
   if (screen) {
     allTheProps = { ...pressableProps, ...props, ...linkProps };
@@ -144,7 +146,6 @@ export default function LinkButton({
    * Sound effect
    */
   useEffect(() => {
-    // Expo Audio sets the player volume by assigning this property.
     // eslint-disable-next-line react-hooks/immutability
     tapPlayer.volume = 0.2;
   }, [ tapPlayer ]);
@@ -178,7 +179,7 @@ export default function LinkButton({
       await tapPlayer.seekTo(0);
       tapPlayer.play();
     } catch {
-      // Shush, warning
+      console.log('There was an error while playing the LinkButton tap sound.');
     }
   }
 
@@ -204,20 +205,18 @@ export default function LinkButton({
       style={[ linkButton, deckColorStyles, animatedButtonStyle, fullwidth && fullwidthStyle, typeStyle, style ]}
       disabled={disabled}
     >
-      <View style={linkTextRow}>
-        <View style={[
-          innerRow,
-          {
-            paddingHorizontal: contentPaddingHorizontal,
-            paddingVertical: contentPaddingVertical,
-          }
-        ]}>
-          {iconElement}
-          <Text style={[ linkText, outlineTextStyle ]}>{children}</Text>
-          {useArrow && (
-            <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={resolvedArrowColor} />
-          )}
-        </View>
+      <View style={[
+        innerRow,
+        {
+          paddingHorizontal: contentPaddingHorizontal,
+          paddingVertical: contentPaddingVertical,
+        }
+      ]}>
+        {iconElement}
+        <Text style={[ linkText, outlineTextStyle ]}>{children}</Text>
+        {useArrow && (
+          <SVGRightArrow height={String(arrowSize)} width={String(arrowSize)} color={resolvedArrowColor} />
+        )}
       </View>
     </AnimatedPressable>
   );
@@ -249,14 +248,12 @@ const styles = StyleSheet.create({
     fontFamily: 'lexend-600',
     fontSize: 14,
   },
-  linkTextRow: {
-    width: '100%',
-    padding: 4,
-  },
   innerRow: {
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    width: '100%',
+    padding: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     borderWidth: 2,
-    borderRadius: 4,
+    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',

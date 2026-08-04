@@ -30,7 +30,7 @@ export default function TabsLayout({ size = 28 }) {
         }}
       />
       <Tabs.Screen
-        name="Settings"
+        name="settings"
         options={{
           title: 'Settings',
           tabBarIcon: ({ color }) => <MaterialIcons color={color} size={size} name="settings" />,
@@ -41,5 +41,5 @@ export default function TabsLayout({ size = 28 }) {
         headerTitle: 'Test Loader'
       }} />
     </Tabs>
-  )
+  );
 }
