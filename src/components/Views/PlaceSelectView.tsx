@@ -1,4 +1,4 @@
-import { deckAtlas, DeckChapter, DeckPlace } from "@/data/french/deckAtlas";
+import { DeckAtlas, deckAtlas, DeckChapter, DeckPlace } from "@/data/french/deckAtlas";
 import sharedStyles from "@/src/app/sharedStyles";
 import { useUserContext } from "@/src/db/useUserContext";
 import { getDecksProgress } from "@/src/util/getDecksProgress";
@@ -9,6 +9,9 @@ import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../../app/colors";
 import LinkButton from "../LinkButton";
 
+/**
+ * Typing
+ */
 interface PlaceProgressById {
   [ placeId: string ]: number;
 }
@@ -36,7 +39,7 @@ const polaroidColorStops: NonNullable<LinearGradientProps[ 'locations' ]> = [
  * PlaceSelectView component
  */
 export default function PlaceSelectView() {
-  const userId = useUserContext()?.id;
+  const userId: string | undefined = useUserContext()?.id;
   const [ placeProgressById, setPlaceProgressById ] = useState<PlaceProgressById>({});
 
   /**
@@ -62,24 +65,20 @@ export default function PlaceSelectView() {
     placeSelectButtonTextStyle
   } = styles;
 
+  const initialChapter: Partial<DeckChapter> = {
+    name: '',
+    places: [],
+    chapterName: ''
+  };
+
   const { id } = useLocalSearchParams<{ id?: string; }>();
-  const { chapters } = deckAtlas;
+  const { chapters }: Partial<DeckAtlas> = deckAtlas;
+  const selectedChapter: DeckChapter | undefined = chapters.find((chapter) => chapter.id === id);
+  const { name, places, chapterName }: Partial<DeckChapter> = selectedChapter ?? initialChapter;
 
-  const selectedChapter = chapters.find((chapter) => chapter.id === id);
-
-  if (!selectedChapter) {
-    return (
-      <View style={styles.viewStyle}>
-        <View style={styles.chapterTitleContainerStyle}>
-          <Text style={styles.chapterIndexStyle}>Unknown chapter</Text>
-          <Text style={styles.chapterTitleStyle}>Please go back and select a chapter.</Text>
-        </View>
-      </View>
-    );
-  }
-
-  const { name, places, chapterName } = selectedChapter;
-
+  /**
+   * Update the progress when being viewed
+   */
   useFocusEffect(
     useCallback(() => {
       let shouldUpdateState = true;
@@ -87,17 +86,19 @@ export default function PlaceSelectView() {
       async function getPlaceProgress() {
         const result: PlaceProgressById = {};
 
-        try {
-          if (userId) {
-            for (const place of places) {
-              result[ place.id ] = await getDecksProgress({
-                decks: place.decks,
-                userId,
-              });
+        if (Array.isArray(places)) {
+          try {
+            if (userId) {
+              for (const place of places) {
+                result[ place.id ] = await getDecksProgress({
+                  decks: place.decks,
+                  userId,
+                });
+              }
             }
+          } catch (error) {
+            console.error('Could not retrieve place progress:', error);
           }
-        } catch (error) {
-          console.error('Could not retrieve place progress:', error);
         }
 
         if (shouldUpdateState) setPlaceProgressById(result);
@@ -113,6 +114,20 @@ export default function PlaceSelectView() {
   );
 
   /**
+   * In case we are routed here without state
+   */
+  if (!selectedChapter) {
+    return (
+      <View style={styles.viewStyle}>
+        <View style={styles.chapterTitleContainerStyle}>
+          <Text style={styles.chapterIndexStyle}>Unknown chapter</Text>
+          <Text style={styles.chapterTitleStyle}>Please go back and select a chapter.</Text>
+        </View>
+      </View>
+    );
+  }
+
+  /**
    * Render the card grid
    */
   return (
@@ -124,16 +139,12 @@ export default function PlaceSelectView() {
       <ScrollView contentContainerStyle={chapterContainerStyle}>
         {
           /**
-          * Map the places
+          * Map the chapter's places
           */
-          places.map((place: DeckPlace, index: number) => {
+          places?.map((place: DeckPlace, index: number) => {
             const isEven = index % 2 === 0;
             const rotate = isEven ? '-5deg' : '5deg';
             const reverseRotate = isEven ? '5deg' : '-5deg';
-
-            /**
-             * Destructure the place data
-             */
             const { id: placeId, name, description, image } = place;
             const progressPercent = placeProgressById[ placeId ] ?? 0;
 
@@ -292,8 +303,8 @@ const styles = StyleSheet.create({
     borderColor: colors.light.border
   },
   placeSelectButtonStyle: {
-    alignSelf: 'center',
     marginBottom: 4,
+    marginHorizontal: 16
   },
   placeSelectButtonTextStyle: {
     fontSize: 14,
