@@ -10,6 +10,8 @@ import Loader from "../components/Loader";
 import { getTables, setDB } from "../db/interface";
 import getMonHomme, { UserRow } from "../db/queries/getMonHomme";
 import { UserContext } from "../db/userContext";
+import { UserProgressProvider } from "../db/userProgressContext";
+import { validateProgression } from "../util/atlasProgression";
 import alloTheme from './alloTheme';
 
 /**
@@ -31,6 +33,7 @@ export default function AppLayout() {
    */
   const [ cardDeckState, cardDeckDispatch ] = useReducer(cardDeckReducer, initialCardDeckState);
   const [ user, setUser ] = useState<UserRow | null>(null);
+  const [ isDatabaseReady, setIsDatabaseReady ] = useState(false);
 
   /**
    * Load our fonts
@@ -60,9 +63,11 @@ export default function AppLayout() {
    */
   const initDB = useCallback(async (database: SQLiteDatabase) => {
     setDB(database);
+    validateProgression();
 
     if (resetDB) {
       await database.execAsync(`
+        DROP TABLE IF EXISTS userProgress;
         DROP TABLE IF EXISTS userWords;
         DROP TABLE IF EXISTS users;
         DROP TABLE IF EXISTS words;
@@ -73,6 +78,7 @@ export default function AppLayout() {
     await getTables();
     const monHomme = await getMonHomme();
     setUser(monHomme);
+    setIsDatabaseReady(true);
   }, []);
 
   /**
@@ -90,13 +96,17 @@ export default function AppLayout() {
           cardDeckState,
           cardDeckDispatch
         }}>
-          <Suspense fallback={<Loader />}>
-            <SQLiteProvider
-              databaseName="allo_carto.db"
-              onInit={initDB}
-              useSuspense
-            >
-              <Stack>
+          <UserProgressProvider
+            isDatabaseReady={isDatabaseReady}
+            userId={user?.id}
+          >
+            <Suspense fallback={<Loader />}>
+              <SQLiteProvider
+                databaseName="allo_carto.db"
+                onInit={initDB}
+                useSuspense
+              >
+                <Stack>
                 <Stack.Screen name="(tabs)" options={{
                   headerShown: false,
                   headerTitle: 'Home',
@@ -142,9 +152,10 @@ export default function AppLayout() {
                   headerTitle: 'Results',
                   headerBackVisible: false
                 }} />
-              </Stack>
-            </SQLiteProvider>
-          </Suspense>
+                </Stack>
+              </SQLiteProvider>
+            </Suspense>
+          </UserProgressProvider>
         </CardDeckContext>
       </ThemeProvider>
     </UserContext>
