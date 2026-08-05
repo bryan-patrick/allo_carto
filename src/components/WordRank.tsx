@@ -3,7 +3,7 @@ import { ComponentProps, useEffect, useMemo, useState } from "react";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from "react-native-reanimated";
 import colors from "../app/colors";
-import { getWordRankDefinition, getWordRankDefinitionByKey, WordRankKey } from "../util/wordRanks";
+import { getWordRankDefinitionByKey, getWordRankDefinitionFromCorrectCount, WordRankKey } from "../util/wordRanks";
 import { useCardDeck } from "./CardDeck/useCardDeck";
 
 /**
@@ -16,16 +16,16 @@ type RankIconProps = Omit<ComponentProps<typeof MaterialIcons>, "name"> & {
 
 function getRankColor(score: number = 0, isDark = false) {
   if (isDark) {
-    return colors.dark.rank[getWordRankDefinition(score).key];
+    return colors.dark.rank[getWordRankDefinitionFromCorrectCount(score).key];
   }
-  return colors.light.rank[getWordRankDefinition(score).key];
+  return colors.light.rank[getWordRankDefinitionFromCorrectCount(score).key];
 }
 
 /**
  * RankIcon Component
  */
 export function RankIcon({ rank, score = 0, size = 12, color, ...props }: RankIconProps) {
-  let rankDefinition = getWordRankDefinition(score);
+  let rankDefinition = getWordRankDefinitionFromCorrectCount(score);
 
   if (rank) {
     rankDefinition = getWordRankDefinitionByKey(rank);

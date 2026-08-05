@@ -11,7 +11,7 @@ export function getDeckCompletionPercent({
 	deckWordCount: number;
 	rankCounts: Pick<
 		DeckRankCounts,
-		'bronze' | 'silver' | 'gold' | 'diamond'
+		'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond'
 	>;
 }): number {
 	return getCompletionPercentage({

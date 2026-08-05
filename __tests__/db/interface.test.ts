@@ -111,12 +111,23 @@ describe('getDeck', () => {
 		mockGetAllAsync.mockResolvedValueOnce([]);
 
 		await getDeck({ deck, amount: 1, rank: 'bronze', userId: 'user_one' });
+		await getDeck({ deck, amount: 1, rank: 'unseen', userId: 'user_one' });
+		await getDeck({ deck, amount: 1, rank: 'fnew', userId: 'user_one' });
 
 		const [selectionQuery, userId, ...wordIds] = mockGetAllAsync.mock.calls[0];
+		const [unseenSelectionQuery] = mockGetAllAsync.mock.calls[1];
+		const [newSelectionQuery] = mockGetAllAsync.mock.calls[2];
 
 		expect(selectionQuery).toMatch(/LEFT JOIN userWords AS uw/);
 		expect(selectionQuery).toMatch(/COALESCE\(uw\.correctCount, 0\) >= 3/);
 		expect(selectionQuery).toMatch(/COALESCE\(uw\.correctCount, 0\) < 7/);
+		expect(unseenSelectionQuery).toMatch(
+			/COALESCE\(uw\.correctCount, 0\) = 0 AND COALESCE\(uw\.seenCount, 0\) = 0/,
+		);
+		expect(newSelectionQuery).toMatch(
+			/COALESCE\(uw\.correctCount, 0\) > 0 OR COALESCE\(uw\.seenCount, 0\) > 0/,
+		);
+		expect(newSelectionQuery).toMatch(/COALESCE\(uw\.correctCount, 0\) < 3/);
 		expect(userId).toBe('user_one');
 		expect(wordIds).toEqual(deck.wordIds);
 	});

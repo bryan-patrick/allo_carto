@@ -64,7 +64,7 @@ export function UserProgressProvider({
 	const progressWriteInFlight = useRef(false);
 
 	/**
-	 * Refresh progress from the database
+	 * Reload userProgress rows from the database
 	 */
 	const refreshProgress = useCallback(async () => {
 		if (!isDatabaseReady || !userId) {
@@ -83,7 +83,7 @@ export function UserProgressProvider({
 	}, [isDatabaseReady, userId]);
 
 	/**
-	 * Load progress when the database is ready
+	 * Load userProgress rows when the database is ready
 	 */
 	useEffect(() => {
 		/**
@@ -94,7 +94,8 @@ export function UserProgressProvider({
 	}, [refreshProgress]);
 
 	/**
-	 * Block progress writes until everything is done
+	 * Block another word or userProgress write until
+	 * the database write and in-memory refresh finish
 	 */
 	const runProgressWrite = useCallback(async (
 		write: () => Promise<void>,

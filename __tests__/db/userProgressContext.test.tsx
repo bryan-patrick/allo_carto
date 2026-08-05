@@ -49,7 +49,7 @@ describe('<UserProgressProvider />', () => {
 	});
 
 	test('starts only one write when input is repeated before React rerenders', async () => {
-		const pendingWrite = deferred<{ rankChanged: boolean }>();
+		const pendingWrite = deferred<void>();
 		mockWriteCorrectAnswer.mockReturnValue(pendingWrite.promise);
 		const { result } = await renderHook(() => useUserProgress(), {
 			wrapper: Wrapper,
@@ -68,7 +68,7 @@ describe('<UserProgressProvider />', () => {
 		expect(mockWriteCorrectAnswer).toHaveBeenCalledTimes(1);
 		expect(result.current.isUpdatingProgress).toBe(true);
 
-		pendingWrite.resolve({ rankChanged: false });
+		pendingWrite.resolve();
 		await act(async () => {
 			await expect(firstWrite).resolves.toBe(true);
 		});
@@ -79,7 +79,7 @@ describe('<UserProgressProvider />', () => {
 
 	test('keeps input blocked until refreshed progress is loaded', async () => {
 		const pendingRefresh = deferred<{}>();
-		mockWriteCorrectAnswer.mockResolvedValue({ rankChanged: true });
+		mockWriteCorrectAnswer.mockResolvedValue(undefined);
 		mockGetUserProgress
 			.mockResolvedValueOnce({})
 			.mockReturnValueOnce(pendingRefresh.promise);
@@ -113,7 +113,7 @@ describe('<UserProgressProvider />', () => {
 			.mockImplementation(() => {});
 		mockWriteCorrectAnswer
 			.mockRejectedValueOnce(new Error('write failed'))
-			.mockResolvedValueOnce({ rankChanged: false });
+			.mockResolvedValueOnce(undefined);
 		const { result } = await renderHook(() => useUserProgress(), {
 			wrapper: Wrapper,
 		});

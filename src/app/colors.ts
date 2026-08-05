@@ -22,6 +22,7 @@ const colors = {
 			C2: '#2D1A1B',
 		},
 		rank: {
+			unseen: '#1d2427',
 			fnew: '#2b2b2b',
 			bronze: '#503D2B',
 			silver: '#303946',
@@ -49,6 +50,7 @@ const colors = {
 			C2: '#FF8FA2',
 		},
 		rank: {
+			unseen: '#7f8c8d',
 			fnew: '#b7b7b7',
 			bronze: '#CA9E86',
 			silver: '#e1e7ef',

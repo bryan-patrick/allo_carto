@@ -2,7 +2,7 @@ import type { ProgressById, UserProgressRow } from '@/src/util/progression';
 import { getDB } from '../connection';
 
 /**
- * Get all of a user's progress
+ * Load a user's userProgress rows into an ID lookup
  */
 export default async function getUserProgress(
 	userId: string,

@@ -77,6 +77,10 @@ export default function DeckBoxHero({
         end={{ x: 1, y: 0 }}
       >
         <View style={badgeCountContainerStyle}>
+          <Text style={badgeCountTextStyle}>{rankCounts.unseen}</Text>
+          <MaterialIcons color={colors.light.text} size={badgeIconSize} name="visibility-off" />
+        </View>
+        <View style={badgeCountContainerStyle}>
           <Text style={badgeCountTextStyle}>{rankCounts.fnew}</Text>
           <MaterialIcons color={colors.light.text} size={badgeIconSize} name="fiber-new" />
         </View>

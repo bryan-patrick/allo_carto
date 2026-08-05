@@ -4,7 +4,7 @@ import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
  * Typing
  */
 interface TestRankCounts {
-	seen: number;
+	fnew: number;
 	bronze: number;
 	silver: number;
 	gold: number;
@@ -18,7 +18,7 @@ function makeRankCounts(
 	overrides: Partial<TestRankCounts> = {},
 ): TestRankCounts {
 	return {
-		seen: 0,
+		fnew: 0,
 		bronze: 0,
 		silver: 0,
 		gold: 0,
@@ -37,27 +37,36 @@ describe('deck completion', () => {
 		).toBe(0);
 	});
 
-	it('does not count merely seeing words as familiarity', () => {
+	it('gives a New word half a point', () => {
 		expect(
 			getDeckCompletionPercent({
 				deckWordCount: 80,
 				rankCounts: makeRankCounts({
-					seen: 36,
+					fnew: 36,
 				}),
 			}),
-		).toBe(0);
+		).toBe(5.625);
 	});
 
-	it('uses rank mastery when it is higher than seen progress', () => {
+	it("uses each word's current rank points", () => {
 		expect(
 			getDeckCompletionPercent({
 				deckWordCount: 10,
 				rankCounts: makeRankCounts({
-					seen: 10,
+					fnew: 5,
 					diamond: 5,
 				}),
 			}),
-		).toBe(50);
+		).toBe(56.25);
+	});
+
+	it('reaches 12.5% when every word is New', () => {
+		expect(
+			getDeckCompletionPercent({
+				deckWordCount: 10,
+				rankCounts: makeRankCounts({ fnew: 10 }),
+			}),
+		).toBe(12.5);
 	});
 
 	it('keeps full precision', () => {

@@ -37,8 +37,7 @@ export function isUnlocked({
 	let result = true;
 
 	for (const requirement of requirements) {
-		const completion =
-			progressById[requirement.id]?.completionPercentage ?? 0;
+		const completion = progressById[requirement.id]?.completionPercentage ?? 0;
 
 		if (completion < requirement.requiredCompletionPercentage) {
 			result = false;
@@ -50,8 +49,7 @@ export function isUnlocked({
 }
 
 /**
- * Get the progress percent
- * Seeing words does not count
+ * Calculate one stored completion percentage
  */
 export function getCompletionPercentage({
 	wordCount,
@@ -60,7 +58,7 @@ export function getCompletionPercentage({
 	wordCount: number;
 	rankCounts: Pick<
 		DeckRankCounts,
-		'bronze' | 'silver' | 'gold' | 'diamond'
+		'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond'
 	>;
 }): number {
 	if (wordCount === 0) return 0;
@@ -69,10 +67,12 @@ export function getCompletionPercentage({
 	 * Each rank is worth more points
 	 */
 	const earnedPoints =
+		rankCounts.fnew * 0.5 +
 		rankCounts.bronze +
 		rankCounts.silver * 2 +
 		rankCounts.gold * 3 +
 		rankCounts.diamond * 4;
+
 	const possiblePoints = wordCount * 4;
 
 	return (earnedPoints / possiblePoints) * 100;

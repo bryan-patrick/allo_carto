@@ -10,6 +10,7 @@ function makeRankCounts(
 	overrides: Partial<Record<WordRankKey, number>>,
 ): Record<WordRankKey, number> {
 	return {
+		unseen: 0,
 		fnew: 0,
 		bronze: 0,
 		silver: 0,
@@ -26,13 +27,13 @@ describe('deck rank progression', () => {
 		expect(getDeckRankUnlockCount(51)).toBe(26);
 	});
 
-	it('starts New as available and keeps later ranks locked', () => {
-		const rankCounts = makeRankCounts({ fnew: deckWordCount });
+	it('starts Unseen as available and keeps New locked', () => {
+		const rankCounts = makeRankCounts({ unseen: deckWordCount });
 
 		expect(getDeckRankProgress({
 			deckWordCount,
 			rankCounts,
-			rankKey: 'fnew',
+			rankKey: 'unseen',
 		})).toMatchObject({
 			completion: 'incomplete',
 			isSelectable: true,
@@ -41,7 +42,7 @@ describe('deck rank progression', () => {
 		expect(getDeckRankProgress({
 			deckWordCount,
 			rankCounts,
-			rankKey: 'bronze',
+			rankKey: 'fnew',
 		})).toMatchObject({
 			completion: 'incomplete',
 			isSelectable: false,
@@ -50,12 +51,12 @@ describe('deck rank progression', () => {
 	});
 
 	it('softly completes a rank at halfway and keeps it playable', () => {
-		const rankCounts = makeRankCounts({ fnew: 25, bronze: 25 });
+		const rankCounts = makeRankCounts({ unseen: 25, fnew: 25 });
 
 		expect(getDeckRankProgress({
 			deckWordCount,
 			rankCounts,
-			rankKey: 'fnew',
+			rankKey: 'unseen',
 		})).toMatchObject({
 			completion: 'soft',
 			isSelectable: true,
@@ -66,7 +67,7 @@ describe('deck rank progression', () => {
 		expect(getDeckRankProgress({
 			deckWordCount,
 			rankCounts,
-			rankKey: 'bronze',
+			rankKey: 'fnew',
 		})).toMatchObject({
 			completion: 'incomplete',
 			isSelectable: true,
@@ -76,25 +77,25 @@ describe('deck rank progression', () => {
 
 	it('allows multiple unlocked ranks while locking the next threshold', () => {
 		const rankCounts = makeRankCounts({
-			fnew: 10,
+			unseen: 10,
+			fnew: 20,
 			bronze: 20,
-			silver: 20,
 		});
 
 		expect(getDeckRankProgress({
 			deckWordCount,
 			rankCounts,
-			rankKey: 'fnew',
+			rankKey: 'unseen',
 		}).completion).toBe('soft');
 		expect(getDeckRankProgress({
 			deckWordCount,
 			rankCounts,
-			rankKey: 'bronze',
+			rankKey: 'fnew',
 		})).toMatchObject({ isSelectable: true, isUnlocked: true });
 		expect(getDeckRankProgress({
 			deckWordCount,
 			rankCounts,
-			rankKey: 'silver',
+			rankKey: 'bronze',
 		})).toMatchObject({ isSelectable: false, isUnlocked: false });
 	});
 

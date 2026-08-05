@@ -1,6 +1,6 @@
 import type { StorySegment } from '@/src/components/CardDeck/cardDeckTypes';
 import {
-	getWordRankDefinition,
+	getWordRankKeyFromCounts,
 	type WordProgressKey,
 } from '@/src/util/wordRanks';
 import { getDB } from '../connection';
@@ -95,25 +95,12 @@ export default async function getWordProgressById({
 		/**
 		 * Make sure every requested word id gets a progress key.
 		 *
-		 * If the user has no row for a word yet, then the word
-		 * has never been seen.
-		 *
-		 * Older rows may have correctCount but no seenCount because
-		 * we added seenCount later, so a correct answer still means
-		 * the word has been seen.
+		 * Use the stored userWords counts to get each word's rank
 		 */
 		for (const wordId of uniqueWordIds) {
-			const progress = progressByWordId[wordId];
-
-			if (!progress) {
-				result[wordId] = 'unseen';
-			} else if (progress.seenCount === 0 && progress.correctCount === 0) {
-				result[wordId] = 'unseen';
-			} else {
-				const wordRankDefinition = getWordRankDefinition(progress.correctCount);
-
-				result[wordId] = wordRankDefinition.key;
-			}
+			result[wordId] = getWordRankKeyFromCounts(
+				progressByWordId[wordId] ?? {},
+			);
 		}
 	}
 

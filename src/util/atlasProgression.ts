@@ -15,7 +15,7 @@ import { isUnlocked } from './progression';
 /**
  * Typing
  */
-export interface ProgressItem extends Progression {
+export interface AtlasProgressDetails extends Progression {
 	type: ProgressType;
 	wordIds: string[];
 }
@@ -49,10 +49,13 @@ function getChapterDecks(chapter: DeckChapter): CardDeck[] {
 }
 
 /**
- * Get every progress item
+ * Get every chapter, place, and deck
+ * with the unique words each one contains
  */
-export function getProgressItems(atlas: DeckAtlas = deckAtlas): ProgressItem[] {
-	const result: ProgressItem[] = [];
+export function getAtlasProgressDetails(
+	atlas: DeckAtlas = deckAtlas,
+): AtlasProgressDetails[] {
+	const result: AtlasProgressDetails[] = [];
 
 	for (const chapter of atlas.chapters) {
 		result.push({
@@ -85,26 +88,26 @@ export function getProgressItems(atlas: DeckAtlas = deckAtlas): ProgressItem[] {
 }
 
 /**
- * Get everything that uses a word
+ * Get every chapter, place, and deck containing a word
  */
-export function getProgressItemsForWord({
+export function getAtlasChaptersPlacesAndDecksContainingWord({
 	atlas = deckAtlas,
 	wordId,
 }: {
 	atlas?: DeckAtlas;
 	wordId: string;
-}): ProgressItem[] {
-	const result: ProgressItem[] = [];
+}): AtlasProgressDetails[] {
+	const result: AtlasProgressDetails[] = [];
 
-	for (const item of getProgressItems(atlas)) {
-		if (item.wordIds.includes(wordId)) result.push(item);
+	for (const details of getAtlasProgressDetails(atlas)) {
+		if (details.wordIds.includes(wordId)) result.push(details);
 	}
 
 	return result;
 }
 
 /**
- * Get the parents for an item
+ * Get a chapter, place, and deck path for one ID
  */
 export function getProgressPath({
 	atlas = deckAtlas,
@@ -162,27 +165,27 @@ export function isProgressAccessible({
  * Make sure progression data is valid
  */
 export function validateProgression(atlas: DeckAtlas = deckAtlas): void {
-	const items = getProgressItems(atlas);
-	const itemById: Record<string, ProgressItem> = {};
+	const allProgressDetails = getAtlasProgressDetails(atlas);
+	const progressDetailsById: Record<string, AtlasProgressDetails> = {};
 
-	for (const item of items) {
-		if (itemById[item.id]) {
-			throw new Error(`Duplicate progression ID: ${item.id}`);
+	for (const details of allProgressDetails) {
+		if (progressDetailsById[details.id]) {
+			throw new Error(`Duplicate progression ID: ${details.id}`);
 		}
 
-		itemById[item.id] = item;
+		progressDetailsById[details.id] = details;
 	}
 
-	for (const item of items) {
-		for (const requirement of item.unlockRequirements ?? []) {
-			if (!itemById[requirement.id]) {
+	for (const details of allProgressDetails) {
+		for (const requirement of details.unlockRequirements ?? []) {
+			if (!progressDetailsById[requirement.id]) {
 				throw new Error(
-					`Unknown unlock requirement ${requirement.id} on ${item.id}`,
+					`Unknown unlock requirement ${requirement.id} on ${details.id}`,
 				);
 			}
 
-			if (requirement.id === item.id) {
-				throw new Error(`${item.id} cannot require itself`);
+			if (requirement.id === details.id) {
+				throw new Error(`${details.id} cannot require itself`);
 			}
 
 			if (
@@ -190,7 +193,7 @@ export function validateProgression(atlas: DeckAtlas = deckAtlas): void {
 				requirement.requiredCompletionPercentage > 100
 			) {
 				throw new Error(
-					`Invalid unlock percentage on ${item.id}: ${requirement.requiredCompletionPercentage}`,
+					`Invalid unlock percentage on ${details.id}: ${requirement.requiredCompletionPercentage}`,
 				);
 			}
 		}

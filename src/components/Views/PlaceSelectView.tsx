@@ -62,7 +62,7 @@ export default function PlaceSelectView() {
   const selectedChapter = findChapterById(id);
 
   /**
-   * Wait for progress
+   * Wait for the user's stored percentages
    */
   if (status === 'loading') return <Loader />;
   if (status === 'error') return <Text>Could not load place progress.</Text>;

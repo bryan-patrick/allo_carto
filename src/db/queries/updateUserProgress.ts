@@ -1,18 +1,20 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
-import type { ProgressItem } from '@/src/util/atlasProgression';
+import type { ProgressType } from '@/src/util/progression';
 
 /**
- * Update one progress row
+ * Create or update one row in the userProgress table
  */
 export default async function updateUserProgress({
 	completionPercentage,
 	database,
-	item,
+	id,
+	type,
 	userId,
 }: {
 	completionPercentage: number;
 	database: SQLiteDatabase;
-	item: ProgressItem;
+	id: string;
+	type: ProgressType;
 	userId: string;
 }): Promise<void> {
 	/**
@@ -33,8 +35,8 @@ export default async function updateUserProgress({
 			completionPercentage = excluded.completionPercentage;
 		`,
 		userId,
-		item.id,
-		item.type,
+		id,
+		type,
 		completionPercentage,
 	);
 }

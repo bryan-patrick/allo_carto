@@ -12,15 +12,26 @@ interface GetDeckProps {
 	userId: string;
 }
 
-function getRankCorrectCountCondition(rankKey: WordRankKey): string {
+function getRankCountCondition(rankKey: WordRankKey): string {
 	const rankIndex = wordRankDefinitions.findIndex(rank => rank.key === rankKey);
 	const rank = wordRankDefinitions[rankIndex];
 	const nextRank = wordRankDefinitions[rankIndex + 1];
 	const normalizedCorrectCount = 'COALESCE(uw.correctCount, 0)';
+	const normalizedSeenCount = 'COALESCE(uw.seenCount, 0)';
 
 	if (!rank) {
-		// SQL secret speak for "include all cards". It's just a fallback.
+		/**
+		 * Include all cards if the rank is missing
+		 */
 		return '1 = 1';
+	}
+
+	if (rank.key === 'unseen') {
+		return `${normalizedCorrectCount} = 0 AND ${normalizedSeenCount} = 0`;
+	}
+
+	if (rank.key === 'fnew') {
+		return `(${normalizedCorrectCount} > 0 OR ${normalizedSeenCount} > 0) AND ${normalizedCorrectCount} < ${nextRank?.minCorrectCount ?? 0}`;
 	}
 
 	if (!nextRank) {
@@ -84,7 +95,7 @@ export default async function getDeck({
 	try {
 		const database = await getDB();
 		const rankCondition =
-			rank ? `AND ${getRankCorrectCountCondition(rank)}` : '';
+			rank ? `AND ${getRankCountCondition(rank)}` : '';
 		const rows = await database.getAllAsync<WordRow>(
 			`
 			SELECT

@@ -52,7 +52,12 @@ export default function DeckBoxModal({
   /**
    * Header deck completion percentage 
    */
-  const wordsSeenCount = rankCounts.seen;
+  const wordsSeenCount =
+    rankCounts.fnew +
+    rankCounts.bronze +
+    rankCounts.silver +
+    rankCounts.gold +
+    rankCounts.diamond;
   const deckCompletionPercent = Math.floor(getDeckCompletionPercent({
     deckWordCount: deck.wordIds.length,
     rankCounts,

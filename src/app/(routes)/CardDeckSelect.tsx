@@ -37,7 +37,7 @@ export default function CardDeckSelect() {
   }
 
   /**
-   * Wait for progress
+   * Wait for the user's stored percentages
    */
   if (status === 'loading') return <Loader />;
   if (status === 'error') return <Text>Could not load deck progress.</Text>;
