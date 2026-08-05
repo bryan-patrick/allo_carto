@@ -1,66 +1,27 @@
 import type { DeckChapter } from '@/data/french/deckAtlas';
 import { deckAtlas } from '@/data/french/deckAtlas';
-import { useUserContext } from '@/src/db/useUserContext';
-import getChapterProgressPercent from '@/src/util/getDecksProgress';
-import { useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import Loader from '@/src/components/Loader';
+import { useUserProgress } from '@/src/db/useUserProgress';
+import { isProgressAccessible } from '@/src/util/atlasProgression';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import Chapter from './Chapter';
-
-/**
- * Typing
- */
-interface ChapterProgressById {
-  [ chapterId: string ]: number;
-}
 
 /**
  * Component chapter select view
  */
 export default function ChapterSelectView() {
-  const userId = useUserContext()?.id;
   const { chapters } = deckAtlas;
-  const [ chapterProgressById, setChapterProgressById ] = useState<ChapterProgressById>({});
+  const { progressById, status } = useUserProgress();
   const {
     scrollViewStyle,
     scrollViewContainerStyle,
   } = styles;
 
-  useFocusEffect(
-    useCallback(() => {
-      let shouldUpdateState = true;
-
-      async function getChapterProgress() {
-        const result: ChapterProgressById = {};
-
-        try {
-          if (userId) {
-            for (const chapter of chapters) {
-              const progressPercent = await getChapterProgressPercent({
-                chapter,
-                userId,
-              });
-
-              result[ chapter.id ] = progressPercent;
-            }
-          }
-        } catch (error) {
-          console.error('Could not retrieve chapter progress:', error);
-        }
-
-        if (shouldUpdateState) {
-          setChapterProgressById(result);
-        }
-      }
-
-      setChapterProgressById({});
-      getChapterProgress();
-
-      return () => {
-        shouldUpdateState = false;
-      };
-    }, [ chapters, userId ])
-  );
+  /**
+   * Wait for progress
+   */
+  if (status === 'loading') return <Loader />;
+  if (status === 'error') return <Text>Could not load chapter progress.</Text>;
 
   /**
    * Render the component
@@ -74,8 +35,9 @@ export default function ChapterSelectView() {
         <Chapter
           chapter={chapter}
           index={index}
+          isLocked={!isProgressAccessible({ id: chapter.id, progressById })}
           key={chapter.id}
-          progressPercent={chapterProgressById[ chapter.id ] ?? 0}
+          progressPercent={progressById[ chapter.id ]?.completionPercentage ?? 0}
         />
       ))}
     </ScrollView>

@@ -7,12 +7,13 @@ import { StyleSheet, Text } from 'react-native';
  */
 interface ChapterSelectButtonProps {
   chapter: DeckChapter;
+  disabled?: boolean;
 }
 
 /**
  * Chapter select button
  */
-export default function ChapterSelectButton({ chapter }: ChapterSelectButtonProps) {
+export default function ChapterSelectButton({ chapter, disabled = false }: ChapterSelectButtonProps) {
   const { id, color } = chapter;
 
   /**
@@ -32,6 +33,7 @@ export default function ChapterSelectButton({ chapter }: ChapterSelectButtonProp
       params={{ id }}
       screen="(routes)/PlaceSelect"
       color={color}
+      disabled={disabled}
       fullwidth
     >
       <Text style={chapterSelectButtonTextStyle}>Select Chapter</Text>

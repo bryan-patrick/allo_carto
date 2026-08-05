@@ -1,7 +1,6 @@
 import colors from "@/src/app/colors";
 import sharedStyles from "@/src/app/sharedStyles";
-import { incrementSeenCount } from "@/src/db/queries/incrementSeenCount";
-import { useUserContext } from "@/src/db/useUserContext";
+import { useUserProgress } from "@/src/db/useUserProgress";
 import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
@@ -50,8 +49,8 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
   /**
    * State
    */
-  const user = useUserContext();
   const { cardDeckState } = useCardDeck();
+  const { isUpdatingProgress, recordWordSeen } = useUserProgress();
   const [fillerWords, setFillerWords] = useState<string[]>([]);
   const [articleWords, setArticleWords] = useState<string[]>([]);
   const loadedWordId = useRef<string | null>(null);
@@ -77,17 +76,19 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
    */
   useEffect(() => {
     async function markWordSeen() {
-      if (!user?.id || !isCurrent) return;
+      if (!isCurrent || isUpdatingProgress) return;
       if (seenWordId.current === word.id) return;
 
-      seenWordId.current = word.id;
-      await incrementSeenCount(user.id, word.id);
+      const didWrite = await recordWordSeen(word.id);
+
+      if (didWrite) seenWordId.current = word.id;
     }
 
     markWordSeen();
   }, [
     isCurrent,
-    user?.id,
+    isUpdatingProgress,
+    recordWordSeen,
     word.id,
   ]);
 

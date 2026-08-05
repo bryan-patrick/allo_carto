@@ -13,6 +13,7 @@ import { useUserContext } from "../../db/useUserContext";
 import { getDeckCompletionPercent } from "../../util/deckCompletion";
 import type { WordProgressKey } from "../../util/wordRanks";
 import type { CardDeck } from "../CardDeck/cardDeckTypes";
+import { getUnlockCriteria } from "../../util/atlasProgression";
 import LockOverlay from "../LockOverlay";
 import DeckBoxFooter from "./DeckBoxFooter";
 import DeckBoxHeader from "./DeckBoxHeader";
@@ -38,9 +39,10 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
   const [ wordProgressKeyByWordId, setWordProgressKeyByWordId ] = useState<Record<string, WordProgressKey>>({});
   const [ modalVisible, setModalVisible ] = useState(false);
 
-  const unlockCriteriaMsg = deck.requiredPreviousDeckRank
-    ? `Get half of the previous deck's cards to ${deck.requiredPreviousDeckRank.toUpperCase()} to unlock.`
-    : '';
+  /**
+   * Get the lock message
+   */
+  const unlockCriteriaMsg = getUnlockCriteria(deck);
 
   /**
    * Destructure styles
@@ -54,10 +56,10 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
   /**
    * Deck completion
    */
-  const deckCompletionPercent = getDeckCompletionPercent({
+  const deckCompletionPercent = Math.floor(getDeckCompletionPercent({
     deckWordCount: deck.wordIds.length,
     rankCounts,
-  });
+  }));
 
   /**
    * Data loaders
@@ -164,7 +166,12 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
    * Render the card grid
    */
   return (
-    <LockOverlay isLocked={isLocked} unlockCriteria={unlockCriteriaMsg}>
+    <LockOverlay
+      isLocked={isLocked}
+      lockedAccessibilityHint={unlockCriteriaMsg}
+      lockedAccessibilityLabel={`${deck.title} deck locked`}
+      unlockCriteria={unlockCriteriaMsg}
+    >
       <View style={cardStyle}>
         <View style={[ cardInnerStyle ]}>
           <View style={cardInnerBorder}>

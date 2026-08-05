@@ -1,20 +1,14 @@
-import { DeckAtlas, deckAtlas, DeckChapter, DeckPlace } from "@/data/french/deckAtlas";
+import { DeckPlace } from "@/data/french/deckAtlas";
 import sharedStyles from "@/src/app/sharedStyles";
-import { useUserContext } from "@/src/db/useUserContext";
-import { getDecksProgress } from "@/src/util/getDecksProgress";
+import Loader from "@/src/components/Loader";
+import LockOverlay from "@/src/components/LockOverlay";
+import { useUserProgress } from "@/src/db/useUserProgress";
+import { findChapterById, getUnlockCriteria, isProgressAccessible } from "@/src/util/atlasProgression";
 import { LinearGradient, type LinearGradientProps } from "expo-linear-gradient";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import colors from "../../app/colors";
 import LinkButton from "../LinkButton";
-
-/**
- * Typing
- */
-interface PlaceProgressById {
-  [ placeId: string ]: number;
-}
 
 /**
  * For the progress bars on the polaroids
@@ -39,8 +33,7 @@ const polaroidColorStops: NonNullable<LinearGradientProps[ 'locations' ]> = [
  * PlaceSelectView component
  */
 export default function PlaceSelectView() {
-  const userId: string | undefined = useUserContext()?.id;
-  const [ placeProgressById, setPlaceProgressById ] = useState<PlaceProgressById>({});
+  const { progressById, status } = useUserProgress();
 
   /**
    * DestructureStyles
@@ -65,53 +58,14 @@ export default function PlaceSelectView() {
     placeSelectButtonTextStyle
   } = styles;
 
-  const initialChapter: Partial<DeckChapter> = {
-    name: '',
-    places: [],
-    chapterName: ''
-  };
-
   const { id } = useLocalSearchParams<{ id?: string; }>();
-  const { chapters }: Partial<DeckAtlas> = deckAtlas;
-  const selectedChapter: DeckChapter | undefined = chapters.find((chapter) => chapter.id === id);
-  const { name, places, chapterName }: Partial<DeckChapter> = selectedChapter ?? initialChapter;
+  const selectedChapter = findChapterById(id);
 
   /**
-   * Update the progress when being viewed
+   * Wait for progress
    */
-  useFocusEffect(
-    useCallback(() => {
-      let shouldUpdateState = true;
-
-      async function getPlaceProgress() {
-        const result: PlaceProgressById = {};
-
-        if (Array.isArray(places)) {
-          try {
-            if (userId) {
-              for (const place of places) {
-                result[ place.id ] = await getDecksProgress({
-                  decks: place.decks,
-                  userId,
-                });
-              }
-            }
-          } catch (error) {
-            console.error('Could not retrieve place progress:', error);
-          }
-        }
-
-        if (shouldUpdateState) setPlaceProgressById(result);
-      }
-
-      setPlaceProgressById({});
-      getPlaceProgress();
-
-      return () => {
-        shouldUpdateState = false;
-      };
-    }, [ places, userId ])
-  );
+  if (status === 'loading') return <Loader />;
+  if (status === 'error') return <Text>Could not load place progress.</Text>;
 
   /**
    * In case we are routed here without state
@@ -128,6 +82,22 @@ export default function PlaceSelectView() {
   }
 
   /**
+   * Block locked chapters
+   */
+  if (!isProgressAccessible({ id: selectedChapter.id, progressById })) {
+    return (
+      <View style={styles.viewStyle}>
+        <View style={styles.chapterTitleContainerStyle}>
+          <Text style={styles.chapterIndexStyle}>Chapter locked</Text>
+          <Text style={styles.chapterTitleStyle}>Complete its requirements before continuing.</Text>
+        </View>
+      </View>
+    );
+  }
+
+  const { name, places, chapterName } = selectedChapter;
+
+  /**
    * Render the card grid
    */
   return (
@@ -141,57 +111,69 @@ export default function PlaceSelectView() {
           /**
           * Map the chapter's places
           */
-          places?.map((place: DeckPlace, index: number) => {
+          places.map((place: DeckPlace, index: number) => {
             const isEven = index % 2 === 0;
             const rotate = isEven ? '-5deg' : '5deg';
             const reverseRotate = isEven ? '5deg' : '-5deg';
             const { id: placeId, name, description, image } = place;
-            const progressPercent = placeProgressById[ placeId ] ?? 0;
+            const progressPercent = Math.floor(
+              progressById[ placeId ]?.completionPercentage ?? 0,
+            );
+            const isLocked = !isProgressAccessible({ id: placeId, progressById });
 
             /**
              * Render the place view/card
              */
             return (
-              <View key={placeId} style={placeContainerStyle}>
-                <Text style={placeTitleTextStyle}>{name}</Text>
-                <View
-                  style={[ polaroidContainerStyle, { transform: [ { rotate: reverseRotate } ] } ]}
-                >
-                  <View style={[ polaroid, { transform: [ { rotate } ] } ]}>
-                    <Image
-                      source={image}
-                      style={placeImageStyle}
-                    />
-                    <Text style={placeDescriptionTextStyle}>{description}</Text>
-                    <View style={progressContainerStyle}>
-                      <Text style={progressTextStyle}>Progress {progressPercent}%</Text>
-                      <View style={progressBarsContainer}>
-                        <LinearGradient
-                          style={[ progressBarStyle, { width: `${progressPercent}%`, borderRightWidth: 1 } ]}
-                          colors={polaroidColors}
-                          locations={polaroidColorStops}
-                        />
-                        <LinearGradient
-                          style={[ progressBarStyle, { position: 'absolute', width: '100%', opacity: 0.15 } ]}
-                          colors={polaroidColors}
-                          locations={polaroidColorStops}
-                        />
+              <LockOverlay
+                isLocked={isLocked}
+                key={placeId}
+                lockedAccessibilityHint={getUnlockCriteria(place)}
+                lockedAccessibilityLabel={`${name} place locked`}
+                unlockCriteria={getUnlockCriteria(place)}
+              >
+                <View style={placeContainerStyle}>
+                  <Text style={placeTitleTextStyle}>{name}</Text>
+                  <View
+                    style={[ polaroidContainerStyle, { transform: [ { rotate: reverseRotate } ] } ]}
+                  >
+                    <View style={[ polaroid, { transform: [ { rotate } ] } ]}>
+                      <Image
+                        source={image}
+                        style={placeImageStyle}
+                      />
+                      <Text style={placeDescriptionTextStyle}>{description}</Text>
+                      <View style={progressContainerStyle}>
+                        <Text style={progressTextStyle}>Progress {progressPercent}%</Text>
+                        <View style={progressBarsContainer}>
+                          <LinearGradient
+                            style={[ progressBarStyle, { width: `${progressPercent}%`, borderRightWidth: 1 } ]}
+                            colors={polaroidColors}
+                            locations={polaroidColorStops}
+                          />
+                          <LinearGradient
+                            style={[ progressBarStyle, { position: 'absolute', width: '100%', opacity: 0.15 } ]}
+                            colors={polaroidColors}
+                            locations={polaroidColorStops}
+                          />
+                        </View>
                       </View>
                     </View>
                   </View>
+                  <LinkButton
+                    hitSlop={10}
+                    arrowSize={16}
+                    contentPaddingHorizontal={48}
+                    contentPaddingVertical={14}
+                    disabled={isLocked}
+                    style={placeSelectButtonStyle}
+                    screen={'(routes)/CardDeckSelect'}
+                    params={{ placeId }}
+                  >
+                    <Text style={placeSelectButtonTextStyle}>View Decks</Text>
+                  </LinkButton>
                 </View>
-                <LinkButton
-                  hitSlop={10}
-                  arrowSize={16}
-                  contentPaddingHorizontal={48}
-                  contentPaddingVertical={14}
-                  style={placeSelectButtonStyle}
-                  screen={'(routes)/CardDeckSelect'}
-                  params={{ placeId }}
-                >
-                  <Text style={placeSelectButtonTextStyle}>View Decks</Text>
-                </LinkButton>
-              </View>
+              </LockOverlay>
             );
           })
         }

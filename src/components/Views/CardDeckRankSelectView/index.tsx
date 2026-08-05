@@ -5,10 +5,13 @@ import { getDeck } from '@/src/db/interface';
 import type { DeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
 import getDeckRankCounts, { emptyDeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
 import { useUserContext } from '@/src/db/useUserContext';
+import { useUserProgress } from '@/src/db/useUserProgress';
+import Loader from '@/src/components/Loader';
+import { isProgressAccessible } from '@/src/util/atlasProgression';
 import type { WordRankKey } from '@/src/util/wordRanks';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import RankButtonList from './RankButtonList';
 import RankSelectHeader from './RankSelectHeader';
 
@@ -18,6 +21,7 @@ import RankSelectHeader from './RankSelectHeader';
 export default function CardDeckRankSelectView() {
   const userId = useUserContext()?.id;
   const { cardDeckState, cardDeckDispatch } = useCardDeck();
+  const { progressById, status } = useUserProgress();
   const [ rankCounts, setRankCounts ] = useState<DeckRankCounts>(emptyDeckRankCounts);
   const { cardDeck } = cardDeckState;
   const deckWordCount = cardDeck.wordIds.length;
@@ -78,6 +82,19 @@ export default function CardDeckRankSelectView() {
     cardDeck.wordIds,
     userId,
   ]);
+
+  /**
+   * Wait for progress
+   */
+  if (status === 'loading') return <Loader />;
+  if (status === 'error') return <Text>Could not load deck progress.</Text>;
+
+  /**
+   * Block locked decks
+   */
+  if (!isProgressAccessible({ id: cardDeck.id, progressById })) {
+    return <Text>This deck is locked.</Text>;
+  }
 
   /**
    * Render the component

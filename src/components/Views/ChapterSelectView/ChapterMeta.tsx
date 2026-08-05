@@ -13,6 +13,7 @@ interface ChapterMetaProps {
  * Chapter meta component, currently only renders progress.
  */
 export default function ChapterMeta({ progressPercent, progressColor = '#08433f' }: ChapterMetaProps) {
+  const displayProgressPercent = Math.floor(progressPercent);
   const {
     metaRowStyle,
     metaTextStyle,
@@ -29,7 +30,7 @@ export default function ChapterMeta({ progressPercent, progressColor = '#08433f'
       <View style={metaRowStyle}>
         <Text style={metaTextStyle}>Progress</Text>
         <View style={chapterProgressBarContainer}>
-          <View style={[ chapterProgressBar, { backgroundColor: progressColor, width: `${progressPercent}%` } ]} />
+          <View style={[ chapterProgressBar, { backgroundColor: progressColor, width: `${displayProgressPercent}%` } ]} />
           <View style={[ chapterProgressBar, {
             backgroundColor: `${progressColor}20`,
             width: '100%',
@@ -39,7 +40,7 @@ export default function ChapterMeta({ progressPercent, progressColor = '#08433f'
             opacity: 0.4,
           } ]} />
         </View>
-        <Text style={metaDataStyle}>{progressPercent}%</Text>
+        <Text style={metaDataStyle}>{displayProgressPercent}%</Text>
       </View>
     </View>
   );

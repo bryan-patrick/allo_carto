@@ -1,13 +1,12 @@
 import colors from '@/src/app/colors';
-import { incrementCorrectCount } from '@/src/db/queries/incrementCorrectCount';
-import { useUserContext } from '@/src/db/useUserContext';
+import { useUserProgress } from '@/src/db/useUserProgress';
 import {
   impactAsync,
   ImpactFeedbackStyle,
   notificationAsync,
   NotificationFeedbackType,
 } from 'expo-haptics';
-import { ReactElement, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useCardDeck } from '../CardDeck/useCardDeck';
@@ -36,9 +35,12 @@ export default function WordCardButton({
   style,
   ...props
 }: WordCardButtonProps) {
-  const user = useUserContext();
   const { cardState, wordCardUIDispatch } = useWordCardUI();
   const { cardDeckDispatch, currentCard } = useCardDeck();
+  const {
+    isUpdatingProgress,
+    recordCorrectAnswer,
+  } = useUserProgress();
 
   /**
    * Style vars
@@ -65,10 +67,19 @@ export default function WordCardButton({
    * State/prop vars
    */
   const [ isPressed, setIsPressed ] = useState(false);
+  const [ isAnswerPending, setIsAnswerPending ] = useState(false);
+
+  /**
+   * Block very fast double presses
+   */
+  const pressInFlight = useRef(false);
+  const persistedCorrectAnswer = useRef<string | null>(null);
 
   const isDisabled = useMemo(() => {
     if (
       cardState.progress === 'WARNING' ||
+      isAnswerPending ||
+      isUpdatingProgress ||
       (currentCard.englishArticle && !cardState.selectedArticle) ||
       !cardState.selectedWord) {
       return true;
@@ -77,7 +88,9 @@ export default function WordCardButton({
     currentCard.englishArticle,
     cardState.progress,
     cardState.selectedArticle,
-    cardState.selectedWord
+    cardState.selectedWord,
+    isAnswerPending,
+    isUpdatingProgress,
   ]);
 
   /**
@@ -112,30 +125,48 @@ export default function WordCardButton({
    * Side effects (and haptics) for dispatching check answer
    */
   useEffect(() => {
-    async function udatecorrectCount() {
-      if (user?.id) {
-        await incrementCorrectCount(user.id, currentCard.id);
-      }
-
-    }
-
     if (cardState.attempts !== 0) {
       switch (`${cardState.stage}_${cardState.progress}`) {
-        case 'CORRECT_SUCCESS':
-          cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
-          cardDeckDispatch({ type: 'ADD_CORRECT_WORD' });
-          udatecorrectCount();
-          impactAsync(ImpactFeedbackStyle.Light);
+        case 'CORRECT_SUCCESS': {
+          const answerId = `${currentCard.id}:${cardState.attempts}`;
+
+          /**
+           * Save this answer once
+           */
+          if (persistedCorrectAnswer.current === answerId) break;
+          persistedCorrectAnswer.current = answerId;
+
+          async function persistCorrectAnswer() {
+            const didWrite = await recordCorrectAnswer(currentCard.id);
+
+            if (didWrite) {
+              cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
+              cardDeckDispatch({ type: 'ADD_CORRECT_WORD' });
+              impactAsync(ImpactFeedbackStyle.Light);
+            }
+
+            pressInFlight.current = false;
+            setIsAnswerPending(false);
+          }
+
+          persistCorrectAnswer();
           break;
+        }
         case 'READY_WARNING':
-          notificationAsync(
+          void Promise.resolve(notificationAsync(
             NotificationFeedbackType.Warning,
-          );
+          )).finally(() => {
+            pressInFlight.current = false;
+            setIsAnswerPending(false);
+          });
           break;
         case 'INCORRECT_DANGER':
-          notificationAsync(
+          void Promise.resolve(notificationAsync(
             NotificationFeedbackType.Warning,
-          );
+          )).finally(() => {
+            pressInFlight.current = false;
+            setIsAnswerPending(false);
+          });
           cardDeckDispatch({ type: 'ADD_INCORRECT_WORD' });
           break;
         case 'COMPLETED_DANGER':
@@ -146,21 +177,25 @@ export default function WordCardButton({
       }
     }
   }, [
-    user?.id,
     currentCard.id,
     cardState.attempts,
     cardState.progress,
     cardState.stage,
     cardDeckDispatch,
+    recordCorrectAnswer,
   ]);
 
   /**
    * Action handlers
    */
   const handlePressIn = useCallback(() => {
+    if (pressInFlight.current || isUpdatingProgress) return;
+
+    pressInFlight.current = true;
     setIsPressed(true);
+    setIsAnswerPending(true);
     checkAnswer();
-  }, [ checkAnswer ]);
+  }, [ checkAnswer, isUpdatingProgress ]);
 
   const handlePressOut = useCallback(() => {
     setIsPressed(false);

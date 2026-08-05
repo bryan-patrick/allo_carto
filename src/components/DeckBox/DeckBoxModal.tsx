@@ -53,10 +53,10 @@ export default function DeckBoxModal({
    * Header deck completion percentage 
    */
   const wordsSeenCount = rankCounts.seen;
-  const deckCompletionPercent = getDeckCompletionPercent({
+  const deckCompletionPercent = Math.floor(getDeckCompletionPercent({
     deckWordCount: deck.wordIds.length,
     rankCounts,
-  });
+  }));
 
   /**
    * Render the modal
