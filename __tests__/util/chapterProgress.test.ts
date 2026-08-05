@@ -30,7 +30,6 @@ function makeDeck(id: string, wordIds: string[]): CardDeck {
 				secondary: '#ffffff',
 			},
 		},
-		requiredPreviousDeckRank: null,
 	};
 
 	return result;

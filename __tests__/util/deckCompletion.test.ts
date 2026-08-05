@@ -37,7 +37,7 @@ describe('deck completion', () => {
 		).toBe(0);
 	});
 
-	it('gives seen words a small progress bump', () => {
+	it('does not count merely seeing words as familiarity', () => {
 		expect(
 			getDeckCompletionPercent({
 				deckWordCount: 80,
@@ -45,7 +45,7 @@ describe('deck completion', () => {
 					seen: 36,
 				}),
 			}),
-		).toBe(11);
+		).toBe(0);
 	});
 
 	it('uses rank mastery when it is higher than seen progress', () => {
@@ -58,5 +58,14 @@ describe('deck completion', () => {
 				}),
 			}),
 		).toBe(50);
+	});
+
+	it('keeps full precision', () => {
+		expect(
+			getDeckCompletionPercent({
+				deckWordCount: 3,
+				rankCounts: makeRankCounts({ bronze: 1 }),
+			}),
+		).toBeCloseTo(100 / 12);
 	});
 });

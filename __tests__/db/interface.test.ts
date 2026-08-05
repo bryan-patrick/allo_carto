@@ -45,7 +45,6 @@ describe('getDeck', () => {
 	test('loads every word before the word raffle', async () => {
 		const deck: CardDeck = {
 			id: 'deck__test',
-			requiredPreviousDeckRank: 'bronze',
 			title: 'Test deck',
 			description: 'A deck used to test selection',
 			image: undefined,
@@ -90,7 +89,6 @@ describe('getDeck', () => {
 	test('can filter deck words by selected rank', async () => {
 		const deck: CardDeck = {
 			id: 'deck__test',
-			requiredPreviousDeckRank: 'bronze',
 			title: 'Test deck',
 			description: 'A deck used to test selection',
 			image: undefined,
