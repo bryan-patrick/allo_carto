@@ -96,9 +96,31 @@ async function createUserWordsTable(): Promise<void> {
 	});
 }
 
+/**
+ * Create the user progress table
+ */
+async function createUserProgressTable(): Promise<void> {
+	const database = await getDB();
+
+	await logThisIfItFails('Oops our progress table messed up', async () => {
+		await database.execAsync(`
+			CREATE TABLE IF NOT EXISTS userProgress (
+				userId TEXT NOT NULL,
+				id TEXT NOT NULL,
+				type TEXT NOT NULL CHECK (type IN ('chapter', 'place', 'deck')),
+				completionPercentage REAL NOT NULL DEFAULT 0
+					CHECK (completionPercentage >= 0 AND completionPercentage <= 100),
+				PRIMARY KEY (userId, id),
+				FOREIGN KEY (userId) REFERENCES users(id)
+			)
+		`);
+	});
+}
+
 export default async function createTables(): Promise<void> {
 	await createWordsTable();
 	await ensureWordsFormColumn();
 	await createUsersTable();
 	await createUserWordsTable();
+	await createUserProgressTable();
 }

@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
 import sharedStyles from '@/src/app/sharedStyles';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
-import { getDeck } from '@/src/db/interface';
+import { getDB, getDeck } from '@/src/db/interface';
 import type { DeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
 import getDeckRankCounts, { emptyDeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
 import { useUserContext } from '@/src/db/useUserContext';
@@ -60,7 +60,9 @@ export default function CardDeckRankSelectView() {
           return;
         }
 
+        const database = await getDB();
         const counts = await getDeckRankCounts({
+          database,
           userId,
           wordIds: cardDeck.wordIds,
         });

@@ -1,5 +1,5 @@
 import { useCardDeck } from "@/src/components/CardDeck/useCardDeck";
-import { getDeck, getWordProgressById } from "@/src/db/interface";
+import { getDB, getDeck, getWordProgressById } from "@/src/db/interface";
 import getDeckRankCounts, {
   DeckRankCounts,
   emptyDeckRankCounts,
@@ -71,7 +71,9 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
         return;
       }
 
+      const database = await getDB();
       const counts = await getDeckRankCounts({
+        database,
         userId,
         wordIds: deck.wordIds,
       });

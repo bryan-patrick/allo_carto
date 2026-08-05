@@ -1,5 +1,5 @@
 import { getWordRankSqlCountSelect } from '../../util/wordRanks';
-import { getDB } from '../connection';
+import type { SQLiteDatabase } from 'expo-sqlite';
 
 /**
  * Typing
@@ -14,6 +14,7 @@ export interface DeckRankCounts {
 }
 
 interface GetDeckRankCountsProps {
+	database: SQLiteDatabase;
 	userId: string;
 	wordIds: string[];
 }
@@ -36,12 +37,12 @@ export const emptyDeckRankCounts: DeckRankCounts = {
  * LEFT JOIN uses zero for correctCount (fnew).
  */
 export default async function getDeckRankCounts({
+	database,
 	userId,
 	wordIds,
 }: GetDeckRankCountsProps): Promise<DeckRankCounts> {
 	if (wordIds.length === 0) return emptyDeckRankCounts;
 
-	const database = await getDB();
 	const quests = wordIds.map(() => '?').join(',');
 	const rankCountSelect = getWordRankSqlCountSelect('uw.correctCount');
 	const seenCountSelect = `
