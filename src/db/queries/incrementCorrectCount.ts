@@ -1,11 +1,13 @@
-import { getDB } from '../connection';
+import type { SQLiteDatabase } from 'expo-sqlite';
 
 /**
  * Increments the correct count row on the userWords table
  */
-export async function incrementCorrectCount(userId: string, wordId: string) {
-	const database = await getDB();
-
+export async function incrementCorrectCount(
+	userId: string,
+	wordId: string,
+	database: SQLiteDatabase,
+): Promise<void> {
 	await database.runAsync(
 		`
 		INSERT INTO userWords (

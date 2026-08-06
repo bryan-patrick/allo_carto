@@ -44,9 +44,7 @@ export default function filterFillerWords({
 	 */
 	const uniqueWords = getUniqueWords(words);
 	const uniqueCorrectWords = getUniqueWords(correctWords);
-	const normalizedCorrectWords = new Set(
-		uniqueCorrectWords.map(word => word.toLowerCase()),
-	);
+	const normalizedCorrectWords = new Set(uniqueCorrectWords.map(word => word.toLowerCase()));
 
 	/**
 	 * Remove the correct answer from this choices arr

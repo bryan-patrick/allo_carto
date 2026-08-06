@@ -3,100 +3,98 @@ import sharedStyles from '@/src/app/sharedStyles';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import colors from "../../app/colors";
-import { useCardDeck } from "../CardDeck/useCardDeck";
+import colors from '../../app/colors';
+import { useCardDeck } from '../CardDeck/useCardDeck';
 import GradientText from '../GradientText';
 import LinkButton from '../LinkButton';
 import ResultsList from '../ResultsList';
 
-const englishVowels = ['a', 'e', 'i', 'o', 'u', 'y']
+const englishVowels = ['a', 'e', 'i', 'o', 'u', 'y'];
 
 function findDeckPlaceId(cardDeck: CardDeck) {
-  for (const chapter of deckAtlas.chapters) {
-    for (const place of chapter.places) {
-      const deck = place.decks.find((deck) => {
-        const isSameTitle = deck.title === cardDeck.title;
-        const hasSameWordCount = deck.wordIds.length === cardDeck.wordIds.length;
-        const hasSameWords = deck.wordIds.every((wordId) => {
-          return cardDeck.wordIds.includes(wordId);
-        });
+	for (const chapter of deckAtlas.chapters) {
+		for (const place of chapter.places) {
+			const deck = place.decks.find(deck => {
+				const isSameTitle = deck.title === cardDeck.title;
+				const hasSameWordCount = deck.wordIds.length === cardDeck.wordIds.length;
+				const hasSameWords = deck.wordIds.every(wordId => {
+					return cardDeck.wordIds.includes(wordId);
+				});
 
-        return isSameTitle && hasSameWordCount && hasSameWords;
-      });
+				return isSameTitle && hasSameWordCount && hasSameWords;
+			});
 
-      if (deck) return place.id;
-    }
-  }
+			if (deck) return place.id;
+		}
+	}
 }
 
 /**
  * DeckResultsView component
- * 
+ *
  * TODO: We need to derive all sorts
  * of components from this thing
  */
 export default function DeckResultsView() {
-  const { cardDeckState } = useCardDeck();
-  const { title } = cardDeckState.cardDeck;
-  const { correctWords, incorrectWords } = cardDeckState;
-  const isFirstLetterAVowel = englishVowels.includes(title.split('')[0].toLowerCase());
-  const resultsTitleArticle = isFirstLetterAVowel ? 'an' : 'a'
-  const placeId = findDeckPlaceId(cardDeckState.cardDeck);
+	const { cardDeckState } = useCardDeck();
+	const { title } = cardDeckState.cardDeck;
+	const { correctWords, incorrectWords } = cardDeckState;
+	const isFirstLetterAVowel = englishVowels.includes(title.split('')[0].toLowerCase());
+	const resultsTitleArticle = isFirstLetterAVowel ? 'an' : 'a';
+	const placeId = findDeckPlaceId(cardDeckState.cardDeck);
 
-  function handleFinish() {
-    if (placeId) {
-      router.dismissTo({
-        pathname: '/CardDeckSelect',
-        params: { placeId },
-      });
-      return;
-    }
+	function handleFinish() {
+		if (placeId) {
+			router.dismissTo({
+				pathname: '/CardDeckSelect',
+				params: { placeId },
+			});
+			return;
+		}
 
-    router.replace('/(tabs)');
-  }
+		router.replace('/(tabs)');
+	}
 
-  /**
-   * Destructure styles
-   */
-  const {
-    titleStyle,
-    titleRowStyle,
-    resultsContainerStyle,
-    wordsFlexRows,
-  } = styles;
+	/**
+	 * Destructure styles
+	 */
+	const { titleStyle, titleRowStyle, resultsContainerStyle, wordsFlexRows } = styles;
 
-  /**
-   * Render the deck results
-   */
-  return (
-    <ScrollView>
-      <View style={resultsContainerStyle}>
-        <View>
-          <View style={titleRowStyle}>
-            <Text style={titleStyle}>Good job! You completed {resultsTitleArticle} </Text>
-            <GradientText
-              text={title}
-              colors={[cardDeckState.cardDeck.colors.dark.primary, cardDeckState.cardDeck.colors.dark.secondary]}
-              fontSize={20}
-              fontWeight={600}
-            />
-            <Text style={titleStyle}> deck.</Text>
-          </View>
-        </View>
-        <View style={wordsFlexRows}>
-          <ResultsList
-            wordArr={correctWords}
-            isCorrect={true}
-          />
-          <ResultsList
-            wordArr={incorrectWords}
-            isCorrect={false}
-          />
-        </View>
-        <LinkButton handler={handleFinish}>Finish</LinkButton>
-      </View>
-    </ScrollView>
-  )
+	/**
+	 * Render the deck results
+	 */
+	return (
+		<ScrollView>
+			<View style={resultsContainerStyle}>
+				<View>
+					<View style={titleRowStyle}>
+						<Text style={titleStyle}>Good job! You completed {resultsTitleArticle} </Text>
+						<GradientText
+							text={title}
+							colors={[
+								cardDeckState.cardDeck.colors.dark.primary,
+								cardDeckState.cardDeck.colors.dark.secondary,
+							]}
+							fontSize={20}
+							fontWeight={600}
+						/>
+						<Text style={titleStyle}> deck.</Text>
+					</View>
+				</View>
+				<View style={wordsFlexRows}>
+					<ResultsList
+						wordArr={correctWords}
+						isCorrect={true}
+					/>
+					<ResultsList
+						wordArr={incorrectWords}
+						isCorrect={false}
+					/>
+				</View>
+				<LinkButton handler={handleFinish}>Finish</LinkButton>
+			</View>
+		</ScrollView>
+	);
 }
 
 /**
@@ -108,29 +106,29 @@ const { containerMargin } = sharedStyles;
  * Styles
  */
 const styles = StyleSheet.create({
-  resultsContainerStyle: {
-    display: 'flex',
-    backgroundColor: colors.light.background,
-    margin: containerMargin,
-    borderRadius: 16,
-    boxShadow: `0 16px 0 ${colors.dark.border}`,
-    overflow: 'hidden',
-    borderWidth: 6,
-    borderColor: colors.light.border,
-    padding: 16,
-    gap: 16
-  },
-  titleRowStyle: {
-    alignItems: 'baseline',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  titleStyle: {
-    fontSize: 20,
-    fontFamily: 'lexend-400',
-  },
-  wordsFlexRows: {
-    display: 'flex',
-    gap: 8
-  },
-})
+	resultsContainerStyle: {
+		display: 'flex',
+		backgroundColor: colors.light.background,
+		margin: containerMargin,
+		borderRadius: 16,
+		boxShadow: `0 16px 0 ${colors.dark.border}`,
+		overflow: 'hidden',
+		borderWidth: 6,
+		borderColor: colors.light.border,
+		padding: 16,
+		gap: 16,
+	},
+	titleRowStyle: {
+		alignItems: 'baseline',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+	},
+	titleStyle: {
+		fontSize: 20,
+		fontFamily: 'lexend-400',
+	},
+	wordsFlexRows: {
+		display: 'flex',
+		gap: 8,
+	},
+});

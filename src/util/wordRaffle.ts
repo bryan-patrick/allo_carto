@@ -21,10 +21,7 @@ const numberOfTicketsByRarity: Record<CardRarity, number> = {
  *
  * This is for drawing words from a deck based on actual rarity.
  */
-export default function wordRaffle(
-	words: Word[],
-	numberOfWordsToDraw: number,
-): Word[] {
+export default function wordRaffle(words: Word[], numberOfWordsToDraw: number): Word[] {
 	const wordsInRaffle = [...words];
 	const winningWords: Word[] = [];
 
@@ -32,10 +29,7 @@ export default function wordRaffle(
 	 * Keep drawing until the deck has enough words
 	 * or the raffle is empty.
 	 */
-	while (
-		winningWords.length < numberOfWordsToDraw &&
-		wordsInRaffle.length > 0
-	) {
+	while (winningWords.length < numberOfWordsToDraw && wordsInRaffle.length > 0) {
 		let totalRaffleTickets = 0;
 
 		/**

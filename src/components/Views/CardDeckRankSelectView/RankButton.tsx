@@ -12,125 +12,129 @@ import { StyleSheet, Text, View } from 'react-native';
  * Typing
  */
 interface RankButtonProps {
-  deckWordCount: number;
-  handleRankSelect: (rank: WordRankKey) => Promise<void>;
-  rankCounts: DeckRankCounts;
-  rankDefinition: WordRankDefinition;
+	deckWordCount: number;
+	handleRankSelect: (rank: WordRankKey) => Promise<void>;
+	rankCounts: DeckRankCounts;
+	rankDefinition: WordRankDefinition;
 }
 
 interface LockedAccessibilityHintProps {
-  deckWordCount: number;
-  rankCounts: DeckRankCounts;
-  rankKey: WordRankKey;
-  rankName: string;
+	deckWordCount: number;
+	rankCounts: DeckRankCounts;
+	rankKey: WordRankKey;
+	rankName: string;
 }
 
 /**
  * Component rank button
  */
 export default function RankButton({
-  deckWordCount,
-  handleRankSelect,
-  rankCounts,
-  rankDefinition,
+	deckWordCount,
+	handleRankSelect,
+	rankCounts,
+	rankDefinition,
 }: RankButtonProps) {
-  const { key, name } = rankDefinition;
-  const rankCount = rankCounts[ key ];
-  const rankProgress = getDeckRankProgress({
-    deckWordCount,
-    rankCounts,
-    rankKey: key,
-  });
-  const isRankFullyComplete = rankProgress.completion === 'full';
-  const isRankLocked = !rankProgress.isUnlocked;
-  const isRankButtonDisabled = !rankProgress.isSelectable;
-  const rankButtonColorStyle = {
-    backgroundColor: colors.light.rank[ key ],
-  };
-  const {
-    rankButtonContainerStyle,
-    rankLockOverlayStyle,
-    rankButtonTextStyle,
-  } = styles;
+	const { key, name } = rankDefinition;
+	const rankCount = rankCounts[key];
+	const rankProgress = getDeckRankProgress({
+		deckWordCount,
+		rankCounts,
+		rankKey: key,
+	});
+	const isRankFullyComplete = rankProgress.completion === 'full';
+	const isRankLocked = !rankProgress.isUnlocked;
+	const isRankButtonDisabled = !rankProgress.isSelectable;
+	const rankButtonColorStyle = {
+		backgroundColor: colors.light.rank[key],
+	};
+	const { rankButtonContainerStyle, rankLockOverlayStyle, rankButtonTextStyle } = styles;
 
-  /**
-   * Render the rank button
-   */
-  return (
-    <View style={rankButtonContainerStyle}>
-      <LockOverlay
-        completeAccessibilityHint={`${name} is fully complete.`}
-        completeAccessibilityLabel={`${name} rank fully complete`}
-        isComplete={isRankFullyComplete && !rankProgress.isSelectable}
-        isLocked={isRankLocked}
-        lockedAccessibilityHint={getLockedAccessibilityHint({
-          deckWordCount,
-          rankCounts,
-          rankKey: key,
-          rankName: name,
-        })}
-        lockedAccessibilityLabel={`${name} rank locked`}
-        overlayStyle={rankLockOverlayStyle}
-      >
-        <LinkButton
-          SVGElement={<RankIcon color={colors.dark.rank[ key ]} rank={key} size={32} />}
-          accessibilityHint={`Practice the ${name} cards in this deck.`}
-          accessibilityLabel={`${name}, ${rankCount} cards${isRankFullyComplete ? ', full complete' : ''}`}
-          arrowColor={colors.dark.text}
-          contentPaddingHorizontal={8}
-          contentPaddingVertical={8}
-          disabled={isRankButtonDisabled}
-          handler={() => handleRankSelect(key)}
-          style={rankButtonColorStyle}
-          useArrow={false}
-        >
-          <Text style={rankButtonTextStyle}>{name} ({rankCount})</Text>
-        </LinkButton>
-      </LockOverlay>
-    </View>
-  );
+	/**
+	 * Render the rank button
+	 */
+	return (
+		<View style={rankButtonContainerStyle}>
+			<LockOverlay
+				completeAccessibilityHint={`${name} is fully complete.`}
+				completeAccessibilityLabel={`${name} rank fully complete`}
+				isComplete={isRankFullyComplete && !rankProgress.isSelectable}
+				isLocked={isRankLocked}
+				lockedAccessibilityHint={getLockedAccessibilityHint({
+					deckWordCount,
+					rankCounts,
+					rankKey: key,
+					rankName: name,
+				})}
+				lockedAccessibilityLabel={`${name} rank locked`}
+				overlayStyle={rankLockOverlayStyle}
+			>
+				<LinkButton
+					SVGElement={
+						<RankIcon
+							color={colors.dark.rank[key]}
+							rank={key}
+							size={32}
+						/>
+					}
+					accessibilityHint={`Practice the ${name} cards in this deck.`}
+					accessibilityLabel={`${name}, ${rankCount} cards${isRankFullyComplete ? ', full complete' : ''}`}
+					arrowColor={colors.dark.text}
+					contentPaddingHorizontal={8}
+					contentPaddingVertical={8}
+					disabled={isRankButtonDisabled}
+					handler={() => handleRankSelect(key)}
+					style={rankButtonColorStyle}
+					useArrow={false}
+				>
+					<Text style={rankButtonTextStyle}>
+						{name} ({rankCount})
+					</Text>
+				</LinkButton>
+			</LockOverlay>
+		</View>
+	);
 }
 
 /**
  * Helper to get the a11y text
  */
 function getLockedAccessibilityHint({
-  deckWordCount,
-  rankCounts,
-  rankKey,
-  rankName,
+	deckWordCount,
+	rankCounts,
+	rankKey,
+	rankName,
 }: LockedAccessibilityHintProps): string {
-  let result = '';
+	let result = '';
 
-  const rankIndex = wordRankDefinitions.findIndex((rank) => rank.key === rankKey);
+	const rankIndex = wordRankDefinitions.findIndex(rank => rank.key === rankKey);
 
-  const cardsAtOrAboveRank = wordRankDefinitions.reduce((total, rank, index) => {
-    const indexIsGreaterThanRank = index >= rankIndex;
-    const rankCount = rankCounts[ rank.key ] ?? 0;
+	const cardsAtOrAboveRank = wordRankDefinitions.reduce((total, rank, index) => {
+		const indexIsGreaterThanRank = index >= rankIndex;
+		const rankCount = rankCounts[rank.key] ?? 0;
 
-    return indexIsGreaterThanRank ? total + rankCount : total;
-  }, 0);
+		return indexIsGreaterThanRank ? total + rankCount : total;
+	}, 0);
 
-  const unlockCount = getDeckRankUnlockCount(deckWordCount);
+	const unlockCount = getDeckRankUnlockCount(deckWordCount);
 
-  result = `${rankName} unlocks when ${unlockCount} cards reach ${rankName}. You currently have ${cardsAtOrAboveRank}/${unlockCount}.`;
+	result = `${rankName} unlocks when ${unlockCount} cards reach ${rankName}. You currently have ${cardsAtOrAboveRank}/${unlockCount}.`;
 
-  return result;
+	return result;
 }
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-  rankButtonContainerStyle: {
-    flexGrow: 1,
-    marginBottom: 4,
-    width: '40%',
-  },
-  rankLockOverlayStyle: {
-    borderRadius: 8,
-  },
-  rankButtonTextStyle: {
-    color: colors.dark.text,
-  },
+	rankButtonContainerStyle: {
+		flexGrow: 1,
+		marginBottom: 4,
+		width: '40%',
+	},
+	rankLockOverlayStyle: {
+		borderRadius: 8,
+	},
+	rankButtonTextStyle: {
+		color: colors.dark.text,
+	},
 });

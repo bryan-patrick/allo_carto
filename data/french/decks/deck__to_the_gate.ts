@@ -7,7 +7,12 @@ const toTheGate = require('@/src/app/assets/images/decks/to-the-gate.jpg');
 
 export const DeckToTheGate: CardDeck = {
 	id: 'deck__to_the_gate',
-	requiredPreviousDeckRank: 'bronze',
+	unlockRequirements: [
+		{
+			id: 'deck__trouble_in_the_terminal',
+			requiredCompletionPercentage: 50,
+		},
+	],
 	title: 'To the Gate!',
 	description:
 		'Plane terms, getting on the flight down the walkway, gate announcements, finding seats, people watching etc.',

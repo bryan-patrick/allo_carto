@@ -8,26 +8,32 @@ import colors from '../colors';
  * HomeScreen view - Index of the (tabs) dir routes
  */
 export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-      <LinkCard
-        screen="(routes)/ChapterSelect"
-        title="Learn more words!"
-        linkText="Review a deck"
-        description="Progress through chapters places and decks!"
-        SVGElement={<SVGCards height={'120px'} width={'130px'} color={colors.dark.secondary} />}
-      />
-    </View>
-  );
+	return (
+		<View style={styles.container}>
+			<StatusBar style="light" />
+			<LinkCard
+				screen="(routes)/ChapterSelect"
+				title="Learn more words!"
+				linkText="Review a deck"
+				description="Progress through chapters places and decks!"
+				SVGElement={
+					<SVGCards
+						height={'120px'}
+						width={'130px'}
+						color={colors.dark.secondary}
+					/>
+				}
+			/>
+		</View>
+	);
 }
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-  container: {
-    margin: 24,
-    gap: 24,
-  },
+	container: {
+		margin: 24,
+		gap: 24,
+	},
 });

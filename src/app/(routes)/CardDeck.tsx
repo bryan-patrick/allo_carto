@@ -1,13 +1,37 @@
-import { useCardDeck } from "@/src/components/CardDeck/useCardDeck";
-import CardDeckView from "@/src/components/Views/CardDeckView";
+import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
+import Loader from '@/src/components/Loader';
+import CardDeckView from '@/src/components/Views/CardDeckView';
+import { useUserProgress } from '@/src/db/useUserProgress';
+import { isProgressAccessible } from '@/src/util/atlasProgression';
+import { Text } from 'react-native';
 
 /**
  * Deck view - A route wrapper in (routes)
  */
 export default function CardDeck() {
-  const { currentCard } = useCardDeck();
+	const { cardDeckState, currentCard } = useCardDeck();
+	const { progressById, status } = useUserProgress();
 
-  return (
-    <CardDeckView currentCard={currentCard} />
-  )
+	/**
+	 * Wait for the user's stored percentages
+	 */
+	if (status === 'loading') return <Loader />;
+	if (status === 'error') return <Text>Could not load deck progress.</Text>;
+
+	/**
+	 * Block locked decks
+	 */
+	if (
+		!isProgressAccessible({
+			id: cardDeckState.cardDeck.id,
+			progressById,
+		})
+	) {
+		return <Text>This deck is locked.</Text>;
+	}
+
+	/**
+	 * Render the deck
+	 */
+	return <CardDeckView currentCard={currentCard} />;
 }

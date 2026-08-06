@@ -32,7 +32,6 @@ export const initialCardDeckState: CardDeckStateProps = {
 	incorrectWords: [],
 	cardDeck: {
 		id: '',
-		requiredPreviousDeckRank: null,
 		title: '',
 		description: '',
 		image: undefined,

@@ -1,209 +1,203 @@
-import colors from "@/src/app/colors";
-import { memo } from "react";
-import { type LayoutChangeEvent, StyleSheet, Text, type TextStyle, View, type ViewStyle } from "react-native";
-import type { AnimatedStyle } from "react-native-reanimated";
-import Animated from "react-native-reanimated";
-import formatFrenchWordWithArticle from "../../util/formatFrenchWordWithArticle";
-import { useCardDeck } from "../CardDeck/useCardDeck";
-import { sharedWordCardStyles } from "./sharedWordCardStyles";
-import { useWordCardUI } from "./useWordCardUI";
-import { FEEDBACK_TEXT_FRONT } from "./wordCardContext";
-import WordCardHeader from "./WordCardHeader";
+import colors from '@/src/app/colors';
+import { memo } from 'react';
+import {
+	type LayoutChangeEvent,
+	StyleSheet,
+	Text,
+	type TextStyle,
+	View,
+	type ViewStyle,
+} from 'react-native';
+import type { AnimatedStyle } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
+import formatFrenchWordWithArticle from '../../util/formatFrenchWordWithArticle';
+import { useCardDeck } from '../CardDeck/useCardDeck';
+import { sharedWordCardStyles } from './sharedWordCardStyles';
+import { useWordCardUI } from './useWordCardUI';
+import { FEEDBACK_TEXT_FRONT } from './wordCardContext';
+import WordCardHeader from './WordCardHeader';
 
 /**
  * Typing
  */
 interface WordCardFrontProps {
-  wordWidthStyle: AnimatedStyle<TextStyle>;
-  articleWidthStyle: AnimatedStyle<TextStyle>;
-  wordCardFrontFlippedStyle: AnimatedStyle<ViewStyle>;
-  feedbackStyle: TextStyle;
-  articleSlotStyle: TextStyle;
-  wordSlotStyle: TextStyle;
-  handleArticleWidth: (event: LayoutChangeEvent) => void;
-  handleWordWidth: (event: LayoutChangeEvent) => void;
+	wordWidthStyle: AnimatedStyle<TextStyle>;
+	articleWidthStyle: AnimatedStyle<TextStyle>;
+	wordCardFrontFlippedStyle: AnimatedStyle<ViewStyle>;
+	feedbackStyle: TextStyle;
+	articleSlotStyle: TextStyle;
+	wordSlotStyle: TextStyle;
+	handleArticleWidth: (event: LayoutChangeEvent) => void;
+	handleWordWidth: (event: LayoutChangeEvent) => void;
 }
 
 /**
  * WordCardFront component
  */
 const WordCardFront = memo(function WordCardFrontMemo({
-  handleWordWidth,
-  handleArticleWidth,
-  articleWidthStyle,
-  wordCardFrontFlippedStyle,
-  wordWidthStyle,
-  feedbackStyle,
-  articleSlotStyle,
-  wordSlotStyle
+	handleWordWidth,
+	handleArticleWidth,
+	articleWidthStyle,
+	wordCardFrontFlippedStyle,
+	wordWidthStyle,
+	feedbackStyle,
+	articleSlotStyle,
+	wordSlotStyle,
 }: WordCardFrontProps) {
-  const { cardState } = useWordCardUI();
-  const { currentCard } = useCardDeck();
+	const { cardState } = useWordCardUI();
+	const { currentCard } = useCardDeck();
 
-  /**
-   * Destructure Styles
-   */
-  const {
-    cardFront,
-    hiddenMeasureText,
-  } = wordCardFrontStyles;
+	/**
+	 * Destructure Styles
+	 */
+	const { cardFront, hiddenMeasureText } = wordCardFrontStyles;
 
-  const {
-    wordId,
-    wordPronunciation,
-    cardMain,
-    answerSlotContainer,
-    answerSlot,
-    feedbackContainer,
-    feedbackText,
-    wordMetaContainer,
-    wordForm
-  } = sharedWordCardStyles;
+	const {
+		wordId,
+		wordPronunciation,
+		cardMain,
+		answerSlotContainer,
+		answerSlot,
+		feedbackContainer,
+		feedbackText,
+		wordMetaContainer,
+		wordForm,
+	} = sharedWordCardStyles;
 
-  /**
-   * Word data
-   */
-  const {
-    pronunciation,
-    frenchArticle,
-    englishArticle,
-    englishWords,
-    frenchWord,
-    form,
-    partOfSpeech
-  } = currentCard;
+	/**
+	 * Word data
+	 */
+	const {
+		pronunciation,
+		frenchArticle,
+		englishArticle,
+		englishWords,
+		frenchWord,
+		form,
+		partOfSpeech,
+	} = currentCard;
 
-  /**
-   * Render the articlea and word the user has selected.
-   * These will animated when changing size, which is cool.
-  */
-  const displayedArticle = cardState.selectedArticle ?? englishArticle;
-  const displayedWord = cardState.selectedWord ?? englishWords[0];
-  const displayedFrenchWord = formatFrenchWordWithArticle({
-    article: frenchArticle,
-    word: frenchWord,
-  });
-  const articleClass = { color: cardState.selectedArticle ? colors.dark.text : 'transparent' };
-  const wordClass = { color: cardState.selectedWord ? colors.dark.text : 'transparent' };
+	/**
+	 * Render the articlea and word the user has selected.
+	 * These will animated when changing size, which is cool.
+	 */
+	const displayedArticle = cardState.selectedArticle ?? englishArticle;
+	const displayedWord = cardState.selectedWord ?? englishWords[0];
+	const displayedFrenchWord = formatFrenchWordWithArticle({
+		article: frenchArticle,
+		word: frenchWord,
+	});
+	const articleClass = {
+		color: cardState.selectedArticle ? colors.dark.text : 'transparent',
+	};
+	const wordClass = {
+		color: cardState.selectedWord ? colors.dark.text : 'transparent',
+	};
 
-  const formCapitalized = (form ?? '')
-    .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+	const formCapitalized = (form ?? '')
+		.split(' ')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
 
-  const partOfSpeechCapitalized = (partOfSpeech ?? '')
-    .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+	const partOfSpeechCapitalized = (partOfSpeech ?? '')
+		.split(' ')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
 
-  /**
-   * Render the front of the WordCard
-   */
-  return (
-    <Animated.View style={[
-      sharedWordCardStyles.wordCardInner,
-      cardFront,
-      wordCardFrontFlippedStyle
-    ]}>
-      <WordCardHeader />
-      <View style={cardMain}>
-        <Text style={wordId}>{displayedFrenchWord}</Text>
-        <Text style={wordPronunciation}>({pronunciation})</Text>
-        <View style={wordMetaContainer}>
-          {partOfSpeech && (
-            <Text style={[wordForm, {
-              borderRightWidth: formCapitalized ? 1 : 0,
-              marginRight: formCapitalized ? 8 : 0,
-              paddingRight: formCapitalized ? 8 : 0
-            }]}>{partOfSpeechCapitalized}</Text>
-          )}
-          {form && (
-            <Text style={wordForm}>{formCapitalized}</Text>
-          )}
-        </View>
-      </View>
-      <View style={answerSlotContainer}>
-        {englishArticle && (
-          <>
-            <Text
-              numberOfLines={1}
-              onLayout={handleArticleWidth}
-              style={[answerSlot, hiddenMeasureText]}
-            >
-              {displayedArticle}
-            </Text>
-            <Animated.Text
-              numberOfLines={1}
-              style={[
-                answerSlot,
-                articleClass,
-                articleWidthStyle,
-                (
-                  cardState.progress !== 'SUCCESS' &&
-                  cardState.selectedArticle &&
-                  articleSlotStyle
-                )
-              ]}
-            >
-              {cardState.selectedArticle && displayedArticle}
-            </Animated.Text>
-          </>
-        )}
-        <Text
-          numberOfLines={1}
-          onLayout={handleWordWidth}
-          style={[answerSlot, hiddenMeasureText]}
-        >
-          {displayedWord}
-        </Text>
-        <Animated.Text
-          numberOfLines={1}
-          style={[
-            answerSlot,
-            wordClass,
-            wordWidthStyle,
-            (
-              cardState.progress !== 'SUCCESS' &&
-              cardState.selectedWord &&
-              wordSlotStyle
-            )
-          ]}
-        >
-          {cardState.selectedWord && displayedWord}
-        </Animated.Text>
-      </View>
-      <View style={feedbackContainer}>
-        <Text style={[
-          feedbackText,
-          (
-            cardState.progress !== 'SUCCESS' &&
-            feedbackStyle
-          )
-        ]}>
-          {FEEDBACK_TEXT_FRONT[cardState.feedbackKey] ?? ''}
-        </Text>
-      </View>
-    </Animated.View>
-  )
+	/**
+	 * Render the front of the WordCard
+	 */
+	return (
+		<Animated.View
+			style={[sharedWordCardStyles.wordCardInner, cardFront, wordCardFrontFlippedStyle]}
+		>
+			<WordCardHeader />
+			<View style={cardMain}>
+				<Text style={wordId}>{displayedFrenchWord}</Text>
+				<Text style={wordPronunciation}>({pronunciation})</Text>
+				<View style={wordMetaContainer}>
+					{partOfSpeech && (
+						<Text
+							style={[
+								wordForm,
+								{
+									borderRightWidth: formCapitalized ? 1 : 0,
+									marginRight: formCapitalized ? 8 : 0,
+									paddingRight: formCapitalized ? 8 : 0,
+								},
+							]}
+						>
+							{partOfSpeechCapitalized}
+						</Text>
+					)}
+					{form && <Text style={wordForm}>{formCapitalized}</Text>}
+				</View>
+			</View>
+			<View style={answerSlotContainer}>
+				{englishArticle && (
+					<>
+						<Text
+							numberOfLines={1}
+							onLayout={handleArticleWidth}
+							style={[answerSlot, hiddenMeasureText]}
+						>
+							{displayedArticle}
+						</Text>
+						<Animated.Text
+							numberOfLines={1}
+							style={[
+								answerSlot,
+								articleClass,
+								articleWidthStyle,
+								cardState.progress !== 'SUCCESS' && cardState.selectedArticle && articleSlotStyle,
+							]}
+						>
+							{cardState.selectedArticle && displayedArticle}
+						</Animated.Text>
+					</>
+				)}
+				<Text
+					numberOfLines={1}
+					onLayout={handleWordWidth}
+					style={[answerSlot, hiddenMeasureText]}
+				>
+					{displayedWord}
+				</Text>
+				<Animated.Text
+					numberOfLines={1}
+					style={[
+						answerSlot,
+						wordClass,
+						wordWidthStyle,
+						cardState.progress !== 'SUCCESS' && cardState.selectedWord && wordSlotStyle,
+					]}
+				>
+					{cardState.selectedWord && displayedWord}
+				</Animated.Text>
+			</View>
+			<View style={feedbackContainer}>
+				<Text style={[feedbackText, cardState.progress !== 'SUCCESS' && feedbackStyle]}>
+					{FEEDBACK_TEXT_FRONT[cardState.feedbackKey] ?? ''}
+				</Text>
+			</View>
+		</Animated.View>
+	);
 });
 
 /**
  * Styles
  */
 export const wordCardFrontStyles = StyleSheet.create({
-  cardFront: {
-    backfaceVisibility: 'hidden',
-    width: '100%',
-    transform: [
-      { perspective: 1000 },
-      { rotateY: '0deg' }
-    ]
-  },
-  hiddenMeasureText: {
-    position: 'absolute',
-    opacity: 0,
-    borderBottomWidth: 0
-  }
+	cardFront: {
+		backfaceVisibility: 'hidden',
+		width: '100%',
+		transform: [{ perspective: 1000 }, { rotateY: '0deg' }],
+	},
+	hiddenMeasureText: {
+		position: 'absolute',
+		opacity: 0,
+		borderBottomWidth: 0,
+	},
 });
 
 export default WordCardFront;

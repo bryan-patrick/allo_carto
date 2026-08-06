@@ -8,47 +8,47 @@ import RankButton from './RankButton';
  * Typing
  */
 interface RankButtonListProps {
-  deckWordCount: number;
-  handleRankSelect: (rank: WordRankKey) => Promise<void>;
-  rankCounts: DeckRankCounts;
+	deckWordCount: number;
+	handleRankSelect: (rank: WordRankKey) => Promise<void>;
+	rankCounts: DeckRankCounts;
 }
 
 /**
  * Component rank button list
  */
 export default function RankButtonList({
-  deckWordCount,
-  handleRankSelect,
-  rankCounts,
+	deckWordCount,
+	handleRankSelect,
+	rankCounts,
 }: RankButtonListProps) {
-  const { rankButtonListStyle } = styles;
+	const { rankButtonListStyle } = styles;
 
-  /**
-   * Render the component
-   */
-  return (
-    <View style={rankButtonListStyle}>
-      {wordRankDefinitions.map((rankDefinition) => (
-        <RankButton
-          deckWordCount={deckWordCount}
-          handleRankSelect={handleRankSelect}
-          key={rankDefinition.key}
-          rankCounts={rankCounts}
-          rankDefinition={rankDefinition}
-        />
-      ))}
-    </View>
-  );
+	/**
+	 * Render the component
+	 */
+	return (
+		<View style={rankButtonListStyle}>
+			{wordRankDefinitions.map(rankDefinition => (
+				<RankButton
+					deckWordCount={deckWordCount}
+					handleRankSelect={handleRankSelect}
+					key={rankDefinition.key}
+					rankCounts={rankCounts}
+					rankDefinition={rankDefinition}
+				/>
+			))}
+		</View>
+	);
 }
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-  rankButtonListStyle: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
+	rankButtonListStyle: {
+		display: 'flex',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 8,
+	},
 });

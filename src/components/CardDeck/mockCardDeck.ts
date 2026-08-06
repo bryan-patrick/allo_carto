@@ -68,7 +68,6 @@ export const mockWords: Word[] = [
  */
 export const mockCardDeck: CardDeck = {
 	id: 'deck__testing',
-	requiredPreviousDeckRank: null,
 	title: 'Testing deck',
 	description: 'A deck for tests',
 	CEFR: ['A1'],
@@ -103,7 +102,8 @@ export function makeMockCardDeck(overrides: Partial<CardDeck> = {}): CardDeck {
 		words,
 		wordIds: overrides.wordIds ?? words.map(word => word.id),
 		wordChoices:
-			overrides.wordChoices ?? words.map(word => ({
+			overrides.wordChoices ??
+			words.map(word => ({
 				englishWords: word.englishWords,
 				partOfSpeech: word.partOfSpeech,
 			})),
