@@ -10,7 +10,12 @@ const troubleInTerminal = require('@/src/app/assets/images/decks/trouble-in-term
 
 export const DeckTroubleInTheTerminal: CardDeck = {
 	id: 'deck__trouble_in_the_terminal',
-	requiredPreviousDeckRank: 'bronze',
+	unlockRequirements: [
+		{
+			id: 'deck__dawn_at_the_drop_off',
+			requiredCompletionPercentage: 50,
+		},
+	],
 	title: 'Trouble at the Terminal',
 	description:
 		'Information about the airport, late, early, times, crowds, people rushing, business, etc.',

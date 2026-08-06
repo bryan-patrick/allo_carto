@@ -1,97 +1,55 @@
 import type { DeckChapter } from '@/data/french/deckAtlas';
 import { deckAtlas } from '@/data/french/deckAtlas';
-import { useUserContext } from '@/src/db/useUserContext';
-import getChapterProgressPercent from '@/src/util/getDecksProgress';
-import { useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import Loader from '@/src/components/Loader';
+import { useUserProgress } from '@/src/db/useUserProgress';
+import { isProgressAccessible } from '@/src/util/atlasProgression';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import Chapter from './Chapter';
-
-/**
- * Typing
- */
-interface ChapterProgressById {
-  [ chapterId: string ]: number;
-}
 
 /**
  * Component chapter select view
  */
 export default function ChapterSelectView() {
-  const userId = useUserContext()?.id;
-  const { chapters } = deckAtlas;
-  const [ chapterProgressById, setChapterProgressById ] = useState<ChapterProgressById>({});
-  const {
-    scrollViewStyle,
-    scrollViewContainerStyle,
-  } = styles;
+	const { chapters } = deckAtlas;
+	const { progressById, status } = useUserProgress();
+	const { scrollViewStyle, scrollViewContainerStyle } = styles;
 
-  useFocusEffect(
-    useCallback(() => {
-      let shouldUpdateState = true;
+	/**
+	 * Wait for the user's stored percentages
+	 */
+	if (status === 'loading') return <Loader />;
+	if (status === 'error') return <Text>Could not load chapter progress.</Text>;
 
-      async function getChapterProgress() {
-        const result: ChapterProgressById = {};
-
-        try {
-          if (userId) {
-            for (const chapter of chapters) {
-              const progressPercent = await getChapterProgressPercent({
-                chapter,
-                userId,
-              });
-
-              result[ chapter.id ] = progressPercent;
-            }
-          }
-        } catch (error) {
-          console.error('Could not retrieve chapter progress:', error);
-        }
-
-        if (shouldUpdateState) {
-          setChapterProgressById(result);
-        }
-      }
-
-      setChapterProgressById({});
-      getChapterProgress();
-
-      return () => {
-        shouldUpdateState = false;
-      };
-    }, [ chapters, userId ])
-  );
-
-  /**
-   * Render the component
-   */
-  return (
-    <ScrollView
-      style={scrollViewStyle}
-      contentContainerStyle={scrollViewContainerStyle}
-    >
-      {chapters.map((chapter: DeckChapter, index) => (
-        <Chapter
-          chapter={chapter}
-          index={index}
-          key={chapter.id}
-          progressPercent={chapterProgressById[ chapter.id ] ?? 0}
-        />
-      ))}
-    </ScrollView>
-  );
+	/**
+	 * Render the component
+	 */
+	return (
+		<ScrollView
+			style={scrollViewStyle}
+			contentContainerStyle={scrollViewContainerStyle}
+		>
+			{chapters.map((chapter: DeckChapter, index) => (
+				<Chapter
+					chapter={chapter}
+					index={index}
+					isLocked={!isProgressAccessible({ id: chapter.id, progressById })}
+					key={chapter.id}
+					progressPercent={progressById[chapter.id]?.completionPercentage ?? 0}
+				/>
+			))}
+		</ScrollView>
+	);
 }
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-  scrollViewStyle: {
-  },
-  scrollViewContainerStyle: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 24,
-    paddingVertical: 24,
-  },
+	scrollViewStyle: {},
+	scrollViewContainerStyle: {
+		display: 'flex',
+		flexDirection: 'column',
+		gap: 24,
+		paddingVertical: 24,
+	},
 });

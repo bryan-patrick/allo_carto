@@ -7,7 +7,6 @@ const lostRoomKeys = require('@/src/app/assets/images/decks/lost-room-keys.jpg')
 
 export const DeckLostRoomKeys: CardDeck = {
 	id: 'deck__lost_room_keys',
-	requiredPreviousDeckRank: 'bronze',
 	title: 'Lost Room Keys',
 	description:
 		'Interaction with concierge, directions to the hotel, parking/valet, room upgrades, views, amenities, confusion about room mix ups',

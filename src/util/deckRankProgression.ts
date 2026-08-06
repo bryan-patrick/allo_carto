@@ -36,72 +36,6 @@ function getCardsAfterRank(rankCounts: RankCounts, rankIndex: number): number {
 }
 
 /**
- * Find the highest earned rank reached by at least half of the deck's cards.
- */
-export function getHighestSoftCompletedDeckRank(
-	rankCounts: RankCounts,
-): WordRankKey | null {
-	const deckWordCount = rankKeys.reduce((total, rankKey) => {
-		return total + (rankCounts[rankKey] ?? 0);
-	}, 0);
-	const unlockCount = getDeckRankUnlockCount(deckWordCount);
-
-	for (let rankIndex = rankKeys.length - 1; rankIndex > 0; rankIndex--) {
-		const rankCount = rankCounts[rankKeys[rankIndex]] ?? 0;
-		const progressCount = rankCount + getCardsAfterRank(rankCounts, rankIndex);
-
-		if (deckWordCount > 0 && progressCount >= unlockCount) {
-			return rankKeys[rankIndex];
-		}
-	}
-
-	return null;
-}
-
-/**
- * Return the highest rank every card in a deck has fully completed.
- */
-export function getHighestFullyCompletedDeckRank(
-	rankCounts: RankCounts,
-): WordRankKey | null {
-	const deckWordCount = rankKeys.reduce((total, rankKey) => {
-		return total + (rankCounts[rankKey] ?? 0);
-	}, 0);
-
-	for (let rankIndex = rankKeys.length - 1; rankIndex >= 0; rankIndex--) {
-		const progressCount =
-			rankKeys[rankIndex] === 'diamond' ?
-				(rankCounts.diamond ?? 0)
-			:	getCardsAfterRank(rankCounts, rankIndex);
-
-		if (deckWordCount > 0 && progressCount === deckWordCount) {
-			return rankKeys[rankIndex];
-		}
-	}
-
-	return null;
-}
-
-/**
- * Check if the user's rank progress is enough to unlock the next deck.
- */
-export function doesCompletedRankMeetRequirement({
-	completedRank,
-	requiredRank,
-}: {
-	completedRank: WordRankKey | null;
-	requiredRank: WordRankKey | null;
-}): boolean {
-	if (requiredRank === null) return true;
-
-	const completedRankIndex =
-		completedRank ? rankKeys.indexOf(completedRank) : -1;
-	const requiredRankIndex = rankKeys.indexOf(requiredRank);
-
-	return requiredRankIndex >= 0 && completedRankIndex >= requiredRankIndex;
-}
-
-/**
  * Check the user's progress for one rank.
  * A rank can still be played after it is soft complete if it has cards left.
  */
@@ -119,10 +53,8 @@ export function getDeckRankProgress({
 	const unlockCount = getDeckRankUnlockCount(deckWordCount);
 	const cardsAfterRank = getCardsAfterRank(rankCounts, rankIndex);
 	const cardsAtOrAboveRank = rankCount + cardsAfterRank;
-	const progressCount =
-		rankKey === 'diamond' ? cardsAtOrAboveRank : cardsAfterRank;
-	const isUnlocked =
-		deckWordCount > 0 && (rankIndex === 0 || cardsAtOrAboveRank >= unlockCount);
+	const progressCount = rankKey === 'diamond' ? cardsAtOrAboveRank : cardsAfterRank;
+	const isUnlocked = deckWordCount > 0 && (rankIndex === 0 || cardsAtOrAboveRank >= unlockCount);
 
 	let completion: DeckRankCompletion = 'incomplete';
 

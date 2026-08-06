@@ -1,5 +1,5 @@
-import Loader from "@/src/components/Loader";
+import Loader from '@/src/components/Loader';
 
 export default function TestLoader() {
-  return <Loader />
+	return <Loader />;
 }

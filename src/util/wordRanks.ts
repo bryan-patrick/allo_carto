@@ -1,8 +1,8 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { ComponentProps } from 'react';
 
-export type WordRankKey = 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond';
-export type WordProgressKey = 'unseen' | WordRankKey;
+export type WordRankKey = 'unseen' | 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond';
+export type WordProgressKey = WordRankKey;
 
 export interface WordRankDefinition {
 	key: WordRankKey;
@@ -12,6 +12,12 @@ export interface WordRankDefinition {
 }
 
 export const wordRankDefinitions: WordRankDefinition[] = [
+	{
+		key: 'unseen',
+		name: 'Unseen',
+		minCorrectCount: 0,
+		iconName: 'visibility-off',
+	},
 	{
 		key: 'fnew',
 		name: 'New',
@@ -44,14 +50,16 @@ export const wordRankDefinitions: WordRankDefinition[] = [
 	},
 ];
 
-export function getWordRankDefinition(score: number = 0): WordRankDefinition {
-	const normalizedScore = Math.max(score, 0);
+export function getWordRankDefinitionFromCorrectCount(
+	correctCount: number = 0,
+): WordRankDefinition {
+	const normalizedCorrectCount = Math.max(correctCount, 0);
 	let matchingRank = wordRankDefinitions[0];
 
 	for (let index = wordRankDefinitions.length - 1; index >= 0; index--) {
 		const rank = wordRankDefinitions[index];
 
-		if (normalizedScore >= rank.minCorrectCount) {
+		if (normalizedCorrectCount >= rank.minCorrectCount) {
 			matchingRank = rank;
 			break;
 		}
@@ -60,9 +68,24 @@ export function getWordRankDefinition(score: number = 0): WordRankDefinition {
 	return matchingRank;
 }
 
-export function getWordRankDefinitionByKey(
-	rankKey: WordRankKey,
-): WordRankDefinition {
+/**
+ * Get the word's rank from its stored userWords counts
+ */
+export function getWordRankKeyFromCounts({
+	correctCount = 0,
+	seenCount = 0,
+}: {
+	correctCount?: number;
+	seenCount?: number;
+}): WordRankKey {
+	if (correctCount === 0 && seenCount === 0) {
+		return 'unseen';
+	}
+
+	return getWordRankDefinitionFromCorrectCount(correctCount).key;
+}
+
+export function getWordRankDefinitionByKey(rankKey: WordRankKey): WordRankDefinition {
 	let matchingRank = wordRankDefinitions[0];
 
 	for (const rank of wordRankDefinitions) {
@@ -76,15 +99,23 @@ export function getWordRankDefinitionByKey(
 
 export function getWordRankSqlCountSelect(
 	correctCountExpression: string = 'uw.correctCount',
+	seenCountExpression: string = 'uw.seenCount',
 ) {
+	const normalizedCorrectCount = `COALESCE(${correctCountExpression}, 0)`;
+	const normalizedSeenCount = `COALESCE(${seenCountExpression}, 0)`;
+
 	return wordRankDefinitions
 		.map((rank, index) => {
 			const nextRank = wordRankDefinitions[index + 1];
-			const normalizedCorrectCount = `COALESCE(${correctCountExpression}, 0)`;
-			const condition =
-				nextRank ?
-					`${normalizedCorrectCount} >= ${rank.minCorrectCount} AND ${normalizedCorrectCount} < ${nextRank.minCorrectCount}`
-				:	`${normalizedCorrectCount} >= ${rank.minCorrectCount}`;
+			let condition = `${normalizedCorrectCount} >= ${rank.minCorrectCount}`;
+
+			if (rank.key === 'unseen') {
+				condition = `${normalizedCorrectCount} = 0 AND ${normalizedSeenCount} = 0`;
+			} else if (rank.key === 'fnew') {
+				condition = `(${normalizedCorrectCount} > 0 OR ${normalizedSeenCount} > 0) AND ${normalizedCorrectCount} < ${nextRank?.minCorrectCount ?? 0}`;
+			} else if (nextRank) {
+				condition = `${normalizedCorrectCount} >= ${rank.minCorrectCount} AND ${normalizedCorrectCount} < ${nextRank.minCorrectCount}`;
+			}
 
 			return `SUM(CASE WHEN ${condition} THEN 1 ELSE 0 END) AS ${rank.key}`;
 		})

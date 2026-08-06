@@ -1,5 +1,5 @@
 import MaterialIcons from '@/node_modules/@expo/vector-icons/MaterialIcons';
-import { Tabs } from "@/node_modules/expo-router";
+import { Tabs } from '@/node_modules/expo-router';
 import colors from '../colors';
 
 /**
@@ -7,39 +7,60 @@ import colors from '../colors';
  * https://mui.com/material-ui/material-icons/
  */
 export default function TabsLayout({ size = 28 }) {
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: colors.light.secondary,
-        tabBarInactiveTintColor: colors.light.background,
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          headerTitle: 'Allo',
-          tabBarIcon: ({ color }) => <MaterialIcons color={color} size={size} name="home" />,
-        }}
-      />
-      <Tabs.Screen
-        name="Stats"
-        options={{
-          title: 'Stats',
-          tabBarIcon: ({ color }) => <MaterialIcons color={color} size={size} name="star" />,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color }) => <MaterialIcons color={color} size={size} name="settings" />,
-        }}
-      />
-      <Tabs.Screen name="TestLoader" options={{
-        headerShown: true,
-        headerTitle: 'Test Loader'
-      }} />
-    </Tabs>
-  );
+	return (
+		<Tabs
+			screenOptions={{
+				tabBarActiveTintColor: colors.light.secondary,
+				tabBarInactiveTintColor: colors.light.background,
+			}}
+		>
+			<Tabs.Screen
+				name="index"
+				options={{
+					title: 'Home',
+					headerTitle: 'Allo',
+					tabBarIcon: ({ color }) => (
+						<MaterialIcons
+							color={color}
+							size={size}
+							name="home"
+						/>
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="Stats"
+				options={{
+					title: 'Stats',
+					tabBarIcon: ({ color }) => (
+						<MaterialIcons
+							color={color}
+							size={size}
+							name="star"
+						/>
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="settings"
+				options={{
+					title: 'Settings',
+					tabBarIcon: ({ color }) => (
+						<MaterialIcons
+							color={color}
+							size={size}
+							name="settings"
+						/>
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="TestLoader"
+				options={{
+					headerShown: true,
+					headerTitle: 'Test Loader',
+				}}
+			/>
+		</Tabs>
+	);
 }

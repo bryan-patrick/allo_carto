@@ -7,6 +7,7 @@ import {
 	DeckTroubleInTheTerminal,
 } from '@/data/french/decks';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Progression } from '@/src/util/progression';
 import type { ImageSourcePropType } from 'react-native';
 
 /**
@@ -25,7 +26,7 @@ export interface DeckAtlas {
 	chapters: DeckChapter[];
 }
 
-export interface DeckChapter {
+export interface DeckChapter extends Progression {
 	id: string;
 	name: string;
 	places: DeckPlace[];
@@ -35,7 +36,7 @@ export interface DeckChapter {
 	materialIconName?: string;
 }
 
-export interface DeckPlace {
+export interface DeckPlace extends Progression {
 	id: string;
 	name: string;
 	description: string;
@@ -63,14 +64,16 @@ export const deckAtlas: DeckAtlas = {
 					description:
 						'Flights, feathers, occasional bread delays. These decks focus on situations while travelling.',
 					image: aeroportOiseau,
-					decks: [
-						DeckDawnAtTheDropOff,
-						DeckTroubleInTheTerminal,
-						DeckToTheGate,
-					],
+					decks: [DeckDawnAtTheDropOff, DeckTroubleInTheTerminal, DeckToTheGate],
 				},
 				{
 					id: 'hotel-bonne-chance',
+					unlockRequirements: [
+						{
+							id: 'aeroport-oiseau',
+							requiredCompletionPercentage: 50,
+						},
+					],
 					name: 'Hôtel Bonne Chance',
 					description: 'Clean sheets. Questionable luck.',
 					image: hotelChance,
@@ -80,6 +83,12 @@ export const deckAtlas: DeckAtlas = {
 		},
 		{
 			id: 'lost-and-secret-decks',
+			unlockRequirements: [
+				{
+					id: 'a-very-french-travel-day',
+					requiredCompletionPercentage: 50,
+				},
+			],
 			name: 'Lost and Secret Decks',
 			chapterName: 'Epilogue:',
 			image: lostAndSecretDecks,
@@ -102,7 +111,5 @@ export const deckAtlas: DeckAtlas = {
  * Get every playable deck in progression order.
  */
 export function getDecks(atlas: DeckAtlas = deckAtlas): CardDeck[] {
-	return atlas.chapters.flatMap(chapter =>
-		chapter.places.flatMap(place => place.decks),
-	);
+	return atlas.chapters.flatMap(chapter => chapter.places.flatMap(place => place.decks));
 }

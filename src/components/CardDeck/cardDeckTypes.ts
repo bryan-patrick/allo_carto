@@ -1,4 +1,4 @@
-import { WordRankKey } from '@/src/util/wordRanks';
+import type { Progression } from '@/src/util/progression';
 import { ImageSourcePropType } from 'react-native';
 
 /**
@@ -33,7 +33,7 @@ export interface StorySegment {
 	after?: string;
 }
 
-export interface CardDeck {
+export interface CardDeck extends Progression {
 	id: string;
 	title: string;
 	CEFR: CEFR[];
@@ -45,7 +45,6 @@ export interface CardDeck {
 	place?: string;
 	colors: DeckColors;
 	story?: StorySegment[];
-	requiredPreviousDeckRank: WordRankKey | null;
 }
 
 /**

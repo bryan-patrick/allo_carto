@@ -1,11 +1,11 @@
 import { getWordRankSqlCountSelect } from '../../util/wordRanks';
-import { getDB } from '../connection';
+import type { SQLiteDatabase } from 'expo-sqlite';
 
 /**
  * Typing
  */
 export interface DeckRankCounts {
-	seen: number;
+	unseen: number;
 	fnew: number;
 	bronze: number;
 	silver: number;
@@ -14,6 +14,7 @@ export interface DeckRankCounts {
 }
 
 interface GetDeckRankCountsProps {
+	database: SQLiteDatabase;
 	userId: string;
 	wordIds: string[];
 }
@@ -22,7 +23,7 @@ interface GetDeckRankCountsProps {
  * Deck rank counts init
  */
 export const emptyDeckRankCounts: DeckRankCounts = {
-	seen: 0,
+	unseen: 0,
 	fnew: 0,
 	bronze: 0,
 	silver: 0,
@@ -31,34 +32,20 @@ export const emptyDeckRankCounts: DeckRankCounts = {
 };
 
 /**
- * Count every word in a deck by the user's current word rank.
- * Words the user has not seen do not have a userWords row, so the
- * LEFT JOIN uses zero for correctCount (fnew).
+ * Count every word in a deck by the user's current word rank
  */
 export default async function getDeckRankCounts({
+	database,
 	userId,
 	wordIds,
 }: GetDeckRankCountsProps): Promise<DeckRankCounts> {
 	if (wordIds.length === 0) return emptyDeckRankCounts;
 
-	const database = await getDB();
 	const quests = wordIds.map(() => '?').join(',');
-	const rankCountSelect = getWordRankSqlCountSelect('uw.correctCount');
-	const seenCountSelect = `
-		SUM(
-			CASE
-				WHEN COALESCE(uw.seenCount, 0) > 0
-					OR COALESCE(uw.correctCount, 0) > 0
-				THEN 1
-				ELSE 0
-			END
-		) AS seen
-	`;
-
+	const rankCountSelect = getWordRankSqlCountSelect('uw.correctCount', 'uw.seenCount');
 	const row = await database.getFirstAsync<DeckRankCounts>(
 		`
 		SELECT
-			${seenCountSelect},
 			${rankCountSelect}
 		FROM words AS w
 		LEFT JOIN userWords AS uw
