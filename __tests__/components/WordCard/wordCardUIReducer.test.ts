@@ -5,9 +5,6 @@ import {
 } from '@/src/components/WordCard/wordCardContext';
 import { wordCardUIReducer } from '@/src/components/WordCard/wordCardUIReducer';
 
-/**
- * Fake card with an article
- */
 const cardWithArticle: Word = {
 	id: 'word_noun_cafe',
 	frenchWord: 'cafe',
@@ -20,9 +17,6 @@ const cardWithArticle: Word = {
 	correctCount: 14,
 };
 
-/**
- * Fake card without an article
- */
 const cardWithoutArticle: Word = {
 	id: 'word_verb_manger',
 	frenchWord: 'manger',
@@ -33,9 +27,6 @@ const cardWithoutArticle: Word = {
 	correctCount: 3,
 };
 
-/**
- * Make state so we don't type this trash all day
- */
 function makeState(
 	overrides: Partial<WordCardStateProps> = {},
 ): WordCardStateProps {
@@ -45,13 +36,7 @@ function makeState(
 	};
 }
 
-/**
- * Test the WordCard reducer
- */
 describe('wordCardUIReducer', () => {
-	/**
-	 * Test article selection
-	 */
 	test('selects and toggles the article', () => {
 		const selectedState = wordCardUIReducer(initialWordCardState, {
 			type: 'SELECT_ARTICLE',
@@ -71,9 +56,6 @@ describe('wordCardUIReducer', () => {
 		expect(toggledState.selectedArticle).toBeNull();
 	});
 
-	/**
-	 * Test word selection
-	 */
 	test('selects and toggles the word', () => {
 		const selectedState = wordCardUIReducer(initialWordCardState, {
 			type: 'SELECT_WORD',
@@ -93,9 +75,6 @@ describe('wordCardUIReducer', () => {
 		expect(toggledState.selectedWord).toBeNull();
 	});
 
-	/**
-	 * Test that we don't keep selecting after the card is done
-	 */
 	test('ignores selections once the card is no longer ready', () => {
 		const state = makeState({
 			stage: 'CORRECT',
@@ -112,9 +91,6 @@ describe('wordCardUIReducer', () => {
 		expect(nextState).toBe(state);
 	});
 
-	/**
-	 * Correct answer. oooooo weeeeeeee
-	 */
 	test('marks a correct answer correct', () => {
 		const state = makeState({
 			selectedArticle: 'The',
@@ -133,9 +109,6 @@ describe('wordCardUIReducer', () => {
 		expect(nextState.feedbackKey).toBe('CORRECT_SUCCESS_NONE');
 	});
 
-	/**
-	 * Wrong
-	 */
 	test('warns when the answer is wrong but attempts remain', () => {
 		const state = makeState({
 			selectedArticle: 'A',
@@ -155,9 +128,6 @@ describe('wordCardUIReducer', () => {
 		expect(nextState.feedbackKey).toBe('READY_WARNING_BOTH');
 	});
 
-	/**
-	 * Wrong and out of tries. No point 4 u.
-	 */
 	test('marks an answer incorrect when max attempts are gone', () => {
 		const state = makeState({
 			selectedArticle: 'A',
@@ -177,9 +147,6 @@ describe('wordCardUIReducer', () => {
 		expect(nextState.feedbackKey).toBe('INCORRECT_DANGER_BOTH');
 	});
 
-	/**
-	 * Verbs don't need the article thing
-	 */
 	test('checks cards without articles without demanding an article', () => {
 		const state = makeState({
 			selectedWord: 'eat',
@@ -195,9 +162,6 @@ describe('wordCardUIReducer', () => {
 		expect(nextState.mistake).toBe('NONE');
 	});
 
-	/**
-	 * Next check completes the card
-	 */
 	test('moves correct and incorrect cards to completed on the next check', () => {
 		const correctState = makeState({
 			stage: 'CORRECT',
@@ -235,9 +199,6 @@ describe('wordCardUIReducer', () => {
 		expect(completedIncorrectState.feedbackKey).toBe('COMPLETED_DANGER_WORD');
 	});
 
-	/**
-	 * Do nothing if there's nothing to do
-	 */
 	test('does nothing when checking without a current card or after completion', () => {
 		const readyState = makeState({
 			selectedWord: 'coffee',

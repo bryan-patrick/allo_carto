@@ -5,14 +5,8 @@ import {
 	mockWords,
 } from '@/src/components/CardDeck/mockCardDeck';
 
-/**
- * Mock words
- */
 const [firstWord, secondWord, thirdWord] = mockWords;
 
-/**
- * Mock reducer state
- */
 function mockState(words = [firstWord, secondWord]): CardDeckStateProps {
 	return {
 		currentIndex: 0,
@@ -23,9 +17,6 @@ function mockState(words = [firstWord, secondWord]): CardDeckStateProps {
 	};
 }
 
-/**
- * Test next card action
- */
 describe('cardDeckReducer', () => {
 	test('moves to the next card', () => {
 		const state = mockState();
@@ -36,9 +27,6 @@ describe('cardDeckReducer', () => {
 		expect(nextState.currentId).toBe(secondWord.id);
 	});
 
-	/**
-	 * Test increment word score action
-	 */
 	test('increments only the current word score', () => {
 		const state = {
 			...mockState(),
@@ -80,9 +68,6 @@ describe('cardDeckReducer', () => {
 		expect(nextState.incorrectWords).toEqual([firstWord]);
 	});
 
-	/**
-	 * Make sure setting a new deck gives us expected state
-	 */
 	test('sets a new deck and starts at the first card', () => {
 		const state = mockState();
 		const newDeck = makeMockCardDeck({ words: [thirdWord] });

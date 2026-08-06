@@ -11,6 +11,7 @@ const firstWord: Word = {
 	correctCount: 0,
 	rarity: 'Common',
 };
+
 const secondWord: Word = {
 	id: 'word_two',
 	frenchWord: 'deux',

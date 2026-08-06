@@ -1,89 +1,54 @@
-import MappedWords from '@/src/components/WordCard/MappedWords';
+import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
+import {
+  makeMockCardDeck,
+  makeMockCardDeckState,
+} from '@/src/components/CardDeck/mockCardDeck';
+import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
 import WordCardSelection from '@/src/components/WordCard/WordCardSelection';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 
-/**
- * Mock the thing this component renders twice
- */
-jest.mock('@/src/components/WordCard/MappedWords', () => {
-  const { Text } = jest.requireActual('react-native');
-
-  return jest.fn(() => <Text>Mapped words</Text>);
-});
-
-/**
- * Mock the context hook wrapper
- */
+jest.mock('@/src/components/CardDeck/useCardDeck');
 jest.mock('@/src/components/WordCard/useWordCardUI');
 
-/**
- * Here we go again
- */
-const mockMappedWords = jest.mocked(MappedWords);
+const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseWordCardUI = jest.mocked(useWordCardUI);
 
-/**
- * Test WordCardSelection
- */
 describe('<WordCardSelection />', () => {
-  beforeEach(() => {
-    mockMappedWords.mockClear();
-    mockUseWordCardUI.mockReset();
-  });
-
-  test('renders article and word choices with dispatch handlers', async () => {
+  test('selects article and word answers when pressed', async () => {
+    const currentCard: Word = {
+      id: 'word_noun_cafe',
+      frenchWord: 'cafe',
+      englishArticle: 'The',
+      englishWords: ['coffee'],
+      pronunciation: 'ka-fay',
+      isVulgar: false,
+      CEFR: 'A1',
+      correctCount: 14,
+    };
+    const cardDeck = makeMockCardDeck({ words: [currentCard] });
     const wordCardUIDispatch = jest.fn();
 
+    mockUseCardDeck.mockReturnValue({
+      cardDeckState: makeMockCardDeckState({ cardDeck }),
+      cardDeckDispatch: jest.fn(),
+      currentCard,
+    });
     mockUseWordCardUI.mockReturnValue({
-      cardState: {
-        ...initialWordCardState,
-        selectedArticle: 'The',
-        selectedWord: 'coffee',
-      },
+      cardState: initialWordCardState,
       wordCardUIDispatch,
     });
 
-    await render(
+    const { getByText } = await render(
       <WordCardSelection
         articleWords={['The', 'A']}
         fillerWords={['coffee', 'tea']}
       />,
     );
 
-    /**
-     * First call is articles
-     */
-    expect(mockMappedWords).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        words: ['The', 'A'],
-        activeWord: 'The',
-      }),
-      undefined,
-    );
-
-    /**
-     * Second call is words
-     */
-    expect(mockMappedWords).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({
-        words: ['coffee', 'tea'],
-        activeWord: 'coffee',
-      }),
-      undefined,
-    );
-
-    const articleHandler = mockMappedWords.mock.calls[0][0].handler;
-    const wordHandler = mockMappedWords.mock.calls[1][0].handler;
-
-    /**
-     * Make sure the fake handlers dispatch
-     */
-    articleHandler('A');
-    wordHandler('tea');
+    await fireEvent.press(getByText('A'));
+    await fireEvent.press(getByText('tea'));
 
     expect(wordCardUIDispatch).toHaveBeenCalledWith({
       type: 'SELECT_ARTICLE',

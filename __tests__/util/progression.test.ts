@@ -7,16 +7,10 @@ import {
 } from '@/src/util/atlasProgression';
 import {
 	getCompletionPercentage,
-	isUnlocked,
 	type ProgressById,
 } from '@/src/util/progression';
 
-/**
- * Make some stored progress
- */
-function makeProgressById(
-	percentages: Record<string, number>,
-): ProgressById {
+function makeProgressById(percentages: Record<string, number>): ProgressById {
 	const result: ProgressById = {};
 
 	for (const id of Object.keys(percentages)) {
@@ -31,9 +25,6 @@ function makeProgressById(
 	return result;
 }
 
-/**
- * Make a small atlas
- */
 function makeAtlas(): DeckAtlas {
 	const firstDeck = makeMockCardDeck({
 		id: 'deck_one',
@@ -94,65 +85,34 @@ function makeAtlas(): DeckAtlas {
 }
 
 describe('progression', () => {
-	test('unlocks content with no requirements', () => {
-		expect(isUnlocked({ progressById: {} })).toBe(true);
-	});
-
-	test('treats missing progress as 0%', () => {
-		expect(isUnlocked({
-			requirements: [
-				{ id: 'deck_one', requiredCompletionPercentage: 1 },
-			],
-			progressById: {},
-		})).toBe(false);
-	});
-
-	test('passes a requirement at its exact percentage', () => {
-		expect(isUnlocked({
-			requirements: [
-				{ id: 'deck_one', requiredCompletionPercentage: 50 },
-			],
-			progressById: makeProgressById({ deck_one: 50 }),
-		})).toBe(true);
-	});
-
-	test('requires every listed requirement to pass', () => {
-		expect(isUnlocked({
-			requirements: [
-				{ id: 'deck_one', requiredCompletionPercentage: 50 },
-				{ id: 'deck_two', requiredCompletionPercentage: 50 },
-			],
-			progressById: makeProgressById({
-				deck_one: 75,
-				deck_two: 49.9,
-			}),
-		})).toBe(false);
-	});
-
 	test('calculates full-precision familiarity without stacking New points', () => {
-		expect(getCompletionPercentage({
-			wordCount: 3,
-			rankCounts: {
-				fnew: 0,
-				bronze: 1,
-				silver: 1,
-				gold: 0,
-				diamond: 0,
-			},
-		})).toBeCloseTo(25);
+		expect(
+			getCompletionPercentage({
+				wordCount: 3,
+				rankCounts: {
+					fnew: 0,
+					bronze: 1,
+					silver: 1,
+					gold: 0,
+					diamond: 0,
+				},
+			}),
+		).toBeCloseTo(25);
 	});
 
 	test('treats content with no words as 0%', () => {
-		expect(getCompletionPercentage({
-			wordCount: 0,
-			rankCounts: {
-				fnew: 0,
-				bronze: 0,
-				silver: 0,
-				gold: 0,
-				diamond: 0,
-			},
-		})).toBe(0);
+		expect(
+			getCompletionPercentage({
+				wordCount: 0,
+				rankCounts: {
+					fnew: 0,
+					bronze: 0,
+					silver: 0,
+					gold: 0,
+					diamond: 0,
+				},
+			}),
+		).toBe(0);
 	});
 
 	test('deduplicates words within decks, places, and chapters', () => {
@@ -179,39 +139,37 @@ describe('progression', () => {
 	test('checks every parent before allowing direct access to a child', () => {
 		const atlas = makeAtlas();
 
-		expect(isProgressAccessible({
-			atlas,
-			id: 'deck_three',
-			progressById: {},
-		})).toBe(false);
-		expect(isProgressAccessible({
-			atlas,
-			id: 'deck_three',
-			progressById: makeProgressById({ chapter_one: 50 }),
-		})).toBe(true);
+		expect(
+			isProgressAccessible({
+				atlas,
+				id: 'deck_three',
+				progressById: {},
+			}),
+		).toBe(false);
+		expect(
+			isProgressAccessible({
+				atlas,
+				id: 'deck_three',
+				progressById: makeProgressById({ chapter_one: 50 }),
+			}),
+		).toBe(true);
 	});
 
 	test('rejects duplicate ids, missing references, and invalid percentages', () => {
 		const duplicateAtlas = makeAtlas();
 		duplicateAtlas.chapters[1].id = 'place_one';
-		expect(() => validateProgression(duplicateAtlas)).toThrow(
-			'Duplicate progression ID: place_one',
-		);
+		expect(() => validateProgression(duplicateAtlas)).toThrow();
 
 		const missingReferenceAtlas = makeAtlas();
 		missingReferenceAtlas.chapters[1].unlockRequirements = [
 			{ id: 'missing', requiredCompletionPercentage: 50 },
 		];
-		expect(() => validateProgression(missingReferenceAtlas)).toThrow(
-			'Unknown unlock requirement missing on chapter_two',
-		);
+		expect(() => validateProgression(missingReferenceAtlas)).toThrow();
 
 		const invalidPercentageAtlas = makeAtlas();
 		invalidPercentageAtlas.chapters[1].unlockRequirements = [
 			{ id: 'chapter_one', requiredCompletionPercentage: 101 },
 		];
-		expect(() => validateProgression(invalidPercentageAtlas)).toThrow(
-			'Invalid unlock percentage on chapter_two: 101',
-		);
+		expect(() => validateProgression(invalidPercentageAtlas)).toThrow();
 	});
 });

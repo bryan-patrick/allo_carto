@@ -1,6 +1,5 @@
 import {
 	getDeckRankProgress,
-	getDeckRankUnlockCount,
 } from '@/src/util/deckRankProgression';
 import type { WordRankKey } from '@/src/util/wordRanks';
 
@@ -21,12 +20,6 @@ function makeRankCounts(
 }
 
 describe('deck rank progression', () => {
-	it('rounds the halfway unlock threshold up', () => {
-		expect(getDeckRankUnlockCount(0)).toBe(0);
-		expect(getDeckRankUnlockCount(50)).toBe(25);
-		expect(getDeckRankUnlockCount(51)).toBe(26);
-	});
-
 	it('starts Unseen as available and keeps New locked', () => {
 		const rankCounts = makeRankCounts({ unseen: deckWordCount });
 

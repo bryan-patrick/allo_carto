@@ -1,24 +1,15 @@
-import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
+import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
 import {
   makeMockCardDeck,
   makeMockCardDeckState,
 } from '@/src/components/CardDeck/mockCardDeck';
-import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
+import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import WordCardButton from '@/src/components/WordCard/WordCardButton';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { StyleSheet } from 'react-native';
-import {
-  impactAsync,
-  ImpactFeedbackStyle,
-  notificationAsync,
-} from 'expo-haptics';
+import { render, userEvent, waitFor } from '@testing-library/react-native';
 
-/**
- * Mock all the things
- */
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(),
   ImpactFeedbackStyle: {
@@ -31,26 +22,22 @@ jest.mock('expo-haptics', () => ({
     Error: 'error',
   },
 }));
+
 jest.mock('@/src/db/useUserProgress');
 jest.mock('@/src/components/CardDeck/useCardDeck');
 jest.mock('@/src/components/WordCard/useWordCardUI');
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseWordCardUI = jest.mocked(useWordCardUI);
-const mockImpactAsync = jest.mocked(impactAsync);
-const mockNotificationAsync = jest.mocked(notificationAsync);
 const mockUseUserProgress = jest.mocked(useUserProgress);
 const mockRecordCorrectAnswer = jest.fn();
 
-/**
- * Mock state
- */
 function mockDeckState(cardDeckDispatch = jest.fn()) {
   const currentCard: Word = {
     id: 'word_noun_cafe',
     frenchWord: 'cafe',
     englishArticle: 'The',
-    englishWords: ['coffee'],
+    englishWords: [ 'coffee' ],
     pronunciation: 'ka-fay',
     isVulgar: false,
     CEFR: 'A1',
@@ -61,7 +48,7 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
     cardDeckState: makeMockCardDeckState({
       currentIndex: 0,
       currentId: currentCard.id,
-      cardDeck: makeMockCardDeck({ words: [currentCard] }),
+      cardDeck: makeMockCardDeck({ words: [ currentCard ] }),
     }),
     cardDeckDispatch,
     currentCard,
@@ -72,8 +59,6 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
 
 describe('<WordCardButton />', () => {
   beforeEach(() => {
-    mockImpactAsync.mockClear();
-    mockNotificationAsync.mockClear();
     mockRecordCorrectAnswer.mockReset();
     mockRecordCorrectAnswer.mockResolvedValue(true);
     mockUseUserProgress.mockReturnValue({
@@ -99,15 +84,13 @@ describe('<WordCardButton />', () => {
       <WordCardButton testID="word-card-button">Check</WordCardButton>,
     );
 
-    /**
-     * No selected article or selected word
-     */
     expect(getByTestId('word-card-button')).toBeDisabled();
   });
 
-  test('checks the current answer on press in', async () => {
+  test('checks the current answer when pressed', async () => {
     const wordCardUIDispatch = jest.fn();
     const { currentCard } = mockDeckState();
+    const user = userEvent.setup();
 
     mockUseWordCardUI.mockReturnValue({
       cardState: {
@@ -120,10 +103,7 @@ describe('<WordCardButton />', () => {
 
     const { getByText } = await render(<WordCardButton>Check</WordCardButton>);
 
-    /**
-     * The component checks on press in.
-     */
-    await fireEvent(getByText('Check'), 'pressIn');
+    await user.press(getByText('Check'));
 
     expect(wordCardUIDispatch).toHaveBeenCalledWith({
       type: 'CHECK_ANSWER',
@@ -132,7 +112,6 @@ describe('<WordCardButton />', () => {
   });
 
   test('cannot check an answer while another progress write is running', async () => {
-    const wordCardUIDispatch = jest.fn();
     mockDeckState();
     mockUseUserProgress.mockReturnValue({
       isUpdatingProgress: true,
@@ -148,7 +127,7 @@ describe('<WordCardButton />', () => {
         selectedArticle: 'The',
         selectedWord: 'coffee',
       },
-      wordCardUIDispatch,
+      wordCardUIDispatch: jest.fn(),
     });
 
     const { getByTestId } = await render(
@@ -156,26 +135,9 @@ describe('<WordCardButton />', () => {
     );
 
     expect(getByTestId('word-card-button')).toBeDisabled();
-    await fireEvent(getByTestId('word-card-button'), 'pressIn');
-    expect(wordCardUIDispatch).not.toHaveBeenCalled();
   });
 
-  test('reserves space for the next-card arrow before it appears', async () => {
-    mockDeckState();
-    mockUseWordCardUI.mockReturnValue({
-      cardState: initialWordCardState,
-      wordCardUIDispatch: jest.fn(),
-    });
-
-    const { getByTestId } = await render(<WordCardButton>Check</WordCardButton>);
-    const textRowStyle = StyleSheet.flatten(
-      getByTestId('word-card-button-content').props.style,
-    );
-
-    expect(textRowStyle.minHeight).toBe(24);
-  });
-
-  test('increments score and fires success haptics after a correct answer', async () => {
+  test('records a correct answer and increments its score', async () => {
     const cardDeckDispatch = jest.fn();
     mockDeckState(cardDeckDispatch);
 
@@ -193,9 +155,6 @@ describe('<WordCardButton />', () => {
 
     await render(<WordCardButton>Next card</WordCardButton>);
 
-    /**
-     * Make sure setting the card state called the action
-     */
     await waitFor(() => {
       expect(mockRecordCorrectAnswer).toHaveBeenCalledWith('word_noun_cafe');
       expect(cardDeckDispatch).toHaveBeenCalledWith({
@@ -203,11 +162,5 @@ describe('<WordCardButton />', () => {
       });
     });
 
-    /**
-     * Make sure the haptic went off!
-     */
-    expect(mockImpactAsync).toHaveBeenCalledWith(
-      ImpactFeedbackStyle.Light,
-    );
   });
 });

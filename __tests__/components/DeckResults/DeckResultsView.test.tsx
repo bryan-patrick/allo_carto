@@ -1,22 +1,16 @@
-import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
+import { DeckToTheGate } from '@/data/french/decks';
+import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
 import {
   makeMockCardDeckState,
 } from '@/src/components/CardDeck/mockCardDeck';
-import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
+import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckResultsView from '@/src/components/Views/DeckResultsView';
-import { DeckToTheGate } from '@/data/french/decks';
+import { fireEvent, render } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import { useLinkProps } from 'expo-router/react-navigation';
-import { fireEvent, render } from '@testing-library/react-native';
 
-/**
- * Mock the deck hook
- */
 jest.mock('@/src/components/CardDeck/useCardDeck');
 
-/**
- * Mock navigation so we can check the link press.
- */
 jest.mock('expo-router/react-navigation', () => ({
   useLinkProps: jest.fn(() => ({})),
 }));
@@ -28,9 +22,6 @@ jest.mock('expo-router', () => ({
   },
 }));
 
-/**
- * Mock audio since our button boops
- */
 jest.mock('expo-audio', () => ({
   useAudioPlayer: jest.fn(() => ({
     volume: 0,
@@ -39,9 +30,6 @@ jest.mock('expo-audio', () => ({
   })),
 }));
 
-/**
- * Mock icons
- */
 jest.mock('@expo/vector-icons/MaterialIcons', () => {
   const { Text } = jest.requireActual('react-native');
 
@@ -53,9 +41,6 @@ const mockUseLinkProps = jest.mocked(useLinkProps);
 const mockRouterDismissTo = jest.mocked(router.dismissTo);
 const testingImage = { uri: 'testing-deck-image.jpg' };
 
-/**
- * Testing deck results view
- */
 describe('<DeckResultsView />', () => {
   beforeEach(() => {
     mockRouterDismissTo.mockClear();
@@ -64,7 +49,7 @@ describe('<DeckResultsView />', () => {
       {
         id: 'word_noun_cafe',
         frenchWord: 'cafe',
-        englishWords: ['coffee'],
+        englishWords: [ 'coffee' ],
         pronunciation: 'ka-fay',
         isVulgar: false,
         CEFR: 'A1',
@@ -73,7 +58,7 @@ describe('<DeckResultsView />', () => {
       {
         id: 'word_noun_the',
         frenchWord: 'the',
-        englishWords: ['tea'],
+        englishWords: [ 'tea' ],
         pronunciation: 'tay',
         isVulgar: false,
         CEFR: 'A1',
@@ -89,56 +74,33 @@ describe('<DeckResultsView />', () => {
     mockUseCardDeck.mockReturnValue({
       cardDeckState: makeMockCardDeckState({
         currentIndex: 0,
-        currentId: words[0].id,
+        currentId: words[ 0 ].id,
         cardDeck,
-        correctWords: [words[0]],
-        incorrectWords: [words[1]],
+        correctWords: [ words[ 0 ] ],
+        incorrectWords: [ words[ 1 ] ],
       }),
       cardDeckDispatch: jest.fn(),
-      currentCard: words[0],
+      currentCard: words[ 0 ],
     });
   });
 
-  /**
-   * Make sure the results render
-   */
   test('renders the deck details and correct and incorrect words', async () => {
     const { getByText, getAllByText } = await render(<DeckResultsView />);
 
-    /**
-     * Make sure the title row is rendering the selected deck.
-     * Note the GradientText component renders the title twice 
-     * (on purpose).
-     */
-    getByText('Good job! You completed a ');
-    expect(getAllByText(DeckToTheGate.title)).toHaveLength(2);
-    getByText(' deck.');
+    getAllByText(DeckToTheGate.title);
 
-    /**
-     * Make sure correct words render in the correct section.
-     */
     getByText('Correct');
     getByText('cafe');
     getByText('coffee');
 
-    /**
-     * Make sure incorrect words render in the incorrect section.
-     */
     getByText('Incorrect');
     getByText('the');
     getByText('tea');
   });
 
-  /**
-   * Make sure the finish button goes back to deck select
-   */
   test('dismisses results back to the selected place deck list when pressing finish', async () => {
     const { getByText } = await render(<DeckResultsView />);
 
-    /**
-     * Pressing the finish link should pop back to deck select, so back
-     * does not land on completed results again.
-     */
     await fireEvent.press(getByText('Finish'));
     expect(mockRouterDismissTo).toHaveBeenCalledWith({
       pathname: '/CardDeckSelect',

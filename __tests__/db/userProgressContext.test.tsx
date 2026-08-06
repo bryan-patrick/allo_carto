@@ -1,13 +1,10 @@
-import { useUserProgress } from '@/src/db/useUserProgress';
-import { UserProgressProvider } from '@/src/db/userProgressContext';
 import getUserProgress from '@/src/db/queries/getUserProgress';
 import { writeCorrectAnswer } from '@/src/db/queries/writeUserProgress';
+import { useUserProgress } from '@/src/db/useUserProgress';
+import { UserProgressProvider } from '@/src/db/userProgressContext';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 
-/**
- * Mock the queries
- */
 jest.mock('@/src/db/queries/getUserProgress');
 jest.mock('@/src/db/queries/writeUserProgress', () => ({
 	writeCorrectAnswer: jest.fn(),
@@ -17,9 +14,6 @@ jest.mock('@/src/db/queries/writeUserProgress', () => ({
 const mockGetUserProgress = jest.mocked(getUserProgress);
 const mockWriteCorrectAnswer = jest.mocked(writeCorrectAnswer);
 
-/**
- * Make a promise we control
- */
 function deferred<T>() {
 	let resolve!: (value: T) => void;
 	let reject!: (reason?: unknown) => void;
@@ -31,10 +25,7 @@ function deferred<T>() {
 	return { promise, reject, resolve };
 }
 
-/**
- * Wrap the progress hook
- */
-function Wrapper({ children }: { children: ReactNode }) {
+function Wrapper({ children }: { children: ReactNode; }) {
 	return (
 		<UserProgressProvider isDatabaseReady userId="user_one">
 			{children}
@@ -49,6 +40,10 @@ describe('<UserProgressProvider />', () => {
 	});
 
 	test('starts only one write when input is repeated before React rerenders', async () => {
+		/**
+		 * Keep the first write pending so a second press reaches the
+		 * synchronous in-flight guard before React can rerender.
+		 */
 		const pendingWrite = deferred<void>();
 		mockWriteCorrectAnswer.mockReturnValue(pendingWrite.promise);
 		const { result } = await renderHook(() => useUserProgress(), {
@@ -78,7 +73,10 @@ describe('<UserProgressProvider />', () => {
 	});
 
 	test('keeps input blocked until refreshed progress is loaded', async () => {
-		const pendingRefresh = deferred<{}>();
+		/**
+		 * Let the write finish immediately, then pause the refresh that follows it.
+		 */
+		const pendingRefresh = deferred<any>();
 		mockWriteCorrectAnswer.mockResolvedValue(undefined);
 		mockGetUserProgress
 			.mockResolvedValueOnce({})
@@ -108,9 +106,12 @@ describe('<UserProgressProvider />', () => {
 	});
 
 	test('releases the write block after a failed write', async () => {
+		/**
+		 * The provider reports expected write failures, so silence that output here.
+		 */
 		const consoleError = jest
 			.spyOn(console, 'error')
-			.mockImplementation(() => {});
+			.mockImplementation(() => { });
 		mockWriteCorrectAnswer
 			.mockRejectedValueOnce(new Error('write failed'))
 			.mockResolvedValueOnce(undefined);

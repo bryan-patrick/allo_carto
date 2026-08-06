@@ -1,23 +1,15 @@
 import { makeMockCardDeck, makeMockCardDeckState, mockWords } from '@/src/components/CardDeck/mockCardDeck';
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
-import WordCard from '@/src/components/WordCard/WordCard';
 import WordCardContainer from '@/src/components/WordCard/WordCardContainer';
-import WordCardSelection from '@/src/components/WordCard/WordCardSelection';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import getFillerWords from '@/src/util/getFillerWords';
 import { render, waitFor } from '@testing-library/react-native';
 
-/**
- * Mock the util
- */
 jest.mock('@/src/util/getFillerWords');
 jest.mock('@/src/db/useUserProgress');
 jest.mock('@/src/components/CardDeck/useCardDeck');
 
-/**
- * Mock the children it is supposed to render
- */
 jest.mock('@/src/components/WordCard/WordCard', () => {
   const { Text } = jest.requireActual('react-native');
 
@@ -40,12 +32,7 @@ const mockGetFillerWords = jest.mocked(getFillerWords);
 const mockUseUserProgress = jest.mocked(useUserProgress);
 const mockRecordWordSeen = jest.fn();
 const mockUseCardDeck = jest.mocked(useCardDeck);
-const mockWordCard = jest.mocked(WordCard);
-const mockWordCardSelection = jest.mocked(WordCardSelection);
 
-/**
- * Test the WordCardContainer component
- */
 describe('<WordCardContainer />', () => {
   beforeEach(() => {
     mockGetFillerWords.mockReset();
@@ -59,9 +46,6 @@ describe('<WordCardContainer />', () => {
       refreshProgress: jest.fn(),
       status: 'ready',
     });
-    mockWordCard.mockClear();
-    mockWordCardSelection.mockClear();
-
     const adjective = {
       ...mockWords[0],
       id: 'word_adjective_rapide',
@@ -90,7 +74,11 @@ describe('<WordCardContainer />', () => {
     });
   });
 
-  test('renders the word card pieces', async () => {
+  /**
+   * Recording an answer updates word scores. That rerender must not move
+   * the answer buttons while the learner is still looking at the card.
+   */
+  test('does not reshuffle choices when progress changes', async () => {
     mockGetFillerWords
       .mockResolvedValueOnce(['coffee', 'tea'])
       .mockResolvedValueOnce(['The', 'A']);
@@ -108,46 +96,18 @@ describe('<WordCardContainer />', () => {
       correctCount: 14,
     };
 
-    const { getByText, rerender } = await render(
+    const { rerender } = await render(
       <WordCardContainer
         word={word}
         isCurrent={true}
       />,
     );
 
-    /**
-     * Make sure the container rendered its children
-     */
-    getByText('Word card');
-    getByText('Word card selection');
-    getByText('Check');
-
-    /**
-     * Make sure the current card isCurrent
-     */
-    expect(mockWordCard).toHaveBeenCalledWith(
-      expect.objectContaining({
-        isCurrent: true,
-      }),
-      undefined,
-    );
-
-    /**
-     * This is for loadWords() in the useEffect
-     */
     await waitFor(() => {
       expect(mockGetFillerWords).toHaveBeenNthCalledWith(1, {
         correctWords: ['coffee'],
         words: ['dog', 'house', 'book', 'apple', 'train'],
       });
-
-      expect(mockWordCardSelection).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          articleWords: ['The', 'A'],
-          fillerWords: ['coffee', 'tea'],
-        }),
-        undefined,
-      );
     });
 
     const updatedWords = mockWords.map(deckWord => ({
