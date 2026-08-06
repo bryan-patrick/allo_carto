@@ -33,10 +33,7 @@ function getRouteParam(routeParam: string | string[] | undefined) {
 /**
  * Find the deck from the route
  */
-function findDeckByRouteParams({
-	deckTitle,
-	placeId,
-}: ViewCardsRouteParams): CardDeck | undefined {
+function findDeckByRouteParams({ deckTitle, placeId }: ViewCardsRouteParams): CardDeck | undefined {
 	let routeDeck: CardDeck | undefined;
 
 	for (const chapter of deckAtlas.chapters) {

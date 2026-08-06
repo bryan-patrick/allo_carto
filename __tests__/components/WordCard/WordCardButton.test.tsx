@@ -1,8 +1,5 @@
 import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
-import {
-	makeMockCardDeck,
-	makeMockCardDeckState,
-} from '@/src/components/CardDeck/mockCardDeck';
+import { makeMockCardDeck, makeMockCardDeckState } from '@/src/components/CardDeck/mockCardDeck';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import WordCardButton from '@/src/components/WordCard/WordCardButton';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';

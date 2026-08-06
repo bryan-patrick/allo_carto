@@ -1,8 +1,4 @@
-import type {
-	CardRarity,
-	CEFR,
-	Word,
-} from '../components/CardDeck/cardDeckTypes';
+import type { CardRarity, CEFR, Word } from '../components/CardDeck/cardDeckTypes';
 
 export interface WordRow {
 	id: string;

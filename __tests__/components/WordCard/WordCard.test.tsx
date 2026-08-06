@@ -1,7 +1,4 @@
-import {
-	CardDeckContext,
-	initialCardDeckState,
-} from '@/src/components/CardDeck/cardDeckContext';
+import { CardDeckContext, initialCardDeckState } from '@/src/components/CardDeck/cardDeckContext';
 import WordCard from '@/src/components/WordCard/WordCard';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
@@ -71,9 +68,7 @@ describe('<WordCard />', () => {
 			wordCardUIDispatch: jest.fn(),
 		});
 
-		await renderWithAFakeDispatchSoWeCanDoActions(
-			<WordCard isCurrent={true} />,
-		);
+		await renderWithAFakeDispatchSoWeCanDoActions(<WordCard isCurrent={true} />);
 
 		await waitFor(() => {
 			expect(mockRouterPush).toHaveBeenCalledWith('/DeckResults');

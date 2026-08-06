@@ -16,8 +16,7 @@ function findDeckPlaceId(cardDeck: CardDeck) {
 		for (const place of chapter.places) {
 			const deck = place.decks.find(deck => {
 				const isSameTitle = deck.title === cardDeck.title;
-				const hasSameWordCount =
-					deck.wordIds.length === cardDeck.wordIds.length;
+				const hasSameWordCount = deck.wordIds.length === cardDeck.wordIds.length;
 				const hasSameWords = deck.wordIds.every(wordId => {
 					return cardDeck.wordIds.includes(wordId);
 				});
@@ -40,9 +39,7 @@ export default function DeckResultsView() {
 	const { cardDeckState } = useCardDeck();
 	const { title } = cardDeckState.cardDeck;
 	const { correctWords, incorrectWords } = cardDeckState;
-	const isFirstLetterAVowel = englishVowels.includes(
-		title.split('')[0].toLowerCase(),
-	);
+	const isFirstLetterAVowel = englishVowels.includes(title.split('')[0].toLowerCase());
 	const resultsTitleArticle = isFirstLetterAVowel ? 'an' : 'a';
 	const placeId = findDeckPlaceId(cardDeckState.cardDeck);
 
@@ -61,8 +58,7 @@ export default function DeckResultsView() {
 	/**
 	 * Destructure styles
 	 */
-	const { titleStyle, titleRowStyle, resultsContainerStyle, wordsFlexRows } =
-		styles;
+	const { titleStyle, titleRowStyle, resultsContainerStyle, wordsFlexRows } = styles;
 
 	/**
 	 * Render the deck results
@@ -72,9 +68,7 @@ export default function DeckResultsView() {
 			<View style={resultsContainerStyle}>
 				<View>
 					<View style={titleRowStyle}>
-						<Text style={titleStyle}>
-							Good job! You completed {resultsTitleArticle}{' '}
-						</Text>
+						<Text style={titleStyle}>Good job! You completed {resultsTitleArticle} </Text>
 						<GradientText
 							text={title}
 							colors={[

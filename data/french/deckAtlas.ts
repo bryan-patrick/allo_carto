@@ -64,11 +64,7 @@ export const deckAtlas: DeckAtlas = {
 					description:
 						'Flights, feathers, occasional bread delays. These decks focus on situations while travelling.',
 					image: aeroportOiseau,
-					decks: [
-						DeckDawnAtTheDropOff,
-						DeckTroubleInTheTerminal,
-						DeckToTheGate,
-					],
+					decks: [DeckDawnAtTheDropOff, DeckTroubleInTheTerminal, DeckToTheGate],
 				},
 				{
 					id: 'hotel-bonne-chance',
@@ -115,7 +111,5 @@ export const deckAtlas: DeckAtlas = {
  * Get every playable deck in progression order.
  */
 export function getDecks(atlas: DeckAtlas = deckAtlas): CardDeck[] {
-	return atlas.chapters.flatMap(chapter =>
-		chapter.places.flatMap(place => place.decks),
-	);
+	return atlas.chapters.flatMap(chapter => chapter.places.flatMap(place => place.decks));
 }

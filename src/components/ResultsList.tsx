@@ -36,11 +36,9 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
 	 * Is correct or nah?
 	 */
 	const title: string = isCorrect ? 'Correct' : 'Incorrect';
-	const iconColor: string =
-		isCorrect ? colors.dark.success : colors.dark.danger;
+	const iconColor: string = isCorrect ? colors.dark.success : colors.dark.danger;
 	const isCorrectStyle: TextStyle = isCorrect ? successStyle : dangerStyle;
-	const iconName: ComponentProps<typeof MaterialIcons>['name'] =
-		isCorrect ? 'check' : 'close';
+	const iconName: ComponentProps<typeof MaterialIcons>['name'] = isCorrect ? 'check' : 'close';
 	const emptyText =
 		isCorrect ?
 			"You didn't get any correct. Try again!"
@@ -72,19 +70,10 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
 								/>
 								<View style={wordRowStyle}>
 									<Text style={frenchWordStyle}>{frenchWord}</Text>
-									<Text style={[englishWordStyle, isCorrectStyle]}>
-										{englishWords.join(', ')}
-									</Text>
+									<Text style={[englishWordStyle, isCorrectStyle]}>{englishWords.join(', ')}</Text>
 								</View>
 							</View>
-							<Text
-								style={[
-									CEFRStyle,
-									{ backgroundColor: colors.light.CEFR[CEFR] },
-								]}
-							>
-								{CEFR}
-							</Text>
+							<Text style={[CEFRStyle, { backgroundColor: colors.light.CEFR[CEFR] }]}>{CEFR}</Text>
 						</View>
 					);
 				})}

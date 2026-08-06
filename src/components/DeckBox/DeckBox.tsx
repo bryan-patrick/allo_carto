@@ -32,15 +32,10 @@ interface SelectCardDeckProps {
 /**
  * DeckBox component
  */
-export default function DeckBox({
-	deck,
-	placeId,
-	isLocked,
-}: SelectCardDeckProps) {
+export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps) {
 	const userId = useUserContext()?.id;
 	const { cardDeckDispatch } = useCardDeck();
-	const [rankCounts, setRankCounts] =
-		useState<DeckRankCounts>(emptyDeckRankCounts);
+	const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
 	const [wordProgressKeyByWordId, setWordProgressKeyByWordId] = useState<
 		Record<string, WordProgressKey>
 	>({});

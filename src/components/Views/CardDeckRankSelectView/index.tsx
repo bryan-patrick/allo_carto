@@ -3,9 +3,7 @@ import sharedStyles from '@/src/app/sharedStyles';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import { getDB, getDeck } from '@/src/db/interface';
 import type { DeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
-import getDeckRankCounts, {
-	emptyDeckRankCounts,
-} from '@/src/db/queries/getDeckRankCounts';
+import getDeckRankCounts, { emptyDeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import Loader from '@/src/components/Loader';
@@ -24,15 +22,10 @@ export default function CardDeckRankSelectView() {
 	const userId = useUserContext()?.id;
 	const { cardDeckState, cardDeckDispatch } = useCardDeck();
 	const { progressById, status } = useUserProgress();
-	const [rankCounts, setRankCounts] =
-		useState<DeckRankCounts>(emptyDeckRankCounts);
+	const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
 	const { cardDeck } = cardDeckState;
 	const deckWordCount = cardDeck.wordIds.length;
-	const {
-		rankSelectFlexStyle,
-		rankSelectContainerStyle,
-		rankSelectInnerCardStyle,
-	} = styles;
+	const { rankSelectFlexStyle, rankSelectContainerStyle, rankSelectInnerCardStyle } = styles;
 
 	const handleRankSelect = useCallback(
 		async (rank: WordRankKey) => {

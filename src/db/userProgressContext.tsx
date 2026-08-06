@@ -37,8 +37,7 @@ const initialValue: UserProgressContextValue = {
 	status: 'loading',
 };
 
-export const UserProgressContext =
-	createContext<UserProgressContextValue>(initialValue);
+export const UserProgressContext = createContext<UserProgressContextValue>(initialValue);
 
 /**
  * User progress provider
@@ -166,9 +165,5 @@ export function UserProgressProvider({
 	/**
 	 * Render the provider
 	 */
-	return (
-		<UserProgressContext.Provider value={value}>
-			{children}
-		</UserProgressContext.Provider>
-	);
+	return <UserProgressContext.Provider value={value}>{children}</UserProgressContext.Provider>;
 }

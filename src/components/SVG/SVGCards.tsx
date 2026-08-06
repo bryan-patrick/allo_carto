@@ -5,11 +5,7 @@ import SVG from './SVG';
 /**
  * SVGCards Component
  */
-export default function SVGCards({
-	color = '#ffffff',
-	height = '32px',
-	width = '32px',
-}: SVGProps) {
+export default function SVGCards({ color = '#ffffff', height = '32px', width = '32px' }: SVGProps) {
 	return (
 		<SVG
 			viewbox="0 0 921 647.736"

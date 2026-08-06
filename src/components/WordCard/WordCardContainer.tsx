@@ -1,19 +1,9 @@
 import colors from '@/src/app/colors';
 import sharedStyles from '@/src/app/sharedStyles';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import {
-	useEffect,
-	useLayoutEffect,
-	useReducer,
-	useRef,
-	useState,
-} from 'react';
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, {
-	useAnimatedStyle,
-	useSharedValue,
-	withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { englishArticles } from '../../util/filterFillerWords';
 import getFillerWords from '../../util/getFillerWords';
 import { type Word } from '../CardDeck/cardDeckTypes';
@@ -55,10 +45,7 @@ function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
 /**
  * WordCardContainer Component
  */
-export default function WordCardContainer({
-	word,
-	isCurrent,
-}: CardContainerProps) {
+export default function WordCardContainer({ word, isCurrent }: CardContainerProps) {
 	/**
 	 * State
 	 */
@@ -68,17 +55,13 @@ export default function WordCardContainer({
 	const [articleWords, setArticleWords] = useState<string[]>([]);
 	const loadedWordId = useRef<string | null>(null);
 	const seenWordId = useRef<string | null>(null);
-	const [cardState, wordCardUIDispatch] = useReducer(
-		wordCardUIReducer,
-		initialWordCardState,
-	);
+	const [cardState, wordCardUIDispatch] = useReducer(wordCardUIReducer, initialWordCardState);
 
 	/**
 	 * Destructure styles
 	 */
 	const { container } = wordCardContainerStyles;
-	const isNextCardButton =
-		cardState.stage === 'CORRECT' || cardState.stage === 'INCORRECT';
+	const isNextCardButton = cardState.stage === 'CORRECT' || cardState.stage === 'INCORRECT';
 	const nextCardArrowColor =
 		cardState.progress === 'SUCCESS' ? colors.dark.text : colors.light.text;
 

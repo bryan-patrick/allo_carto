@@ -1,12 +1,6 @@
 import colors from '@/src/app/colors';
 import { memo } from 'react';
-import {
-	type ViewStyle,
-	StyleSheet,
-	Text,
-	TextStyle,
-	View,
-} from 'react-native';
+import { type ViewStyle, StyleSheet, Text, TextStyle, View } from 'react-native';
 import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import formatFrenchWordWithArticle from '../../util/formatFrenchWordWithArticle';
 import { useCardDeck } from '../CardDeck/useCardDeck';
@@ -95,13 +89,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 	 * Render the back of the WordCard
 	 */
 	return (
-		<Animated.View
-			style={[
-				sharedWordCardStyles.wordCardInner,
-				cardBack,
-				wordCardBackFlippedStyle,
-			]}
-		>
+		<Animated.View style={[sharedWordCardStyles.wordCardInner, cardBack, wordCardBackFlippedStyle]}>
 			<WordCardHeader />
 			<View style={cardMain}>
 				<Text style={wordId}>{displayedFrenchWord}</Text>

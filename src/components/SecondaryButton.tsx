@@ -1,10 +1,4 @@
-import {
-	cloneElement,
-	isValidElement,
-	ReactNode,
-	useEffect,
-	useState,
-} from 'react';
+import { cloneElement, isValidElement, ReactNode, useEffect, useState } from 'react';
 import {
 	GestureResponderEvent,
 	Pressable,
@@ -27,10 +21,7 @@ import colors from '../app/colors';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const secondaryButtonShadowHeight = 2;
 
-interface SecondaryButtonProps extends Omit<
-	PressableProps,
-	'children' | 'style'
-> {
+interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'> {
 	SVGElement?: ReactNode;
 	children?: ReactNode;
 	color?: string;
@@ -58,8 +49,7 @@ export default function SecondaryButton({
 	/**
 	 * Destructure styles
 	 */
-	const { buttonStyle, buttonTextRowStyle, buttonTextStyle, fullwidthStyle } =
-		styles;
+	const { buttonStyle, buttonTextRowStyle, buttonTextStyle, fullwidthStyle } = styles;
 
 	/**
 	 * State vars
@@ -77,11 +67,7 @@ export default function SecondaryButton({
 
 	const outlineTextStyle = type === 'outline' && color ? { color } : {};
 	const iconElement =
-		(
-			type === 'outline' &&
-			color &&
-			isValidElement<{ color?: string }>(SVGElement)
-		) ?
+		type === 'outline' && color && isValidElement<{ color?: string }>(SVGElement) ?
 			cloneElement(SVGElement, { color })
 		:	SVGElement;
 
@@ -139,21 +125,13 @@ export default function SecondaryButton({
 	return (
 		<AnimatedPressable
 			{...props}
-			style={[
-				buttonStyle,
-				animatedButtonStyle,
-				fullwidth && fullwidthStyle,
-				typeStyle,
-				style,
-			]}
+			style={[buttonStyle, animatedButtonStyle, fullwidth && fullwidthStyle, typeStyle, style]}
 			onPressIn={handleOnPressIn}
 			onPressOut={handleOnPressOut}
 			hitSlop={4}
 		>
 			<View style={buttonTextRowStyle}>
-				<Text style={[buttonTextStyle, textStyle, outlineTextStyle]}>
-					{children}
-				</Text>
+				<Text style={[buttonTextStyle, textStyle, outlineTextStyle]}>{children}</Text>
 				{iconElement}
 			</View>
 		</AnimatedPressable>

@@ -6,22 +6,8 @@ import {
 	notificationAsync,
 	NotificationFeedbackType,
 } from 'expo-haptics';
-import {
-	ReactElement,
-	ReactNode,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
-import {
-	Pressable,
-	PressableProps,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native';
+import { ReactElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, PressableProps, StyleSheet, Text, View } from 'react-native';
 import Animated, {
 	Easing,
 	useAnimatedStyle,
@@ -72,8 +58,7 @@ export default function WordCardButton({
 		disabledText,
 	} = wordCardButtonStyles;
 
-	const pressableStateStyle =
-		cardState.progress === 'SUCCESS' ? successPressable : null;
+	const pressableStateStyle = cardState.progress === 'SUCCESS' ? successPressable : null;
 	const textStateStyle = cardState.progress === 'SUCCESS' ? successText : null;
 
 	/**
@@ -165,17 +150,13 @@ export default function WordCardButton({
 					break;
 				}
 				case 'READY_WARNING':
-					void Promise.resolve(
-						notificationAsync(NotificationFeedbackType.Warning),
-					).finally(() => {
+					void Promise.resolve(notificationAsync(NotificationFeedbackType.Warning)).finally(() => {
 						pressInFlight.current = false;
 						setIsAnswerPending(false);
 					});
 					break;
 				case 'INCORRECT_DANGER':
-					void Promise.resolve(
-						notificationAsync(NotificationFeedbackType.Warning),
-					).finally(() => {
+					void Promise.resolve(notificationAsync(NotificationFeedbackType.Warning)).finally(() => {
 						pressInFlight.current = false;
 						setIsAnswerPending(false);
 					});
@@ -258,11 +239,7 @@ export default function WordCardButton({
 					style={textRow}
 					testID="word-card-button-content"
 				>
-					<Text
-						style={[textStyles, textStateStyle, isDisabled && disabledText]}
-					>
-						{children}
-					</Text>
+					<Text style={[textStyles, textStateStyle, isDisabled && disabledText]}>{children}</Text>
 					{SVGElement}
 				</View>
 			</AnimatedPressable>

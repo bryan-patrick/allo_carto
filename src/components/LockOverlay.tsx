@@ -1,13 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ReactNode } from 'react';
-import {
-	Pressable,
-	StyleProp,
-	StyleSheet,
-	Text,
-	View,
-	ViewStyle,
-} from 'react-native';
+import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import colors from '../app/colors';
 import SVGCheck from './SVG/SVGCheck';
 
@@ -63,8 +56,7 @@ export default function LockOverlay({
 	/**
 	 * Ternaries
 	 */
-	const accessibilityHint =
-		showLockOverlay ? lockedAccessibilityHint : completeAccessibilityHint;
+	const accessibilityHint = showLockOverlay ? lockedAccessibilityHint : completeAccessibilityHint;
 	const accessibilityLabel =
 		showLockOverlay ? lockedAccessibilityLabel : completeAccessibilityLabel;
 	const overlayTestID = showLockOverlay ? 'lock-overlay' : 'complete-overlay';
@@ -81,11 +73,7 @@ export default function LockOverlay({
 					accessibilityLabel={accessibilityLabel}
 					accessibilityState={{ disabled: true }}
 					onPress={() => undefined}
-					style={[
-						overlayStyle,
-						showCompleteOverlay && completeOverlayStyle,
-						customOverlayStyle,
-					]}
+					style={[overlayStyle, showCompleteOverlay && completeOverlayStyle, customOverlayStyle]}
 					testID={overlayTestID}
 				>
 					{showLockOverlay && (

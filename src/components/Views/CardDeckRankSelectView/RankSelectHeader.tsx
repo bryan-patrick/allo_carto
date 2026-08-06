@@ -24,18 +24,14 @@ export default function RankSelectHeader({ cardDeck }: RankSelectHeaderProps) {
 			<View style={titleRowStyle}>
 				<Text style={titleTextStyle}>Select the deck rank for</Text>
 				<GradientText
-					colors={[
-						cardDeck.colors.dark.primary,
-						cardDeck.colors.dark.secondary,
-					]}
+					colors={[cardDeck.colors.dark.primary, cardDeck.colors.dark.secondary]}
 					fontSize={20}
 					fontWeight={700}
 					text={title}
 				/>
 			</View>
 			<Text style={descriptionTextStyle}>
-				Advance half the deck to unlock the next rank. Advance every card for
-				full completion.
+				Advance half the deck to unlock the next rank. Advance every card for full completion.
 			</Text>
 		</>
 	);

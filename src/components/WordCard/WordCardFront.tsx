@@ -109,11 +109,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	 */
 	return (
 		<Animated.View
-			style={[
-				sharedWordCardStyles.wordCardInner,
-				cardFront,
-				wordCardFrontFlippedStyle,
-			]}
+			style={[sharedWordCardStyles.wordCardInner, cardFront, wordCardFrontFlippedStyle]}
 		>
 			<WordCardHeader />
 			<View style={cardMain}>
@@ -153,9 +149,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 								answerSlot,
 								articleClass,
 								articleWidthStyle,
-								cardState.progress !== 'SUCCESS' &&
-									cardState.selectedArticle &&
-									articleSlotStyle,
+								cardState.progress !== 'SUCCESS' && cardState.selectedArticle && articleSlotStyle,
 							]}
 						>
 							{cardState.selectedArticle && displayedArticle}
@@ -175,21 +169,14 @@ const WordCardFront = memo(function WordCardFrontMemo({
 						answerSlot,
 						wordClass,
 						wordWidthStyle,
-						cardState.progress !== 'SUCCESS' &&
-							cardState.selectedWord &&
-							wordSlotStyle,
+						cardState.progress !== 'SUCCESS' && cardState.selectedWord && wordSlotStyle,
 					]}
 				>
 					{cardState.selectedWord && displayedWord}
 				</Animated.Text>
 			</View>
 			<View style={feedbackContainer}>
-				<Text
-					style={[
-						feedbackText,
-						cardState.progress !== 'SUCCESS' && feedbackStyle,
-					]}
-				>
+				<Text style={[feedbackText, cardState.progress !== 'SUCCESS' && feedbackStyle]}>
 					{FEEDBACK_TEXT_FRONT[cardState.feedbackKey] ?? ''}
 				</Text>
 			</View>

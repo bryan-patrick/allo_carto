@@ -81,9 +81,7 @@ describe('<UserProgressProvider />', () => {
 		 */
 		const pendingRefresh = deferred<any>();
 		mockWriteCorrectAnswer.mockResolvedValue(undefined);
-		mockGetUserProgress
-			.mockResolvedValueOnce({})
-			.mockReturnValueOnce(pendingRefresh.promise);
+		mockGetUserProgress.mockResolvedValueOnce({}).mockReturnValueOnce(pendingRefresh.promise);
 		const { result } = await renderHook(() => useUserProgress(), {
 			wrapper: Wrapper,
 		});
@@ -97,9 +95,7 @@ describe('<UserProgressProvider />', () => {
 		await waitFor(() => expect(mockGetUserProgress).toHaveBeenCalledTimes(2));
 
 		expect(result.current.isUpdatingProgress).toBe(true);
-		await expect(result.current.recordCorrectAnswer('word_two')).resolves.toBe(
-			false,
-		);
+		await expect(result.current.recordCorrectAnswer('word_two')).resolves.toBe(false);
 
 		pendingRefresh.resolve({});
 		await act(async () => {
@@ -112,9 +108,7 @@ describe('<UserProgressProvider />', () => {
 		/**
 		 * The provider reports expected write failures, so silence that output here.
 		 */
-		const consoleError = jest
-			.spyOn(console, 'error')
-			.mockImplementation(() => {});
+		const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 		mockWriteCorrectAnswer
 			.mockRejectedValueOnce(new Error('write failed'))
 			.mockResolvedValueOnce(undefined);
@@ -125,16 +119,12 @@ describe('<UserProgressProvider />', () => {
 		await waitFor(() => expect(result.current.status).toBe('ready'));
 
 		await act(async () => {
-			await expect(
-				result.current.recordCorrectAnswer('word_one'),
-			).resolves.toBe(false);
+			await expect(result.current.recordCorrectAnswer('word_one')).resolves.toBe(false);
 		});
 		expect(result.current.isUpdatingProgress).toBe(false);
 
 		await act(async () => {
-			await expect(
-				result.current.recordCorrectAnswer('word_two'),
-			).resolves.toBe(true);
+			await expect(result.current.recordCorrectAnswer('word_two')).resolves.toBe(true);
 		});
 		expect(mockWriteCorrectAnswer).toHaveBeenCalledTimes(2);
 		consoleError.mockRestore();

@@ -1,8 +1,4 @@
-import type {
-	DeckAtlas,
-	DeckChapter,
-	DeckPlace,
-} from '@/data/french/deckAtlas';
+import type { DeckAtlas, DeckChapter, DeckPlace } from '@/data/french/deckAtlas';
 import { deckAtlas } from '@/data/french/deckAtlas';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { ProgressById, Progression, ProgressType } from './progression';
@@ -48,9 +44,7 @@ function getChapterDecks(chapter: DeckChapter): CardDeck[] {
  * Get every chapter, place, and deck
  * with the unique words each one contains
  */
-export function getAtlasProgressDetails(
-	atlas: DeckAtlas = deckAtlas,
-): AtlasProgressDetails[] {
+export function getAtlasProgressDetails(atlas: DeckAtlas = deckAtlas): AtlasProgressDetails[] {
 	const result: AtlasProgressDetails[] = [];
 
 	for (const chapter of atlas.chapters) {
@@ -177,9 +171,7 @@ export function validateProgression(atlas: DeckAtlas = deckAtlas): void {
 	for (const details of allProgressDetails) {
 		for (const requirement of details.unlockRequirements ?? []) {
 			if (!progressDetailsById[requirement.id]) {
-				throw new Error(
-					`Unknown unlock requirement ${requirement.id} on ${details.id}`,
-				);
+				throw new Error(`Unknown unlock requirement ${requirement.id} on ${details.id}`);
 			}
 
 			if (requirement.id === details.id) {
@@ -227,10 +219,7 @@ export function findPlaceById(
 /**
  * Get a progress item's name
  */
-export function getProgressName(
-	id: string,
-	atlas: DeckAtlas = deckAtlas,
-): string {
+export function getProgressName(id: string, atlas: DeckAtlas = deckAtlas): string {
 	for (const chapter of atlas.chapters) {
 		if (chapter.id === id) return chapter.name;
 
@@ -249,10 +238,7 @@ export function getProgressName(
 /**
  * Get the unlock message
  */
-export function getUnlockCriteria(
-	item: Progression,
-	atlas: DeckAtlas = deckAtlas,
-): string {
+export function getUnlockCriteria(item: Progression, atlas: DeckAtlas = deckAtlas): string {
 	let result = '';
 	const requirements = item.unlockRequirements ?? [];
 
