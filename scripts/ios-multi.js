@@ -22,9 +22,19 @@ const GRAY = '\x1b[90m';
 const RESET = '\x1b[0m';
 const CLEAR_LINE = '\r\x1b[2K';
 
-const PHONE_NAMES = ['iPhone SE (3rd generation)', 'iPhone 17 Pro', 'iPhone 17 Pro Max'];
+const PHONE_NAMES = [
+	'iPhone SE (3rd generation)',
+	'iPhone 17 Pro',
+	'iPhone 17 Pro Max',
+];
 
-const PROGRESS_STEPS = ['Find phones', 'Boot phones', 'Expo Go', 'Start Metro', 'Open app'];
+const PROGRESS_STEPS = [
+	'Find phones',
+	'Boot phones',
+	'Expo Go',
+	'Start Metro',
+	'Open app',
+];
 
 /**
  * Sleep
@@ -110,9 +120,13 @@ function findSimulators() {
 	let phone = null;
 	let phoneIsNewer = false;
 
-	simulatorJSON = execFileSync('xcrun', ['simctl', 'list', 'devices', 'available', '-j'], {
-		encoding: 'utf8',
-	});
+	simulatorJSON = execFileSync(
+		'xcrun',
+		['simctl', 'list', 'devices', 'available', '-j'],
+		{
+			encoding: 'utf8',
+		},
+	);
 
 	deviceTuples = Object.entries(JSON.parse(simulatorJSON).devices);
 
@@ -247,18 +261,23 @@ function startMetro() {
 	let nodeOptions = '';
 	let metroEnvironment = {};
 
-	nodeOptions = `${process.env.NODE_OPTIONS || ''} --dns-result-order=ipv4first`.trim();
+	nodeOptions =
+		`${process.env.NODE_OPTIONS || ''} --dns-result-order=ipv4first`.trim();
 	metroEnvironment = { ...process.env, NODE_OPTIONS: nodeOptions };
 
 	if ('FORCE_COLOR' in metroEnvironment) {
 		delete metroEnvironment.NO_COLOR;
 	}
 
-	return spawn('npx', ['expo', 'start', '--go', '--localhost', '--port', PORT], {
-		cwd: PROJECT_ROOT,
-		env: metroEnvironment,
-		stdio: 'inherit',
-	});
+	return spawn(
+		'npx',
+		['expo', 'start', '--go', '--localhost', '--port', PORT],
+		{
+			cwd: PROJECT_ROOT,
+			env: metroEnvironment,
+			stdio: 'inherit',
+		},
+	);
 }
 
 /**
@@ -314,7 +333,12 @@ async function openAppWhenMetroStarts(simulators, metro) {
 					for (let openAttempt = 0; openAttempt < 5; openAttempt++) {
 						openResult = spawnSync(
 							'xcrun',
-							['simctl', 'openurl', simulator.id, `exp://${PACKAGER_HOST}:${PORT}`],
+							[
+								'simctl',
+								'openurl',
+								simulator.id,
+								`exp://${PACKAGER_HOST}:${PORT}`,
+							],
 							{ stdio: 'ignore' },
 						);
 

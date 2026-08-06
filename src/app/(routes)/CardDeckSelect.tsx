@@ -2,7 +2,10 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findPlaceById, isProgressAccessible } from '@/src/util/atlasProgression';
+import {
+	findPlaceById,
+	isProgressAccessible,
+} from '@/src/util/atlasProgression';
 import { useLocalSearchParams } from 'expo-router';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import colors from '../colors';

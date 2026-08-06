@@ -12,7 +12,11 @@ interface CreateUserProps {
 /**
  * Creates a new row on the users table
  */
-export async function createUser({ id, name = '', isMonHomme = 1 }: CreateUserProps) {
+export async function createUser({
+	id,
+	name = '',
+	isMonHomme = 1,
+}: CreateUserProps) {
 	const database = await getDB();
 
 	await database.runAsync(

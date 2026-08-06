@@ -84,9 +84,18 @@ function animateCard(
 		withRepeat(
 			withSequence(
 				withTiming(TOP_CARD_Z_INDEX, { duration: 0 }),
-				withDelay(CARD_MOVE_DURATION, withTiming(UNDER_DECK_Z_INDEX, { duration: 0 })),
-				withDelay(CARD_MOVE_DURATION, withTiming(DECK_Z_INDEX, { duration: 0 })),
-				withDelay(CARD_REST_DURATION, withTiming(DECK_Z_INDEX, { duration: 0 })),
+				withDelay(
+					CARD_MOVE_DURATION,
+					withTiming(UNDER_DECK_Z_INDEX, { duration: 0 }),
+				),
+				withDelay(
+					CARD_MOVE_DURATION,
+					withTiming(DECK_Z_INDEX, { duration: 0 }),
+				),
+				withDelay(
+					CARD_REST_DURATION,
+					withTiming(DECK_Z_INDEX, { duration: 0 }),
+				),
 			),
 			-1,
 		),
@@ -97,7 +106,8 @@ function animateCard(
  * Loader Component
  */
 export default function Loader() {
-	const { container, cardContainer, card, cardText, textContainer, text } = styles;
+	const { container, cardContainer, card, cardText, textContainer, text } =
+		styles;
 
 	/**
 	 * Animation values
@@ -116,17 +126,26 @@ export default function Loader() {
 	 * Animation styles
 	 */
 	const cardOne = useAnimatedStyle(() => ({
-		transform: [{ translateX: cardOneX.value }, { rotateZ: `${cardOneRotate.value}deg` }],
+		transform: [
+			{ translateX: cardOneX.value },
+			{ rotateZ: `${cardOneRotate.value}deg` },
+		],
 		zIndex: cardOneZIndex.value,
 	}));
 
 	const cardTwo = useAnimatedStyle(() => ({
-		transform: [{ translateX: cardTwoX.value }, { rotateZ: `${cardTwoRotate.value}deg` }],
+		transform: [
+			{ translateX: cardTwoX.value },
+			{ rotateZ: `${cardTwoRotate.value}deg` },
+		],
 		zIndex: cardTwoZIndex.value,
 	}));
 
 	const cardThree = useAnimatedStyle(() => ({
-		transform: [{ translateX: cardThreeX.value }, { rotateZ: `${cardThreeRotate.value}deg` }],
+		transform: [
+			{ translateX: cardThreeX.value },
+			{ rotateZ: `${cardThreeRotate.value}deg` },
+		],
 		zIndex: cardThreeZIndex.value,
 	}));
 

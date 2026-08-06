@@ -42,7 +42,10 @@ export default async function getDeckRankCounts({
 	if (wordIds.length === 0) return emptyDeckRankCounts;
 
 	const quests = wordIds.map(() => '?').join(',');
-	const rankCountSelect = getWordRankSqlCountSelect('uw.correctCount', 'uw.seenCount');
+	const rankCountSelect = getWordRankSqlCountSelect(
+		'uw.correctCount',
+		'uw.seenCount',
+	);
 	const row = await database.getFirstAsync<DeckRankCounts>(
 		`
 		SELECT

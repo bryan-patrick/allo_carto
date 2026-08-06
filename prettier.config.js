@@ -1,7 +1,7 @@
 /** @type {import('prettier').Config} */
 const config = {
 	// Wrap long lines around this point when Prettier can do so cleanly.
-	printWidth: 100,
+	printWidth: 80,
 
 	// Use tabs for indentation. tabWidth controls how wide those tabs are treated.
 	useTabs: true,

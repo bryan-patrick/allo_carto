@@ -1,6 +1,9 @@
 import { CardDeckStateProps } from '@/src/components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '@/src/components/CardDeck/cardDeckReducer';
-import { makeMockCardDeck, mockWords } from '@/src/components/CardDeck/mockCardDeck';
+import {
+	makeMockCardDeck,
+	mockWords,
+} from '@/src/components/CardDeck/mockCardDeck';
 
 const [firstWord, secondWord, thirdWord] = mockWords;
 
@@ -33,8 +36,12 @@ describe('cardDeckReducer', () => {
 
 		const nextState = cardDeckReducer(state, { type: 'INCREMENT_WORD_SCORE' });
 
-		expect(nextState.cardDeck.words[0].correctCount).toBe(firstWord.correctCount);
-		expect(nextState.cardDeck.words[1].correctCount).toBe(secondWord.correctCount + 1);
+		expect(nextState.cardDeck.words[0].correctCount).toBe(
+			firstWord.correctCount,
+		);
+		expect(nextState.cardDeck.words[1].correctCount).toBe(
+			secondWord.correctCount + 1,
+		);
 	});
 
 	test('adds the current word to correct words', () => {

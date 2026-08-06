@@ -52,7 +52,11 @@ export default function DeckBoxModal({
 	 * Header deck completion percentage
 	 */
 	const wordsSeenCount =
-		rankCounts.fnew + rankCounts.bronze + rankCounts.silver + rankCounts.gold + rankCounts.diamond;
+		rankCounts.fnew +
+		rankCounts.bronze +
+		rankCounts.silver +
+		rankCounts.gold +
+		rankCounts.diamond;
 	const deckCompletionPercent = Math.floor(
 		getDeckCompletionPercent({
 			deckWordCount: deck.wordIds.length,
@@ -85,16 +89,41 @@ export default function DeckBoxModal({
 							text={deck.title}
 						/>
 					</View>
-					<View style={[modalHeaderStyle, { borderColor: deck.colors.dark.primary }]}>
-						<Text style={[modalHeaderTextStyle, { color: deck.colors.dark.primary }]}>
+					<View
+						style={[
+							modalHeaderStyle,
+							{ borderColor: deck.colors.dark.primary },
+						]}
+					>
+						<Text
+							style={[
+								modalHeaderTextStyle,
+								{ color: deck.colors.dark.primary },
+							]}
+						>
 							Deck Completion:{' '}
-							<Text style={[modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary }]}>
+							<Text
+								style={[
+									modalHeaderMonospaceTextStyle,
+									{ color: deck.colors.dark.primary },
+								]}
+							>
 								{deckCompletionPercent}%
 							</Text>
 						</Text>
-						<Text style={[modalHeaderTextStyle, { color: deck.colors.dark.primary }]}>
+						<Text
+							style={[
+								modalHeaderTextStyle,
+								{ color: deck.colors.dark.primary },
+							]}
+						>
 							Words Seen:{' '}
-							<Text style={[modalHeaderMonospaceTextStyle, { color: deck.colors.dark.primary }]}>
+							<Text
+								style={[
+									modalHeaderMonospaceTextStyle,
+									{ color: deck.colors.dark.primary },
+								]}
+							>
 								{wordsSeenCount}/{deck.wordIds.length}
 							</Text>
 						</Text>
@@ -113,9 +142,12 @@ export default function DeckBoxModal({
 								deck.story.map(({ text, wordId, after }, index) => {
 									const key = `${index}-${wordId ?? text}`;
 									const spaceMaybeButNotAlways = after ?? ' ';
-									const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
+									const progress =
+										wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
 									const progressColor =
-										progress === 'unseen' ? colors.dark.border : colors.light.rank[progress];
+										progress === 'unseen' ?
+											colors.dark.border
+										:	colors.light.rank[progress];
 
 									const wordStyle: any = {
 										fontSize: 16,

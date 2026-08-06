@@ -1,6 +1,12 @@
 import colors from '@/src/app/colors';
 import { Dispatch, memo, useEffect, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
+import {
+	Pressable,
+	StyleSheet,
+	Text,
+	TextStyle,
+	ViewStyle,
+} from 'react-native';
 import Animated, {
 	Easing,
 	useAnimatedStyle,
@@ -90,15 +96,24 @@ const MappedButton = memo(function MappedButtonMemo({
 			case 'DANGER':
 				if (isCorrectWord) {
 					buttonY.value = withTiming(-6, answerRevealTiming);
-					buttonBackgroundColor.value = withTiming(colors.light.success, answerRevealTiming);
+					buttonBackgroundColor.value = withTiming(
+						colors.light.success,
+						answerRevealTiming,
+					);
 				} else {
-					buttonBackgroundColor.value = withTiming(colors.light.border, answerRevealTiming);
+					buttonBackgroundColor.value = withTiming(
+						colors.light.border,
+						answerRevealTiming,
+					);
 					buttonY.value = withTiming(0, answerRevealTiming);
 				}
 
 				if (isSelectedWrong) {
 					buttonY.value = withTiming(0, answerRevealTiming);
-					buttonBackgroundColor.value = withTiming(colors.light.background, answerRevealTiming);
+					buttonBackgroundColor.value = withTiming(
+						colors.light.background,
+						answerRevealTiming,
+					);
 				}
 
 				buttonBoxShadow.value = `0 6px 0 0 ${colors.dark.border}`;
@@ -110,7 +125,10 @@ const MappedButton = memo(function MappedButtonMemo({
 					buttonBoxShadow.value = `0 0 0 0 transparent`;
 				} else {
 					buttonY.value = withTiming(0, selectionTiming);
-					buttonBackgroundColor.value = withTiming(colors.light.background, selectionTiming);
+					buttonBackgroundColor.value = withTiming(
+						colors.light.background,
+						selectionTiming,
+					);
 					buttonBoxShadow.value = `0 6px 0 0 ${colors.light.border}`;
 				}
 				break;
@@ -146,7 +164,9 @@ const MappedButton = memo(function MappedButtonMemo({
 				onPress={() => handler(word)}
 				hitSlop={10}
 			>
-				<Text style={[wcsText, isHighlighted && highlightTextStyles]}>{word}</Text>
+				<Text style={[wcsText, isHighlighted && highlightTextStyles]}>
+					{word}
+				</Text>
 			</AnimatedPressable>
 		</Animated.View>
 	);
@@ -182,10 +202,17 @@ const MappedWords = memo(function MappedWordsMemo({
 	/**
 	 * Current card data
 	 */
-	const { highlightArticle, highlightWord, highlightStyles, highlightTextStyles } = useMemo(() => {
-		const hasArticleMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
+	const {
+		highlightArticle,
+		highlightWord,
+		highlightStyles,
+		highlightTextStyles,
+	} = useMemo(() => {
+		const hasArticleMistake =
+			cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
 
-		const hasWordMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
+		const hasWordMistake =
+			cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
 
 		switch (cardState.progress) {
 			case 'SUCCESS':
@@ -197,14 +224,16 @@ const MappedWords = memo(function MappedWordsMemo({
 				};
 			case 'WARNING':
 				return {
-					highlightArticle: hasArticleMistake ? cardState.selectedArticle : null,
+					highlightArticle:
+						hasArticleMistake ? cardState.selectedArticle : null,
 					highlightWord: hasWordMistake ? cardState.selectedWord : null,
 					highlightStyles: highlightWarning,
 					highlightTextStyles: highlightTextWarning,
 				};
 			case 'DANGER':
 				return {
-					highlightArticle: hasArticleMistake ? (currentCard.englishArticle ?? '') : null,
+					highlightArticle:
+						hasArticleMistake ? (currentCard.englishArticle ?? '') : null,
 					highlightWord: hasWordMistake ? currentCard.englishWords[0] : null,
 					highlightStyles: highlightDanger,
 					highlightTextStyles: highlightTextDanger,
@@ -237,10 +266,15 @@ const MappedWords = memo(function MappedWordsMemo({
 			key={word}
 			word={word}
 			isActive={word === activeWord}
-			isCorrectWord={currentCard.englishWords.includes(word) || word === currentCard.englishArticle}
+			isCorrectWord={
+				currentCard.englishWords.includes(word) ||
+				word === currentCard.englishArticle
+			}
 			isSelectedWrong={
-				(cardState.selectedArticle === word && word !== currentCard.englishArticle) ||
-				(cardState.selectedWord === word && !currentCard.englishWords.includes(word))
+				(cardState.selectedArticle === word &&
+					word !== currentCard.englishArticle) ||
+				(cardState.selectedWord === word &&
+					!currentCard.englishWords.includes(word))
 			}
 			isHighlighted={word === highlightArticle || word === highlightWord}
 			progress={cardState.progress}

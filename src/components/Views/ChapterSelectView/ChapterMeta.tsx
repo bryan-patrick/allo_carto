@@ -36,7 +36,10 @@ export default function ChapterMeta({
 					<View
 						style={[
 							chapterProgressBar,
-							{ backgroundColor: progressColor, width: `${displayProgressPercent}%` },
+							{
+								backgroundColor: progressColor,
+								width: `${displayProgressPercent}%`,
+							},
 						]}
 					/>
 					<View

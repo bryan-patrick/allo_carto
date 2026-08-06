@@ -14,7 +14,10 @@ interface WordCardSelectionProps {
 /**
  * WordCardSelection Component
  */
-export default function WordCardSelection({ articleWords, fillerWords }: WordCardSelectionProps) {
+export default function WordCardSelection({
+	articleWords,
+	fillerWords,
+}: WordCardSelectionProps) {
 	const { cardState, wordCardUIDispatch } = useWordCardUI();
 	const { wcsContainer } = wordCardSelectionStyles;
 

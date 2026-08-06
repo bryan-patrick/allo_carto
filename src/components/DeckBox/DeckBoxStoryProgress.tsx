@@ -81,10 +81,14 @@ export default function DeckBoxStoryProgress({
 	return (
 		<View style={storyProgressContainerStyle}>
 			<View style={storyProgressHeaderStyle}>
-				<Text style={[storyProgressTitleStyle, { color: deck.colors.dark.primary }]}>
+				<Text
+					style={[storyProgressTitleStyle, { color: deck.colors.dark.primary }]}
+				>
 					Story Progress
 				</Text>
-				<Text style={[storyProgressTextStyle, { color: deck.colors.dark.primary }]}>
+				<Text
+					style={[storyProgressTextStyle, { color: deck.colors.dark.primary }]}
+				>
 					{deckCompletionPercent}%
 				</Text>
 			</View>

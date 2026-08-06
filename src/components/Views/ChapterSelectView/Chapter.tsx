@@ -23,7 +23,12 @@ interface ChapterProps {
 /**
  * Chapter component
  */
-export default function Chapter({ chapter, progressPercent, index, isLocked }: ChapterProps) {
+export default function Chapter({
+	chapter,
+	progressPercent,
+	index,
+	isLocked,
+}: ChapterProps) {
 	/**
 	 * Destructure chapter
 	 */

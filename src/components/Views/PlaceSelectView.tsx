@@ -80,7 +80,9 @@ export default function PlaceSelectView() {
 			<View style={styles.viewStyle}>
 				<View style={styles.chapterTitleContainerStyle}>
 					<Text style={styles.chapterIndexStyle}>Unknown chapter</Text>
-					<Text style={styles.chapterTitleStyle}>Please go back and select a chapter.</Text>
+					<Text style={styles.chapterTitleStyle}>
+						Please go back and select a chapter.
+					</Text>
 				</View>
 			</View>
 		);
@@ -94,7 +96,9 @@ export default function PlaceSelectView() {
 			<View style={styles.viewStyle}>
 				<View style={styles.chapterTitleContainerStyle}>
 					<Text style={styles.chapterIndexStyle}>Chapter locked</Text>
-					<Text style={styles.chapterTitleStyle}>Complete its requirements before continuing.</Text>
+					<Text style={styles.chapterTitleStyle}>
+						Complete its requirements before continuing.
+					</Text>
 				</View>
 			</View>
 		);
@@ -121,8 +125,13 @@ export default function PlaceSelectView() {
 						const rotate = isEven ? '-5deg' : '5deg';
 						const reverseRotate = isEven ? '5deg' : '-5deg';
 						const { id: placeId, name, description, image } = place;
-						const progressPercent = Math.floor(progressById[placeId]?.completionPercentage ?? 0);
-						const isLocked = !isProgressAccessible({ id: placeId, progressById });
+						const progressPercent = Math.floor(
+							progressById[placeId]?.completionPercentage ?? 0,
+						);
+						const isLocked = !isProgressAccessible({
+							id: placeId,
+							progressById,
+						});
 
 						/**
 						 * Render the place view/card
@@ -138,21 +147,31 @@ export default function PlaceSelectView() {
 								<View style={placeContainerStyle}>
 									<Text style={placeTitleTextStyle}>{name}</Text>
 									<View
-										style={[polaroidContainerStyle, { transform: [{ rotate: reverseRotate }] }]}
+										style={[
+											polaroidContainerStyle,
+											{ transform: [{ rotate: reverseRotate }] },
+										]}
 									>
 										<View style={[polaroid, { transform: [{ rotate }] }]}>
 											<Image
 												source={image}
 												style={placeImageStyle}
 											/>
-											<Text style={placeDescriptionTextStyle}>{description}</Text>
+											<Text style={placeDescriptionTextStyle}>
+												{description}
+											</Text>
 											<View style={progressContainerStyle}>
-												<Text style={progressTextStyle}>Progress {progressPercent}%</Text>
+												<Text style={progressTextStyle}>
+													Progress {progressPercent}%
+												</Text>
 												<View style={progressBarsContainer}>
 													<LinearGradient
 														style={[
 															progressBarStyle,
-															{ width: `${progressPercent}%`, borderRightWidth: 1 },
+															{
+																width: `${progressPercent}%`,
+																borderRightWidth: 1,
+															},
 														]}
 														colors={polaroidColors}
 														locations={polaroidColorStops}
@@ -160,7 +179,11 @@ export default function PlaceSelectView() {
 													<LinearGradient
 														style={[
 															progressBarStyle,
-															{ position: 'absolute', width: '100%', opacity: 0.15 },
+															{
+																position: 'absolute',
+																width: '100%',
+																opacity: 0.15,
+															},
 														]}
 														colors={polaroidColors}
 														locations={polaroidColorStops}

@@ -33,7 +33,13 @@ function getRankColor(score: number = 0, isDark = false) {
 /**
  * RankIcon Component
  */
-export function RankIcon({ rank, score = 0, size = 12, color, ...props }: RankIconProps) {
+export function RankIcon({
+	rank,
+	score = 0,
+	size = 12,
+	color,
+	...props
+}: RankIconProps) {
 	let rankDefinition = getWordRankDefinitionFromCorrectCount(score);
 
 	if (rank) {
@@ -66,7 +72,10 @@ export default function WordRank() {
 		[currentScore],
 	);
 
-	const nextRankDarkColor = useMemo(() => ({ color: getRankColor(nextScore, true) }), [nextScore]);
+	const nextRankDarkColor = useMemo(
+		() => ({ color: getRankColor(nextScore, true) }),
+		[nextScore],
+	);
 
 	const currentRankBackgroundColor = useMemo(
 		() => ({
@@ -130,7 +139,9 @@ export default function WordRank() {
 		<View style={wordRankContainer}>
 			<Animated.View style={[animationContainer, containerY]}>
 				<Animated.View style={[currentContainer, currentRankBackgroundColor]}>
-					<Animated.Text style={[scoreText, currentRankDarkColor]}>{currentScore}</Animated.Text>
+					<Animated.Text style={[scoreText, currentRankDarkColor]}>
+						{currentScore}
+					</Animated.Text>
 					<RankIcon
 						style={icon}
 						score={currentScore}
@@ -138,7 +149,9 @@ export default function WordRank() {
 					/>
 				</Animated.View>
 				<Animated.View style={[nextContainer, nextRankBackgroundColor]}>
-					<Animated.Text style={[scoreText, nextRankDarkColor]}>{nextScore}</Animated.Text>
+					<Animated.Text style={[scoreText, nextRankDarkColor]}>
+						{nextScore}
+					</Animated.Text>
 					<RankIcon
 						style={icon}
 						score={nextScore}
@@ -153,40 +166,42 @@ export default function WordRank() {
 /**
  * Styles
  */
-const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>({
-	wordRankContainer: {
-		display: 'flex',
-		height: 22,
-		backgroundColor: colors.dark.background,
+const wordRankStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>(
+	{
+		wordRankContainer: {
+			display: 'flex',
+			height: 22,
+			backgroundColor: colors.dark.background,
+		},
+		animationContainer: {
+			display: 'flex',
+			flexDirection: 'column',
+			justifyContent: 'space-between',
+			gap: 22,
+		},
+		currentContainer: {
+			display: 'flex',
+			flexDirection: 'row',
+			justifyContent: 'center',
+			alignItems: 'center',
+			paddingLeft: 8,
+			paddingRight: 4,
+			height: 22,
+			gap: 4,
+			borderLeftWidth: 1,
+		},
+		nextContainer: {
+			display: 'flex',
+			flexDirection: 'row',
+			justifyContent: 'center',
+			alignItems: 'center',
+			height: 22,
+			gap: 4,
+			borderLeftWidth: 1,
+		},
+		scoreText: {
+			fontSize: 16,
+			fontFamily: 'azeret-mono-400',
+		},
 	},
-	animationContainer: {
-		display: 'flex',
-		flexDirection: 'column',
-		justifyContent: 'space-between',
-		gap: 22,
-	},
-	currentContainer: {
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-		paddingLeft: 8,
-		paddingRight: 4,
-		height: 22,
-		gap: 4,
-		borderLeftWidth: 1,
-	},
-	nextContainer: {
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-		height: 22,
-		gap: 4,
-		borderLeftWidth: 1,
-	},
-	scoreText: {
-		fontSize: 16,
-		fontFamily: 'azeret-mono-400',
-	},
-});
+);

@@ -1,4 +1,8 @@
-import { deleteDatabaseAsync, openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
+import {
+	deleteDatabaseAsync,
+	openDatabaseAsync,
+	type SQLiteDatabase,
+} from 'expo-sqlite';
 
 let db: SQLiteDatabase | null = null;
 
@@ -48,7 +52,10 @@ export async function deleteDB(): Promise<void> {
 /**
  * Just a logging helper
  */
-export async function logThisIfItFails<T>(message: string, fn: () => Promise<T>): Promise<T> {
+export async function logThisIfItFails<T>(
+	message: string,
+	fn: () => Promise<T>,
+): Promise<T> {
 	try {
 		return await fn();
 	} catch (error) {

@@ -4,7 +4,9 @@ import { getDB } from '../connection';
 /**
  * Load a user's userProgress rows into an ID lookup
  */
-export default async function getUserProgress(userId: string): Promise<ProgressById> {
+export default async function getUserProgress(
+	userId: string,
+): Promise<ProgressById> {
 	const database = await getDB();
 	const rows = await database.getAllAsync<UserProgressRow>(
 		`

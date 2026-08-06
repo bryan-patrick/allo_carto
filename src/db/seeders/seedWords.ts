@@ -8,9 +8,11 @@ export default async function seedWords(): Promise<void> {
 	 * Seed the existing words
 	 */
 	for (const word of frenchSeedWords) {
-		await logThisIfItFails(`Oops we messed up seeding word ${word.id}`, async () => {
-			await database.runAsync(
-				`
+		await logThisIfItFails(
+			`Oops we messed up seeding word ${word.id}`,
+			async () => {
+				await database.runAsync(
+					`
 				INSERT INTO words (
 					id,
 					frenchWord,
@@ -44,24 +46,25 @@ export default async function seedWords(): Promise<void> {
 					partOfSpeech = excluded.partOfSpeech,
 					rarity = excluded.rarity
 				`,
-				[
-					word.id,
-					word.frenchWord,
-					JSON.stringify(word.englishWords),
-					word.frenchArticle ?? null,
-					word.englishArticle ?? null,
-					word.pronunciation,
-					word.isVulgar ? 1 : 0,
-					word.CEFR,
-					word.lemmaId ?? null,
-					word.form ?? null,
-					word.tense ?? null,
-					word.gender ?? null,
-					word.partOfSpeech ?? null,
-					word.correctCount,
-					word.rarity ?? null,
-				],
-			);
-		});
+					[
+						word.id,
+						word.frenchWord,
+						JSON.stringify(word.englishWords),
+						word.frenchArticle ?? null,
+						word.englishArticle ?? null,
+						word.pronunciation,
+						word.isVulgar ? 1 : 0,
+						word.CEFR,
+						word.lemmaId ?? null,
+						word.form ?? null,
+						word.tense ?? null,
+						word.gender ?? null,
+						word.partOfSpeech ?? null,
+						word.correctCount,
+						word.rarity ?? null,
+					],
+				);
+			},
+		);
 	}
 }

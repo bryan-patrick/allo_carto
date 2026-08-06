@@ -1,5 +1,8 @@
 import type { StorySegment } from '@/src/components/CardDeck/cardDeckTypes';
-import { getWordRankKeyFromCounts, type WordProgressKey } from '@/src/util/wordRanks';
+import {
+	getWordRankKeyFromCounts,
+	type WordProgressKey,
+} from '@/src/util/wordRanks';
 import { getDB } from '../connection';
 
 /**

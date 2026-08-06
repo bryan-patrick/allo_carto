@@ -4,7 +4,10 @@ import { Stack } from 'expo-router';
 import { ThemeProvider } from 'expo-router/react-navigation';
 import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
 import { Suspense, useCallback, useEffect, useReducer, useState } from 'react';
-import { CardDeckContext, initialCardDeckState } from '../components/CardDeck/cardDeckContext';
+import {
+	CardDeckContext,
+	initialCardDeckState,
+} from '../components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '../components/CardDeck/cardDeckReducer';
 import Loader from '../components/Loader';
 import { getTables, setDB } from '../db/interface';
@@ -30,7 +33,10 @@ export default function AppLayout() {
 	/**
 	 * State
 	 */
-	const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
+	const [cardDeckState, cardDeckDispatch] = useReducer(
+		cardDeckReducer,
+		initialCardDeckState,
+	);
 	const [user, setUser] = useState<UserRow | null>(null);
 	const [isDatabaseReady, setIsDatabaseReady] = useState(false);
 

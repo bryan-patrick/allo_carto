@@ -3,7 +3,10 @@ import LinkButton from '@/src/components/LinkButton';
 import LockOverlay from '@/src/components/LockOverlay';
 import { RankIcon } from '@/src/components/WordRank';
 import type { DeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
-import { getDeckRankProgress, getDeckRankUnlockCount } from '@/src/util/deckRankProgression';
+import {
+	getDeckRankProgress,
+	getDeckRankUnlockCount,
+} from '@/src/util/deckRankProgression';
 import type { WordRankDefinition, WordRankKey } from '@/src/util/wordRanks';
 import { wordRankDefinitions } from '@/src/util/wordRanks';
 import { StyleSheet, Text, View } from 'react-native';
@@ -47,7 +50,11 @@ export default function RankButton({
 	const rankButtonColorStyle = {
 		backgroundColor: colors.light.rank[key],
 	};
-	const { rankButtonContainerStyle, rankLockOverlayStyle, rankButtonTextStyle } = styles;
+	const {
+		rankButtonContainerStyle,
+		rankLockOverlayStyle,
+		rankButtonTextStyle,
+	} = styles;
 
 	/**
 	 * Render the rank button
@@ -108,12 +115,15 @@ function getLockedAccessibilityHint({
 
 	const rankIndex = wordRankDefinitions.findIndex(rank => rank.key === rankKey);
 
-	const cardsAtOrAboveRank = wordRankDefinitions.reduce((total, rank, index) => {
-		const indexIsGreaterThanRank = index >= rankIndex;
-		const rankCount = rankCounts[rank.key] ?? 0;
+	const cardsAtOrAboveRank = wordRankDefinitions.reduce(
+		(total, rank, index) => {
+			const indexIsGreaterThanRank = index >= rankIndex;
+			const rankCount = rankCounts[rank.key] ?? 0;
 
-		return indexIsGreaterThanRank ? total + rankCount : total;
-	}, 0);
+			return indexIsGreaterThanRank ? total + rankCount : total;
+		},
+		0,
+	);
 
 	const unlockCount = getDeckRankUnlockCount(deckWordCount);
 

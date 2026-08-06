@@ -11,7 +11,12 @@ interface DeckBoxHeaderProps {
  * DeckBoxHeader component
  */
 export default function DeckBoxHeader({ deck }: DeckBoxHeaderProps) {
-	const { cardHeaderStyle, titleContainer, gradientTextContainer, descriptionStyle } = styles;
+	const {
+		cardHeaderStyle,
+		titleContainer,
+		gradientTextContainer,
+		descriptionStyle,
+	} = styles;
 
 	return (
 		<View style={cardHeaderStyle}>

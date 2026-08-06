@@ -17,11 +17,23 @@ interface CardProps {
 /**
  * LinkCard Component
  */
-export default function LinkCard({ title, SVGElement, description, screen, linkText }: CardProps) {
+export default function LinkCard({
+	title,
+	SVGElement,
+	description,
+	screen,
+	linkText,
+}: CardProps) {
 	/**
 	 * Destructure styles
 	 */
-	const { titleStyle, rowBetweenStyle, colBetweenStyle, cardTextStyle, cardViewStyle } = styles;
+	const {
+		titleStyle,
+		rowBetweenStyle,
+		colBetweenStyle,
+		cardTextStyle,
+		cardViewStyle,
+	} = styles;
 
 	/**
 	 * Different headings for when using an SVG or not

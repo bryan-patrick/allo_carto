@@ -10,7 +10,10 @@ interface DeckBoxFooterProps {
 /**
  * DeckBoxFooter component
  */
-export default function DeckBoxFooter({ deck, handleDeckSelect }: DeckBoxFooterProps) {
+export default function DeckBoxFooter({
+	deck,
+	handleDeckSelect,
+}: DeckBoxFooterProps) {
 	const { cardFooterStyle } = styles;
 
 	return (

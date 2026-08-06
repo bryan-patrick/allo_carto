@@ -29,7 +29,9 @@ jest.mock('@/src/components/WordCard/WordCardSelection', () => {
 jest.mock('@/src/components/WordCard/WordCardButton', () => {
 	const { Text } = jest.requireActual('react-native');
 
-	return jest.fn(({ children }: { children: string }) => <Text>{children}</Text>);
+	return jest.fn(({ children }: { children: string }) => (
+		<Text>{children}</Text>
+	));
 });
 
 const mockGetFillerWords = jest.mocked(getFillerWords);
@@ -83,7 +85,9 @@ describe('<WordCardContainer />', () => {
 	 * the answer buttons while the learner is still looking at the card.
 	 */
 	test('does not reshuffle choices when progress changes', async () => {
-		mockGetFillerWords.mockResolvedValueOnce(['coffee', 'tea']).mockResolvedValueOnce(['The', 'A']);
+		mockGetFillerWords
+			.mockResolvedValueOnce(['coffee', 'tea'])
+			.mockResolvedValueOnce(['The', 'A']);
 
 		const word: Word = {
 			id: 'word_noun_cafe',
@@ -181,7 +185,9 @@ describe('<WordCardContainer />', () => {
 	});
 
 	test('increments the seen count when the card is current', async () => {
-		mockGetFillerWords.mockResolvedValueOnce(['coffee', 'tea']).mockResolvedValueOnce(['The', 'A']);
+		mockGetFillerWords
+			.mockResolvedValueOnce(['coffee', 'tea'])
+			.mockResolvedValueOnce(['The', 'A']);
 
 		const word: Word = {
 			id: 'word_noun_cafe',

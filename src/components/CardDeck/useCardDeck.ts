@@ -13,7 +13,9 @@ export function useCardDeck() {
 	 * State
 	 */
 	const { cardDeckState, cardDeckDispatch } = useContext(CardDeckContext);
-	const currentCard = cardDeckState.cardDeck.words[cardDeckState.currentIndex] ?? initialWordState;
+	const currentCard =
+		cardDeckState.cardDeck.words[cardDeckState.currentIndex] ??
+		initialWordState;
 
 	/**
 	 * Return

@@ -7,8 +7,8 @@ jest.mock('@/src/db/connection', () => ({
 	getDB: jest.fn(async () => ({
 		getAllAsync: mockGetAllAsync,
 	})),
-	logThisIfItFails: jest.fn(async (_message: string, operation: () => Promise<unknown>) =>
-		operation(),
+	logThisIfItFails: jest.fn(
+		async (_message: string, operation: () => Promise<unknown>) => operation(),
 	),
 	setDB: jest.fn(),
 }));
@@ -40,7 +40,12 @@ describe('getWordProgressById', () => {
 		const [, userId, ...wordIds] = mockGetAllAsync.mock.calls[0];
 
 		expect(userId).toBe('user_one');
-		expect(wordIds).toEqual(['word_new', 'word_unseen', 'word_bronze', 'word_silver']);
+		expect(wordIds).toEqual([
+			'word_new',
+			'word_unseen',
+			'word_bronze',
+			'word_silver',
+		]);
 		expect(progressByWordId).toEqual({
 			word_new: 'fnew',
 			word_unseen: 'unseen',

@@ -5,7 +5,11 @@ import SVG from './SVG';
 /**
  * SVGCheck Component
  */
-export default function SVGCheck({ color = '#ffffff', height = '24px', width = '24px' }: SVGProps) {
+export default function SVGCheck({
+	color = '#ffffff',
+	height = '24px',
+	width = '24px',
+}: SVGProps) {
 	return (
 		<SVG
 			viewbox="0 0 24 24"

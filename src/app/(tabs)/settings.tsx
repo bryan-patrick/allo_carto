@@ -5,8 +5,15 @@ import colors from '../colors';
 import { resetDB } from '../../db/interface';
 
 export default function Settings() {
-	const { container, debugSection, disabledPressable, heading, pressable, resetPressable, text } =
-		styles;
+	const {
+		container,
+		debugSection,
+		disabledPressable,
+		heading,
+		pressable,
+		resetPressable,
+		text,
+	} = styles;
 
 	/**
 	 * State
@@ -34,17 +41,21 @@ export default function Settings() {
 	}
 
 	function confirmResetDB() {
-		Alert.alert('Reset DB?', 'This will clear local progress and rebuild the seeded data.', [
-			{
-				text: 'Cancel',
-				style: 'cancel',
-			},
-			{
-				text: 'Reset DB',
-				style: 'destructive',
-				onPress: handleResetDB,
-			},
-		]);
+		Alert.alert(
+			'Reset DB?',
+			'This will clear local progress and rebuild the seeded data.',
+			[
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Reset DB',
+					style: 'destructive',
+					onPress: handleResetDB,
+				},
+			],
+		);
 	}
 
 	return (
@@ -83,10 +94,16 @@ export default function Settings() {
 				<Text style={heading}>Debug</Text>
 				<Pressable
 					disabled={isResettingDB}
-					style={[pressable, resetPressable, isResettingDB && disabledPressable]}
+					style={[
+						pressable,
+						resetPressable,
+						isResettingDB && disabledPressable,
+					]}
 					onPress={confirmResetDB}
 				>
-					<Text style={text}>{isResettingDB ? 'Resetting DB...' : 'Reset DB'}</Text>
+					<Text style={text}>
+						{isResettingDB ? 'Resetting DB...' : 'Reset DB'}
+					</Text>
 				</Pressable>
 			</View>
 		</View>

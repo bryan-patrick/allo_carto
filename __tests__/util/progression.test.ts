@@ -5,7 +5,10 @@ import {
 	isProgressAccessible,
 	validateProgression,
 } from '@/src/util/atlasProgression';
-import { getCompletionPercentage, type ProgressById } from '@/src/util/progression';
+import {
+	getCompletionPercentage,
+	type ProgressById,
+} from '@/src/util/progression';
 
 function makeProgressById(percentages: Record<string, number>): ProgressById {
 	const result: ProgressById = {};

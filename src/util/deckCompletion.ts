@@ -9,7 +9,10 @@ export function getDeckCompletionPercent({
 	rankCounts,
 }: {
 	deckWordCount: number;
-	rankCounts: Pick<DeckRankCounts, 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond'>;
+	rankCounts: Pick<
+		DeckRankCounts,
+		'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond'
+	>;
 }): number {
 	return getCompletionPercentage({
 		wordCount: deckWordCount,

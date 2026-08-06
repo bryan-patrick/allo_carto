@@ -15,7 +15,12 @@ export interface SVGProps {
 /**
  * SVG Component
  */
-export default function SVG({ viewbox, height = '32px', width = '32px', children }: SVGProps) {
+export default function SVG({
+	viewbox,
+	height = '32px',
+	width = '32px',
+	children,
+}: SVGProps) {
 	return (
 		<Svg
 			viewBox={viewbox}

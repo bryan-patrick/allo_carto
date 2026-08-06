@@ -23,7 +23,11 @@ describe('word definitions', () => {
 	 */
 	test('do not duplicate French articles inside frenchWord', () => {
 		const wordsWithDuplicatedArticles = seedWords
-			.filter(word => word.frenchArticle && startsWithArticle(word.frenchWord, word.frenchArticle))
+			.filter(
+				word =>
+					word.frenchArticle &&
+					startsWithArticle(word.frenchWord, word.frenchArticle),
+			)
 			.map(word => word.id);
 
 		expect(wordsWithDuplicatedArticles).toEqual([]);
@@ -38,7 +42,9 @@ describe('word definitions', () => {
 			.filter(word => word.englishArticle)
 			.flatMap(word =>
 				word.englishWords
-					.filter(englishWord => startsWithArticle(englishWord, word.englishArticle as string))
+					.filter(englishWord =>
+						startsWithArticle(englishWord, word.englishArticle as string),
+					)
 					.map(() => word.id),
 			);
 

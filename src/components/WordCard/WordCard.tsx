@@ -1,7 +1,17 @@
 import { router } from 'expo-router';
 import { useContext, useEffect, useLayoutEffect, useMemo } from 'react';
-import { type LayoutChangeEvent, StyleSheet, TextStyle, View } from 'react-native';
-import { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import {
+	type LayoutChangeEvent,
+	StyleSheet,
+	TextStyle,
+	View,
+} from 'react-native';
+import {
+	Easing,
+	useAnimatedStyle,
+	useSharedValue,
+	withTiming,
+} from 'react-native-reanimated';
 import colors from '../../app/colors';
 import { CardDeckContext } from '../CardDeck/cardDeckContext';
 import { sharedWordCardStyles } from './sharedWordCardStyles';
@@ -44,8 +54,10 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 	} = sharedWordCardStyles;
 	const { wordCard } = wordCardStyles;
 
-	const hasArticleMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
-	const hasWordMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
+	const hasArticleMistake =
+		cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
+	const hasWordMistake =
+		cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
 
 	let feedbackStyle: TextStyle = {};
 	let articleSlotStyle: TextStyle = {};
@@ -64,7 +76,8 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 			break;
 		case 'DANGER':
 			feedbackStyle = feedbackError;
-			articleSlotStyle = hasArticleMistake ? answerSlotError : answerSlotSuccess;
+			articleSlotStyle =
+				hasArticleMistake ? answerSlotError : answerSlotSuccess;
 			wordSlotStyle = hasWordMistake ? answerSlotError : answerSlotSuccess;
 			break;
 	}
@@ -104,7 +117,10 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 	}));
 
 	const wordCardBackFlippedStyle = useAnimatedStyle(() => ({
-		transform: [{ perspective: 1000 }, { rotateY: `-${180 + flipDegrees.get()}deg` }],
+		transform: [
+			{ perspective: 1000 },
+			{ rotateY: `-${180 + flipDegrees.get()}deg` },
+		],
 	}));
 
 	/**
@@ -140,7 +156,10 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 	 */
 	useEffect(() => {
 		if (isCurrent && cardState.stage === 'COMPLETED') {
-			if (cardDeckState.currentIndex === cardDeckState.cardDeck.words.length - 1) {
+			if (
+				cardDeckState.currentIndex ===
+				cardDeckState.cardDeck.words.length - 1
+			) {
 				router.push('/DeckResults');
 			} else {
 				cardDeckDispatch({ type: 'NEXT_CARD' });

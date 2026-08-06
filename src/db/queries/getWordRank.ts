@@ -11,7 +11,10 @@ interface GetWordRankProps {
 /**
  * Get user's score from the join table
  */
-export default async function getWordRank({ userId, wordId }: GetWordRankProps) {
+export default async function getWordRank({
+	userId,
+	wordId,
+}: GetWordRankProps) {
 	const database = await getDB();
 
 	const row: { correctCount: number } | null = await database.getFirstAsync(

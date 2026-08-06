@@ -26,17 +26,31 @@ export default function DeckProgress() {
 	/**
 	 * Destructuring
 	 */
-	const { cardDeck: currentCardDeck, currentIndex, correctWords, incorrectWords } = cardDeckState;
+	const {
+		cardDeck: currentCardDeck,
+		currentIndex,
+		correctWords,
+		incorrectWords,
+	} = cardDeckState;
 	const { words } = currentCardDeck;
-	const { deckProgressContainerStyle, progressTextStyle, blipContainerStyle, blipStyle } = styles;
+	const {
+		deckProgressContainerStyle,
+		progressTextStyle,
+		blipContainerStyle,
+		blipStyle,
+	} = styles;
 
 	/**
 	 * Card vars
 	 */
 	const totalCards = words.length;
 	const currentCard = currentIndex + 1;
-	const correctWordIds: Set<string> = new Set(correctWords.map(word => word.id));
-	const incorrectWordIds: Set<string> = new Set(incorrectWords.map(word => word.id));
+	const correctWordIds: Set<string> = new Set(
+		correctWords.map(word => word.id),
+	);
+	const incorrectWordIds: Set<string> = new Set(
+		incorrectWords.map(word => word.id),
+	);
 
 	/**
 	 * Render the component
@@ -59,7 +73,8 @@ export default function DeckProgress() {
 						const isCompleted: boolean = index + 1 < currentCard;
 						const isCurrent: boolean = index + 1 === currentCard;
 						const isFilled: boolean = isCompleted || isCorrect || isIncorrect;
-						const blipColor: string = isIncorrect ? colors.light.danger : rarityColor;
+						const blipColor: string =
+							isIncorrect ? colors.light.danger : rarityColor;
 						const glowRadius: number = glowRadiusByRarity[rarity];
 
 						/**

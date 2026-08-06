@@ -53,8 +53,10 @@ export function getDeckRankProgress({
 	const unlockCount = getDeckRankUnlockCount(deckWordCount);
 	const cardsAfterRank = getCardsAfterRank(rankCounts, rankIndex);
 	const cardsAtOrAboveRank = rankCount + cardsAfterRank;
-	const progressCount = rankKey === 'diamond' ? cardsAtOrAboveRank : cardsAfterRank;
-	const isUnlocked = deckWordCount > 0 && (rankIndex === 0 || cardsAtOrAboveRank >= unlockCount);
+	const progressCount =
+		rankKey === 'diamond' ? cardsAtOrAboveRank : cardsAfterRank;
+	const isUnlocked =
+		deckWordCount > 0 && (rankIndex === 0 || cardsAtOrAboveRank >= unlockCount);
 
 	let completion: DeckRankCompletion = 'incomplete';
 

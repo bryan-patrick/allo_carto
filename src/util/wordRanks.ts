@@ -1,7 +1,8 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { ComponentProps } from 'react';
 
-export type WordRankKey = 'unseen' | 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond';
+export type WordRankKey =
+	'unseen' | 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond';
 export type WordProgressKey = WordRankKey;
 
 export interface WordRankDefinition {
@@ -85,7 +86,9 @@ export function getWordRankKeyFromCounts({
 	return getWordRankDefinitionFromCorrectCount(correctCount).key;
 }
 
-export function getWordRankDefinitionByKey(rankKey: WordRankKey): WordRankDefinition {
+export function getWordRankDefinitionByKey(
+	rankKey: WordRankKey,
+): WordRankDefinition {
 	let matchingRank = wordRankDefinitions[0];
 
 	for (const rank of wordRankDefinitions) {

@@ -1,5 +1,9 @@
 import { type Word } from '../CardDeck/cardDeckTypes';
-import { type CardMistake, getFeedbackKey, type WordCardStateProps } from './wordCardContext';
+import {
+	type CardMistake,
+	getFeedbackKey,
+	type WordCardStateProps,
+} from './wordCardContext';
 
 /**
  * Typing
@@ -24,11 +28,17 @@ export type WordCardUIAction =
 function getMistake(state: WordCardStateProps, currentCard: Word): CardMistake {
 	let mistake: CardMistake = 'NONE';
 
-	if (currentCard.englishArticle && currentCard.englishArticle !== state.selectedArticle) {
+	if (
+		currentCard.englishArticle &&
+		currentCard.englishArticle !== state.selectedArticle
+	) {
 		mistake = 'ARTICLE';
 	}
 
-	if (!state.selectedWord || !currentCard.englishWords.includes(state.selectedWord)) {
+	if (
+		!state.selectedWord ||
+		!currentCard.englishWords.includes(state.selectedWord)
+	) {
 		mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
 	}
 
@@ -160,7 +170,8 @@ export function wordCardUIReducer(
 
 			const nextState: WordCardStateProps = {
 				...state,
-				selectedArticle: action.word !== state.selectedArticle ? action.word : null,
+				selectedArticle:
+					action.word !== state.selectedArticle ? action.word : null,
 				mistake: 'NONE',
 				progress: 'PENDING',
 			};

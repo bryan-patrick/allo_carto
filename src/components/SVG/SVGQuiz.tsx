@@ -5,7 +5,11 @@ import SVG from './SVG';
 /**
  * SVGQuiz Component
  */
-export default function SVGQuiz({ color = '#ffffff', height = '32px', width = '32px' }: SVGProps) {
+export default function SVGQuiz({
+	color = '#ffffff',
+	height = '32px',
+	width = '32px',
+}: SVGProps) {
 	return (
 		<SVG
 			viewbox="0 0 800.205 434.249"
