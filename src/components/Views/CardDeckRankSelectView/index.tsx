@@ -19,102 +19,94 @@ import RankSelectHeader from './RankSelectHeader';
  * View card deck rank select
  */
 export default function CardDeckRankSelectView() {
-  const userId = useUserContext()?.id;
-  const { cardDeckState, cardDeckDispatch } = useCardDeck();
-  const { progressById, status } = useUserProgress();
-  const [ rankCounts, setRankCounts ] = useState<DeckRankCounts>(emptyDeckRankCounts);
-  const { cardDeck } = cardDeckState;
-  const deckWordCount = cardDeck.wordIds.length;
-  const {
-    rankSelectFlexStyle,
-    rankSelectContainerStyle,
-    rankSelectInnerCardStyle,
-  } = styles;
+	const userId = useUserContext()?.id;
+	const { cardDeckState, cardDeckDispatch } = useCardDeck();
+	const { progressById, status } = useUserProgress();
+	const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
+	const { cardDeck } = cardDeckState;
+	const deckWordCount = cardDeck.wordIds.length;
+	const { rankSelectFlexStyle, rankSelectContainerStyle, rankSelectInnerCardStyle } = styles;
 
-  const handleRankSelect = useCallback(async (rank: WordRankKey) => {
-    if (userId) {
-      const deck = await getDeck({
-        deck: cardDeck,
-        userId,
-        rank,
-      });
+	const handleRankSelect = useCallback(
+		async (rank: WordRankKey) => {
+			if (userId) {
+				const deck = await getDeck({
+					deck: cardDeck,
+					userId,
+					rank,
+				});
 
-      if (deck) {
-        cardDeckDispatch({ type: 'SET_DECK', payload: deck });
-        router.push('/CardDeck');
-      }
-    }
-  }, [
-    userId,
-    cardDeck,
-    cardDeckDispatch,
-  ]);
+				if (deck) {
+					cardDeckDispatch({ type: 'SET_DECK', payload: deck });
+					router.push('/CardDeck');
+				}
+			}
+		},
+		[userId, cardDeck, cardDeckDispatch],
+	);
 
-  useEffect(() => {
-    let isCurrent = true;
+	useEffect(() => {
+		let isCurrent = true;
 
-    async function loadRankCounts() {
-      try {
-        if (!userId) {
-          setRankCounts(emptyDeckRankCounts);
-          return;
-        }
+		async function loadRankCounts() {
+			try {
+				if (!userId) {
+					setRankCounts(emptyDeckRankCounts);
+					return;
+				}
 
-        const database = await getDB();
-        const counts = await getDeckRankCounts({
-          database,
-          userId,
-          wordIds: cardDeck.wordIds,
-        });
+				const database = await getDB();
+				const counts = await getDeckRankCounts({
+					database,
+					userId,
+					wordIds: cardDeck.wordIds,
+				});
 
-        if (isCurrent) {
-          setRankCounts(counts);
-        }
-      } catch (error) {
-        console.error('Could not retrieve deck rank counts:', error);
-      }
-    }
+				if (isCurrent) {
+					setRankCounts(counts);
+				}
+			} catch (error) {
+				console.error('Could not retrieve deck rank counts:', error);
+			}
+		}
 
-    loadRankCounts();
+		loadRankCounts();
 
-    return () => {
-      isCurrent = false;
-    };
-  }, [
-    cardDeck.wordIds,
-    userId,
-  ]);
+		return () => {
+			isCurrent = false;
+		};
+	}, [cardDeck.wordIds, userId]);
 
-  /**
-   * Wait for the user's stored percentages
-   */
-  if (status === 'loading') return <Loader />;
-  if (status === 'error') return <Text>Could not load deck progress.</Text>;
+	/**
+	 * Wait for the user's stored percentages
+	 */
+	if (status === 'loading') return <Loader />;
+	if (status === 'error') return <Text>Could not load deck progress.</Text>;
 
-  /**
-   * Block locked decks
-   */
-  if (!isProgressAccessible({ id: cardDeck.id, progressById })) {
-    return <Text>This deck is locked.</Text>;
-  }
+	/**
+	 * Block locked decks
+	 */
+	if (!isProgressAccessible({ id: cardDeck.id, progressById })) {
+		return <Text>This deck is locked.</Text>;
+	}
 
-  /**
-   * Render the component
-   */
-  return (
-    <View style={rankSelectFlexStyle}>
-      <View style={rankSelectContainerStyle}>
-        <View style={rankSelectInnerCardStyle}>
-          <RankSelectHeader cardDeck={cardDeck} />
-          <RankButtonList
-            deckWordCount={deckWordCount}
-            handleRankSelect={handleRankSelect}
-            rankCounts={rankCounts}
-          />
-        </View>
-      </View>
-    </View>
-  );
+	/**
+	 * Render the component
+	 */
+	return (
+		<View style={rankSelectFlexStyle}>
+			<View style={rankSelectContainerStyle}>
+				<View style={rankSelectInnerCardStyle}>
+					<RankSelectHeader cardDeck={cardDeck} />
+					<RankButtonList
+						deckWordCount={deckWordCount}
+						handleRankSelect={handleRankSelect}
+						rankCounts={rankCounts}
+					/>
+				</View>
+			</View>
+		</View>
+	);
 }
 
 const { containerMargin } = sharedStyles;
@@ -123,31 +115,31 @@ const { containerMargin } = sharedStyles;
  * Styles
  */
 const styles = StyleSheet.create({
-  rankSelectFlexStyle: {
-    alignContent: 'center',
-    display: 'flex',
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  rankSelectContainerStyle: {
-    borderColor: colors.dark.border,
-    borderRadius: 16,
-    borderWidth: 4,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: containerMargin,
-    overflow: 'hidden',
-  },
-  rankSelectInnerCardStyle: {
-    alignItems: 'center',
-    backgroundColor: colors.light.background,
-    borderRadius: 8,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    justifyContent: 'center',
-    padding: 32,
-  },
+	rankSelectFlexStyle: {
+		alignContent: 'center',
+		display: 'flex',
+		flexGrow: 1,
+		justifyContent: 'center',
+	},
+	rankSelectContainerStyle: {
+		borderColor: colors.dark.border,
+		borderRadius: 16,
+		borderWidth: 4,
+		display: 'flex',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		marginHorizontal: containerMargin,
+		overflow: 'hidden',
+	},
+	rankSelectInnerCardStyle: {
+		alignItems: 'center',
+		backgroundColor: colors.light.background,
+		borderRadius: 8,
+		display: 'flex',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 8,
+		justifyContent: 'center',
+		padding: 32,
+	},
 });

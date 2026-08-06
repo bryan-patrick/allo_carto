@@ -102,7 +102,8 @@ export function makeMockCardDeck(overrides: Partial<CardDeck> = {}): CardDeck {
 		words,
 		wordIds: overrides.wordIds ?? words.map(word => word.id),
 		wordChoices:
-			overrides.wordChoices ?? words.map(word => ({
+			overrides.wordChoices ??
+			words.map(word => ({
 				englishWords: word.englishWords,
 				partOfSpeech: word.partOfSpeech,
 			})),

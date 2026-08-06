@@ -6,10 +6,8 @@ async function createWordsTable(): Promise<void> {
 	/**
 	 * Check/Create word table
 	 */
-	await logThisIfItFails(
-		'Oops we messed up creating the words table somehows',
-		async () => {
-			await database.execAsync(`
+	await logThisIfItFails('Oops we messed up creating the words table somehows', async () => {
+		await database.execAsync(`
 				CREATE TABLE IF NOT EXISTS words (
 					id TEXT PRIMARY KEY,
 					frenchWord TEXT NOT NULL,
@@ -28,27 +26,21 @@ async function createWordsTable(): Promise<void> {
 					rarity TEXT
 				);
 			`);
-		},
-	);
+	});
 }
 
 async function ensureWordsFormColumn(): Promise<void> {
 	const database = await getDB();
 
-	await logThisIfItFails(
-		'Oops we messed up adding the words form column',
-		async () => {
-			const columns =
-				(await database.getAllAsync<{ name: string }>(
-					'PRAGMA table_info(words)',
-				)) ?? [];
-			const hasFormColumn = columns.some(column => column.name === 'form');
+	await logThisIfItFails('Oops we messed up adding the words form column', async () => {
+		const columns =
+			(await database.getAllAsync<{ name: string }>('PRAGMA table_info(words)')) ?? [];
+		const hasFormColumn = columns.some(column => column.name === 'form');
 
-			if (!hasFormColumn) {
-				await database.execAsync('ALTER TABLE words ADD COLUMN form TEXT;');
-			}
-		},
-	);
+		if (!hasFormColumn) {
+			await database.execAsync('ALTER TABLE words ADD COLUMN form TEXT;');
+		}
+	});
 }
 
 async function createUsersTable(): Promise<void> {
@@ -57,18 +49,15 @@ async function createUsersTable(): Promise<void> {
 	/**
 	 * Create users table
 	 */
-	await logThisIfItFails(
-		'Oops we messed up the users table somehows mon homme',
-		async () => {
-			await database.execAsync(`
+	await logThisIfItFails('Oops we messed up the users table somehows mon homme', async () => {
+		await database.execAsync(`
 				CREATE TABLE IF NOT EXISTS users (
 					id TEXT PRIMARY KEY,
 					name TEXT,
 					isMonHomme INTEGER NOT NULL DEFAULT 1
 				);
 			`);
-		},
-	);
+	});
 }
 
 async function createUserWordsTable(): Promise<void> {

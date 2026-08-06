@@ -1,8 +1,5 @@
 import type { StorySegment } from '@/src/components/CardDeck/cardDeckTypes';
-import {
-	getWordRankKeyFromCounts,
-	type WordProgressKey,
-} from '@/src/util/wordRanks';
+import { getWordRankKeyFromCounts, type WordProgressKey } from '@/src/util/wordRanks';
 import { getDB } from '../connection';
 
 /**
@@ -98,9 +95,7 @@ export default async function getWordProgressById({
 		 * Use the stored userWords counts to get each word's rank
 		 */
 		for (const wordId of uniqueWordIds) {
-			result[wordId] = getWordRankKeyFromCounts(
-				progressByWordId[wordId] ?? {},
-			);
+			result[wordId] = getWordRankKeyFromCounts(progressByWordId[wordId] ?? {});
 		}
 	}
 

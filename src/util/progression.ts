@@ -56,10 +56,7 @@ export function getCompletionPercentage({
 	rankCounts,
 }: {
 	wordCount: number;
-	rankCounts: Pick<
-		DeckRankCounts,
-		'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond'
-	>;
+	rankCounts: Pick<DeckRankCounts, 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond'>;
 }): number {
 	if (wordCount === 0) return 0;
 

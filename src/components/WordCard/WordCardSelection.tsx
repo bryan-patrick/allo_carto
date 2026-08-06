@@ -7,53 +7,55 @@ import { useWordCardUI } from './useWordCardUI';
  * Typing
  */
 interface WordCardSelectionProps {
-  articleWords: string[];
-  fillerWords: string[];
+	articleWords: string[];
+	fillerWords: string[];
 }
 
 /**
  * WordCardSelection Component
  */
 export default function WordCardSelection({ articleWords, fillerWords }: WordCardSelectionProps) {
-  const { cardState, wordCardUIDispatch } = useWordCardUI();
-  const { wcsContainer } = wordCardSelectionStyles;
+	const { cardState, wordCardUIDispatch } = useWordCardUI();
+	const { wcsContainer } = wordCardSelectionStyles;
 
-  const handleArticlePressToggle = useCallback((word: string) => {
-    wordCardUIDispatch({ type: 'SELECT_ARTICLE', word });
-  }, [
-    wordCardUIDispatch
-  ]);
+	const handleArticlePressToggle = useCallback(
+		(word: string) => {
+			wordCardUIDispatch({ type: 'SELECT_ARTICLE', word });
+		},
+		[wordCardUIDispatch],
+	);
 
-  const handleWordPressToggle = useCallback((word: string) => {
-    wordCardUIDispatch({ type: 'SELECT_WORD', word });
-  }, [
-    wordCardUIDispatch
-  ]);
+	const handleWordPressToggle = useCallback(
+		(word: string) => {
+			wordCardUIDispatch({ type: 'SELECT_WORD', word });
+		},
+		[wordCardUIDispatch],
+	);
 
-  return (
-    <View style={wcsContainer}>
-      <MappedWords
-        words={articleWords}
-        activeWord={cardState.selectedArticle}
-        handler={handleArticlePressToggle}
-      />
-      <MappedWords
-        words={fillerWords}
-        activeWord={cardState.selectedWord}
-        handler={handleWordPressToggle}
-      />
-    </View>
-  )
+	return (
+		<View style={wcsContainer}>
+			<MappedWords
+				words={articleWords}
+				activeWord={cardState.selectedArticle}
+				handler={handleArticlePressToggle}
+			/>
+			<MappedWords
+				words={fillerWords}
+				activeWord={cardState.selectedWord}
+				handler={handleWordPressToggle}
+			/>
+		</View>
+	);
 }
 
 /**
  * Styles
  */
 const wordCardSelectionStyles = StyleSheet.create({
-  wcsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 20,
-  },
+	wcsContainer: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'center',
+		gap: 20,
+	},
 });

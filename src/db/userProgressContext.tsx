@@ -9,10 +9,7 @@ import {
 	useState,
 } from 'react';
 import getUserProgress from './queries/getUserProgress';
-import {
-	writeCorrectAnswer,
-	writeWordSeen,
-} from './queries/writeUserProgress';
+import { writeCorrectAnswer, writeWordSeen } from './queries/writeUserProgress';
 
 /**
  * Typing
@@ -40,8 +37,7 @@ const initialValue: UserProgressContextValue = {
 	status: 'loading',
 };
 
-export const UserProgressContext =
-	createContext<UserProgressContextValue>(initialValue);
+export const UserProgressContext = createContext<UserProgressContextValue>(initialValue);
 
 /**
  * User progress provider
@@ -97,75 +93,77 @@ export function UserProgressProvider({
 	 * Block another word or userProgress write until
 	 * the database write and in-memory refresh finish
 	 */
-	const runProgressWrite = useCallback(async (
-		write: () => Promise<void>,
-	): Promise<boolean> => {
-		if (!userId || progressWriteInFlight.current) return false;
+	const runProgressWrite = useCallback(
+		async (write: () => Promise<void>): Promise<boolean> => {
+			if (!userId || progressWriteInFlight.current) return false;
 
-		progressWriteInFlight.current = true;
-		setIsUpdatingProgress(true);
+			progressWriteInFlight.current = true;
+			setIsUpdatingProgress(true);
 
-		try {
-			await write();
-			await refreshProgress();
-			return true;
-		} catch (error) {
-			console.error('Could not update user progress:', error);
-			setStatus('error');
-			return false;
-		} finally {
-			progressWriteInFlight.current = false;
-			setIsUpdatingProgress(false);
-		}
-	}, [refreshProgress, userId]);
+			try {
+				await write();
+				await refreshProgress();
+				return true;
+			} catch (error) {
+				console.error('Could not update user progress:', error);
+				setStatus('error');
+				return false;
+			} finally {
+				progressWriteInFlight.current = false;
+				setIsUpdatingProgress(false);
+			}
+		},
+		[refreshProgress, userId],
+	);
 
 	/**
 	 * Save a correct answer
 	 */
-	const recordCorrectAnswer = useCallback(async (
-		wordId: string,
-	): Promise<boolean> => {
-		return runProgressWrite(async () => {
-			await writeCorrectAnswer({ userId: userId!, wordId });
-		});
-	}, [runProgressWrite, userId]);
+	const recordCorrectAnswer = useCallback(
+		async (wordId: string): Promise<boolean> => {
+			return runProgressWrite(async () => {
+				await writeCorrectAnswer({ userId: userId!, wordId });
+			});
+		},
+		[runProgressWrite, userId],
+	);
 
 	/**
 	 * Save that a word was seen
 	 */
-	const recordWordSeen = useCallback(async (
-		wordId: string,
-	): Promise<boolean> => {
-		return runProgressWrite(async () => {
-			await writeWordSeen({ userId: userId!, wordId });
-		});
-	}, [runProgressWrite, userId]);
+	const recordWordSeen = useCallback(
+		async (wordId: string): Promise<boolean> => {
+			return runProgressWrite(async () => {
+				await writeWordSeen({ userId: userId!, wordId });
+			});
+		},
+		[runProgressWrite, userId],
+	);
 
 	/**
 	 * Context value
 	 */
-	const value = useMemo<UserProgressContextValue>(() => ({
-		isUpdatingProgress,
-		progressById,
-		recordCorrectAnswer,
-		recordWordSeen,
-		refreshProgress,
-		status,
-	}), [
-		isUpdatingProgress,
-		progressById,
-		recordCorrectAnswer,
-		recordWordSeen,
-		refreshProgress,
-		status,
-	]);
+	const value = useMemo<UserProgressContextValue>(
+		() => ({
+			isUpdatingProgress,
+			progressById,
+			recordCorrectAnswer,
+			recordWordSeen,
+			refreshProgress,
+			status,
+		}),
+		[
+			isUpdatingProgress,
+			progressById,
+			recordCorrectAnswer,
+			recordWordSeen,
+			refreshProgress,
+			status,
+		],
+	);
 
 	/**
 	 * Render the provider
 	 */
-	return (
-		<UserProgressContext.Provider value={value}>
-			{children}
-		</UserProgressContext.Provider>
-	);
+	return <UserProgressContext.Provider value={value}>{children}</UserProgressContext.Provider>;
 }

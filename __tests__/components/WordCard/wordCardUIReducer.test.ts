@@ -27,9 +27,7 @@ const cardWithoutArticle: Word = {
 	correctCount: 3,
 };
 
-function makeState(
-	overrides: Partial<WordCardStateProps> = {},
-): WordCardStateProps {
+function makeState(overrides: Partial<WordCardStateProps> = {}): WordCardStateProps {
 	return {
 		...initialWordCardState,
 		...overrides,

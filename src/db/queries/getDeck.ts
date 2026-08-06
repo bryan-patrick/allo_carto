@@ -94,8 +94,7 @@ export default async function getDeck({
 	 */
 	try {
 		const database = await getDB();
-		const rankCondition =
-			rank ? `AND ${getRankCountCondition(rank)}` : '';
+		const rankCondition = rank ? `AND ${getRankCountCondition(rank)}` : '';
 		const rows = await database.getAllAsync<WordRow>(
 			`
 			SELECT

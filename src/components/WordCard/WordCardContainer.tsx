@@ -1,216 +1,216 @@
-import colors from "@/src/app/colors";
-import sharedStyles from "@/src/app/sharedStyles";
-import { useUserProgress } from "@/src/db/useUserProgress";
-import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
+import colors from '@/src/app/colors';
+import sharedStyles from '@/src/app/sharedStyles';
+import { useUserProgress } from '@/src/db/useUserProgress';
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { englishArticles } from "../../util/filterFillerWords";
-import getFillerWords from "../../util/getFillerWords";
-import { type Word } from "../CardDeck/cardDeckTypes";
-import { useCardDeck } from "../CardDeck/useCardDeck";
-import SVGRightArrow from "../SVG/SVGRightArrow";
-import WordCard from "./WordCard";
-import WordCardButton from "./WordCardButton";
-import { initialWordCardState, WordCardUIContext } from "./wordCardContext";
-import WordCardSelection from "./WordCardSelection";
-import { wordCardUIReducer } from "./wordCardUIReducer";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { englishArticles } from '../../util/filterFillerWords';
+import getFillerWords from '../../util/getFillerWords';
+import { type Word } from '../CardDeck/cardDeckTypes';
+import { useCardDeck } from '../CardDeck/useCardDeck';
+import SVGRightArrow from '../SVG/SVGRightArrow';
+import WordCard from './WordCard';
+import WordCardButton from './WordCardButton';
+import { initialWordCardState, WordCardUIContext } from './wordCardContext';
+import WordCardSelection from './WordCardSelection';
+import { wordCardUIReducer } from './wordCardUIReducer';
 
 /**
  * Typing
  */
 interface CardContainerProps {
-  word: Word;
-  isCurrent: boolean;
+	word: Word;
+	isCurrent: boolean;
 }
 
 const MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WORDS_FROM_OTHER_PARTS_OF_SPEECH = 3;
 
 function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
-  const lowerCaseCorrectAnswers = new Set(
-    correctAnswers.map(correctAnswer => correctAnswer.toLowerCase()),
-  );
-  const wrongAnswerChoices = new Set<string>();
+	const lowerCaseCorrectAnswers = new Set(
+		correctAnswers.map(correctAnswer => correctAnswer.toLowerCase()),
+	);
+	const wrongAnswerChoices = new Set<string>();
 
-  for (const word of words) {
-    const lowerCaseWord = word.toLowerCase();
+	for (const word of words) {
+		const lowerCaseWord = word.toLowerCase();
 
-    if (!lowerCaseCorrectAnswers.has(lowerCaseWord)) {
-      wrongAnswerChoices.add(lowerCaseWord);
-    }
-  }
+		if (!lowerCaseCorrectAnswers.has(lowerCaseWord)) {
+			wrongAnswerChoices.add(lowerCaseWord);
+		}
+	}
 
-  return wrongAnswerChoices.size;
+	return wrongAnswerChoices.size;
 }
 
 /**
  * WordCardContainer Component
  */
 export default function WordCardContainer({ word, isCurrent }: CardContainerProps) {
-  /**
-   * State
-   */
-  const { cardDeckState } = useCardDeck();
-  const { isUpdatingProgress, recordWordSeen } = useUserProgress();
-  const [fillerWords, setFillerWords] = useState<string[]>([]);
-  const [articleWords, setArticleWords] = useState<string[]>([]);
-  const loadedWordId = useRef<string | null>(null);
-  const seenWordId = useRef<string | null>(null);
-  const [cardState, wordCardUIDispatch] = useReducer(
-    wordCardUIReducer,
-    initialWordCardState,
-  );
+	/**
+	 * State
+	 */
+	const { cardDeckState } = useCardDeck();
+	const { isUpdatingProgress, recordWordSeen } = useUserProgress();
+	const [fillerWords, setFillerWords] = useState<string[]>([]);
+	const [articleWords, setArticleWords] = useState<string[]>([]);
+	const loadedWordId = useRef<string | null>(null);
+	const seenWordId = useRef<string | null>(null);
+	const [cardState, wordCardUIDispatch] = useReducer(wordCardUIReducer, initialWordCardState);
 
-  /**
-   * Destructure styles
-   */
-  const { container } = wordCardContainerStyles;
-  const isNextCardButton =
-    cardState.stage === 'CORRECT' ||
-    cardState.stage === 'INCORRECT';
-  const nextCardArrowColor = cardState.progress === 'SUCCESS'
-    ? colors.dark.text
-    : colors.light.text;
+	/**
+	 * Destructure styles
+	 */
+	const { container } = wordCardContainerStyles;
+	const isNextCardButton = cardState.stage === 'CORRECT' || cardState.stage === 'INCORRECT';
+	const nextCardArrowColor =
+		cardState.progress === 'SUCCESS' ? colors.dark.text : colors.light.text;
 
-  /**
-   * Increment the seen count when a card becomes current.
-   */
-  useEffect(() => {
-    async function markWordSeen() {
-      if (!isCurrent || isUpdatingProgress) return;
-      if (seenWordId.current === word.id) return;
+	/**
+	 * Increment the seen count when a card becomes current.
+	 */
+	useEffect(() => {
+		async function markWordSeen() {
+			if (!isCurrent || isUpdatingProgress) return;
+			if (seenWordId.current === word.id) return;
 
-      const didWrite = await recordWordSeen(word.id);
+			const didWrite = await recordWordSeen(word.id);
 
-      if (didWrite) seenWordId.current = word.id;
-    }
+			if (didWrite) seenWordId.current = word.id;
+		}
 
-    markWordSeen();
-  }, [
-    isCurrent,
-    isUpdatingProgress,
-    recordWordSeen,
-    word.id,
-  ]);
+		markWordSeen();
+	}, [isCurrent, isUpdatingProgress, recordWordSeen, word.id]);
 
-  /**
-    * Side effects
-    * Load the new card and its state.
-    * Note that we use the id to check for a new card.
-    */
-  useEffect(() => {
-    async function loadWords() {
-      /**
-       * Checking an answer updates the deck's words array, which reruns this
-       * effect and reshuffles the choices mid card, which is bad mmmk?
-       * 
-       * In other words it moves the MappedWords around. 
-       * To future me, put the crowbar down and slowly back away.
-       */
-      if (loadedWordId.current === word.id) return;
-      loadedWordId.current = word.id;
+	/**
+	 * Side effects
+	 * Load the new card and its state.
+	 * Note that we use the id to check for a new card.
+	 */
+	useEffect(() => {
+		async function loadWords() {
+			/**
+			 * Checking an answer updates the deck's words array, which reruns this
+			 * effect and reshuffles the choices mid card, which is bad mmmk?
+			 *
+			 * In other words it moves the MappedWords around.
+			 * To future me, put the crowbar down and slowly back away.
+			 */
+			if (loadedWordId.current === word.id) return;
+			loadedWordId.current = word.id;
 
-      const deckWordChoices = cardDeckState.cardDeck.wordChoices
-        .flatMap(choice => choice.englishWords);
-      let matchingWordChoices = deckWordChoices;
+			const deckWordChoices = cardDeckState.cardDeck.wordChoices.flatMap(
+				choice => choice.englishWords,
+			);
+			let matchingWordChoices = deckWordChoices;
 
-      if (word.partOfSpeech) {
-        matchingWordChoices = cardDeckState.cardDeck.wordChoices
-          .filter(choice => choice.partOfSpeech === word.partOfSpeech)
-          .flatMap(choice => choice.englishWords);
+			if (word.partOfSpeech) {
+				matchingWordChoices = cardDeckState.cardDeck.wordChoices
+					.filter(choice => choice.partOfSpeech === word.partOfSpeech)
+					.flatMap(choice => choice.englishWords);
 
-        if (
-          countWrongAnswerChoices(matchingWordChoices, word.englishWords) <
-          MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WORDS_FROM_OTHER_PARTS_OF_SPEECH
-        ) {
-          matchingWordChoices = deckWordChoices;
-        }
-      }
+				if (
+					countWrongAnswerChoices(matchingWordChoices, word.englishWords) <
+					MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WORDS_FROM_OTHER_PARTS_OF_SPEECH
+				) {
+					matchingWordChoices = deckWordChoices;
+				}
+			}
 
-      setFillerWords(await getFillerWords({
-        correctWords: word.englishWords,
-        words: matchingWordChoices,
-      }));
+			setFillerWords(
+				await getFillerWords({
+					correctWords: word.englishWords,
+					words: matchingWordChoices,
+				}),
+			);
 
-      if (word.englishArticle) {
-        setArticleWords(await getFillerWords({
-          words: englishArticles,
-          correctWords: [word.englishArticle]
-        }));
-      } else {
-        setArticleWords([]);
-      }
-    }
+			if (word.englishArticle) {
+				setArticleWords(
+					await getFillerWords({
+						words: englishArticles,
+						correctWords: [word.englishArticle],
+					}),
+				);
+			} else {
+				setArticleWords([]);
+			}
+		}
 
-    loadWords();
-  }, [
-    word.id,
-    word.frenchWord,
-    word.englishWords,
-    word.englishArticle,
-    word.partOfSpeech,
-    cardDeckState.cardDeck.wordChoices,
-  ]);
+		loadWords();
+	}, [
+		word.id,
+		word.frenchWord,
+		word.englishWords,
+		word.englishArticle,
+		word.partOfSpeech,
+		cardDeckState.cardDeck.wordChoices,
+	]);
 
-  /**
-   * Handle current card styles
-   */
-  const currentPosition = useSharedValue(isCurrent ? 0 : 1000);
-  const currentOpacity = useSharedValue(isCurrent ? 1 : 0);
-  const positionStyle = useAnimatedStyle(() => ({
-    left: currentPosition.get(),
-    opacity: currentOpacity.get()
-  }));
+	/**
+	 * Handle current card styles
+	 */
+	const currentPosition = useSharedValue(isCurrent ? 0 : 1000);
+	const currentOpacity = useSharedValue(isCurrent ? 1 : 0);
+	const positionStyle = useAnimatedStyle(() => ({
+		left: currentPosition.get(),
+		opacity: currentOpacity.get(),
+	}));
 
-  /**
-   * Kind of a shuffle animation effect
-   */
-  useLayoutEffect(() => {
-    if (isCurrent) {
-      currentPosition.set(withTiming(0, {
-        duration: 250
-      }));
-      currentOpacity.set(withTiming(1.0, {
-        duration: 100
-      }));
-    } else {
-      currentPosition.set(withTiming(500, {
-        duration: 500
-      }));
-      currentOpacity.set(withTiming(0, {
-        duration: 250
-      }));
-    }
-  }, [isCurrent, currentPosition, currentOpacity]);
+	/**
+	 * Kind of a shuffle animation effect
+	 */
+	useLayoutEffect(() => {
+		if (isCurrent) {
+			currentPosition.set(
+				withTiming(0, {
+					duration: 250,
+				}),
+			);
+			currentOpacity.set(
+				withTiming(1.0, {
+					duration: 100,
+				}),
+			);
+		} else {
+			currentPosition.set(
+				withTiming(500, {
+					duration: 500,
+				}),
+			);
+			currentOpacity.set(
+				withTiming(0, {
+					duration: 250,
+				}),
+			);
+		}
+	}, [isCurrent, currentPosition, currentOpacity]);
 
-  /**
-   * Render the WordCard container
-   */
-  return (
-    <WordCardUIContext.Provider value={{ cardState, wordCardUIDispatch }}>
-      <Animated.View style={[
-        container,
-        positionStyle
-      ]
-      }>
-        <WordCard isCurrent={isCurrent} />
-        <WordCardSelection
-          articleWords={articleWords}
-          fillerWords={fillerWords}
-        />
-        <WordCardButton
-          SVGElement={isNextCardButton ? (
-            <SVGRightArrow
-              color={nextCardArrowColor}
-              height="24"
-              width="24"
-            />
-          ) : <></>}
-        >
-          {isNextCardButton ? 'Next card' : 'Check'}
-        </WordCardButton>
-      </Animated.View>
-    </WordCardUIContext.Provider >
-  )
+	/**
+	 * Render the WordCard container
+	 */
+	return (
+		<WordCardUIContext.Provider value={{ cardState, wordCardUIDispatch }}>
+			<Animated.View style={[container, positionStyle]}>
+				<WordCard isCurrent={isCurrent} />
+				<WordCardSelection
+					articleWords={articleWords}
+					fillerWords={fillerWords}
+				/>
+				<WordCardButton
+					SVGElement={
+						isNextCardButton ?
+							<SVGRightArrow
+								color={nextCardArrowColor}
+								height="24"
+								width="24"
+							/>
+						:	<></>
+					}
+				>
+					{isNextCardButton ? 'Next card' : 'Check'}
+				</WordCardButton>
+			</Animated.View>
+		</WordCardUIContext.Provider>
+	);
 }
 
 /**
@@ -222,11 +222,11 @@ const { containerMargin } = sharedStyles;
  * Styles
  */
 const wordCardContainerStyles = StyleSheet.create({
-  container: {
-    height: '100%',
-    display: 'flex',
-    padding: containerMargin,
-    justifyContent: 'space-around',
-    left: 500, // animation start position
-  },
+	container: {
+		height: '100%',
+		display: 'flex',
+		padding: containerMargin,
+		justifyContent: 'space-around',
+		left: 500, // animation start position
+	},
 });

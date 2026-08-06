@@ -10,50 +10,46 @@ import Chapter from './Chapter';
  * Component chapter select view
  */
 export default function ChapterSelectView() {
-  const { chapters } = deckAtlas;
-  const { progressById, status } = useUserProgress();
-  const {
-    scrollViewStyle,
-    scrollViewContainerStyle,
-  } = styles;
+	const { chapters } = deckAtlas;
+	const { progressById, status } = useUserProgress();
+	const { scrollViewStyle, scrollViewContainerStyle } = styles;
 
-  /**
-   * Wait for the user's stored percentages
-   */
-  if (status === 'loading') return <Loader />;
-  if (status === 'error') return <Text>Could not load chapter progress.</Text>;
+	/**
+	 * Wait for the user's stored percentages
+	 */
+	if (status === 'loading') return <Loader />;
+	if (status === 'error') return <Text>Could not load chapter progress.</Text>;
 
-  /**
-   * Render the component
-   */
-  return (
-    <ScrollView
-      style={scrollViewStyle}
-      contentContainerStyle={scrollViewContainerStyle}
-    >
-      {chapters.map((chapter: DeckChapter, index) => (
-        <Chapter
-          chapter={chapter}
-          index={index}
-          isLocked={!isProgressAccessible({ id: chapter.id, progressById })}
-          key={chapter.id}
-          progressPercent={progressById[ chapter.id ]?.completionPercentage ?? 0}
-        />
-      ))}
-    </ScrollView>
-  );
+	/**
+	 * Render the component
+	 */
+	return (
+		<ScrollView
+			style={scrollViewStyle}
+			contentContainerStyle={scrollViewContainerStyle}
+		>
+			{chapters.map((chapter: DeckChapter, index) => (
+				<Chapter
+					chapter={chapter}
+					index={index}
+					isLocked={!isProgressAccessible({ id: chapter.id, progressById })}
+					key={chapter.id}
+					progressPercent={progressById[chapter.id]?.completionPercentage ?? 0}
+				/>
+			))}
+		</ScrollView>
+	);
 }
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-  scrollViewStyle: {
-  },
-  scrollViewContainerStyle: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 24,
-    paddingVertical: 24,
-  },
+	scrollViewStyle: {},
+	scrollViewContainerStyle: {
+		display: 'flex',
+		flexDirection: 'column',
+		gap: 24,
+		paddingVertical: 24,
+	},
 });
