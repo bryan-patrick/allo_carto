@@ -1,9 +1,9 @@
 import { deckAtlas } from '@/data/french/deckAtlas';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
-import ViewCardsView from '@/src/components/Views/ViewCardsView';
 import Loader from '@/src/components/Loader';
+import ViewCardsView from '@/src/components/Views/ViewCardsView';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { isProgressAccessible } from '@/src/util/atlasProgression';
+import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { Text } from 'react-native';
 
@@ -69,7 +69,7 @@ export default function ViewCards() {
 	/**
 	 * Block locked decks
 	 */
-	if (deck && !isProgressAccessible({ id: deck.id, progressById })) {
+	if (deck && !isItemUnlocked({ id: deck.id, progressById })) {
 		return <Text>This deck is locked.</Text>;
 	}
 

@@ -1,9 +1,9 @@
+import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import {
 	makeMockCardDeck,
 	makeMockCardDeckState,
 	mockWords,
 } from '@/src/components/CardDeck/mockCardDeck';
-import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import WordCardContainer from '@/src/components/WordCard/WordCardContainer';
 import { useUserProgress } from '@/src/db/useUserProgress';
@@ -45,9 +45,9 @@ describe('<WordCardContainer />', () => {
 		mockUseUserProgress.mockReturnValue({
 			isUpdatingProgress: false,
 			progressById: {},
-			recordCorrectAnswer: jest.fn(),
-			recordWordSeen: mockRecordWordSeen,
-			refreshProgress: jest.fn(),
+			writeCorrectAnswer: jest.fn(),
+			writeWordSeen: mockRecordWordSeen,
+			reloadProgress: jest.fn(),
 			status: 'ready',
 		});
 		const adjective = {

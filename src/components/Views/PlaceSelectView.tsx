@@ -5,9 +5,10 @@ import LockOverlay from '@/src/components/LockOverlay';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import {
 	findChapterById,
+	formatUnlockCriterion,
 	getUnlockCriteria,
-	isProgressAccessible,
-} from '@/src/util/atlasProgression';
+	isItemUnlocked,
+} from '@/src/util/atlasCompletion';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -89,7 +90,7 @@ export default function PlaceSelectView() {
 	/**
 	 * Block locked chapters
 	 */
-	if (!isProgressAccessible({ id: selectedChapter.id, progressById })) {
+	if (!isItemUnlocked({ id: selectedChapter.id, progressById })) {
 		return (
 			<View style={styles.viewStyle}>
 				<View style={styles.chapterTitleContainerStyle}>
@@ -122,10 +123,11 @@ export default function PlaceSelectView() {
 						const reverseRotate = isEven ? '5deg' : '-5deg';
 						const { id: placeId, name, description, image } = place;
 						const progressPercent = Math.floor(progressById[placeId]?.completionPercentage ?? 0);
-						const isLocked = !isProgressAccessible({
+						const isLocked = !isItemUnlocked({
 							id: placeId,
 							progressById,
 						});
+						const unlockCriteria = getUnlockCriteria(place, progressById);
 
 						/**
 						 * Render the place view/card
@@ -134,9 +136,9 @@ export default function PlaceSelectView() {
 							<LockOverlay
 								isLocked={isLocked}
 								key={placeId}
-								lockedAccessibilityHint={getUnlockCriteria(place)}
+								lockedAccessibilityHint={unlockCriteria.map(formatUnlockCriterion).join(' ')}
 								lockedAccessibilityLabel={`${name} place locked`}
-								unlockCriteria={getUnlockCriteria(place)}
+								unlockCriteria={unlockCriteria}
 							>
 								<View style={placeContainerStyle}>
 									<Text style={placeTitleTextStyle}>{name}</Text>

@@ -2,7 +2,7 @@ import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import Loader from '@/src/components/Loader';
 import CardDeckView from '@/src/components/Views/CardDeckView';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { isProgressAccessible } from '@/src/util/atlasProgression';
+import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { Text } from 'react-native';
 
 /**
@@ -22,7 +22,7 @@ export default function CardDeck() {
 	 * Block locked decks
 	 */
 	if (
-		!isProgressAccessible({
+		!isItemUnlocked({
 			id: cardDeckState.cardDeck.id,
 			progressById,
 		})

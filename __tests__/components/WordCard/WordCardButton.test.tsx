@@ -61,9 +61,9 @@ describe('<WordCardButton />', () => {
 		mockUseUserProgress.mockReturnValue({
 			isUpdatingProgress: false,
 			progressById: {},
-			recordCorrectAnswer: mockRecordCorrectAnswer,
-			recordWordSeen: jest.fn(),
-			refreshProgress: jest.fn(),
+			writeCorrectAnswer: mockRecordCorrectAnswer,
+			writeWordSeen: jest.fn(),
+			reloadProgress: jest.fn(),
 			status: 'ready',
 		});
 		mockUseCardDeck.mockReset();
@@ -113,9 +113,9 @@ describe('<WordCardButton />', () => {
 		mockUseUserProgress.mockReturnValue({
 			isUpdatingProgress: true,
 			progressById: {},
-			recordCorrectAnswer: mockRecordCorrectAnswer,
-			recordWordSeen: jest.fn(),
-			refreshProgress: jest.fn(),
+			writeCorrectAnswer: mockRecordCorrectAnswer,
+			writeWordSeen: jest.fn(),
+			reloadProgress: jest.fn(),
 			status: 'ready',
 		});
 		mockUseWordCardUI.mockReturnValue({
