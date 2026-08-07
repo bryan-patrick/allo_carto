@@ -13,18 +13,23 @@ interface ChapterLockedButtonProps {
  * ChapterLockedButton component
  */
 export default function ChapterLockedButton({ color, unlockCriteria }: ChapterLockedButtonProps) {
-	const { buttonContainerStyle, criteriaContainerStyle } = styles;
+	const { buttonContainer, criteriaContainer, criteriaText } = styles;
 
 	return (
-		<View style={[buttonContainerStyle, { borderColor: color }]}>
+		<View style={[buttonContainer, { borderColor: color }]}>
 			<MaterialIcons
 				color={color}
 				size={24}
 				name="lock"
 			/>
-			<View style={criteriaContainerStyle}>
+			<View style={criteriaContainer}>
 				{unlockCriteria.map((criterion, index) => (
-					<Text key={`${criterion}-${index}`}>{criterion}</Text>
+					<Text
+						key={`${criterion}-${index}`}
+						style={criteriaText}
+					>
+						{criterion}
+					</Text>
 				))}
 			</View>
 		</View>
@@ -35,10 +40,14 @@ export default function ChapterLockedButton({ color, unlockCriteria }: ChapterLo
  * Styles
  */
 const styles = StyleSheet.create({
-	buttonContainerStyle: {
+	buttonContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
+		borderWidth: 5,
 	},
-	criteriaContainerStyle: {},
+	criteriaContainer: {},
+	criteriaText: {
+		fontSize: 14,
+	},
 });
