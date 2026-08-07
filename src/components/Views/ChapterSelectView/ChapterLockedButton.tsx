@@ -17,7 +17,11 @@ export default function ChapterLockedButton({ color, unlockCriteria }: ChapterLo
 
 	return (
 		<View style={[buttonContainerStyle, { borderColor: color }]}>
-			<MaterialIcons color={color} size={24} name="lock" />
+			<MaterialIcons
+				color={color}
+				size={24}
+				name="lock"
+			/>
 			<View style={criteriaContainerStyle}>
 				{unlockCriteria.map((criterion, index) => (
 					<Text key={`${criterion}-${index}`}>{criterion}</Text>
