@@ -27,7 +27,7 @@ const MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WOR
 
 function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
 	const lowerCaseCorrectAnswers = new Set(
-		correctAnswers.map(correctAnswer => correctAnswer.toLowerCase()),
+		correctAnswers.map((correctAnswer) => correctAnswer.toLowerCase()),
 	);
 	const wrongAnswerChoices = new Set<string>();
 
@@ -50,7 +50,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 	 * State
 	 */
 	const { cardDeckState } = useCardDeck();
-	const { isUpdatingProgress, recordWordSeen } = useUserProgress();
+	const { isUpdatingProgress, writeWordSeen: recordWordSeen } = useUserProgress();
 	const [fillerWords, setFillerWords] = useState<string[]>([]);
 	const [articleWords, setArticleWords] = useState<string[]>([]);
 	const loadedWordId = useRef<string | null>(null);
@@ -99,14 +99,14 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 			loadedWordId.current = word.id;
 
 			const deckWordChoices = cardDeckState.cardDeck.wordChoices.flatMap(
-				choice => choice.englishWords,
+				(choice) => choice.englishWords,
 			);
 			let matchingWordChoices = deckWordChoices;
 
 			if (word.partOfSpeech) {
 				matchingWordChoices = cardDeckState.cardDeck.wordChoices
-					.filter(choice => choice.partOfSpeech === word.partOfSpeech)
-					.flatMap(choice => choice.englishWords);
+					.filter((choice) => choice.partOfSpeech === word.partOfSpeech)
+					.flatMap((choice) => choice.englishWords);
 
 				if (
 					countWrongAnswerChoices(matchingWordChoices, word.englishWords) <
@@ -191,19 +191,14 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 		<WordCardUIContext.Provider value={{ cardState, wordCardUIDispatch }}>
 			<Animated.View style={[container, positionStyle]}>
 				<WordCard isCurrent={isCurrent} />
-				<WordCardSelection
-					articleWords={articleWords}
-					fillerWords={fillerWords}
-				/>
+				<WordCardSelection articleWords={articleWords} fillerWords={fillerWords} />
 				<WordCardButton
 					SVGElement={
-						isNextCardButton ?
-							<SVGRightArrow
-								color={nextCardArrowColor}
-								height="24"
-								width="24"
-							/>
-						:	<></>
+						isNextCardButton ? (
+							<SVGRightArrow color={nextCardArrowColor} height="24" width="24" />
+						) : (
+							<></>
+						)
 					}
 				>
 					{isNextCardButton ? 'Next card' : 'Check'}

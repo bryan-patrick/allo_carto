@@ -1,9 +1,9 @@
 import type { DeckChapter } from '@/data/french/deckAtlas';
 import colors from '@/src/app/colors';
-import LockOverlay from '@/src/components/LockOverlay';
-import { getUnlockCriteria } from '@/src/util/atlasProgression';
+import { getUnlockCriteria } from '@/src/util/atlasCompletion';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import Book from './Book';
+import ChapterLockedButton from './ChapterLockedButton';
 import ChapterMeta from './ChapterMeta';
 import ChapterSelectButton from './ChapterSelectButton';
 import Cover from './Cover';
@@ -30,7 +30,7 @@ export default function Chapter({ chapter, progressPercent, index, isLocked }: C
 	const { chapterName, image, name, color, materialIconName } = chapter;
 
 	/**
-	 * Get the lock message
+	 * Get the unlock criteria
 	 */
 	const unlockCriteria = getUnlockCriteria(chapter);
 
@@ -51,47 +51,33 @@ export default function Chapter({ chapter, progressPercent, index, isLocked }: C
 	 * Render the component
 	 */
 	return (
-		<LockOverlay
-			isLocked={isLocked}
-			lockedAccessibilityHint={unlockCriteria}
-			lockedAccessibilityLabel={`${name} chapter locked`}
-			unlockCriteria={unlockCriteria}
-		>
-			<Book>
-				<Spine
-					color={color}
-					index={index}
-					materialIconName={materialIconName}
-				/>
-				<Crease />
-				<Cover>
-					<View style={chapterContainerStyle}>
-						<View style={chapterContainerInnerStyle}>
-							<View style={chapterTitleContainerStyle}>
-								<Text style={chapterNameStyle}>{chapterName}</Text>
-								<Text style={chapterTitleStyle}>{name}</Text>
-							</View>
-							{!isLocked && (
-								<View style={[chapterImageContainerStyle]}>
-									<ImageBackground
-										source={image}
-										style={chapterImageStyle}
-									/>
-								</View>
-							)}
-							<ChapterMeta
-								progressPercent={progressPercent}
-								progressColor={color ?? '#000000'}
-							/>
-							<ChapterSelectButton
-								chapter={chapter}
-								disabled={isLocked}
-							/>
+		<Book>
+			<Spine color={color} index={index} materialIconName={materialIconName} />
+			<Crease />
+			<Cover>
+				<View style={chapterContainerStyle}>
+					<View style={chapterContainerInnerStyle}>
+						<View style={chapterTitleContainerStyle}>
+							<Text style={chapterNameStyle}>{chapterName}</Text>
+							<Text style={chapterTitleStyle}>{name}</Text>
 						</View>
+						{!isLocked && (
+							<>
+								<View style={[chapterImageContainerStyle]}>
+									<ImageBackground source={image} style={chapterImageStyle} />
+								</View>
+								<ChapterMeta
+									progressPercent={progressPercent}
+									progressColor={color ?? '#000000'}
+								/>
+								<ChapterSelectButton chapter={chapter} disabled={isLocked} />
+							</>
+						)}
+						{isLocked && <ChapterLockedButton />}
 					</View>
-				</Cover>
-			</Book>
-		</LockOverlay>
+				</View>
+			</Cover>
+		</Book>
 	);
 }
 

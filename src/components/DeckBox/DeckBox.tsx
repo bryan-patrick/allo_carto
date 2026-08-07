@@ -10,10 +10,10 @@ import { StyleSheet, View } from 'react-native';
 import colors from '../../app/colors';
 import sharedStyles from '../../app/sharedStyles';
 import { useUserContext } from '../../db/useUserContext';
+import { getUnlockCriteria } from '../../util/atlasCompletion';
 import { getDeckCompletionPercent } from '../../util/deckCompletion';
 import type { WordProgressKey } from '../../util/wordRanks';
 import type { CardDeck } from '../CardDeck/cardDeckTypes';
-import { getUnlockCriteria } from '../../util/atlasProgression';
 import LockOverlay from '../LockOverlay';
 import DeckBoxFooter from './DeckBoxFooter';
 import DeckBoxHeader from './DeckBoxHeader';
@@ -170,10 +170,7 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
 				<View style={[cardInnerStyle]}>
 					<View style={cardInnerBorder}>
 						<DeckBoxHeader deck={deck} />
-						<DeckBoxHero
-							deck={deck}
-							rankCounts={rankCounts}
-						/>
+						<DeckBoxHero deck={deck} rankCounts={rankCounts} />
 						<DeckBoxStoryProgress
 							deck={deck}
 							deckCompletionPercent={deckCompletionPercent}
@@ -184,10 +181,7 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
 							setModalVisible={setModalVisible}
 							wordProgressKeyByWordId={wordProgressKeyByWordId}
 						/>
-						<DeckBoxFooter
-							deck={deck}
-							handleDeckSelect={handleDeckSelect}
-						/>
+						<DeckBoxFooter deck={deck} handleDeckSelect={handleDeckSelect} />
 					</View>
 				</View>
 			</View>

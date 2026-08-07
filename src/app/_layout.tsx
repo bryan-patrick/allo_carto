@@ -11,7 +11,6 @@ import { getTables, setDB } from '../db/interface';
 import getMonHomme, { UserRow } from '../db/queries/getMonHomme';
 import { UserContext } from '../db/userContext';
 import { UserProgressProvider } from '../db/userProgressContext';
-import { validateProgression } from '../util/atlasProgression';
 import alloTheme from './alloTheme';
 
 /**
@@ -62,7 +61,6 @@ export default function AppLayout() {
 	 */
 	const initDB = useCallback(async (database: SQLiteDatabase) => {
 		setDB(database);
-		validateProgression();
 
 		if (resetDB) {
 			await database.execAsync(`

@@ -3,11 +3,7 @@ import sharedStyles from '@/src/app/sharedStyles';
 import Loader from '@/src/components/Loader';
 import LockOverlay from '@/src/components/LockOverlay';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import {
-	findChapterById,
-	getUnlockCriteria,
-	isProgressAccessible,
-} from '@/src/util/atlasProgression';
+import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -80,7 +76,9 @@ export default function PlaceSelectView() {
 			<View style={styles.viewStyle}>
 				<View style={styles.chapterTitleContainerStyle}>
 					<Text style={styles.chapterIndexStyle}>Unknown chapter</Text>
-					<Text style={styles.chapterTitleStyle}>Please go back and select a chapter.</Text>
+					<Text style={styles.chapterTitleStyle}>
+						Please go back and select a chapter.
+					</Text>
 				</View>
 			</View>
 		);
@@ -89,12 +87,14 @@ export default function PlaceSelectView() {
 	/**
 	 * Block locked chapters
 	 */
-	if (!isProgressAccessible({ id: selectedChapter.id, progressById })) {
+	if (!isItemUnlocked({ id: selectedChapter.id, progressById })) {
 		return (
 			<View style={styles.viewStyle}>
 				<View style={styles.chapterTitleContainerStyle}>
 					<Text style={styles.chapterIndexStyle}>Chapter locked</Text>
-					<Text style={styles.chapterTitleStyle}>Complete its requirements before continuing.</Text>
+					<Text style={styles.chapterTitleStyle}>
+						Complete its requirements before continuing.
+					</Text>
 				</View>
 			</View>
 		);
@@ -121,8 +121,10 @@ export default function PlaceSelectView() {
 						const rotate = isEven ? '-5deg' : '5deg';
 						const reverseRotate = isEven ? '5deg' : '-5deg';
 						const { id: placeId, name, description, image } = place;
-						const progressPercent = Math.floor(progressById[placeId]?.completionPercentage ?? 0);
-						const isLocked = !isProgressAccessible({
+						const progressPercent = Math.floor(
+							progressById[placeId]?.completionPercentage ?? 0,
+						);
+						const isLocked = !isItemUnlocked({
 							id: placeId,
 							progressById,
 						});
@@ -141,16 +143,20 @@ export default function PlaceSelectView() {
 								<View style={placeContainerStyle}>
 									<Text style={placeTitleTextStyle}>{name}</Text>
 									<View
-										style={[polaroidContainerStyle, { transform: [{ rotate: reverseRotate }] }]}
+										style={[
+											polaroidContainerStyle,
+											{ transform: [{ rotate: reverseRotate }] },
+										]}
 									>
 										<View style={[polaroid, { transform: [{ rotate }] }]}>
-											<Image
-												source={image}
-												style={placeImageStyle}
-											/>
-											<Text style={placeDescriptionTextStyle}>{description}</Text>
+											<Image source={image} style={placeImageStyle} />
+											<Text style={placeDescriptionTextStyle}>
+												{description}
+											</Text>
 											<View style={progressContainerStyle}>
-												<Text style={progressTextStyle}>Progress {progressPercent}%</Text>
+												<Text style={progressTextStyle}>
+													Progress {progressPercent}%
+												</Text>
 												<View style={progressBarsContainer}>
 													<LinearGradient
 														style={[

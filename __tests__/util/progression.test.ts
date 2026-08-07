@@ -1,6 +1,6 @@
 import type { DeckAtlas } from '@/data/french/deckAtlas';
 import { makeMockCardDeck } from '@/src/components/CardDeck/mockCardDeck';
-import { getAtlasCompletionItems, isAtlasItemUnlocked } from '@/src/util/atlasProgression';
+import { getAtlasCompletionItems, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getCompletionPercentage, type ProgressById } from '@/src/util/progression';
 
 function makeProgressById(percentages: Record<string, number>): ProgressById {
@@ -111,17 +111,17 @@ describe('progression', () => {
 	test('deduplicates words within decks, places, and chapters', () => {
 		const details = getAtlasCompletionItems(makeAtlas());
 
-		expect(details.find(item => item.id === 'deck_one')?.wordIds).toEqual([
+		expect(details.find((item) => item.id === 'deck_one')?.wordIds).toEqual([
 			'shared_word',
 			'first_word',
 		]);
-		expect(details.find(item => item.id === 'place_one')?.wordIds).toEqual([
+		expect(details.find((item) => item.id === 'place_one')?.wordIds).toEqual([
 			'shared_word',
 			'first_word',
 			'second_word',
 			'third_word',
 		]);
-		expect(details.find(item => item.id === 'chapter_one')?.wordIds).toEqual([
+		expect(details.find((item) => item.id === 'chapter_one')?.wordIds).toEqual([
 			'shared_word',
 			'first_word',
 			'second_word',
@@ -133,14 +133,14 @@ describe('progression', () => {
 		const atlas = makeAtlas();
 
 		expect(
-			isAtlasItemUnlocked({
+			isItemUnlocked({
 				atlas,
 				id: 'deck_three',
 				progressById: {},
 			}),
 		).toBe(false);
 		expect(
-			isAtlasItemUnlocked({
+			isItemUnlocked({
 				atlas,
 				id: 'deck_three',
 				progressById: makeProgressById({ chapter_one: 50 }),

@@ -2,7 +2,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findPlaceById, isProgressAccessible } from '@/src/util/atlasProgression';
+import { findPlaceById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import colors from '../colors';
@@ -33,7 +33,7 @@ export default function CardDeckSelect() {
 	 * Check a deck's lock
 	 */
 	function getIsDeckLocked(deck: CardDeck): boolean {
-		return !isProgressAccessible({ id: deck.id, progressById });
+		return !isItemUnlocked({ id: deck.id, progressById });
 	}
 
 	/**
@@ -45,7 +45,7 @@ export default function CardDeckSelect() {
 	/**
 	 * Block locked places
 	 */
-	if (place && !isProgressAccessible({ id: place.id, progressById })) {
+	if (place && !isItemUnlocked({ id: place.id, progressById })) {
 		return (
 			<View style={noDecksContainerStyle}>
 				<Text style={noDecksTextStyle}>This place is locked.</Text>
@@ -70,13 +70,9 @@ export default function CardDeckSelect() {
 					style={{ backgroundColor: colors.dark.text }}
 					contentContainerStyle={cardGridStyle}
 					renderItem={({ item }) => (
-						<DeckBox
-							deck={item}
-							placeId={placeId}
-							isLocked={getIsDeckLocked(item)}
-						/>
+						<DeckBox deck={item} placeId={placeId} isLocked={getIsDeckLocked(item)} />
 					)}
-					keyExtractor={deck => deck.id}
+					keyExtractor={(deck) => deck.id}
 					overScrollMode="always"
 					data={decks}
 				/>
