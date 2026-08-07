@@ -70,9 +70,13 @@ export default function CardDeckSelect() {
 					style={{ backgroundColor: colors.dark.text }}
 					contentContainerStyle={cardGridStyle}
 					renderItem={({ item }) => (
-						<DeckBox deck={item} placeId={placeId} isLocked={getIsDeckLocked(item)} />
+						<DeckBox
+							deck={item}
+							placeId={placeId}
+							isLocked={getIsDeckLocked(item)}
+						/>
 					)}
-					keyExtractor={(deck) => deck.id}
+					keyExtractor={deck => deck.id}
 					overScrollMode="always"
 					data={decks}
 				/>

@@ -52,7 +52,11 @@ export default function Chapter({ chapter, progressPercent, index, isLocked }: C
 	 */
 	return (
 		<Book>
-			<Spine color={color} index={index} materialIconName={materialIconName} />
+			<Spine
+				color={color}
+				index={index}
+				materialIconName={materialIconName}
+			/>
 			<Crease />
 			<Cover>
 				<View style={chapterContainerStyle}>
@@ -64,13 +68,19 @@ export default function Chapter({ chapter, progressPercent, index, isLocked }: C
 						{!isLocked && (
 							<>
 								<View style={[chapterImageContainerStyle]}>
-									<ImageBackground source={image} style={chapterImageStyle} />
+									<ImageBackground
+										source={image}
+										style={chapterImageStyle}
+									/>
 								</View>
 								<ChapterMeta
 									progressPercent={progressPercent}
 									progressColor={color ?? '#000000'}
 								/>
-								<ChapterSelectButton chapter={chapter} disabled={isLocked} />
+								<ChapterSelectButton
+									chapter={chapter}
+									disabled={isLocked}
+								/>
 							</>
 						)}
 						{isLocked && (

@@ -83,9 +83,7 @@ describe('<WordCardContainer />', () => {
 	 * the answer buttons while the learner is still looking at the card.
 	 */
 	test('does not reshuffle choices when progress changes', async () => {
-		mockGetFillerWords
-			.mockResolvedValueOnce(['coffee', 'tea'])
-			.mockResolvedValueOnce(['The', 'A']);
+		mockGetFillerWords.mockResolvedValueOnce(['coffee', 'tea']).mockResolvedValueOnce(['The', 'A']);
 
 		const word: Word = {
 			id: 'word_noun_cafe',
@@ -100,7 +98,12 @@ describe('<WordCardContainer />', () => {
 			correctCount: 14,
 		};
 
-		const { rerender } = await render(<WordCardContainer word={word} isCurrent={true} />);
+		const { rerender } = await render(
+			<WordCardContainer
+				word={word}
+				isCurrent={true}
+			/>,
+		);
 
 		await waitFor(() => {
 			expect(mockGetFillerWords).toHaveBeenNthCalledWith(1, {
@@ -109,7 +112,7 @@ describe('<WordCardContainer />', () => {
 			});
 		});
 
-		const updatedWords = mockWords.map((deckWord) => ({
+		const updatedWords = mockWords.map(deckWord => ({
 			...deckWord,
 			correctCount: deckWord.correctCount + 1,
 		}));
@@ -121,7 +124,12 @@ describe('<WordCardContainer />', () => {
 			currentCard: updatedCardDeck.words[0],
 		});
 
-		await rerender(<WordCardContainer word={word} isCurrent={true} />);
+		await rerender(
+			<WordCardContainer
+				word={word}
+				isCurrent={true}
+			/>,
+		);
 
 		expect(mockGetFillerWords).toHaveBeenCalledTimes(2);
 	});
@@ -157,7 +165,12 @@ describe('<WordCardContainer />', () => {
 			currentCard: word,
 		});
 
-		await render(<WordCardContainer word={word} isCurrent={true} />);
+		await render(
+			<WordCardContainer
+				word={word}
+				isCurrent={true}
+			/>,
+		);
 
 		await waitFor(() => {
 			expect(mockGetFillerWords).toHaveBeenNthCalledWith(1, {
@@ -168,9 +181,7 @@ describe('<WordCardContainer />', () => {
 	});
 
 	test('increments the seen count when the card is current', async () => {
-		mockGetFillerWords
-			.mockResolvedValueOnce(['coffee', 'tea'])
-			.mockResolvedValueOnce(['The', 'A']);
+		mockGetFillerWords.mockResolvedValueOnce(['coffee', 'tea']).mockResolvedValueOnce(['The', 'A']);
 
 		const word: Word = {
 			id: 'word_noun_cafe',
@@ -185,7 +196,12 @@ describe('<WordCardContainer />', () => {
 			correctCount: 14,
 		};
 
-		await render(<WordCardContainer word={word} isCurrent={true} />);
+		await render(
+			<WordCardContainer
+				word={word}
+				isCurrent={true}
+			/>,
+		);
 
 		await waitFor(() => {
 			expect(mockRecordWordSeen).toHaveBeenCalledWith('word_noun_cafe');

@@ -150,17 +150,13 @@ export default function WordCardButton({
 					break;
 				}
 				case 'READY_WARNING':
-					void Promise.resolve(
-						notificationAsync(NotificationFeedbackType.Warning),
-					).finally(() => {
+					void Promise.resolve(notificationAsync(NotificationFeedbackType.Warning)).finally(() => {
 						pressInFlight.current = false;
 						setIsAnswerPending(false);
 					});
 					break;
 				case 'INCORRECT_DANGER':
-					void Promise.resolve(
-						notificationAsync(NotificationFeedbackType.Warning),
-					).finally(() => {
+					void Promise.resolve(notificationAsync(NotificationFeedbackType.Warning)).finally(() => {
 						pressInFlight.current = false;
 						setIsAnswerPending(false);
 					});
@@ -239,10 +235,11 @@ export default function WordCardButton({
 					isDisabled && disabledPressable,
 				]}
 			>
-				<View style={textRow} testID="word-card-button-content">
-					<Text style={[textStyles, textStateStyle, isDisabled && disabledText]}>
-						{children}
-					</Text>
+				<View
+					style={textRow}
+					testID="word-card-button-content"
+				>
+					<Text style={[textStyles, textStateStyle, isDisabled && disabledText]}>{children}</Text>
 					{SVGElement}
 				</View>
 			</AnimatedPressable>

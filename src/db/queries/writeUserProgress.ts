@@ -73,7 +73,7 @@ export async function writeCorrectAnswer({
 	/**
 	 * Keep the whole write together
 	 */
-	await sqliteDatabase.withExclusiveTransactionAsync(async (database) => {
+	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
 		/**
 		 * Get the count before it changes
 		 */
@@ -133,7 +133,7 @@ export async function writeWordSeen({
 	/**
 	 * Seen writes use the same lock
 	 */
-	await sqliteDatabase.withExclusiveTransactionAsync(async (database) => {
+	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
 		/**
 		 * Get the word's rank before the seenCount changes
 		 */

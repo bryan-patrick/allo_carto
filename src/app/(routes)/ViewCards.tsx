@@ -39,7 +39,7 @@ function findDeckByRouteParams({ deckTitle, placeId }: ViewCardsRouteParams): Ca
 	for (const chapter of deckAtlas.chapters) {
 		for (const place of chapter.places) {
 			if (place.id === placeId) {
-				routeDeck = place.decks.find((deck) => deck.title === deckTitle);
+				routeDeck = place.decks.find(deck => deck.title === deckTitle);
 			}
 		}
 	}

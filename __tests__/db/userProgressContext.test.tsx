@@ -27,7 +27,10 @@ function deferred<T>() {
 
 function Wrapper({ children }: { children: ReactNode }) {
 	return (
-		<UserProgressProvider isDatabaseReady userId="user_one">
+		<UserProgressProvider
+			isDatabaseReady
+			userId="user_one"
+		>
 			{children}
 		</UserProgressProvider>
 	);

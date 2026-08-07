@@ -24,7 +24,10 @@ export default function ChapterSelectView() {
 	 * Render the component
 	 */
 	return (
-		<ScrollView style={scrollViewStyle} contentContainerStyle={scrollViewContainerStyle}>
+		<ScrollView
+			style={scrollViewStyle}
+			contentContainerStyle={scrollViewContainerStyle}
+		>
 			{chapters.map((chapter: DeckChapter, index) => {
 				const { id } = chapter;
 				const isLocked = !isItemUnlocked({ id, progressById });

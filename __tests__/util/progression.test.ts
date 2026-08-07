@@ -111,17 +111,17 @@ describe('progression', () => {
 	test('deduplicates words within decks, places, and chapters', () => {
 		const details = getAtlasCompletionItems(makeAtlas());
 
-		expect(details.find((item) => item.id === 'deck_one')?.wordIds).toEqual([
+		expect(details.find(item => item.id === 'deck_one')?.wordIds).toEqual([
 			'shared_word',
 			'first_word',
 		]);
-		expect(details.find((item) => item.id === 'place_one')?.wordIds).toEqual([
+		expect(details.find(item => item.id === 'place_one')?.wordIds).toEqual([
 			'shared_word',
 			'first_word',
 			'second_word',
 			'third_word',
 		]);
-		expect(details.find((item) => item.id === 'chapter_one')?.wordIds).toEqual([
+		expect(details.find(item => item.id === 'chapter_one')?.wordIds).toEqual([
 			'shared_word',
 			'first_word',
 			'second_word',
