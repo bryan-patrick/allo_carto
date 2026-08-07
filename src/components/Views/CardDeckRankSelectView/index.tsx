@@ -1,13 +1,13 @@
 import colors from '@/src/app/colors';
 import sharedStyles from '@/src/app/sharedStyles';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
+import Loader from '@/src/components/Loader';
 import { getDB, getDeck } from '@/src/db/interface';
 import type { DeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
 import getDeckRankCounts, { emptyDeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import Loader from '@/src/components/Loader';
-import { isProgressAccessible } from '@/src/util/atlasProgression';
+import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import type { WordRankKey } from '@/src/util/wordRanks';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -86,7 +86,7 @@ export default function CardDeckRankSelectView() {
 	/**
 	 * Block locked decks
 	 */
-	if (!isProgressAccessible({ id: cardDeck.id, progressById })) {
+	if (!isItemUnlocked({ id: cardDeck.id, progressById })) {
 		return <Text>This deck is locked.</Text>;
 	}
 

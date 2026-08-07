@@ -10,10 +10,11 @@ import { StyleSheet, View } from 'react-native';
 import colors from '../../app/colors';
 import sharedStyles from '../../app/sharedStyles';
 import { useUserContext } from '../../db/useUserContext';
+import { formatUnlockCriterion, getUnlockCriteria } from '../../util/atlasCompletion';
 import { getDeckCompletionPercent } from '../../util/deckCompletion';
+import type { ProgressById } from '../../util/progression';
 import type { WordProgressKey } from '../../util/wordRanks';
 import type { CardDeck } from '../CardDeck/cardDeckTypes';
-import { getUnlockCriteria } from '../../util/atlasProgression';
 import LockOverlay from '../LockOverlay';
 import DeckBoxFooter from './DeckBoxFooter';
 import DeckBoxHeader from './DeckBoxHeader';
@@ -27,12 +28,13 @@ interface SelectCardDeckProps {
 	deck: CardDeck;
 	placeId?: string;
 	isLocked: boolean;
+	progressById: ProgressById;
 }
 
 /**
  * DeckBox component
  */
-export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps) {
+export default function DeckBox({ deck, placeId, isLocked, progressById }: SelectCardDeckProps) {
 	const userId = useUserContext()?.id;
 	const { cardDeckDispatch } = useCardDeck();
 	const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
@@ -44,7 +46,7 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
 	/**
 	 * Get the lock message
 	 */
-	const unlockCriteriaMsg = getUnlockCriteria(deck);
+	const unlockCriteria = getUnlockCriteria(deck, progressById);
 
 	/**
 	 * Destructure styles
@@ -162,9 +164,9 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
 	return (
 		<LockOverlay
 			isLocked={isLocked}
-			lockedAccessibilityHint={unlockCriteriaMsg}
+			lockedAccessibilityHint={unlockCriteria.map(formatUnlockCriterion).join(' ')}
 			lockedAccessibilityLabel={`${deck.title} deck locked`}
-			unlockCriteria={unlockCriteriaMsg}
+			unlockCriteria={unlockCriteria}
 		>
 			<View style={cardStyle}>
 				<View style={[cardInnerStyle]}>

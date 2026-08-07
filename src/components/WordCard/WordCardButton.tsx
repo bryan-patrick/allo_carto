@@ -42,7 +42,7 @@ export default function WordCardButton({
 }: WordCardButtonProps) {
 	const { cardState, wordCardUIDispatch } = useWordCardUI();
 	const { cardDeckDispatch, currentCard } = useCardDeck();
-	const { isUpdatingProgress, recordCorrectAnswer } = useUserProgress();
+	const { isUpdatingProgress, writeCorrectAnswer: recordCorrectAnswer } = useUserProgress();
 
 	/**
 	 * Style vars

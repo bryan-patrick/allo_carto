@@ -1,4 +1,4 @@
-import { getAtlasChaptersPlacesAndDecksContainingWord } from '@/src/util/atlasProgression';
+import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { getCompletionPercentage } from '@/src/util/progression';
 import { getWordRankKeyFromCounts } from '@/src/util/wordRanks';
 import type { SQLiteDatabase } from 'expo-sqlite';
@@ -24,11 +24,11 @@ async function updateUserProgressTableItems({
 	/**
 	 * The atlas tells us which chapters, places, and decks contain the word
 	 */
-	const chaptersPlacesAndDecks = getAtlasChaptersPlacesAndDecksContainingWord({
+	const atlasItems = getAtlasItemsContainingWord({
 		wordId,
 	});
 
-	for (const chapterPlaceOrDeck of chaptersPlacesAndDecks) {
+	for (const atlasItem of atlasItems) {
 		/**
 		 * Recalculate this chapter, place, or deck percentage
 		 * using the user's word counts in the database
@@ -36,12 +36,12 @@ async function updateUserProgressTableItems({
 		const rankCounts = await getDeckRankCounts({
 			database,
 			userId,
-			wordIds: chapterPlaceOrDeck.wordIds,
+			wordIds: atlasItem.wordIds,
 		});
 
 		const completionPercentage = getCompletionPercentage({
 			rankCounts,
-			wordCount: chapterPlaceOrDeck.wordIds.length,
+			wordCount: atlasItem.wordIds.length,
 		});
 
 		/**
@@ -50,8 +50,8 @@ async function updateUserProgressTableItems({
 		await updateUserProgress({
 			completionPercentage,
 			database,
-			id: chapterPlaceOrDeck.id,
-			type: chapterPlaceOrDeck.type,
+			id: atlasItem.id,
+			type: atlasItem.type,
 			userId,
 		});
 	}

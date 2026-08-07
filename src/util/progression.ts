@@ -25,30 +25,6 @@ export interface UserProgressRow {
 export type ProgressById = Record<string, UserProgressRow>;
 
 /**
- * Check all unlock requirements
- */
-export function isUnlocked({
-	requirements = [],
-	progressById,
-}: {
-	requirements?: UnlockRequirement[];
-	progressById: ProgressById;
-}): boolean {
-	let result = true;
-
-	for (const requirement of requirements) {
-		const completion = progressById[requirement.id]?.completionPercentage ?? 0;
-
-		if (completion < requirement.requiredCompletionPercentage) {
-			result = false;
-			break;
-		}
-	}
-
-	return result;
-}
-
-/**
  * Calculate one stored completion percentage
  */
 export function getCompletionPercentage({

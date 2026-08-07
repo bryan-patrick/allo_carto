@@ -50,7 +50,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 	 * State
 	 */
 	const { cardDeckState } = useCardDeck();
-	const { isUpdatingProgress, recordWordSeen } = useUserProgress();
+	const { isUpdatingProgress, writeWordSeen: recordWordSeen } = useUserProgress();
 	const [fillerWords, setFillerWords] = useState<string[]>([]);
 	const [articleWords, setArticleWords] = useState<string[]>([]);
 	const loadedWordId = useRef<string | null>(null);

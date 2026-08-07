@@ -19,10 +19,10 @@ type ProgressStatus = 'loading' | 'ready' | 'error';
 interface UserProgressContextValue {
 	isUpdatingProgress: boolean;
 	progressById: ProgressById;
-	recordCorrectAnswer: (wordId: string) => Promise<boolean>;
-	recordWordSeen: (wordId: string) => Promise<boolean>;
-	refreshProgress: () => Promise<void>;
 	status: ProgressStatus;
+	writeCorrectAnswer: (wordId: string) => Promise<boolean>;
+	writeWordSeen: (wordId: string) => Promise<boolean>;
+	reloadProgress: () => Promise<void>;
 }
 
 /**
@@ -31,10 +31,10 @@ interface UserProgressContextValue {
 const initialValue: UserProgressContextValue = {
 	isUpdatingProgress: false,
 	progressById: {},
-	recordCorrectAnswer: async () => true,
-	recordWordSeen: async () => true,
-	refreshProgress: async () => {},
 	status: 'loading',
+	writeCorrectAnswer: async () => true,
+	writeWordSeen: async () => true,
+	reloadProgress: async () => {},
 };
 
 export const UserProgressContext = createContext<UserProgressContextValue>(initialValue);
@@ -57,7 +57,7 @@ export function UserProgressProvider({
 	const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 	const [progressById, setProgressById] = useState<ProgressById>({});
 	const [status, setStatus] = useState<ProgressStatus>('loading');
-	const progressWriteInFlight = useRef(false);
+	const isSavingProgress = useRef(false);
 
 	/**
 	 * Reload userProgress rows from the database
@@ -66,15 +66,14 @@ export function UserProgressProvider({
 		if (!isDatabaseReady || !userId) {
 			setProgressById({});
 			setStatus('loading');
-			return;
-		}
-
-		try {
-			setProgressById(await getUserProgress(userId));
-			setStatus('ready');
-		} catch (error) {
-			console.error('Could not retrieve user progress:', error);
-			setStatus('error');
+		} else {
+			try {
+				setProgressById(await getUserProgress(userId));
+				setStatus('ready');
+			} catch (error) {
+				console.error('Could not retrieve user progress:', error);
+				setStatus('error');
+			}
 		}
 	}, [isDatabaseReady, userId]);
 
@@ -82,22 +81,18 @@ export function UserProgressProvider({
 	 * Load userProgress rows when the database is ready
 	 */
 	useEffect(() => {
-		/**
-		 * This effect loads our SQLite state
-		 */
 		// eslint-disable-next-line react-hooks/set-state-in-effect
 		refreshProgress();
 	}, [refreshProgress]);
 
 	/**
-	 * Block another word or userProgress write until
-	 * the database write and in-memory refresh finish
+	 * Block another word or userProgress write until the database write finishes
 	 */
 	const runProgressWrite = useCallback(
 		async (write: () => Promise<void>): Promise<boolean> => {
-			if (!userId || progressWriteInFlight.current) return false;
+			if (!userId || isSavingProgress.current) return false;
 
-			progressWriteInFlight.current = true;
+			isSavingProgress.current = true;
 			setIsUpdatingProgress(true);
 
 			try {
@@ -109,7 +104,7 @@ export function UserProgressProvider({
 				setStatus('error');
 				return false;
 			} finally {
-				progressWriteInFlight.current = false;
+				isSavingProgress.current = false;
 				setIsUpdatingProgress(false);
 			}
 		},
@@ -147,9 +142,9 @@ export function UserProgressProvider({
 		() => ({
 			isUpdatingProgress,
 			progressById,
-			recordCorrectAnswer,
-			recordWordSeen,
-			refreshProgress,
+			writeCorrectAnswer: recordCorrectAnswer,
+			writeWordSeen: recordWordSeen,
+			reloadProgress: refreshProgress,
 			status,
 		}),
 		[

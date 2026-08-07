@@ -2,7 +2,7 @@ import type { DeckChapter } from '@/data/french/deckAtlas';
 import { deckAtlas } from '@/data/french/deckAtlas';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { isProgressAccessible } from '@/src/util/atlasProgression';
+import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import Chapter from './Chapter';
 
@@ -28,15 +28,22 @@ export default function ChapterSelectView() {
 			style={scrollViewStyle}
 			contentContainerStyle={scrollViewContainerStyle}
 		>
-			{chapters.map((chapter: DeckChapter, index) => (
-				<Chapter
-					chapter={chapter}
-					index={index}
-					isLocked={!isProgressAccessible({ id: chapter.id, progressById })}
-					key={chapter.id}
-					progressPercent={progressById[chapter.id]?.completionPercentage ?? 0}
-				/>
-			))}
+			{chapters.map((chapter: DeckChapter, index) => {
+				const { id } = chapter;
+				const isLocked = !isItemUnlocked({ id, progressById });
+				const progressPercent = progressById[id]?.completionPercentage ?? 0;
+
+				return (
+					<Chapter
+						chapter={chapter}
+						index={index}
+						isLocked={isLocked}
+						key={id}
+						progressById={progressById}
+						progressPercent={progressPercent}
+					/>
+				);
+			})}
 		</ScrollView>
 	);
 }
