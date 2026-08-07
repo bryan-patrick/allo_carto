@@ -73,7 +73,12 @@ export default function Chapter({ chapter, progressPercent, index, isLocked }: C
 								<ChapterSelectButton chapter={chapter} disabled={isLocked} />
 							</>
 						)}
-						{isLocked && <ChapterLockedButton />}
+						{isLocked && (
+							<ChapterLockedButton
+								color={chapter.color ?? '#000000'}
+								unlockCriteria={unlockCriteria}
+							/>
+						)}
 					</View>
 				</View>
 			</Cover>

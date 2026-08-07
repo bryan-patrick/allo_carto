@@ -44,7 +44,7 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
 	/**
 	 * Get the lock message
 	 */
-	const unlockCriteriaMsg = getUnlockCriteria(deck);
+	const unlockCriteria = getUnlockCriteria(deck);
 
 	/**
 	 * Destructure styles
@@ -162,15 +162,18 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
 	return (
 		<LockOverlay
 			isLocked={isLocked}
-			lockedAccessibilityHint={unlockCriteriaMsg}
+			lockedAccessibilityHint={unlockCriteria.join(' ')}
 			lockedAccessibilityLabel={`${deck.title} deck locked`}
-			unlockCriteria={unlockCriteriaMsg}
+			unlockCriteria={unlockCriteria}
 		>
 			<View style={cardStyle}>
 				<View style={[cardInnerStyle]}>
 					<View style={cardInnerBorder}>
 						<DeckBoxHeader deck={deck} />
-						<DeckBoxHero deck={deck} rankCounts={rankCounts} />
+						<DeckBoxHero
+							deck={deck}
+							rankCounts={rankCounts}
+						/>
 						<DeckBoxStoryProgress
 							deck={deck}
 							deckCompletionPercent={deckCompletionPercent}
@@ -181,7 +184,10 @@ export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps
 							setModalVisible={setModalVisible}
 							wordProgressKeyByWordId={wordProgressKeyByWordId}
 						/>
-						<DeckBoxFooter deck={deck} handleDeckSelect={handleDeckSelect} />
+						<DeckBoxFooter
+							deck={deck}
+							handleDeckSelect={handleDeckSelect}
+						/>
 					</View>
 				</View>
 			</View>

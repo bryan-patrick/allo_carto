@@ -17,7 +17,7 @@ interface LockOverlayProps {
 	lockedAccessibilityLabel?: string;
 	overlayStyle?: StyleProp<ViewStyle>;
 	style?: StyleProp<ViewStyle>;
-	unlockCriteria?: string;
+	unlockCriteria?: string[];
 }
 
 /**
@@ -90,9 +90,16 @@ export default function LockOverlay({
 							width="32"
 						/>
 					)}
-					{unlockCriteria && (
+					{unlockCriteria && unlockCriteria.length > 0 && (
 						<View style={unlockCriteriaContainerStyle}>
-							<Text style={unlockCriteriaTextStyle}>{unlockCriteria}</Text>
+							{unlockCriteria.map((criterion, index) => (
+								<Text
+									key={`${criterion}-${index}`}
+									style={unlockCriteriaTextStyle}
+								>
+									{criterion}
+								</Text>
+							))}
 						</View>
 					)}
 				</Pressable>

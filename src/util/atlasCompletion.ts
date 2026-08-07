@@ -197,17 +197,15 @@ function getItemName(id: string, atlas: DeckAtlas = deckAtlas): string {
 }
 
 /**
- * Build the UI explanation for unlocking an item.
+ * Build each UI explanation for unlocking an item.
  */
-export function getUnlockCriteria(item: Progression, atlas: DeckAtlas = deckAtlas): string {
+export function getUnlockCriteria(item: Progression, atlas: DeckAtlas = deckAtlas): string[] {
 	const requirements = item.unlockRequirements ?? [];
 
-	return requirements
-		.map((requirement) => {
-			const required = getItemName(requirement.id, atlas);
-			const percentage = requirement.requiredCompletionPercentage;
+	return requirements.map(requirement => {
+		const required = getItemName(requirement.id, atlas);
+		const percentage = requirement.requiredCompletionPercentage;
 
-			return `Reach ${percentage}% in ${required} to unlock.`;
-		})
-		.join('\n');
+		return `Reach ${percentage}% in ${required} to unlock.`;
+	});
 }
