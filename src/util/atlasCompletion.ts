@@ -26,6 +26,12 @@ interface IsItemUnlockedProps extends FindCompletionPathProps {
 	progressById: ProgressById;
 }
 
+export interface UnlockCriteria {
+	isUnlocked: boolean;
+	requiredPercentage: number;
+	title: string;
+}
+
 /**
  * Get the unique word ids from a group of decks.
  */
@@ -199,13 +205,28 @@ function getItemName(id: string, atlas: DeckAtlas = deckAtlas): string {
 /**
  * Build each UI explanation for unlocking an item.
  */
-export function getUnlockCriteria(item: Progression, atlas: DeckAtlas = deckAtlas): string[] {
+export function getUnlockCriteria(
+	item: Progression,
+	progressById: ProgressById,
+	atlas: DeckAtlas = deckAtlas,
+): UnlockCriteria[] {
 	const requirements = item.unlockRequirements ?? [];
 
-	return requirements.map(requirement => {
-		const required = getItemName(requirement.id, atlas);
-		const percentage = requirement.requiredCompletionPercentage;
+	return requirements.map(requirement => ({
+		isUnlocked:
+			(progressById[requirement.id]?.completionPercentage ?? 0) >=
+			requirement.requiredCompletionPercentage,
+		requiredPercentage: requirement.requiredCompletionPercentage,
+		title: getItemName(requirement.id, atlas),
+	}));
+}
 
-		return `Reach ${percentage}% in ${required} to unlock.`;
-	});
+/**
+ * Build a plain-text explanation for an unlock criterion.
+ */
+export function formatUnlockCriterion({
+	requiredPercentage: requiredCompletionPercentage,
+	title: requiredTitle,
+}: UnlockCriteria): string {
+	return `Reach ${requiredCompletionPercentage}% in ${requiredTitle} to unlock.`;
 }

@@ -1,3 +1,4 @@
+import type { UnlockCriteria } from '@/src/util/atlasCompletion';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ReactNode } from 'react';
 import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
@@ -17,7 +18,7 @@ interface LockOverlayProps {
 	lockedAccessibilityLabel?: string;
 	overlayStyle?: StyleProp<ViewStyle>;
 	style?: StyleProp<ViewStyle>;
-	unlockCriteria?: string[];
+	unlockCriteria?: UnlockCriteria[];
 }
 
 /**
@@ -43,7 +44,9 @@ export default function LockOverlay({
 		containerStyle,
 		overlayStyle,
 		unlockCriteriaContainerStyle,
+		unlockCriteriaMetStyle,
 		unlockCriteriaTextStyle,
+		unlockCriteriaTitleStyle,
 	} = styles;
 
 	/**
@@ -94,10 +97,19 @@ export default function LockOverlay({
 						<View style={unlockCriteriaContainerStyle}>
 							{unlockCriteria.map((criterion, index) => (
 								<Text
-									key={`${criterion}-${index}`}
-									style={unlockCriteriaTextStyle}
+									key={`${criterion.title}-${index}`}
+									style={[unlockCriteriaTextStyle, criterion.isUnlocked && unlockCriteriaMetStyle]}
 								>
-									{criterion}
+									Reach {criterion.requiredPercentage}% in{' '}
+									<Text
+										style={[
+											unlockCriteriaTitleStyle,
+											criterion.isUnlocked && unlockCriteriaMetStyle,
+										]}
+									>
+										{criterion.title}
+									</Text>{' '}
+									to unlock.
 								</Text>
 							))}
 						</View>
@@ -135,9 +147,15 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.light.primary,
 	},
 	unlockCriteriaTextStyle: {
-		fontFamily: 'lexend-600',
+		fontFamily: 'lexend-400',
 		fontSize: 16,
 		textAlign: 'center',
 		color: colors.dark.text,
+	},
+	unlockCriteriaMetStyle: {
+		textDecorationLine: 'line-through',
+	},
+	unlockCriteriaTitleStyle: {
+		fontFamily: 'lexend-600',
 	},
 });

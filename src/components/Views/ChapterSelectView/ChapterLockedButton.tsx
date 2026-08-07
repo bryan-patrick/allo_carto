@@ -1,3 +1,4 @@
+import type { UnlockCriteria } from '@/src/util/atlasCompletion';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -6,14 +7,14 @@ import { StyleSheet, Text, View } from 'react-native';
  */
 interface ChapterLockedButtonProps {
 	color: string;
-	unlockCriteria: string[];
+	unlockCriteria: UnlockCriteria[];
 }
 
 /**
  * ChapterLockedButton component
  */
 export default function ChapterLockedButton({ color, unlockCriteria }: ChapterLockedButtonProps) {
-	const { buttonContainer, criteriaContainer, criteriaText } = styles;
+	const { buttonContainer, criteriaContainer, criteriaMet, criteriaText, criteriaTitle } = styles;
 
 	return (
 		<View style={[buttonContainer, { borderColor: color }]}>
@@ -23,12 +24,13 @@ export default function ChapterLockedButton({ color, unlockCriteria }: ChapterLo
 				name="lock"
 			/>
 			<View style={criteriaContainer}>
-				{unlockCriteria.map((criterion, index) => (
+				{unlockCriteria.map(({ title, isUnlocked, requiredPercentage }, index) => (
 					<Text
-						key={`${criterion}-${index}`}
-						style={criteriaText}
+						key={`${title}-${index}`}
+						style={[criteriaText, isUnlocked && criteriaMet]}
 					>
-						{criterion}
+						Reach {requiredPercentage}% in{' '}
+						<Text style={[criteriaTitle, isUnlocked && criteriaMet]}>{title}</Text> to unlock.
 					</Text>
 				))}
 			</View>
@@ -44,10 +46,23 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
-		borderWidth: 5,
+		borderWidth: 1,
+		padding: 8,
+		marginHorizontal: 8,
+		borderRadius: 8,
+		gap: 8,
 	},
-	criteriaContainer: {},
+	criteriaContainer: {
+		gap: 4,
+	},
 	criteriaText: {
+		fontFamily: 'lexend-400',
 		fontSize: 14,
+	},
+	criteriaMet: {
+		textDecorationLine: 'line-through',
+	},
+	criteriaTitle: {
+		fontFamily: 'lexend-600',
 	},
 });

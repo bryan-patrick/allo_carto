@@ -85,7 +85,11 @@ export const deckAtlas: DeckAtlas = {
 			id: 'lost-and-secret-decks',
 			unlockRequirements: [
 				{
-					id: 'a-very-french-travel-day',
+					id: 'aeroport-oiseau',
+					requiredCompletionPercentage: 1,
+				},
+				{
+					id: 'hotel-bonne-chance',
 					requiredCompletionPercentage: 50,
 				},
 			],

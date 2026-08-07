@@ -39,6 +39,7 @@ export default function ChapterSelectView() {
 						index={index}
 						isLocked={isLocked}
 						key={id}
+						progressById={progressById}
 						progressPercent={progressPercent}
 					/>
 				);

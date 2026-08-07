@@ -3,7 +3,12 @@ import sharedStyles from '@/src/app/sharedStyles';
 import Loader from '@/src/components/Loader';
 import LockOverlay from '@/src/components/LockOverlay';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
+import {
+	findChapterById,
+	formatUnlockCriterion,
+	getUnlockCriteria,
+	isItemUnlocked,
+} from '@/src/util/atlasCompletion';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -122,7 +127,7 @@ export default function PlaceSelectView() {
 							id: placeId,
 							progressById,
 						});
-						const unlockCriteria = getUnlockCriteria(place);
+						const unlockCriteria = getUnlockCriteria(place, progressById);
 
 						/**
 						 * Render the place view/card
@@ -131,7 +136,7 @@ export default function PlaceSelectView() {
 							<LockOverlay
 								isLocked={isLocked}
 								key={placeId}
-								lockedAccessibilityHint={unlockCriteria.join(' ')}
+								lockedAccessibilityHint={unlockCriteria.map(formatUnlockCriterion).join(' ')}
 								lockedAccessibilityLabel={`${name} place locked`}
 								unlockCriteria={unlockCriteria}
 							>

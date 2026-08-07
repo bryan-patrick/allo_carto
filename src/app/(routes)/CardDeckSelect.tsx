@@ -74,6 +74,7 @@ export default function CardDeckSelect() {
 							deck={item}
 							placeId={placeId}
 							isLocked={getIsDeckLocked(item)}
+							progressById={progressById}
 						/>
 					)}
 					keyExtractor={deck => deck.id}
