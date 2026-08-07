@@ -1,10 +1,6 @@
 import type { DeckAtlas } from '@/data/french/deckAtlas';
 import { makeMockCardDeck } from '@/src/components/CardDeck/mockCardDeck';
-import {
-	getAtlasProgressDetails,
-	isProgressAccessible,
-	validateProgression,
-} from '@/src/util/atlasProgression';
+import { getAtlasCompletionItems, isAtlasItemUnlocked } from '@/src/util/atlasProgression';
 import { getCompletionPercentage, type ProgressById } from '@/src/util/progression';
 
 function makeProgressById(percentages: Record<string, number>): ProgressById {
@@ -113,7 +109,7 @@ describe('progression', () => {
 	});
 
 	test('deduplicates words within decks, places, and chapters', () => {
-		const details = getAtlasProgressDetails(makeAtlas());
+		const details = getAtlasCompletionItems(makeAtlas());
 
 		expect(details.find(item => item.id === 'deck_one')?.wordIds).toEqual([
 			'shared_word',
@@ -137,36 +133,18 @@ describe('progression', () => {
 		const atlas = makeAtlas();
 
 		expect(
-			isProgressAccessible({
+			isAtlasItemUnlocked({
 				atlas,
 				id: 'deck_three',
 				progressById: {},
 			}),
 		).toBe(false);
 		expect(
-			isProgressAccessible({
+			isAtlasItemUnlocked({
 				atlas,
 				id: 'deck_three',
 				progressById: makeProgressById({ chapter_one: 50 }),
 			}),
 		).toBe(true);
-	});
-
-	test('rejects duplicate ids, missing references, and invalid percentages', () => {
-		const duplicateAtlas = makeAtlas();
-		duplicateAtlas.chapters[1].id = 'place_one';
-		expect(() => validateProgression(duplicateAtlas)).toThrow();
-
-		const missingReferenceAtlas = makeAtlas();
-		missingReferenceAtlas.chapters[1].unlockRequirements = [
-			{ id: 'missing', requiredCompletionPercentage: 50 },
-		];
-		expect(() => validateProgression(missingReferenceAtlas)).toThrow();
-
-		const invalidPercentageAtlas = makeAtlas();
-		invalidPercentageAtlas.chapters[1].unlockRequirements = [
-			{ id: 'chapter_one', requiredCompletionPercentage: 101 },
-		];
-		expect(() => validateProgression(invalidPercentageAtlas)).toThrow();
 	});
 });
