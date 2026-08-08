@@ -11,6 +11,10 @@ import { Text } from 'react-native';
 export default function CardDeck() {
 	const { cardDeckState, currentCard } = useCardDeck();
 	const { progressById, status } = useUserProgress();
+ const isUnlocked = !isItemUnlocked({
+			id: cardDeckState.cardDeck.id,
+			progressById,
+	});
 
 	/**
 	 * Wait for the user's stored percentages
@@ -21,12 +25,7 @@ export default function CardDeck() {
 	/**
 	 * Block locked decks
 	 */
-	if (
-		!isItemUnlocked({
-			id: cardDeckState.cardDeck.id,
-			progressById,
-		})
-	) {
+	if (isUnlocked) {
 		return <Text>This deck is locked.</Text>;
 	}
 
