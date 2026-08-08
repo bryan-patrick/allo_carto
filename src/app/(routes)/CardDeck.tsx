@@ -25,7 +25,7 @@ export default function CardDeck() {
 	/**
 	 * Block locked decks
 	 */
-	if (isUnlocked) {
+	if (isLocked) {
 		return <Text>This deck is locked.</Text>;
 	}
 
