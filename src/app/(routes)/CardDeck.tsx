@@ -12,8 +12,8 @@ export default function CardDeck() {
 	const { cardDeckState, currentCard } = useCardDeck();
 	const { progressById, status } = useUserProgress();
 	const isUnlocked = !isItemUnlocked({
-			id: cardDeckState.cardDeck.id,
-			progressById,
+		id: cardDeckState.cardDeck.id,
+		progressById,
 	});
 
 	/**
