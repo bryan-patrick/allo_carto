@@ -13,8 +13,9 @@ import type { ImageSourcePropType } from 'react-native';
 /**
  * Image paths
  */
-const aeroportOiseau = require('@/src/app/assets/images/places/aeroport-oiseau.jpg');
-const hotelChance = require('@/src/app/assets/images/places/hotel-chance.jpg');
+
+const aeroportOiseau = require('@/src/app/assets/images/places/aeroport-oiseau.png');
+const hotelChance = require('@/src/app/assets/images/places/chateau-frontenac.png');
 const rueSaintMatou = require('@/src/app/assets/images/places/rue-saint-matou.jpg');
 const aVeryFrenchTravelDay = require('@/src/app/assets/images/chapters/a-very-french-travel-day.png');
 const lostAndSecretDecks = require('@/src/app/assets/images/chapters/lost-and-secret-decks.png');

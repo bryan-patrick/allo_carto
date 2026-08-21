@@ -1,0 +1,43 @@
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	viewBox="0 0 180 100"
+	fill="none"
+	color="#75695F"
+>
+	<title>Airplane postage mark</title>
+	<g
+		opacity="0.78"
+		stroke="currentColor"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	>
+		<rect
+			x="9"
+			y="9"
+			width="74"
+			height="82"
+			rx="3"
+			stroke-width="4"
+			stroke-dasharray="1 5"
+		/>
+		<rect
+			x="14"
+			y="14"
+			width="64"
+			height="72"
+			rx="2"
+			stroke-width="1.6"
+		/>
+		<path
+			d="m25 55 16-6 8-18 4-1-2 17 16-5 3 3-18 10-1 14-4 1-5-12-9 4-3-2 9-7-12 3Z"
+			fill="currentColor"
+			stroke="none"
+		/>
+		<g stroke-width="2.2">
+			<path d="M73 35c9-5 17 5 26 0s17 5 26 0 17 5 26 0 14 3 20 1" />
+			<path d="M72 45c9-4 18 5 27 0s17 4 26 0 18 5 27 0 13 3 19 1" />
+			<path d="M73 55c8-5 17 4 26 0s18 5 27 0 17 4 26 0 13 4 19 1" />
+			<path d="M74 65c8-4 17 5 25 0 9-5 18 4 27 0s17 5 26 0 13 3 19 1" />
+		</g>
+	</g>
+</svg>
