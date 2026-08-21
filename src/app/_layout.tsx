@@ -128,7 +128,7 @@ export default function AppLayout() {
 											headerShown: true,
 											headerBackTitle: 'Back',
 											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: 'Choose Chapter',
+											headerTitle: 'Select a chapter',
 										}}
 									/>
 									<Stack.Screen
@@ -136,7 +136,7 @@ export default function AppLayout() {
 										options={{
 											headerShown: true,
 											headerBackTitle: 'Home',
-											headerTitle: 'Choose Place',
+											headerTitle: 'Select a place',
 											headerBackButtonDisplayMode: 'minimal',
 										}}
 									/>
@@ -146,7 +146,7 @@ export default function AppLayout() {
 											headerShown: true,
 											headerBackTitle: 'Back',
 											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: 'Choose Deck',
+											headerTitle: 'Select a deck',
 										}}
 									/>
 									<Stack.Screen
@@ -164,7 +164,7 @@ export default function AppLayout() {
 											headerShown: true,
 											headerBackTitle: 'Back',
 											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: 'View Cards',
+											headerTitle: 'View cards',
 										}}
 									/>
 									<Stack.Screen

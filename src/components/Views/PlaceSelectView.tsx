@@ -1,39 +1,15 @@
 import { DeckPlace } from '@/data/french/deckAtlas';
 import sharedStyles from '@/src/app/sharedStyles';
 import Loader from '@/src/components/Loader';
-import LockOverlay from '@/src/components/LockOverlay';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import {
-	findChapterById,
-	formatUnlockCriterion,
-	getUnlockCriteria,
-	isItemUnlocked,
-} from '@/src/util/atlasCompletion';
-import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
+import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../../app/colors';
 import LinkButton from '../LinkButton';
 
-/**
- * For the progress bars on the polaroids
- */
-const polaroidColors: LinearGradientProps['colors'] = [
-	'#E6320D',
-	'#E6320D',
-	'#F17E06',
-	'#F17E06',
-	'#F8BA26',
-	'#F8BA26',
-	'#78BA34',
-	'#78BA34',
-	'#3791CF',
-	'#3791CF',
-];
-
-const polaroidColorStops: NonNullable<LinearGradientProps['locations']> = [
-	0, 0.2, 0.2, 0.4, 0.4, 0.6, 0.6, 0.8, 0.8, 1,
-];
+const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-postmark.png');
+const postmarkBackgroundImage = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /**
  * PlaceSelectView component
@@ -52,16 +28,18 @@ export default function PlaceSelectView() {
 		chapterContainerStyle,
 		placeContainerStyle,
 		placeTitleTextStyle,
-		polaroidContainerStyle,
-		polaroid,
+		titleContainer,
+		postMarkImageStyle,
 		placeImageStyle,
 		placeDescriptionTextStyle,
-		progressContainerStyle,
 		progressTextStyle,
 		progressBarsContainer,
 		progressBarStyle,
 		placeSelectButtonStyle,
 		placeSelectButtonTextStyle,
+		postcardStack,
+		postCardBorder,
+		progressContainer,
 	} = styles;
 
 	const { id } = useLocalSearchParams<{ id?: string }>();
@@ -78,10 +56,10 @@ export default function PlaceSelectView() {
 	 */
 	if (!selectedChapter) {
 		return (
-			<View style={styles.viewStyle}>
-				<View style={styles.chapterTitleContainerStyle}>
-					<Text style={styles.chapterIndexStyle}>Unknown chapter</Text>
-					<Text style={styles.chapterTitleStyle}>Please go back and select a chapter.</Text>
+			<View style={viewStyle}>
+				<View style={chapterTitleContainerStyle}>
+					<Text style={chapterIndexStyle}>Unknown chapter</Text>
+					<Text style={chapterTitleStyle}>Please go back and select a chapter.</Text>
 				</View>
 			</View>
 		);
@@ -92,10 +70,10 @@ export default function PlaceSelectView() {
 	 */
 	if (!isItemUnlocked({ id: selectedChapter.id, progressById })) {
 		return (
-			<View style={styles.viewStyle}>
-				<View style={styles.chapterTitleContainerStyle}>
-					<Text style={styles.chapterIndexStyle}>Chapter locked</Text>
-					<Text style={styles.chapterTitleStyle}>Complete its requirements before continuing.</Text>
+			<View style={viewStyle}>
+				<View style={chapterTitleContainerStyle}>
+					<Text style={chapterIndexStyle}>Chapter locked</Text>
+					<Text style={chapterTitleStyle}>Complete its requirements before continuing.</Text>
 				</View>
 			</View>
 		);
@@ -119,82 +97,93 @@ export default function PlaceSelectView() {
 					 */
 					places.map((place: DeckPlace, index: number) => {
 						const isEven = index % 2 === 0;
-						const rotate = isEven ? '-5deg' : '5deg';
-						const reverseRotate = isEven ? '5deg' : '-5deg';
+						const rotate = isEven ? '-3deg' : '3deg';
 						const { id: placeId, name, description, image } = place;
 						const progressPercent = Math.floor(progressById[placeId]?.completionPercentage ?? 0);
+						const unlockCriteria = getUnlockCriteria(place, progressById);
 						const isLocked = !isItemUnlocked({
 							id: placeId,
 							progressById,
 						});
-						const unlockCriteria = getUnlockCriteria(place, progressById);
 
 						/**
 						 * Render the place view/card
 						 */
 						return (
-							<LockOverlay
-								isLocked={isLocked}
+							<View
 								key={placeId}
-								lockedAccessibilityHint={unlockCriteria.map(formatUnlockCriterion).join(' ')}
-								lockedAccessibilityLabel={`${name} place locked`}
-								unlockCriteria={unlockCriteria}
+								style={postcardStack}
 							>
-								<View style={placeContainerStyle}>
-									<Text style={placeTitleTextStyle}>{name}</Text>
-									<View
-										style={[polaroidContainerStyle, { transform: [{ rotate: reverseRotate }] }]}
-									>
-										<View style={[polaroid, { transform: [{ rotate }] }]}>
-											<Image
-												source={image}
-												style={placeImageStyle}
+								<ImageBackground
+									source={postmarkBackgroundImage}
+									style={[
+										placeContainerStyle,
+										{
+											transform: [{ rotate }],
+											padding: 0,
+											position: 'absolute',
+											top: 0,
+											left: 0,
+											height: '100%',
+											width: '100%',
+										},
+									]}
+								/>
+								<ImageBackground
+									source={postmarkBackgroundImage}
+									style={placeContainerStyle}
+								>
+									<View style={postCardBorder}>
+										<View style={titleContainer}>
+											<Text style={placeTitleTextStyle}>{name}</Text>
+											<ImageBackground
+												source={postmarkImage}
+												style={postMarkImageStyle}
 											/>
-											<Text style={placeDescriptionTextStyle}>{description}</Text>
-											<View style={progressContainerStyle}>
-												<Text style={progressTextStyle}>Progress {progressPercent}%</Text>
-												<View style={progressBarsContainer}>
-													<LinearGradient
-														style={[
-															progressBarStyle,
-															{
-																width: `${progressPercent}%`,
-																borderRightWidth: 1,
-															},
-														]}
-														colors={polaroidColors}
-														locations={polaroidColorStops}
-													/>
-													<LinearGradient
-														style={[
-															progressBarStyle,
-															{
-																position: 'absolute',
-																width: '100%',
-																opacity: 0.15,
-															},
-														]}
-														colors={polaroidColors}
-														locations={polaroidColorStops}
-													/>
-												</View>
+										</View>
+										<Image
+											source={image}
+											style={placeImageStyle}
+										/>
+										<Text style={placeDescriptionTextStyle}>{description}</Text>
+										<View style={progressContainer}>
+											<Text style={progressTextStyle}>Words known: {progressPercent}%</Text>
+											<View style={progressBarsContainer}>
+												<View
+													style={[
+														progressBarStyle,
+														{
+															width: `${progressPercent}%`,
+															backgroundColor: colors.dark.primary,
+														},
+													]}
+												/>
+												<View
+													style={[
+														progressBarStyle,
+														{
+															position: 'absolute',
+															width: '100%',
+															opacity: 0.15,
+														},
+													]}
+												/>
 											</View>
 										</View>
+										<LinkButton
+											hitSlop={5}
+											arrowSize={18}
+											contentPaddingVertical={8}
+											disabled={isLocked}
+											style={placeSelectButtonStyle}
+											screen={'(routes)/CardDeckSelect'}
+											params={{ placeId }}
+										>
+											<Text style={placeSelectButtonTextStyle}>View decks</Text>
+										</LinkButton>
 									</View>
-									<LinkButton
-										hitSlop={10}
-										arrowSize={16}
-										contentPaddingHorizontal={48}
-										contentPaddingVertical={14}
-										disabled={isLocked}
-										style={placeSelectButtonStyle}
-										screen={'(routes)/CardDeckSelect'}
-										params={{ placeId }}
-									>
-										<Text style={placeSelectButtonTextStyle}>View Decks</Text>
-									</LinkButton>
-								</View>
-							</LockOverlay>
+								</ImageBackground>
+							</View>
 						);
 					})
 				}
@@ -239,66 +228,71 @@ const styles = StyleSheet.create({
 	chapterContainerStyle: {
 		display: 'flex',
 		backgroundColor: colors.dark.text,
+		margin: 8,
 		gap: 8,
-		paddingBottom: 8,
 	},
 	placeContainerStyle: {
-		padding: containerMargin,
-		gap: containerMargin,
-		marginHorizontal: 8,
+		padding: 8,
 		backgroundColor: colors.dark.background,
-		borderRadius: 8,
+		borderWidth: 1,
+		borderRadius: 16,
+		borderColor: colors.dark.border,
+		overflow: 'hidden',
+	},
+	postCardBorder: {
+		borderWidth: 1,
+		borderRadius: 12,
+		borderColor: '#b6996d',
+		paddingVertical: 2,
+		paddingHorizontal: 16,
+		gap: 2,
+	},
+	progressContainer: {
+		marginTop: 4,
 	},
 	placeTitleTextStyle: {
-		color: colors.light.text,
+		color: colors.dark.text,
 		fontFamily: 'lexend-600',
 		fontSize: 18,
-		textAlign: 'center',
+		flex: 1.2,
 	},
-	polaroidContainerStyle: {
+	postMarkImageStyle: {
+		flex: 1,
+		aspectRatio: '12 / 5',
+		opacity: 0.6,
+	},
+	postcardStack: {
 		display: 'flex',
-		backgroundColor: colors.light.polaroid,
-		borderRadius: 2,
-		borderWidth: 1,
-		borderColor: colors.light.border,
-		// shadowColor: colors.dark.text,
-		// shadowOffset: { width: 8, height: 8 },
-		// marginRight: 8, // Match the shadow offset width
-		// marginBottom: 8, // Match the shadow offset height
-		// shadowOpacity: 1,
-		// shadowRadius: 4,
+		margin: 8,
+		position: 'relative',
 	},
-	polaroid: {
-		backgroundColor: colors.light.text,
-		borderRadius: 2,
-		borderWidth: 1,
-		borderColor: colors.light.border,
-		padding: 12,
+	titleContainer: {
+		width: '100%',
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignContent: 'center',
+		alignItems: 'center',
+		gap: 16,
+		flexWrap: 'wrap',
 	},
 	placeImageStyle: {
+		aspectRatio: '5 / 2',
 		width: '100%',
-		height: 200,
-		borderRadius: 2,
-		borderWidth: 1,
-		borderColor: colors.dark.border,
+		height: 'auto',
 	},
 	placeDescriptionTextStyle: {
-		padding: 8,
-		fontFamily: 'shadows-400',
-		fontSize: 16,
-	},
-	progressContainerStyle: {
-		paddingHorizontal: 8,
-		paddingTop: 4,
+		fontSize: 14,
 	},
 	progressTextStyle: {
-		fontFamily: 'shadows-400',
 		fontSize: 12,
 	},
 	progressBarsContainer: {
 		overflow: 'hidden',
-		borderTopWidth: 1,
+		borderWidth: 1,
 		borderColor: colors.light.border,
+		borderRadius: 8,
+		marginBottom: 16,
 	},
 	progressBarStyle: {
 		width: '10%',
@@ -307,7 +301,6 @@ const styles = StyleSheet.create({
 	},
 	placeSelectButtonStyle: {
 		marginBottom: 4,
-		marginHorizontal: 16,
 	},
 	placeSelectButtonTextStyle: {
 		fontSize: 14,
