@@ -53,7 +53,7 @@ const colors = {
 			unseen: '#7f8c8d',
 			fnew: '#b7b7b7',
 			bronze: '#CA9E86',
-			silver: '#e1e7ef',
+			silver: '#b2c9e9',
 			gold: '#ffd196',
 			diamond: '#CBE0FF',
 		},
