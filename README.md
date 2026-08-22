@@ -23,15 +23,12 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 - Rank indicator while doing a deck (probably on the top bar somewhere)
 - Later ranks need input fields instead of multi choice. Maybe a prestige?
 - Rank indicator while doing a deck
-- SVG chapter and progress map (visual and data)
 - Deck count on place selection view
 - Word count per day/history feature along with words learned per day delta
 - Get rid of the undraw SVG on the "Learn more words!" card
 - Card Collection page
 - Look into how to use the dynamic island
-- Locked chapters don't show images
 - We need a key for the story view since new words just kind of look broken...Maybe a different way to view the words? We need to think about this
-- Replace the placeholder images on chapters - when I become a better sketch artist.
 
 ## Free art and assets credits
 
