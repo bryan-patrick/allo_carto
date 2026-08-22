@@ -1,3 +1,4 @@
+import colors from '@/src/app/colors';
 import type { UnlockCriteria } from '@/src/util/atlasCompletion';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { StyleSheet, Text, View } from 'react-native';
@@ -14,23 +15,37 @@ interface ChapterLockedButtonProps {
  * ChapterLockedButton component
  */
 export default function ChapterLockedButton({ color, unlockCriteria }: ChapterLockedButtonProps) {
-	const { buttonContainer, criteriaContainer, criteriaMet, criteriaText, criteriaTitle } = styles;
+	const {
+		buttonContainer,
+		criteriaContainer,
+		criteriaMet,
+		criteriaText,
+		lockContainer,
+		lockFlexContainer,
+		reqTitle,
+		criteriaTitle,
+	} = styles;
 
 	return (
 		<View style={[buttonContainer, { borderColor: color }]}>
-			<MaterialIcons
-				color={color}
-				size={24}
-				name="lock"
-			/>
+			<View style={[lockContainer, { backgroundColor: color }]}>
+				<View style={lockFlexContainer}>
+					<MaterialIcons
+						color={'#E0D1B7'}
+						size={16}
+						name="lock"
+					/>
+				</View>
+			</View>
 			<View style={criteriaContainer}>
+				<Text style={reqTitle}>Complete the following to unlock:</Text>
 				{unlockCriteria.map(({ title, isUnlocked, requiredPercentage }, index) => (
 					<Text
 						key={`${title}-${index}`}
 						style={[criteriaText, isUnlocked && criteriaMet]}
 					>
-						Reach {requiredPercentage}% in{' '}
-						<Text style={[criteriaTitle, isUnlocked && criteriaMet]}>{title}</Text> to unlock.
+						• Reach {requiredPercentage}% in{' '}
+						<Text style={[criteriaTitle, isUnlocked && criteriaMet]}>{title}</Text>.
 					</Text>
 				))}
 			</View>
@@ -46,14 +61,38 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
-		borderWidth: 1,
-		padding: 8,
-		marginHorizontal: 8,
-		borderRadius: 8,
-		gap: 8,
+		borderWidth: 0,
+		borderRadius: 12,
+		overflow: 'hidden',
+	},
+	lockContainer: {
+		height: '100%',
+		borderColor: '#E0D1B7',
+		borderRightWidth: 0,
+		borderRadius: 10,
+		borderTopRightRadius: 0,
+		borderBottomRightRadius: 0,
+	},
+	lockFlexContainer: {
+		flexGrow: 1,
+		display: 'flex',
+		justifyContent: 'center',
+		paddingHorizontal: 4,
+	},
+	reqTitle: {
+		fontFamily: 'lexend-600',
+		fontSize: 14,
 	},
 	criteriaContainer: {
-		gap: 4,
+		padding: 4,
+		borderWidth: 2,
+		borderLeftWidth: 0,
+		borderRadius: 12,
+		borderTopLeftRadius: 0,
+		borderBottomLeftRadius: 0,
+		borderStyle: 'dashed',
+		borderColor: colors.dark.border,
+		gap: 8,
 	},
 	criteriaText: {
 		fontFamily: 'lexend-400',

@@ -28,7 +28,7 @@ export default function Crease() {
  */
 const styles = StyleSheet.create({
 	creaseStyle: {
-		width: 12,
+		width: 8,
 		paddingTop: 8,
 		paddingBottom: 8,
 		display: 'flex',
