@@ -49,7 +49,7 @@ export default function Spine({ color, index, materialIconName }: SpineProps) {
 					<MaterialIcons
 						color={'rgba(255, 255, 255, 0.6)'}
 						name={(materialIconName as any) ?? 'flight'}
-						size={40}
+						size={24}
 						style={iconStyle}
 					/>
 					<Text style={spineInnerText}>{index + 1}</Text>
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
 		borderColor: colors.dark.border,
 	},
 	spineStyle: {
-		width: 80,
+		width: 50,
 	},
 	spineInner: {
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',

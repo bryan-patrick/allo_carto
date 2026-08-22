@@ -2,7 +2,7 @@ import type { DeckChapter } from '@/data/french/deckAtlas';
 import colors from '@/src/app/colors';
 import { getUnlockCriteria } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Book from './Book';
 import ChapterLockedButton from './ChapterLockedButton';
 import ChapterMeta from './ChapterMeta';
@@ -35,7 +35,7 @@ export default function Chapter({
 	/**
 	 * Destructure chapter
 	 */
-	const { chapterName, image, name, color, materialIconName } = chapter;
+	const { chapterName, name, color, materialIconName } = chapter;
 
 	/**
 	 * Get the unlock criteria
@@ -46,13 +46,11 @@ export default function Chapter({
 	 * Destructure styles
 	 */
 	const {
-		chapterContainerStyle,
 		chapterContainerInnerStyle,
 		chapterTitleContainerStyle,
 		chapterNameStyle,
 		chapterTitleStyle,
 		chapterImageContainerStyle,
-		chapterImageStyle,
 	} = styles;
 
 	/**
@@ -67,37 +65,30 @@ export default function Chapter({
 			/>
 			<Crease />
 			<Cover>
-				<View style={chapterContainerStyle}>
-					<View style={chapterContainerInnerStyle}>
-						{!isLocked && (
-							<>
-								<View style={chapterTitleContainerStyle}>
-									<Text style={chapterNameStyle}>{chapterName}</Text>
-									<Text style={chapterTitleStyle}>{name}</Text>
-								</View>
-								<View style={[chapterImageContainerStyle]}>
-									<ImageBackground
-										source={image}
-										style={chapterImageStyle}
-									/>
-								</View>
-								<ChapterMeta
-									progressPercent={progressPercent}
-									progressColor={color ?? '#000000'}
-								/>
-								<ChapterSelectButton
-									chapter={chapter}
-									disabled={isLocked}
-								/>
-							</>
-						)}
-						{isLocked && (
-							<ChapterLockedButton
-								color={chapter.color ?? '#000000'}
-								unlockCriteria={unlockCriteria}
+				<View style={chapterContainerInnerStyle}>
+					{!isLocked && (
+						<>
+							<View style={chapterTitleContainerStyle}>
+								<Text style={chapterNameStyle}>{chapterName}</Text>
+								<Text style={chapterTitleStyle}>{name}</Text>
+							</View>
+							<View style={[chapterImageContainerStyle]}></View>
+							<ChapterMeta
+								progressPercent={progressPercent}
+								progressColor={color ?? '#000000'}
 							/>
-						)}
-					</View>
+							<ChapterSelectButton
+								chapter={chapter}
+								disabled={isLocked}
+							/>
+						</>
+					)}
+					{isLocked && (
+						<ChapterLockedButton
+							color={chapter.color ?? '#000000'}
+							unlockCriteria={unlockCriteria}
+						/>
+					)}
 				</View>
 			</Cover>
 		</Book>
@@ -108,17 +99,13 @@ export default function Chapter({
  * Styles
  */
 const styles = StyleSheet.create({
-	chapterContainerStyle: {
-		marginHorizontal: 8,
-	},
 	chapterContainerInnerStyle: {
 		display: 'flex',
 		alignItems: 'center',
 		flexDirection: 'column',
 		justifyContent: 'center',
-		paddingHorizontal: 12,
-		paddingVertical: 16,
-		gap: 16,
+		padding: 12,
+		gap: 12,
 	},
 	chapterTitleContainerStyle: {
 		flexShrink: 1,
@@ -134,7 +121,7 @@ const styles = StyleSheet.create({
 	chapterTitleStyle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
-		fontSize: 20,
+		fontSize: 18,
 		textAlign: 'center',
 	},
 	chapterImageContainerStyle: {
