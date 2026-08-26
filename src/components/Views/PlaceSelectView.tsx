@@ -204,14 +204,10 @@ const { containerMargin } = sharedStyles;
 const styles = StyleSheet.create({
 	viewStyle: {
 		flex: 1,
-		backgroundColor: colors.dark.text,
 	},
 	chapterTitleContainerStyle: {
 		paddingHorizontal: containerMargin,
 		paddingVertical: 16,
-		backgroundColor: colors.dark.text,
-		borderBottomWidth: 1,
-		borderColor: colors.dark.text,
 	},
 	chapterIndexStyle: {
 		textAlign: 'center',
@@ -227,7 +223,6 @@ const styles = StyleSheet.create({
 	},
 	chapterContainerStyle: {
 		display: 'flex',
-		backgroundColor: colors.dark.text,
 		margin: 8,
 		gap: 8,
 	},

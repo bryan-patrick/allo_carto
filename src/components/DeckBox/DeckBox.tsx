@@ -5,23 +5,24 @@ import getDeckRankCounts, {
 	emptyDeckRankCounts,
 } from '@/src/db/queries/getDeckRankCounts';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ImageBackground, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { ImageBackground, Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import colors from '../../app/colors';
-import sharedStyles from '../../app/sharedStyles';
 import { useUserContext } from '../../db/useUserContext';
+import { findAtlasLocationByPlaceId } from '../../util/atlasCompletion';
 import { getDeckCompletionPercent } from '../../util/deckCompletion';
 import type { ProgressById } from '../../util/progression';
 import type { WordProgressKey } from '../../util/wordRanks';
 import type { CardDeck } from '../CardDeck/cardDeckTypes';
-import GradientText from '../GradientText';
-import LinkButton from '../LinkButton';
-import SecondaryButton from '../SecondaryButton';
-import SVGArrowUpFromLine from '../SVG/SVGArrowUpFromLine';
-import SVGRightArrow from '../SVG/SVGRightArrow';
 import DeckBoxModal from './DeckBoxModal';
+
+const deckBoxBorderBottom = require('@/src/app/assets/images/decks/deck-box-border-bottom.png');
+const deckBoxBorderLeft = require('@/src/app/assets/images/decks/deck-box-border-left.png');
+const deckBoxBorderRight = require('@/src/app/assets/images/decks/deck-box-border-right.png');
+const deckBoxContentArea = require('@/src/app/assets/images/decks/deck-box-content-area.png');
+const deckBoxTop = require('@/src/app/assets/images/decks/deck-box-top.png');
+const deckBoxTopMask = require('@/src/app/assets/images/decks/deck-box-top-mask.png');
 
 const plopStyleByProgress: Record<WordProgressKey, ViewStyle> = {
 	unseen: {
@@ -77,38 +78,8 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 		Record<string, WordProgressKey>
 	>({});
 	const [modalVisible, setModalVisible] = useState(false);
+	const atlasLocation = findAtlasLocationByPlaceId(placeId);
 
-	/**
-	 * Destructure styles
-	 */
-	const {
-		cardStyle,
-		cardInnerStyle,
-		cardInnerBorder,
-		cardHeaderStyle,
-		gradientTextContainer,
-		descriptionStyle,
-		CEFRGradientStyle,
-		CEFRLabelStyle,
-		CEFRTextStyle,
-		imageStyle,
-		badgeContainerStyle,
-		badgeCountContainerStyle,
-		badgeCountTextStyle,
-		storyProgressContainerStyle,
-		storyProgressHeaderStyle,
-		storyProgressTitleStyle,
-		storyProgressTextStyle,
-		storyProgressStyle,
-		storyProgressButtonContainerStyle,
-		storyProgressButtonStyle,
-		storyProgressButtonTextStyle,
-		plopContainerStyle,
-		plopStyle,
-		cardFooterStyle,
-	} = styles;
-
-	const badgeIconSize = 14;
 	const CEFRGradientLight: readonly [string, string] = [
 		colors.light.CEFR[deck.CEFR[0]],
 		colors.light.CEFR[deck.CEFR.at(-1)!],
@@ -220,330 +191,188 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 	}
 
 	/**
-	 * Render the card grid
+	 * Destructure styles
+	 */
+	const {
+		deckBoxContentAreaStyle,
+		deckBoxContainer,
+		deckBoxContentStyle,
+		deckBoxContentAreaBorder,
+		deckBoxMiddleStyle,
+		deckBoxMetaContainerStyle,
+		deckBoxMetaStyle,
+		deckBoxMetaTextStyle,
+		deckBoxBorderLeftStyle,
+		deckBoxBorderRightStyle,
+		deckBoxTopStyle,
+		deckBoxBorderBottomStyle,
+	} = styles;
+
+	/**
+	 * Render the Deck Box
 	 */
 	return (
-		<View style={cardStyle}>
-			<View style={cardInnerStyle}>
-				<DeckBoxModal
-					deck={deck}
-					modalVisible={modalVisible}
-					rankCounts={rankCounts}
-					setModalVisible={setModalVisible}
-					wordProgressKeyByWordId={wordProgressKeyByWordId}
-				/>
-				<View style={cardInnerBorder}>
-					<View style={cardHeaderStyle}>
-						<View style={gradientTextContainer}>
-							<GradientText
-								fontSize={20}
-								fontWeight={700}
-								colors={[deck.colors.dark.primary, deck.colors.dark.secondary]}
-								text={deck.title}
-							/>
-						</View>
-						<Text style={descriptionStyle}>{deck.description}</Text>
-					</View>
-
-					<View>
-						<LinearGradient
-							start={{ x: 0, y: 0 }}
-							end={{ x: 1, y: 0 }}
-							colors={CEFRGradientLight}
-							style={CEFRGradientStyle}
-						>
-							<Text style={CEFRLabelStyle}>CEFR</Text>
-							<Text style={CEFRTextStyle}>{deck.CEFR.join(' - ')}</Text>
-						</LinearGradient>
-						<ImageBackground
-							source={deck.image}
-							style={imageStyle}
-						/>
-						<LinearGradient
-							style={badgeContainerStyle}
-							colors={[deck.colors.dark.secondary, deck.colors.dark.primary]}
-							start={{ x: 0, y: 0 }}
-							end={{ x: 1, y: 0 }}
-						>
-							<View style={badgeCountContainerStyle}>
-								<Text style={badgeCountTextStyle}>{rankCounts.unseen}</Text>
-								<MaterialIcons
-									color={colors.light.text}
-									size={badgeIconSize}
-									name="visibility-off"
-								/>
-							</View>
-							<View style={badgeCountContainerStyle}>
-								<Text style={badgeCountTextStyle}>{rankCounts.fnew}</Text>
-								<MaterialIcons
-									color={colors.light.text}
-									size={badgeIconSize}
-									name="fiber-new"
-								/>
-							</View>
-							<View style={badgeCountContainerStyle}>
-								<Text style={badgeCountTextStyle}>{rankCounts.bronze}</Text>
-								<MaterialIcons
-									color={colors.light.text}
-									size={badgeIconSize}
-									name="stars"
-								/>
-							</View>
-							<View style={badgeCountContainerStyle}>
-								<Text style={badgeCountTextStyle}>{rankCounts.silver}</Text>
-								<MaterialIcons
-									color={colors.light.text}
-									size={badgeIconSize}
-									name="military-tech"
-								/>
-							</View>
-							<View style={badgeCountContainerStyle}>
-								<Text style={badgeCountTextStyle}>{rankCounts.gold}</Text>
-								<MaterialIcons
-									color={colors.light.text}
-									size={badgeIconSize}
-									name="emoji-events"
-								/>
-							</View>
-							<View style={badgeCountContainerStyle}>
-								<Text style={badgeCountTextStyle}>{rankCounts.diamond}</Text>
-								<MaterialIcons
-									color={colors.light.text}
-									size={badgeIconSize}
-									name="diamond"
-								/>
-							</View>
-						</LinearGradient>
-					</View>
-
-					<View style={storyProgressContainerStyle}>
-						<View style={storyProgressHeaderStyle}>
-							<Text style={[storyProgressTitleStyle, { color: deck.colors.dark.primary }]}>
-								Story Progress
-							</Text>
-							<Text style={[storyProgressTextStyle, { color: deck.colors.dark.primary }]}>
-								{deckCompletionPercent}%
-							</Text>
-						</View>
-						<View style={storyProgressStyle}>
-							<View style={plopContainerStyle}>
-								{deck.story?.map(({ wordId, text }, index) => {
-									const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
-
-									return (
-										<View
-											key={`plop-${index}-${wordId}-${text}`}
-											style={[plopStyle, plopStyleByProgress[progress]]}
+		<>
+			<DeckBoxModal
+				deck={deck}
+				modalVisible={modalVisible}
+				rankCounts={rankCounts}
+				setModalVisible={setModalVisible}
+				wordProgressKeyByWordId={wordProgressKeyByWordId}
+			/>
+			<View style={deckBoxContainer}>
+				<ImageBackground
+					source={deckBoxTop}
+					style={deckBoxTopStyle}
+					resizeMode="stretch"
+				>
+					<ImageBackground
+						source={deckBoxTopMask}
+						style={[deckBoxTopStyle, { zIndex: 1 }]}
+						resizeMode="stretch"
+					/>
+				</ImageBackground>
+				<View style={deckBoxMiddleStyle}>
+					<ImageBackground
+						source={deckBoxBorderLeft}
+						style={deckBoxBorderLeftStyle}
+						resizeMode="stretch"
+					/>
+					<ImageBackground
+						style={deckBoxContentAreaStyle}
+						source={deckBoxContentArea}
+						resizeMode="stretch"
+					>
+						<View style={deckBoxContentAreaBorder}>
+							{atlasLocation && (
+								<View style={[deckBoxMetaContainerStyle]}>
+									<View
+										style={[deckBoxMetaStyle, { backgroundColor: atlasLocation.chapter.color }]}
+									>
+										<MaterialIcons
+											name={atlasLocation.chapter.materialIconName ?? 'help-outline'}
+											size={36}
+											color={'#b6996d'}
 										/>
-									);
-								})}
+										<Text>{atlasLocation.chapterNumber}</Text>
+									</View>
+								</View>
+							)}
+							<View style={deckBoxContentStyle}>
+								{atlasLocation && (
+									<Text style={[deckBoxMetaTextStyle]}>
+										{atlasLocation.chapter.chapterName} {atlasLocation.chapter.name} {'>'}{' '}
+										{atlasLocation.place.name}
+									</Text>
+								)}
+								<Text>Dawn at the Drop Off</Text>
+								<Text>Stuff</Text>
+								<Pressable>
+									<Text>View story</Text>
+								</Pressable>
+								<View>
+									<View>
+										<MaterialIcons
+											name={'diamond'}
+											size={24}
+											color={colors.dark.border}
+										/>
+										<Text>A1 - A2</Text>
+									</View>
+									<View>
+										<MaterialIcons
+											name={'diamond'}
+											size={24}
+											color={colors.dark.border}
+										/>
+										<Text>80 Cards</Text>
+									</View>
+									<View>
+										<MaterialIcons
+											name={'diamond'}
+											size={24}
+											color={colors.dark.border}
+										/>
+										<Text>{deckCompletionPercent}% known</Text>
+									</View>
+								</View>
 							</View>
 						</View>
-						<View style={storyProgressButtonContainerStyle}>
-							<SecondaryButton
-								style={[
-									storyProgressButtonStyle,
-									{
-										borderColor: deck.colors.dark.primary,
-										shadowColor: deck.colors.dark.primary,
-									},
-								]}
-								textStyle={[storyProgressButtonTextStyle, { color: deck.colors.dark.primary }]}
-								onPress={handleShowStory}
-								hitSlop={4}
-								SVGElement={
-									<SVGArrowUpFromLine
-										color={colors.dark.text}
-										height="14px"
-										width="14px"
-									/>
-								}
-							>
-								Show Story
-							</SecondaryButton>
-							<SecondaryButton
-								style={[
-									storyProgressButtonStyle,
-									{
-										borderColor: deck.colors.dark.primary,
-										shadowColor: deck.colors.dark.primary,
-									},
-								]}
-								textStyle={[storyProgressButtonTextStyle, { color: deck.colors.dark.primary }]}
-								onPress={handleViewCards}
-								hitSlop={4}
-								SVGElement={
-									<SVGRightArrow
-										height="14px"
-										width="14px"
-										color={colors.dark.text}
-									/>
-								}
-							>
-								View Cards
-							</SecondaryButton>
-						</View>
-					</View>
-
-					<View style={cardFooterStyle}>
-						<LinkButton
-							handler={() => handleDeckSelect(deck)}
-							deckColors={deck.colors}
-						>
-							Review this deck
-						</LinkButton>
-					</View>
+					</ImageBackground>
+					<ImageBackground
+						source={deckBoxBorderRight}
+						style={deckBoxBorderRightStyle}
+						resizeMode="stretch"
+					/>
 				</View>
+				<ImageBackground
+					source={deckBoxBorderBottom}
+					style={deckBoxBorderBottomStyle}
+					resizeMode="stretch"
+				/>
 			</View>
-		</View>
+		</>
 	);
 }
-
-/**
- * Destructure shared styles
- */
-const { containerMargin } = sharedStyles;
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-	cardStyle: {
-		padding: containerMargin,
-		backgroundColor: colors.dark.background,
-		borderRadius: 8,
-		overflow: 'hidden',
+	deckBoxContainer: {
+		position: 'relative',
+		margin: 8,
 	},
-	cardInnerStyle: {
-		borderRadius: 16,
-		backgroundColor: colors.light.background,
-		shadowOffset: { width: 0, height: 16 },
-		marginBottom: 8,
-		shadowOpacity: 1,
-		shadowColor: colors.dark.border,
-		shadowRadius: 0,
+	deckBoxTopStyle: {
+		width: '100%',
+		aspectRatio: 761 / 135,
 	},
-	cardInnerBorder: {
-		borderRadius: 16,
+	deckBoxMiddleStyle: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		marginTop: -22,
+	},
+	deckBoxBorderLeftStyle: {
+		flex: 22,
+	},
+	deckBoxBorderRightStyle: {
+		flex: 23,
+	},
+	deckBoxBorderBottomStyle: {
+		width: '100%',
+		aspectRatio: 761 / 22,
+	},
+	deckBoxContentAreaStyle: {
+		flex: 719,
+	},
+	deckBoxContentAreaBorder: {
 		borderWidth: 2,
-		borderColor: colors.light.border,
+		borderRadius: 8,
+		borderColor: '#b6996d',
+		margin: 8,
 	},
-	cardHeaderStyle: {
-		paddingVertical: 16,
-		paddingHorizontal: 16,
-	},
-	gradientTextContainer: {
+	deckBoxContentStyle: {
 		display: 'flex',
-		flexShrink: 1,
+		justifyContent: 'flex-start',
+		alignItems: 'center',
+		flex: 1,
+		padding: 8,
+		margin: 8,
+	},
+	deckBoxMetaContainerStyle: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		gap: 4,
+	},
+	deckBoxMetaStyle: {
+		paddingTop: 16,
+		paddingHorizontal: 32,
+		paddingBottom: 8,
 		justifyContent: 'center',
 	},
-	descriptionStyle: {
-		color: colors.dark.text,
-		wordWrap: 'wrap',
-		fontSize: 14,
-		fontFamily: 'lexend-400',
-	},
-	CEFRGradientStyle: {
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignSelf: 'flex-start',
-		overflow: 'hidden',
-		width: '100%',
-		paddingHorizontal: 16,
-		borderTopWidth: 1,
-		borderBottomWidth: 1,
-		borderColor: colors.light.border,
-	},
-	CEFRLabelStyle: {
-		fontSize: 12,
-		fontFamily: 'lexend-400',
-	},
-	CEFRTextStyle: {
-		fontFamily: 'lexend-400',
-		fontSize: 12,
-		color: colors.dark.text,
-	},
-	imageStyle: {
-		display: 'flex',
-		justifyContent: 'flex-end',
-		height: 120,
-	},
-	badgeContainerStyle: {
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingHorizontal: 16,
-		borderTopWidth: 1,
-		borderBottomWidth: 1,
-		paddingVertical: 1,
-		borderColor: colors.light.border,
-	},
-	badgeCountContainerStyle: {
-		display: 'flex',
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 2,
-	},
-	badgeCountTextStyle: {
-		fontFamily: 'azeret-mono-600',
-		color: colors.light.text,
-		fontSize: 12,
-	},
-	storyProgressContainerStyle: {
-		paddingHorizontal: 16,
-		paddingVertical: 12,
-		borderBottomWidth: 1,
-		borderColor: colors.light.border,
-		marginBottom: 12,
-		gap: 8,
-	},
-	storyProgressHeaderStyle: {
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignContent: 'center',
-	},
-	storyProgressTitleStyle: {
-		fontSize: 14,
-		fontFamily: 'lexend-600',
-	},
-	storyProgressTextStyle: {
-		fontFamily: 'lexend-600',
-		fontSize: 14,
-	},
-	storyProgressStyle: {
-		alignItems: 'center',
-		flexDirection: 'row',
-	},
-	storyProgressButtonContainerStyle: {
-		display: 'flex',
-		flexDirection: 'row',
-		width: '100%',
-		gap: 8,
-	},
-	storyProgressButtonStyle: {
-		flexGrow: 1,
-	},
-	storyProgressButtonTextStyle: {
-		fontSize: 12,
-	},
-	plopContainerStyle: {
+	deckBoxMetaTextStyle: {
 		flex: 1,
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: 1,
-	},
-	plopStyle: {
-		width: 10,
-		height: 4,
-		borderWidth: 1,
-		borderColor: colors.dark.border,
-	},
-	cardFooterStyle: {
-		paddingHorizontal: 16,
-		marginBottom: 16,
-		borderBottomLeftRadius: 8,
-		borderBottomRightRadius: 8,
+		fontFamily: 'lexend-600',
+		fontSize: 11,
 	},
 });

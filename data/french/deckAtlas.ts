@@ -1,13 +1,7 @@
-import {
-	DeckDawnAtTheDropOff,
-	DeckElevatorEpics,
-	DeckLostRoomKeys,
-	DeckStreetMarketTreasureHunt,
-	DeckToTheGate,
-	DeckTroubleInTheTerminal,
-} from '@/data/french/decks';
+import { DeckDawnAtTheDropOff } from '@/data/french/decks';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { Progression } from '@/src/util/progression';
+import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { ImageSourcePropType } from 'react-native';
 
 /**
@@ -27,6 +21,8 @@ export interface DeckAtlas {
 	chapters: DeckChapter[];
 }
 
+export type MaterialIconName = keyof typeof MaterialIcons.glyphMap;
+
 export interface DeckChapter extends Progression {
 	id: string;
 	name: string;
@@ -34,7 +30,7 @@ export interface DeckChapter extends Progression {
 	chapterName: string;
 	image?: ImageSourcePropType;
 	color?: string;
-	materialIconName?: string;
+	materialIconName?: MaterialIconName;
 }
 
 export interface DeckPlace extends Progression {
@@ -65,7 +61,7 @@ export const deckAtlas: DeckAtlas = {
 					description:
 						'Flights, feathers, occasional bread delays. These decks focus on situations while travelling.',
 					image: aeroportOiseau,
-					decks: [DeckDawnAtTheDropOff, DeckTroubleInTheTerminal, DeckToTheGate],
+					decks: [DeckDawnAtTheDropOff],
 				},
 				{
 					id: 'hotel-bonne-chance',
@@ -78,7 +74,7 @@ export const deckAtlas: DeckAtlas = {
 					name: 'Hôtel Bonne Chance',
 					description: 'Clean sheets. Questionable luck.',
 					image: hotelChance,
-					decks: [DeckLostRoomKeys, DeckElevatorEpics],
+					decks: [],
 				},
 			],
 		},
@@ -105,7 +101,7 @@ export const deckAtlas: DeckAtlas = {
 					name: 'Rue Saint Matou',
 					description: 'Bonsoir, hooman. Bienvenue.',
 					image: rueSaintMatou,
-					decks: [DeckStreetMarketTreasureHunt],
+					decks: [],
 				},
 			],
 		},
