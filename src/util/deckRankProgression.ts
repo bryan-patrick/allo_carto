@@ -1,74 +1,37 @@
-import type { WordRankKey } from './wordRanks';
+import type { DeckRankCounts } from '../db/queries/getDeckRankCounts';
+import type { WordRankDefinition } from './wordRanks';
 import { wordRankDefinitions } from './wordRanks';
 
-/**
- * Typing
- */
-type RankCounts = Record<WordRankKey, number>;
-
-export type DeckRankCompletion = 'incomplete' | 'soft' | 'full';
-
-export interface DeckRankProgress {
-	completion: DeckRankCompletion;
-	isSelectable: boolean;
-	isUnlocked: boolean;
-	progressCount: number;
-	unlockCount: number;
-}
-
-const rankKeys = wordRankDefinitions.map(({ key }) => key);
-
-/**
- * Get the number of cards needed to unlock the next rank.
- */
-export function getDeckRankUnlockCount(deckWordCount: number): number {
+function getDeckRankUnlockCount(deckWordCount: number): number {
 	return Math.ceil(Math.max(deckWordCount, 0) / 2);
 }
 
-function getCardsAfterRank(rankCounts: RankCounts, rankIndex: number): number {
-	let result = 0;
-
-	for (let index = rankIndex + 1; index < rankKeys.length; index++) {
-		result += rankCounts[rankKeys[index]] ?? 0;
-	}
-
-	return result;
-}
-
 /**
- * Check the user's progress for one rank.
- * A rank can still be played after it is soft complete if it has cards left.
+ * A deck's current rank is its highest rank reached by at least half its cards.
  */
-export function getDeckRankProgress({
+export function getCurrentDeckRankDefinition({
 	deckWordCount,
 	rankCounts,
-	rankKey,
 }: {
 	deckWordCount: number;
-	rankCounts: RankCounts;
-	rankKey: WordRankKey;
-}): DeckRankProgress {
-	const rankIndex = rankKeys.indexOf(rankKey);
-	const rankCount = rankCounts[rankKey] ?? 0;
+	rankCounts: DeckRankCounts;
+}): WordRankDefinition {
 	const unlockCount = getDeckRankUnlockCount(deckWordCount);
-	const cardsAfterRank = getCardsAfterRank(rankCounts, rankIndex);
-	const cardsAtOrAboveRank = rankCount + cardsAfterRank;
-	const progressCount = rankKey === 'diamond' ? cardsAtOrAboveRank : cardsAfterRank;
-	const isUnlocked = deckWordCount > 0 && (rankIndex === 0 || cardsAtOrAboveRank >= unlockCount);
+	let currentRank = wordRankDefinitions[0];
 
-	let completion: DeckRankCompletion = 'incomplete';
+	if (deckWordCount <= 0) return currentRank;
 
-	if (deckWordCount > 0 && progressCount === deckWordCount) {
-		completion = 'full';
-	} else if (deckWordCount > 0 && progressCount >= unlockCount) {
-		completion = 'soft';
+	for (let rankIndex = 1; rankIndex < wordRankDefinitions.length; rankIndex++) {
+		let cardsAtOrAboveRank = 0;
+
+		for (let index = rankIndex; index < wordRankDefinitions.length; index++) {
+			cardsAtOrAboveRank += rankCounts[wordRankDefinitions[index].key] ?? 0;
+		}
+
+		if (cardsAtOrAboveRank < unlockCount) break;
+
+		currentRank = wordRankDefinitions[rankIndex];
 	}
 
-	return {
-		completion,
-		isSelectable: isUnlocked && rankCount > 0,
-		isUnlocked,
-		progressCount,
-		unlockCount,
-	};
+	return currentRank;
 }

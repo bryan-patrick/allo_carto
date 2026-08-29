@@ -1,6 +1,6 @@
 import type { CardDeck, Word } from '../../components/CardDeck/cardDeckTypes';
+import { getDeckRankSelectionWeight } from '../../util/deckRankSelection';
 import wordRaffle from '../../util/wordRaffle';
-import { wordRankDefinitions, type WordRankKey } from '../../util/wordRanks';
 import { getDB } from '../connection';
 import type { WordRow } from '../types';
 import getDeckWordChoices from './getDeckWordChoices';
@@ -8,50 +8,29 @@ import getDeckWordChoices from './getDeckWordChoices';
 interface GetDeckProps {
 	deck: CardDeck;
 	amount?: number;
-	rank?: WordRankKey;
 	userId: string;
 }
 
-function getRankCountCondition(rankKey: WordRankKey): string {
-	const rankIndex = wordRankDefinitions.findIndex(rank => rank.key === rankKey);
-	const rank = wordRankDefinitions[rankIndex];
-	const nextRank = wordRankDefinitions[rankIndex + 1];
-	const normalizedCorrectCount = 'COALESCE(uw.correctCount, 0)';
-	const normalizedSeenCount = 'COALESCE(uw.seenCount, 0)';
-
-	if (!rank) {
-		/**
-		 * Include all cards if the rank is missing
-		 */
-		return '1 = 1';
-	}
-
-	if (rank.key === 'unseen') {
-		return `${normalizedCorrectCount} = 0 AND ${normalizedSeenCount} = 0`;
-	}
-
-	if (rank.key === 'fnew') {
-		return `(${normalizedCorrectCount} > 0 OR ${normalizedSeenCount} > 0) AND ${normalizedCorrectCount} < ${nextRank?.minCorrectCount ?? 0}`;
-	}
-
-	if (!nextRank) {
-		return `${normalizedCorrectCount} >= ${rank.minCorrectCount}`;
-	}
-
-	return `${normalizedCorrectCount} >= ${rank.minCorrectCount} AND ${normalizedCorrectCount} < ${nextRank.minCorrectCount}`;
+interface DeckWordRow extends WordRow {
+	userSeenCount: number;
 }
 
-function parseWordRow(row: WordRow): Word {
+function parseWordRow(row: DeckWordRow): { seenCount: number; word: Word } {
+	const { englishWords, isVulgar, userCorrectCount, userSeenCount, ...wordFields } = row;
+
 	/**
 	 * We have to add back in englishWords and isVulgar
 	 * since we have to parse the array and isVulgar is
 	 * stored with a numeric value instead of a boolean.
 	 */
 	return {
-		...row,
-		englishWords: JSON.parse(row.englishWords),
-		isVulgar: Boolean(row.isVulgar),
-		correctCount: row.userCorrectCount ?? 0,
+		seenCount: userSeenCount ?? 0,
+		word: {
+			...wordFields,
+			englishWords: JSON.parse(englishWords),
+			isVulgar: Boolean(isVulgar),
+			correctCount: userCorrectCount ?? 0,
+		},
 	};
 }
 
@@ -76,8 +55,7 @@ function dedupeByLemma(words: Word[]): Word[] {
 
 export default async function getDeck({
 	deck,
-	amount = 8,
-	rank,
+	amount = 12,
 	userId,
 }: GetDeckProps): Promise<CardDeck | undefined> {
 	/**
@@ -94,30 +72,38 @@ export default async function getDeck({
 	 */
 	try {
 		const database = await getDB();
-		const rankCondition = rank ? `AND ${getRankCountCondition(rank)}` : '';
-		const rows = await database.getAllAsync<WordRow>(
+		const rows = await database.getAllAsync<DeckWordRow>(
 			`
 			SELECT
 				w.*,
-				COALESCE(uw.correctCount, 0) AS userCorrectCount
+				COALESCE(uw.correctCount, 0) AS userCorrectCount,
+				COALESCE(uw.seenCount, 0) AS userSeenCount
 			FROM words AS w
 			LEFT JOIN userWords AS uw
 				ON uw.wordId = w.id
 				AND uw.userId = ?
-			WHERE w.id IN (${placeholders})
-			${rankCondition};
+			WHERE w.id IN (${placeholders});
 			`,
 			userId,
 			...deck.wordIds,
 		);
 
-		const words = rows?.map(parseWordRow) ?? [];
+		const parsedRows = rows?.map(parseWordRow) ?? [];
+		const words = parsedRows.map(({ word }) => word);
+		const seenCountByWordId = new Map(
+			parsedRows.map(({ seenCount, word }) => [word.id, seenCount]),
+		);
 
 		/**
 		 * Draw the cards.
-		 * wordRaffle is for determined rarity
+		 * Rank adds a slight bias and rarity still affects the chance.
 		 */
-		const selectedWords = wordRaffle(dedupeByLemma(words), amount);
+		const selectedWords = wordRaffle(dedupeByLemma(words), amount, word => {
+			return getDeckRankSelectionWeight({
+				correctCount: word.correctCount,
+				seenCount: seenCountByWordId.get(word.id) ?? 0,
+			});
+		});
 
 		/**
 		 * Return the deck

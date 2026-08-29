@@ -2,6 +2,7 @@ import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import LinkButton from '@/src/components/LinkButton';
+import { RankIcon } from '@/src/components/WordRank';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckRankCounts, {
 	emptyDeckRankCounts,
@@ -10,6 +11,7 @@ import getDeckRankCounts, {
 import { useUserContext } from '@/src/db/useUserContext';
 import { findAtlasLocationByPlaceId } from '@/src/util/atlasCompletion';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
+import { getCurrentDeckRankDefinition } from '@/src/util/deckRankProgression';
 import type { WordProgressKey } from '@/src/util/wordRanks';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, useFocusEffect } from 'expo-router';
@@ -76,6 +78,26 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 			rankCounts,
 		}),
 	);
+	const currentDeckRank = getCurrentDeckRankDefinition({
+		deckWordCount: deckCardCount,
+		rankCounts,
+	});
+	const deckMetadata = {
+		cardCount: deckCardCount,
+		CEFRLabel: deckCEFRLabel,
+		completionPercent: deckCompletionPercent,
+		/**
+		 * TODO: Add the current deck rank and icon to the deck box.
+		 */
+		currentRank: currentDeckRank,
+		currentRankIcon: (
+			<RankIcon
+				color={colors.dark.rank[currentDeckRank.key]}
+				rank={currentDeckRank.key}
+				size={24}
+			/>
+		),
+	};
 
 	/**
 	 * Data loaders
@@ -141,7 +163,7 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 		if (!selectedDeck) return;
 
 		cardDeckDispatch({ type: 'SET_DECK', payload: selectedDeck });
-		router.push('/CardDeckRankSelect');
+		router.push('/CardDeck');
 	}, [userId, deck, cardDeckDispatch]);
 
 	/**
@@ -291,7 +313,9 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 										size={24}
 										color={chapterColor}
 									/>
-									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>{deckCEFRLabel}</Text>
+									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>
+										{deckMetadata.CEFRLabel}
+									</Text>
 								</View>
 								<View style={[deckInfoColumnStyle, deckInfoColumnSeparatorStyle]}>
 									<MaterialIcons
@@ -300,7 +324,7 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 										color={chapterColor}
 									/>
 									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>
-										{deckCardCount} Cards
+										{deckMetadata.cardCount} Cards
 									</Text>
 								</View>
 								<View style={deckInfoColumnStyle}>
@@ -310,7 +334,7 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 										color={chapterColor}
 									/>
 									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>
-										{deckCompletionPercent}% known
+										{deckMetadata.completionPercent}% known
 									</Text>
 								</View>
 							</View>
@@ -330,7 +354,7 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 			</View>
 			<View style={selectDeckButtonContainerStyle}>
 				<LinkButton
-					accessibilityHint={`Continue to rank selection for ${deckTitle}.`}
+					accessibilityHint={`Start practicing ${deckTitle}.`}
 					accessibilityLabel={`Select ${deckTitle}`}
 					color={chapterColor}
 					disabled={isLocked}
