@@ -35,7 +35,7 @@ export default function Chapter({
 	/**
 	 * Destructure chapter
 	 */
-	const { chapterName, name, color, materialIconName } = chapter;
+	const { label, name, color, materialIconName } = chapter;
 
 	/**
 	 * Get the unlock criteria
@@ -48,7 +48,7 @@ export default function Chapter({
 	const {
 		chapterContainerInnerStyle,
 		chapterTitleContainerStyle,
-		chapterNameStyle,
+		labelStyle,
 		chapterTitleStyle,
 		chapterImageContainerStyle,
 	} = styles;
@@ -69,7 +69,7 @@ export default function Chapter({
 					{!isLocked && (
 						<>
 							<View style={chapterTitleContainerStyle}>
-								<Text style={chapterNameStyle}>{chapterName}</Text>
+								<Text style={labelStyle}>{label}</Text>
 								<Text style={chapterTitleStyle}>{name}</Text>
 							</View>
 							<View style={[chapterImageContainerStyle]}></View>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		wordWrap: 'wrap',
 	},
-	chapterNameStyle: {
+	labelStyle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 12,

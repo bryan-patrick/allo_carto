@@ -1,64 +1,78 @@
+import colors from '@/src/app/colors';
+import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
+import LinkButton from '@/src/components/LinkButton';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckRankCounts, {
-	DeckRankCounts,
 	emptyDeckRankCounts,
+	type DeckRankCounts,
 } from '@/src/db/queries/getDeckRankCounts';
+import { useUserContext } from '@/src/db/useUserContext';
+import { findAtlasLocationByPlaceId } from '@/src/util/atlasCompletion';
+import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
+import type { WordProgressKey } from '@/src/util/wordRanks';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import colors from '../../app/colors';
-import sharedStyles from '../../app/sharedStyles';
-import { useUserContext } from '../../db/useUserContext';
-import { formatUnlockCriterion, getUnlockCriteria } from '../../util/atlasCompletion';
-import { getDeckCompletionPercent } from '../../util/deckCompletion';
-import type { ProgressById } from '../../util/progression';
-import type { WordProgressKey } from '../../util/wordRanks';
-import type { CardDeck } from '../CardDeck/cardDeckTypes';
-import LockOverlay from '../LockOverlay';
-import DeckBoxFooter from './DeckBoxFooter';
-import DeckBoxHeader from './DeckBoxHeader';
-import DeckBoxHero from './DeckBoxHero';
-import DeckBoxStoryProgress from './DeckBoxStoryProgress';
+import { Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import DeckBoxModal from './DeckBoxModal';
+
+const deckBoxTopImage = require('@/src/app/assets/images/decks/deck-box-top.png');
+const deckBoxTopMaskImage = require('@/src/app/assets/images/decks/deck-box-top-mask.png');
+const deckBoxLeftBorderImage = require('@/src/app/assets/images/decks/deck-box-border-left.png');
+const deckBoxContentImage = require('@/src/app/assets/images/decks/deck-box-content-area.png');
+const deckBoxRightBorderImage = require('@/src/app/assets/images/decks/deck-box-border-right.png');
+const deckBoxBottomImage = require('@/src/app/assets/images/decks/deck-box-border-bottom.png');
 
 /**
  * Typing
  */
-interface SelectCardDeckProps {
+interface DeckBoxProps {
 	deck: CardDeck;
-	placeId?: string;
 	isLocked: boolean;
-	progressById: ProgressById;
+	placeId?: string;
 }
 
 /**
  * DeckBox component
  */
-export default function DeckBox({ deck, placeId, isLocked, progressById }: SelectCardDeckProps) {
-	const userId = useUserContext()?.id;
+export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
+	/**
+	 * Destructure deck
+	 */
+	const { CEFR, description: deckDescription, title: deckTitle, story, wordIds } = deck;
+
+	/**
+	 * Context and state
+	 */
+	const { id: userId } = useUserContext() ?? {};
 	const { cardDeckDispatch } = useCardDeck();
 	const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
 	const [wordProgressKeyByWordId, setWordProgressKeyByWordId] = useState<
 		Record<string, WordProgressKey>
 	>({});
-	const [modalVisible, setModalVisible] = useState(false);
+	const [isStoryModalVisible, setIsStoryModalVisible] = useState(false);
+	const [storyChevronTranslateY] = useState(() => new Animated.Value(0));
 
 	/**
-	 * Get the lock message
+	 * Destructure atlas location and chapter
 	 */
-	const unlockCriteria = getUnlockCriteria(deck, progressById);
+	const { chapter, chapterNumber } = findAtlasLocationByPlaceId(placeId) ?? {};
+	const {
+		color: chapterColor = colors.dark.primary,
+		label: chapterLabel = '',
+		materialIconName: chapterIconName = 'help-outline',
+		name: chapterName = '',
+	} = chapter ?? {};
 
 	/**
-	 * Destructure styles
+	 * Deck metadata
 	 */
-	const { cardStyle, cardInnerStyle, cardInnerBorder } = styles;
-
-	/**
-	 * Deck completion
-	 */
+	const deckCardCount = wordIds.length;
+	const deckCEFRLabel = CEFR.join(' - ');
 	const deckCompletionPercent = Math.floor(
 		getDeckCompletionPercent({
-			deckWordCount: deck.wordIds.length,
+			deckWordCount: deckCardCount,
 			rankCounts,
 		}),
 	);
@@ -77,21 +91,21 @@ export default function DeckBox({ deck, placeId, isLocked, progressById }: Selec
 			const counts = await getDeckRankCounts({
 				database,
 				userId,
-				wordIds: deck.wordIds,
+				wordIds,
 			});
 
 			setRankCounts(counts);
 		} catch (error) {
 			console.error('Could not retrieve deck rank counts:', error);
 		}
-	}, [userId, deck.wordIds]);
+	}, [userId, wordIds]);
 
 	const loadStoryWordProgress = useCallback(async () => {
 		try {
 			if (userId) {
 				const storyWordProgressKeyByWordId = await getWordProgressById({
 					userId,
-					story: deck.story,
+					story,
 				});
 
 				setWordProgressKeyByWordId(storyWordProgressKeyByWordId);
@@ -102,12 +116,12 @@ export default function DeckBox({ deck, placeId, isLocked, progressById }: Selec
 		} catch (error) {
 			console.error('Could not retrieve story word progress:', error);
 		}
-	}, [userId, deck.story]);
+	}, [userId, story]);
 
 	/**
 	 * The story blips weren't updating when returning
-	 * to the deck selection after completing a deck
-	 * so I was all like, "whoa, that's like...a problem".
+	 * to the deck selection after completing a deck.
+	 * This forces it.
 	 */
 	useFocusEffect(
 		useCallback(() => {
@@ -117,24 +131,18 @@ export default function DeckBox({ deck, placeId, isLocked, progressById }: Selec
 	);
 
 	/**
-	 * ReviewDeck handler
+	 * Select deck handler
 	 */
-	const handleDeckSelect = useCallback(
-		async (selectedDeck: CardDeck) => {
-			if (userId) {
-				const deck = await getDeck({
-					deck: selectedDeck,
-					userId,
-				});
+	const handleSelectDeck = useCallback(async () => {
+		if (!userId) return;
 
-				if (deck) {
-					cardDeckDispatch({ type: 'SET_DECK', payload: deck });
-					router.push('/CardDeckRankSelect');
-				}
-			}
-		},
-		[userId, cardDeckDispatch],
-	);
+		const selectedDeck = await getDeck({ deck, userId });
+
+		if (!selectedDeck) return;
+
+		cardDeckDispatch({ type: 'SET_DECK', payload: selectedDeck });
+		router.push('/CardDeckRankSelect');
+	}, [userId, deck, cardDeckDispatch]);
 
 	/**
 	 * Refresh story data and show modal
@@ -142,88 +150,345 @@ export default function DeckBox({ deck, placeId, isLocked, progressById }: Selec
 	async function handleShowStory() {
 		await Promise.all([loadRankCounts(), loadStoryWordProgress()]);
 
-		setModalVisible(true);
+		setIsStoryModalVisible(true);
 	}
 
 	/**
-	 * Open the full card list for this deck.
+	 * Story button animation handlers
 	 */
-	function handleViewCards() {
-		router.push({
-			pathname: '/ViewCards',
-			params: {
-				deckTitle: deck.title,
-				placeId,
-			},
-		});
+	function handleStoryButtonPressIn() {
+		Animated.timing(storyChevronTranslateY, {
+			toValue: -3,
+			duration: 90,
+			useNativeDriver: true,
+		}).start();
+	}
+
+	function handleStoryButtonPressOut() {
+		Animated.timing(storyChevronTranslateY, {
+			toValue: 0,
+			duration: 140,
+			useNativeDriver: true,
+		}).start();
 	}
 
 	/**
-	 * Render the card grid
+	 * Destructure styles
+	 */
+	const {
+		deckBoxContainerStyle,
+		deckBoxTopStyle,
+		deckBoxMiddleStyle,
+		deckBoxLeftBorderStyle,
+		deckBoxContentBackgroundStyle,
+		deckBoxContentBorderStyle,
+		chapterBadgeContainerStyle,
+		chapterBadgeStyle,
+		chapterNumberStyle,
+		deckDetailsStyle,
+		chapterHeadingStyle,
+		deckTitleSeparatorStyle,
+		deckTitleSeparatorDotStyle,
+		deckTitleStyle,
+		deckDescriptionStyle,
+		storyButtonStyle,
+		storyButtonTextStyle,
+		deckInfoContainerStyle,
+		deckInfoColumnStyle,
+		deckInfoColumnSeparatorStyle,
+		deckInfoTextStyle,
+		deckBoxRightBorderStyle,
+		deckBoxBottomStyle,
+		selectDeckButtonContainerStyle,
+	} = styles;
+
+	/**
+	 * Render the Deck Box
 	 */
 	return (
-		<LockOverlay
-			isLocked={isLocked}
-			lockedAccessibilityHint={unlockCriteria.map(formatUnlockCriterion).join(' ')}
-			lockedAccessibilityLabel={`${deck.title} deck locked`}
-			unlockCriteria={unlockCriteria}
-		>
-			<View style={cardStyle}>
-				<View style={[cardInnerStyle]}>
-					<View style={cardInnerBorder}>
-						<DeckBoxHeader deck={deck} />
-						<DeckBoxHero
-							deck={deck}
-							rankCounts={rankCounts}
-						/>
-						<DeckBoxStoryProgress
-							deck={deck}
-							deckCompletionPercent={deckCompletionPercent}
-							handleShowStory={handleShowStory}
-							handleViewCards={handleViewCards}
-							modalVisible={modalVisible}
-							rankCounts={rankCounts}
-							setModalVisible={setModalVisible}
-							wordProgressKeyByWordId={wordProgressKeyByWordId}
-						/>
-						<DeckBoxFooter
-							deck={deck}
-							handleDeckSelect={handleDeckSelect}
-						/>
-					</View>
+		<>
+			<DeckBoxModal
+				deck={deck}
+				modalVisible={isStoryModalVisible}
+				rankCounts={rankCounts}
+				setModalVisible={setIsStoryModalVisible}
+				wordProgressKeyByWordId={wordProgressKeyByWordId}
+			/>
+			<View style={deckBoxContainerStyle}>
+				<ImageBackground
+					source={deckBoxTopImage}
+					style={deckBoxTopStyle}
+					resizeMode="stretch"
+				>
+					<ImageBackground
+						source={deckBoxTopMaskImage}
+						style={[deckBoxTopStyle, { zIndex: 1 }]}
+						resizeMode="stretch"
+					/>
+				</ImageBackground>
+				<View style={deckBoxMiddleStyle}>
+					<ImageBackground
+						source={deckBoxLeftBorderImage}
+						style={deckBoxLeftBorderStyle}
+						resizeMode="stretch"
+					/>
+					<ImageBackground
+						source={deckBoxContentImage}
+						style={deckBoxContentBackgroundStyle}
+						resizeMode="stretch"
+					>
+						<View style={deckBoxContentBorderStyle}>
+							{chapter && (
+								<View style={chapterBadgeContainerStyle}>
+									<View style={[chapterBadgeStyle, { backgroundColor: chapterColor }]}>
+										<MaterialIcons
+											name={chapterIconName}
+											size={24}
+											color={colors.light.goldenBorder}
+										/>
+										<Text style={chapterNumberStyle}>{chapterNumber}</Text>
+									</View>
+								</View>
+							)}
+							<View style={deckDetailsStyle}>
+								{chapter && (
+									<Text style={chapterHeadingStyle}>
+										{chapterLabel} {chapterName}
+									</Text>
+								)}
+								<View style={deckTitleSeparatorStyle}>
+									<View style={deckTitleSeparatorDotStyle} />
+								</View>
+								<Text style={deckTitleStyle}>{deckTitle}</Text>
+								<Text style={deckDescriptionStyle}>{deckDescription}</Text>
+								<Pressable
+									onPress={handleShowStory}
+									onPressIn={handleStoryButtonPressIn}
+									onPressOut={handleStoryButtonPressOut}
+									style={[storyButtonStyle, { borderColor: chapterColor }]}
+								>
+									<MaterialIcons
+										name="menu-book"
+										size={20}
+										color={chapterColor}
+									/>
+									<Text style={[storyButtonTextStyle, { color: chapterColor }]}>
+										View paragraph
+									</Text>
+									<Animated.View style={{ transform: [{ translateY: storyChevronTranslateY }] }}>
+										<MaterialIcons
+											name="keyboard-arrow-up"
+											size={20}
+											color={chapterColor}
+										/>
+									</Animated.View>
+								</Pressable>
+							</View>
+							<View style={deckInfoContainerStyle}>
+								<View style={[deckInfoColumnStyle, deckInfoColumnSeparatorStyle]}>
+									<MaterialIcons
+										name="language"
+										size={24}
+										color={chapterColor}
+									/>
+									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>{deckCEFRLabel}</Text>
+								</View>
+								<View style={[deckInfoColumnStyle, deckInfoColumnSeparatorStyle]}>
+									<MaterialIcons
+										name="style"
+										size={24}
+										color={chapterColor}
+									/>
+									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>
+										{deckCardCount} Cards
+									</Text>
+								</View>
+								<View style={deckInfoColumnStyle}>
+									<MaterialIcons
+										name="star-outline"
+										size={24}
+										color={chapterColor}
+									/>
+									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>
+										{deckCompletionPercent}% known
+									</Text>
+								</View>
+							</View>
+						</View>
+					</ImageBackground>
+					<ImageBackground
+						source={deckBoxRightBorderImage}
+						style={deckBoxRightBorderStyle}
+						resizeMode="stretch"
+					/>
 				</View>
+				<ImageBackground
+					source={deckBoxBottomImage}
+					style={deckBoxBottomStyle}
+					resizeMode="stretch"
+				/>
 			</View>
-		</LockOverlay>
+			<View style={selectDeckButtonContainerStyle}>
+				<LinkButton
+					accessibilityHint={`Continue to rank selection for ${deckTitle}.`}
+					accessibilityLabel={`Select ${deckTitle}`}
+					color={chapterColor}
+					disabled={isLocked}
+					fullwidth
+					handler={handleSelectDeck}
+				>
+					Select deck
+				</LinkButton>
+			</View>
+		</>
 	);
 }
-
-/**
- * Destructure shared styles
- */
-const { containerMargin } = sharedStyles;
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-	cardStyle: {
-		padding: containerMargin,
-		backgroundColor: colors.dark.background,
-		borderRadius: 8,
-		overflow: 'hidden',
+	deckBoxContainerStyle: {
+		position: 'relative',
+		margin: 8,
 	},
-	cardInnerStyle: {
-		borderRadius: 16,
-		backgroundColor: colors.light.background,
-		shadowOffset: { width: 0, height: 16 },
-		marginBottom: 8,
-		shadowOpacity: 1,
-		shadowColor: colors.dark.border,
-		shadowRadius: 0,
+	deckBoxTopStyle: {
+		width: '100%',
+		aspectRatio: 761 / 135,
 	},
-	cardInnerBorder: {
-		borderRadius: 16,
+	deckBoxMiddleStyle: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		marginTop: -24,
+	},
+	deckBoxLeftBorderStyle: {
+		flex: 22,
+	},
+	deckBoxContentBackgroundStyle: {
+		flex: 719,
+	},
+	deckBoxContentBorderStyle: {
 		borderWidth: 2,
-		borderColor: colors.light.border,
+		borderRadius: 8,
+		borderColor: colors.light.goldenBorder,
+		margin: 12,
+		marginTop: 6,
+	},
+	chapterBadgeContainerStyle: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		gap: 4,
+	},
+	chapterBadgeStyle: {
+		paddingTop: 20,
+		paddingHorizontal: 32,
+		paddingBottom: 8,
+		justifyContent: 'center',
+		gap: 4,
+		borderBottomLeftRadius: 8,
+		borderBottomRightRadius: 8,
+	},
+	chapterNumberStyle: {
+		textAlign: 'center',
+		color: colors.light.goldenBorder,
+		fontFamily: 'azeret-mono-600',
+		fontSize: 12,
+	},
+	deckDetailsStyle: {
+		display: 'flex',
+		justifyContent: 'flex-start',
+		alignItems: 'center',
+		flex: 1,
+		padding: 8,
+		margin: 4,
+		gap: 6,
+	},
+	chapterHeadingStyle: {
+		flex: 1,
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		textAlign: 'center',
+		marginBottom: 4,
+	},
+	deckTitleSeparatorStyle: {
+		position: 'relative',
+		borderTopWidth: 1,
+		borderColor: colors.light.goldenBorder,
+		marginVertical: 4,
+		width: '50%',
+	},
+	deckTitleSeparatorDotStyle: {
+		position: 'absolute',
+		left: '50%',
+		top: '50%',
+		borderRadius: '50%',
+		transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
+		width: 8,
+		height: 8,
+		backgroundColor: colors.light.goldenBorder,
+	},
+	deckTitleStyle: {
+		marginTop: 2,
+		fontFamily: 'lexend-600',
+		fontSize: 24,
+		textAlign: 'center',
+		color: colors.dark.text,
+	},
+	deckDescriptionStyle: {
+		fontFamily: 'lexend-400',
+		fontSize: 14,
+		textAlign: 'center',
+		color: colors.dark.text,
+	},
+	storyButtonStyle: {
+		display: 'flex',
+		justifyContent: 'center',
+		alignContent: 'center',
+		alignItems: 'center',
+		flexDirection: 'row',
+		borderTopWidth: 1,
+		borderBottomWidth: 1,
+		paddingVertical: 8,
+		marginVertical: 16,
+		gap: 8,
+	},
+	storyButtonTextStyle: {
+		fontFamily: 'lexend-600',
+	},
+	deckInfoContainerStyle: {
+		display: 'flex',
+		flexDirection: 'row',
+		borderTopWidth: 2,
+		paddingVertical: 16,
+		borderColor: colors.light.goldenBorder,
+		marginTop: -12,
+	},
+	deckInfoColumnStyle: {
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		flexGrow: 1,
+		flex: 1,
+		gap: 4,
+	},
+	deckInfoColumnSeparatorStyle: {
+		borderRightWidth: 2,
+		borderColor: colors.light.goldenBorder,
+	},
+	deckInfoTextStyle: {
+		fontSize: 14,
+		fontFamily: 'lexend-400',
+	},
+	deckBoxRightBorderStyle: {
+		flex: 23,
+	},
+	deckBoxBottomStyle: {
+		width: '100%',
+		aspectRatio: 761 / 22,
+		marginTop: -2,
+	},
+	selectDeckButtonContainerStyle: {
+		marginHorizontal: 8,
+		marginBottom: 16,
 	},
 });

@@ -1,6 +1,10 @@
 import type { DeckAtlas } from '@/data/french/deckAtlas';
 import { makeMockCardDeck } from '@/src/components/CardDeck/mockCardDeck';
-import { getAtlasCompletionItems, isItemUnlocked } from '@/src/util/atlasCompletion';
+import {
+	findAtlasLocationByPlaceId,
+	getAtlasCompletionItems,
+	isItemUnlocked,
+} from '@/src/util/atlasCompletion';
 import { getCompletionPercentage, type ProgressById } from '@/src/util/progression';
 
 function makeProgressById(percentages: Record<string, number>): ProgressById {
@@ -39,7 +43,7 @@ function makeAtlas(): DeckAtlas {
 			{
 				id: 'chapter_one',
 				name: 'Chapter one',
-				chapterName: 'Chapter 1',
+				label: 'Chapter 1',
 				places: [
 					{
 						id: 'place_one',
@@ -52,7 +56,7 @@ function makeAtlas(): DeckAtlas {
 			{
 				id: 'chapter_two',
 				name: 'Chapter two',
-				chapterName: 'Chapter 2',
+				label: 'Chapter 2',
 				unlockRequirements: [
 					{
 						id: 'chapter_one',
@@ -78,6 +82,19 @@ function makeAtlas(): DeckAtlas {
 }
 
 describe('progression', () => {
+	test('finds a place with its parent chapter and chapter position', () => {
+		const atlas = makeAtlas();
+		const location = findAtlasLocationByPlaceId('place_two', atlas);
+
+		expect(location).toEqual({
+			chapter: atlas.chapters[1],
+			place: atlas.chapters[1].places[0],
+			chapterIndex: 1,
+			chapterNumber: 2,
+		});
+		expect(findAtlasLocationByPlaceId('missing_place', atlas)).toBeUndefined();
+	});
+
 	test('calculates full-precision familiarity without stacking New points', () => {
 		expect(
 			getCompletionPercentage({

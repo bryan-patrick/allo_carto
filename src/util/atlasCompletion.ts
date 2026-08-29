@@ -32,6 +32,13 @@ export interface UnlockCriteria {
 	title: string;
 }
 
+export interface AtlasLocation {
+	chapter: DeckChapter;
+	place: DeckPlace;
+	chapterIndex: number;
+	chapterNumber: number;
+}
+
 /**
  * Get the unique word ids from a group of decks.
  */
@@ -170,17 +177,36 @@ export function findChapterById(
 }
 
 /**
+ * Find a place and its parent chapter by the place's progress id.
+ */
+export function findAtlasLocationByPlaceId(
+	placeId: string | undefined,
+	atlas: DeckAtlas = deckAtlas,
+): AtlasLocation | undefined {
+	if (!placeId) return;
+
+	for (const [chapterIndex, chapter] of atlas.chapters.entries()) {
+		const place = chapter.places.find(place => place.id === placeId);
+
+		if (place) {
+			return {
+				chapter,
+				place,
+				chapterIndex,
+				chapterNumber: chapterIndex + 1,
+			};
+		}
+	}
+}
+
+/**
  * Find a place by its progress id.
  */
 export function findPlaceById(
 	id: string | undefined,
 	atlas: DeckAtlas = deckAtlas,
 ): DeckPlace | undefined {
-	for (const chapter of atlas.chapters) {
-		for (const place of chapter.places) {
-			if (place.id === id) return place;
-		}
-	}
+	return findAtlasLocationByPlaceId(id, atlas)?.place;
 }
 
 /**
