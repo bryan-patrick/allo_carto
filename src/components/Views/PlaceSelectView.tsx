@@ -2,7 +2,7 @@ import { DeckPlace } from '@/data/french/deckAtlas';
 import sharedStyles from '@/src/app/sharedStyles';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { findChapterById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../../app/colors';
@@ -100,7 +100,6 @@ export default function PlaceSelectView() {
 						const rotate = isEven ? '-3deg' : '3deg';
 						const { id: placeId, name, description, image } = place;
 						const progressPercent = Math.floor(progressById[placeId]?.completionPercentage ?? 0);
-						const unlockCriteria = getUnlockCriteria(place, progressById);
 						const isLocked = !isItemUnlocked({
 							id: placeId,
 							progressById,

@@ -150,15 +150,6 @@ export default function AppLayout() {
 										}}
 									/>
 									<Stack.Screen
-										name="(routes)/CardDeckRankSelect"
-										options={{
-											headerShown: true,
-											headerBackTitle: 'Back',
-											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: 'Select a Rank',
-										}}
-									/>
-									<Stack.Screen
 										name="(routes)/ViewCards"
 										options={{
 											headerShown: true,

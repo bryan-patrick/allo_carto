@@ -16,20 +16,34 @@ const numberOfTicketsByRarity: Record<CardRarity, number> = {
 	Legendary: 1,
 };
 
+function getWordRaffleTickets(word: Word, getWeightMultiplier: (word: Word) => number): number {
+	let result = 0;
+	const wordRarity = word.rarity ?? 'Common';
+	const weightMultiplier = getWeightMultiplier(word);
+
+	result = numberOfTicketsByRarity[wordRarity] * weightMultiplier;
+
+	return result;
+}
+
 /**
  * Draw words from a weighted raffle.
  *
  * This is for drawing words from a deck based on actual rarity.
  */
-export default function wordRaffle(words: Word[], numberOfWordsToDraw: number): Word[] {
+export default function wordRaffle(
+	words: Word[],
+	numberOfWordsToDraw: number,
+	getWeightMultiplier: (word: Word) => number = () => 1,
+): Word[] {
+	const result: Word[] = [];
 	const wordsInRaffle = [...words];
-	const winningWords: Word[] = [];
 
 	/**
 	 * Keep drawing until the deck has enough words
 	 * or the raffle is empty.
 	 */
-	while (winningWords.length < numberOfWordsToDraw && wordsInRaffle.length > 0) {
+	while (result.length < numberOfWordsToDraw && wordsInRaffle.length > 0) {
 		let totalRaffleTickets = 0;
 
 		/**
@@ -37,10 +51,7 @@ export default function wordRaffle(words: Word[], numberOfWordsToDraw: number): 
 		 * currently in the draw.
 		 */
 		for (const word of wordsInRaffle) {
-			const wordRarity = word.rarity ?? 'Common';
-			const wordRaffleTickets = numberOfTicketsByRarity[wordRarity];
-
-			totalRaffleTickets = totalRaffleTickets + wordRaffleTickets;
+			totalRaffleTickets += getWordRaffleTickets(word, getWeightMultiplier);
 		}
 
 		/**
@@ -63,8 +74,7 @@ export default function wordRaffle(words: Word[], numberOfWordsToDraw: number): 
 		 */
 		for (let index = 0; index < wordsInRaffle.length; index++) {
 			const word = wordsInRaffle[index];
-			const wordRarity = word.rarity ?? 'Common';
-			const wordRaffleTickets = numberOfTicketsByRarity[wordRarity];
+			const wordRaffleTickets = getWordRaffleTickets(word, getWeightMultiplier);
 
 			raffleTicketsCounted = raffleTicketsCounted + wordRaffleTickets;
 
@@ -81,8 +91,8 @@ export default function wordRaffle(words: Word[], numberOfWordsToDraw: number): 
 		const wordsRemovedFromRaffle = wordsInRaffle.splice(winningWordIndex, 1);
 		const winningWord = wordsRemovedFromRaffle[0];
 
-		winningWords.push(winningWord);
+		result.push(winningWord);
 	}
 
-	return winningWords;
+	return result;
 }
