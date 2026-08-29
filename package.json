@@ -16,13 +16,12 @@
 		"android": "expo run:android",
 		"ios": "clear; reset; expo start --ios",
 		"ios:multi": "node ./scripts/ios-multi.js",
-		"release": "npx expo run:ios --configuration Release --simulator \"iPhone 17 Pro\"",
 		"web": "expo start --web",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"lint": "expo lint",
 		"test": "jest --watchAll",
-		"build-ios": "npx expo run:ios --configuration Release --device",
+		"build-ios": "npx expo run:ios --configuration Release --device --no-bundler",
 		"prepare": "husky"
 	},
 	"lint-staged": {
