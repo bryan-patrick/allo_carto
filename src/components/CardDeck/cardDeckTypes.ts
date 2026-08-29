@@ -1,5 +1,4 @@
 import type { Progression } from '@/src/util/progression';
-import { ImageSourcePropType } from 'react-native';
 
 /**
  * Typing
@@ -40,7 +39,6 @@ export interface CardDeck extends Progression {
 	description: string;
 	wordIds: string[];
 	words: Word[];
-	image: ImageSourcePropType | undefined;
 	wordChoices: DeckWordChoice[];
 	place?: string;
 	colors: DeckColors;

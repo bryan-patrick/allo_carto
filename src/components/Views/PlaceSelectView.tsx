@@ -79,7 +79,7 @@ export default function PlaceSelectView() {
 		);
 	}
 
-	const { name, places, chapterName } = selectedChapter;
+	const { name, places, label } = selectedChapter;
 
 	/**
 	 * Render the card grid
@@ -87,7 +87,7 @@ export default function PlaceSelectView() {
 	return (
 		<View style={viewStyle}>
 			<View style={chapterTitleContainerStyle}>
-				<Text style={chapterIndexStyle}>{chapterName}</Text>
+				<Text style={chapterIndexStyle}>{label}</Text>
 				<Text style={chapterTitleStyle}>{name}</Text>
 			</View>
 			<ScrollView contentContainerStyle={chapterContainerStyle}>
@@ -204,14 +204,10 @@ const { containerMargin } = sharedStyles;
 const styles = StyleSheet.create({
 	viewStyle: {
 		flex: 1,
-		backgroundColor: colors.dark.text,
 	},
 	chapterTitleContainerStyle: {
 		paddingHorizontal: containerMargin,
 		paddingVertical: 16,
-		backgroundColor: colors.dark.text,
-		borderBottomWidth: 1,
-		borderColor: colors.dark.text,
 	},
 	chapterIndexStyle: {
 		textAlign: 'center',
@@ -227,7 +223,6 @@ const styles = StyleSheet.create({
 	},
 	chapterContainerStyle: {
 		display: 'flex',
-		backgroundColor: colors.dark.text,
 		margin: 8,
 		gap: 8,
 	},
@@ -242,7 +237,7 @@ const styles = StyleSheet.create({
 	postCardBorder: {
 		borderWidth: 1,
 		borderRadius: 12,
-		borderColor: '#b6996d',
+		borderColor: colors.light.goldenBorder,
 		paddingVertical: 2,
 		paddingHorizontal: 16,
 		gap: 2,

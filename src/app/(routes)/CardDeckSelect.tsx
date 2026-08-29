@@ -72,9 +72,8 @@ export default function CardDeckSelect() {
 					renderItem={({ item }) => (
 						<DeckBox
 							deck={item}
-							placeId={placeId}
 							isLocked={getIsDeckLocked(item)}
-							progressById={progressById}
+							placeId={placeId}
 						/>
 					)}
 					keyExtractor={deck => deck.id}

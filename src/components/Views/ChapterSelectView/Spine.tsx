@@ -1,3 +1,4 @@
+import type { MaterialIconName } from '@/data/french/deckAtlas';
 import colors from '@/src/app/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
@@ -8,7 +9,7 @@ import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 interface SpineProps {
 	color?: string;
 	index: number;
-	materialIconName?: string;
+	materialIconName?: MaterialIconName;
 }
 
 /**
@@ -48,7 +49,7 @@ export default function Spine({ color, index, materialIconName }: SpineProps) {
 				<View style={borderContainer}>
 					<MaterialIcons
 						color={'rgba(255, 255, 255, 0.6)'}
-						name={(materialIconName as any) ?? 'flight'}
+						name={materialIconName ?? 'flight'}
 						size={24}
 						style={iconStyle}
 					/>
