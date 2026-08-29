@@ -38,6 +38,7 @@ const colors = {
 		background: '#ACC3BB',
 		border: '#465B5D',
 		secondaryBorder: '#6B474B',
+		goldenBorder: '#BCA073',
 		success: '#DDFFD6',
 		warning: '#FFC670',
 		danger: '#FF7081',

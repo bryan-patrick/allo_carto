@@ -43,7 +43,7 @@ function makeAtlas(): DeckAtlas {
 			{
 				id: 'chapter_one',
 				name: 'Chapter one',
-				chapterName: 'Chapter 1',
+				label: 'Chapter 1',
 				places: [
 					{
 						id: 'place_one',
@@ -56,7 +56,7 @@ function makeAtlas(): DeckAtlas {
 			{
 				id: 'chapter_two',
 				name: 'Chapter two',
-				chapterName: 'Chapter 2',
+				label: 'Chapter 2',
 				unlockRequirements: [
 					{
 						id: 'chapter_one',

@@ -7,7 +7,15 @@ import getDeckRankCounts, {
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ImageBackground, Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import {
+	Animated,
+	ImageBackground,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
+	type ViewStyle,
+} from 'react-native';
 import colors from '../../app/colors';
 import { useUserContext } from '../../db/useUserContext';
 import { findAtlasLocationByPlaceId } from '../../util/atlasCompletion';
@@ -78,6 +86,7 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 		Record<string, WordProgressKey>
 	>({});
 	const [modalVisible, setModalVisible] = useState(false);
+	const [viewStoryChevronTranslateY] = useState(() => new Animated.Value(0));
 	const atlasLocation = findAtlasLocationByPlaceId(placeId);
 
 	const CEFRGradientLight: readonly [string, string] = [
@@ -177,6 +186,22 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 		setModalVisible(true);
 	}
 
+	function handleViewStoryPressIn() {
+		Animated.timing(viewStoryChevronTranslateY, {
+			toValue: -3,
+			duration: 90,
+			useNativeDriver: true,
+		}).start();
+	}
+
+	function handleViewStoryPressOut() {
+		Animated.timing(viewStoryChevronTranslateY, {
+			toValue: 0,
+			duration: 140,
+			useNativeDriver: true,
+		}).start();
+	}
+
 	/**
 	 * Open the full card list for this deck.
 	 */
@@ -206,7 +231,22 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 		deckBoxBorderRightStyle,
 		deckBoxTopStyle,
 		deckBoxBorderBottomStyle,
+		deckBoxChapterNumberStyle,
+		deckTitleStyle,
+		deckDescriptionStyle,
+		separatorContainerStyle,
+		separatorBallStyle,
+		viewStoryBtnStyle,
+		viewStoryBtnTextStyle,
+		deckInfoContainerStyle,
+		infoColStyle,
+		gridSeparator,
 	} = styles;
+
+	/**
+	 * Destructure chapter props
+	 */
+	const { name, label, materialIconName, color } = atlasLocation?.chapter!;
 
 	/**
 	 * Render the Deck Box
@@ -246,55 +286,74 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 						<View style={deckBoxContentAreaBorder}>
 							{atlasLocation && (
 								<View style={[deckBoxMetaContainerStyle]}>
-									<View
-										style={[deckBoxMetaStyle, { backgroundColor: atlasLocation.chapter.color }]}
-									>
+									<View style={[deckBoxMetaStyle, { backgroundColor: color }]}>
 										<MaterialIcons
-											name={atlasLocation.chapter.materialIconName ?? 'help-outline'}
-											size={36}
-											color={'#b6996d'}
+											name={materialIconName}
+											size={32}
+											color={colors.light.goldenBorder}
 										/>
-										<Text>{atlasLocation.chapterNumber}</Text>
+										<Text style={[deckBoxChapterNumberStyle]}>{atlasLocation.chapterNumber}</Text>
 									</View>
 								</View>
 							)}
 							<View style={deckBoxContentStyle}>
 								{atlasLocation && (
-									<Text style={[deckBoxMetaTextStyle]}>
-										{atlasLocation.chapter.chapterName} {atlasLocation.chapter.name} {'>'}{' '}
-										{atlasLocation.place.name}
+									<Text style={deckBoxMetaTextStyle}>
+										{label}: {name}
 									</Text>
 								)}
-								<Text>Dawn at the Drop Off</Text>
-								<Text>Stuff</Text>
-								<Pressable>
-									<Text>View story</Text>
+								<View style={separatorContainerStyle}>
+									<View style={separatorBallStyle} />
+								</View>
+								<Text style={deckTitleStyle}>{deck.title}</Text>
+								<Text style={deckDescriptionStyle}>{deck.description}</Text>
+								<Pressable
+									onPress={handleShowStory}
+									onPressIn={handleViewStoryPressIn}
+									onPressOut={handleViewStoryPressOut}
+									style={[viewStoryBtnStyle, { borderColor: color }]}
+								>
+									<MaterialIcons
+										name={'menu-book'}
+										size={20}
+										color={color}
+									/>
+									<Text style={[viewStoryBtnTextStyle, { color }]}>View paragraph</Text>
+									<Animated.View
+										style={{ transform: [{ translateY: viewStoryChevronTranslateY }] }}
+									>
+										<MaterialIcons
+											name="keyboard-arrow-up"
+											size={20}
+											color={color}
+										/>
+									</Animated.View>
 								</Pressable>
-								<View>
-									<View>
-										<MaterialIcons
-											name={'diamond'}
-											size={24}
-											color={colors.dark.border}
-										/>
-										<Text>A1 - A2</Text>
-									</View>
-									<View>
-										<MaterialIcons
-											name={'diamond'}
-											size={24}
-											color={colors.dark.border}
-										/>
-										<Text>80 Cards</Text>
-									</View>
-									<View>
-										<MaterialIcons
-											name={'diamond'}
-											size={24}
-											color={colors.dark.border}
-										/>
-										<Text>{deckCompletionPercent}% known</Text>
-									</View>
+							</View>
+							<View style={deckInfoContainerStyle}>
+								<View style={[infoColStyle, gridSeparator]}>
+									<MaterialIcons
+										name={'language'}
+										size={24}
+										color={colors.dark.border}
+									/>
+									<Text>A1 - A2</Text>
+								</View>
+								<View style={[infoColStyle, gridSeparator]}>
+									<MaterialIcons
+										name={'library-books'}
+										size={24}
+										color={colors.dark.border}
+									/>
+									<Text>80 Cards</Text>
+								</View>
+								<View style={infoColStyle}>
+									<MaterialIcons
+										name={'psychology'}
+										size={24}
+										color={colors.dark.border}
+									/>
+									<Text>{deckCompletionPercent}% known</Text>
 								</View>
 							</View>
 						</View>
@@ -348,8 +407,9 @@ const styles = StyleSheet.create({
 	deckBoxContentAreaBorder: {
 		borderWidth: 2,
 		borderRadius: 8,
-		borderColor: '#b6996d',
-		margin: 8,
+		borderColor: colors.light.goldenBorder,
+		margin: 16,
+		marginTop: 12,
 	},
 	deckBoxContentStyle: {
 		display: 'flex',
@@ -358,6 +418,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 8,
 		margin: 8,
+		gap: 4,
 	},
 	deckBoxMetaContainerStyle: {
 		justifyContent: 'center',
@@ -369,10 +430,85 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 32,
 		paddingBottom: 8,
 		justifyContent: 'center',
+		gap: 4,
+		borderBottomLeftRadius: 8,
+		borderBottomRightRadius: 8,
+	},
+	deckBoxChapterNumberStyle: {
+		textAlign: 'center',
+		color: colors.light.goldenBorder,
+		fontFamily: 'azeret-mono-600',
+		fontSize: 14,
 	},
 	deckBoxMetaTextStyle: {
 		flex: 1,
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		textAlign: 'center',
+		marginBottom: 4,
+	},
+	separatorContainerStyle: {
+		position: 'relative',
+		borderWidth: 1,
+		borderColor: colors.light.goldenBorder,
+		marginVertical: 8,
+		width: '50%',
+	},
+	separatorBallStyle: {
+		position: 'absolute',
+		left: '50%',
+		top: '50%',
+		borderRadius: '50%',
+		transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
+		width: 8,
+		height: 8,
+		backgroundColor: colors.light.goldenBorder,
+	},
+	deckTitleStyle: {
 		fontFamily: 'lexend-600',
-		fontSize: 11,
+		fontSize: 24,
+		textAlign: 'center',
+		color: colors.dark.text,
+	},
+	deckDescriptionStyle: {
+		fontFamily: 'lexend-400',
+		fontSize: 14,
+		textAlign: 'center',
+		color: colors.dark.text,
+	},
+	viewStoryBtnStyle: {
+		display: 'flex',
+		justifyContent: 'center',
+		alignContent: 'center',
+		alignItems: 'center',
+		flexDirection: 'row',
+		borderTopWidth: 1,
+		borderBottomWidth: 1,
+		paddingVertical: 8,
+		marginVertical: 16,
+		gap: 8,
+	},
+	viewStoryBtnTextStyle: {
+		fontFamily: 'lexend-600',
+	},
+	deckInfoContainerStyle: {
+		display: 'flex',
+		flexDirection: 'row',
+		borderTopWidth: 2,
+		paddingVertical: 16,
+		borderColor: colors.light.goldenBorder,
+		marginTop: -8,
+	},
+	infoColStyle: {
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		flexGrow: 1,
+		flex: 1,
+		gap: 4,
+	},
+	gridSeparator: {
+		borderRightWidth: 2,
+		borderColor: colors.light.goldenBorder,
 	},
 });

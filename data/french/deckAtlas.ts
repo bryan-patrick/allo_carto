@@ -27,7 +27,7 @@ export interface DeckChapter extends Progression {
 	id: string;
 	name: string;
 	places: DeckPlace[];
-	chapterName: string;
+	label: string;
 	image?: ImageSourcePropType;
 	color?: string;
 	materialIconName?: MaterialIconName;
@@ -50,7 +50,7 @@ export const deckAtlas: DeckAtlas = {
 		{
 			id: 'a-very-french-travel-day',
 			name: 'A Very French Travel Day',
-			chapterName: 'Chapter 1:',
+			label: 'Chapter 1',
 			image: aVeryFrenchTravelDay,
 			color: '#253749',
 			materialIconName: 'flight',
@@ -91,7 +91,7 @@ export const deckAtlas: DeckAtlas = {
 				},
 			],
 			name: 'Lost and Secret Decks',
-			chapterName: 'Epilogue:',
+			label: 'Epilogue:',
 			image: lostAndSecretDecks,
 			color: '#473022',
 			materialIconName: 'pets',
