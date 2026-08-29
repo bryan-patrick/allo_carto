@@ -23,6 +23,7 @@ import { getDeckCompletionPercent } from '../../util/deckCompletion';
 import type { ProgressById } from '../../util/progression';
 import type { WordProgressKey } from '../../util/wordRanks';
 import type { CardDeck } from '../CardDeck/cardDeckTypes';
+import LinkButton from '../LinkButton';
 import DeckBoxModal from './DeckBoxModal';
 
 const deckBoxBorderBottom = require('@/src/app/assets/images/decks/deck-box-border-bottom.png');
@@ -78,7 +79,7 @@ interface SelectCardDeckProps {
 /**
  * DeckBox component
  */
-export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
+export default function DeckBox({ deck, placeId, isLocked }: SelectCardDeckProps) {
 	const userId = useUserContext()?.id;
 	const { cardDeckDispatch } = useCardDeck();
 	const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
@@ -241,6 +242,8 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 		deckInfoContainerStyle,
 		infoColStyle,
 		gridSeparator,
+		deckInfoText,
+		selectDeckButtonContainerStyle,
 	} = styles;
 
 	/**
@@ -289,7 +292,7 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 									<View style={[deckBoxMetaStyle, { backgroundColor: color }]}>
 										<MaterialIcons
 											name={materialIconName}
-											size={32}
+											size={24}
 											color={colors.light.goldenBorder}
 										/>
 										<Text style={[deckBoxChapterNumberStyle]}>{atlasLocation.chapterNumber}</Text>
@@ -335,25 +338,25 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 									<MaterialIcons
 										name={'language'}
 										size={24}
-										color={colors.dark.border}
+										color={color}
 									/>
-									<Text>A1 - A2</Text>
+									<Text style={[deckInfoText, { color }]}>A1 - A2</Text>
 								</View>
 								<View style={[infoColStyle, gridSeparator]}>
 									<MaterialIcons
-										name={'library-books'}
+										name={'style'}
 										size={24}
-										color={colors.dark.border}
+										color={color}
 									/>
-									<Text>80 Cards</Text>
+									<Text style={[deckInfoText, { color }]}>80 Cards</Text>
 								</View>
 								<View style={infoColStyle}>
 									<MaterialIcons
-										name={'psychology'}
+										name={'star-outline'}
 										size={24}
-										color={colors.dark.border}
+										color={color}
 									/>
-									<Text>{deckCompletionPercent}% known</Text>
+									<Text style={[deckInfoText, { color }]}>{deckCompletionPercent}% known</Text>
 								</View>
 							</View>
 						</View>
@@ -366,9 +369,21 @@ export default function DeckBox({ deck, placeId }: SelectCardDeckProps) {
 				</View>
 				<ImageBackground
 					source={deckBoxBorderBottom}
-					style={deckBoxBorderBottomStyle}
+					style={[deckBoxBorderBottomStyle, { marginTop: -2 }]}
 					resizeMode="stretch"
 				/>
+			</View>
+			<View style={selectDeckButtonContainerStyle}>
+				<LinkButton
+					accessibilityHint={`Continue to rank selection for ${deck.title}.`}
+					accessibilityLabel={`Select ${deck.title}`}
+					color={color}
+					disabled={isLocked}
+					fullwidth
+					handler={() => handleDeckSelect(deck)}
+				>
+					Select deck
+				</LinkButton>
 			</View>
 		</>
 	);
@@ -389,7 +404,7 @@ const styles = StyleSheet.create({
 	deckBoxMiddleStyle: {
 		flexDirection: 'row',
 		justifyContent: 'center',
-		marginTop: -22,
+		marginTop: -24,
 	},
 	deckBoxBorderLeftStyle: {
 		flex: 22,
@@ -408,8 +423,8 @@ const styles = StyleSheet.create({
 		borderWidth: 2,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
-		margin: 16,
-		marginTop: 12,
+		margin: 12,
+		marginTop: 6,
 	},
 	deckBoxContentStyle: {
 		display: 'flex',
@@ -417,8 +432,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		flex: 1,
 		padding: 8,
-		margin: 8,
-		gap: 4,
+		margin: 4,
+		gap: 6,
 	},
 	deckBoxMetaContainerStyle: {
 		justifyContent: 'center',
@@ -426,7 +441,7 @@ const styles = StyleSheet.create({
 		gap: 4,
 	},
 	deckBoxMetaStyle: {
-		paddingTop: 16,
+		paddingTop: 20,
 		paddingHorizontal: 32,
 		paddingBottom: 8,
 		justifyContent: 'center',
@@ -438,7 +453,7 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		color: colors.light.goldenBorder,
 		fontFamily: 'azeret-mono-600',
-		fontSize: 14,
+		fontSize: 12,
 	},
 	deckBoxMetaTextStyle: {
 		flex: 1,
@@ -449,9 +464,9 @@ const styles = StyleSheet.create({
 	},
 	separatorContainerStyle: {
 		position: 'relative',
-		borderWidth: 1,
+		borderTopWidth: 1,
 		borderColor: colors.light.goldenBorder,
-		marginVertical: 8,
+		marginVertical: 4,
 		width: '50%',
 	},
 	separatorBallStyle: {
@@ -465,6 +480,7 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.light.goldenBorder,
 	},
 	deckTitleStyle: {
+		marginTop: 2,
 		fontFamily: 'lexend-600',
 		fontSize: 24,
 		textAlign: 'center',
@@ -497,7 +513,7 @@ const styles = StyleSheet.create({
 		borderTopWidth: 2,
 		paddingVertical: 16,
 		borderColor: colors.light.goldenBorder,
-		marginTop: -8,
+		marginTop: -12,
 	},
 	infoColStyle: {
 		display: 'flex',
@@ -510,5 +526,13 @@ const styles = StyleSheet.create({
 	gridSeparator: {
 		borderRightWidth: 2,
 		borderColor: colors.light.goldenBorder,
+	},
+	deckInfoText: {
+		fontSize: 14,
+		fontFamily: 'lexend-400',
+	},
+	selectDeckButtonContainerStyle: {
+		marginHorizontal: 8,
+		marginBottom: 16,
 	},
 });
