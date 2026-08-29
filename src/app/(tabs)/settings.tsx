@@ -1,10 +1,12 @@
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useUserProgress } from '../../db/useUserProgress';
 import colors from '../colors';
 import { resetDB } from '../../db/interface';
 
 export default function Settings() {
+	const { reloadProgress } = useUserProgress();
 	const { container, debugSection, disabledPressable, heading, pressable, resetPressable, text } =
 		styles;
 
@@ -22,6 +24,7 @@ export default function Settings() {
 		try {
 			await impactAsync(ImpactFeedbackStyle.Heavy);
 			await resetDB();
+			await reloadProgress();
 
 			Alert.alert('DB reset', 'The local database has been reset.');
 		} catch (error) {
