@@ -40,7 +40,7 @@ export interface CardDeck extends Progression {
 	wordIds: string[];
 	words: Word[];
 	wordChoices: DeckWordChoice[];
-	place?: string;
+	place: string;
 	colors: DeckColors;
 	story?: StorySegment[];
 }
