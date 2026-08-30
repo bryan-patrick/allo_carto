@@ -59,6 +59,8 @@ export default function DeckBoxModal({
 		modalTextRulesStyle,
 		modalTextRuleStyle,
 		modalText,
+		unseenWordContainerStyle,
+		unseenWordQuestionStyle,
 		titleContainerStyle,
 		titleStyle,
 		placeContainerStyle,
@@ -222,10 +224,12 @@ export default function DeckBoxModal({
 											const key = `${index}-${wordId ?? text}`;
 											const spaceMaybeButNotAlways = after ?? ' ';
 											const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
+											const isUnseen = progress === 'unseen';
 											const progressColor = colors.wordProgress[progress];
 
 											const wordStyle: any = {
 												color: progressColor,
+												fontFamily: 'lexend-400',
 												lineHeight: 24,
 												fontSize: 16,
 												textDecorationLine: 'underline',
@@ -236,6 +240,7 @@ export default function DeckBoxModal({
 											switch (progress) {
 												case 'unseen':
 													wordStyle.color = 'transparent';
+													wordStyle.opacity = 0.5;
 													wordStyle.textDecorationColor = colors.light.goldenBorder;
 													break;
 											}
@@ -245,7 +250,17 @@ export default function DeckBoxModal({
 													key={key}
 													style={modalText}
 												>
-													<Text style={wordStyle}>{text}</Text>
+													{isUnseen ?
+														<View style={unseenWordContainerStyle}>
+															<Text style={wordStyle}>{text}</Text>
+															<Text
+																accessible={false}
+																style={unseenWordQuestionStyle}
+															>
+																?
+															</Text>
+														</View>
+													:	<Text style={wordStyle}>{text}</Text>}
 													{spaceMaybeButNotAlways}
 												</Text>
 											);
@@ -385,10 +400,10 @@ const styles = StyleSheet.create({
 	modalTextContentStyle: {},
 	modalTextRulesStyle: {
 		position: 'absolute',
-		top: 8,
+		top: 0,
 		left: 0,
 		right: 0,
-		bottom: 8,
+		bottom: 0,
 	},
 	modalTextRuleStyle: {
 		position: 'absolute',
@@ -417,6 +432,22 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 14,
+	},
+	unseenWordContainerStyle: {
+		position: 'relative',
+		flexDirection: 'row',
+	},
+	unseenWordQuestionStyle: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		color: colors.wordProgress.new,
+		fontFamily: 'lexend-600',
+		fontSize: 12,
+		lineHeight: 24,
+		textAlign: 'center',
+		opacity: 0,
 	},
 	modalFooterStyle: {
 		paddingVertical: 16,

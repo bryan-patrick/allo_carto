@@ -46,10 +46,10 @@ const colors = {
 	wordProgress: {
 		unseen: '#556B6D',
 		new: '#7D6240',
-		learning: '#85293A',
-		familiar: '#5C486B',
+		learning: '#98163B',
+		familiar: '#734596',
 		known: '#1A1A1A',
-		mastered: '#1B4E55',
+		mastered: '#006C7A',
 	},
 	rarity: {
 		Common: '#7BADA6',
