@@ -4,6 +4,7 @@ export const DeckDawnAtTheDropOff: CardDeck = {
 	id: 'deck__dawn_at_the_drop_off',
 	title: 'Dawn at the Drop Off',
 	description: 'The start of our journey. Cat included.',
+	place: 'Aéroport Oiseau',
 	CEFR: ['A1', 'A2'],
 	words: [],
 	wordChoices: [],
@@ -17,7 +18,7 @@ export const DeckDawnAtTheDropOff: CardDeck = {
 			secondary: '#ffffff',
 		},
 	},
-	story: [
+	passage: [
 		{ text: 'Je', wordId: 'word_pronoun_je' },
 		{ text: 'me', wordId: 'word_pronoun_me' },
 		{ text: 'suis', wordId: 'word_auxiliary_suis' },

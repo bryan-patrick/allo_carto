@@ -1,5 +1,5 @@
 import type { CardDeck, Word } from '../../components/CardDeck/cardDeckTypes';
-import { getDeckRankSelectionWeight } from '../../util/deckRankSelection';
+import { getDeckWordProgressSelectionWeight } from '../../util/deckWordProgressSelection';
 import wordRaffle from '../../util/wordRaffle';
 import { getDB } from '../connection';
 import type { WordRow } from '../types';
@@ -15,7 +15,7 @@ interface DeckWordRow extends WordRow {
 	userSeenCount: number;
 }
 
-function parseWordRow(row: DeckWordRow): { seenCount: number; word: Word } {
+function parseWordRow(row: DeckWordRow): Word {
 	const { englishWords, isVulgar, userCorrectCount, userSeenCount, ...wordFields } = row;
 
 	/**
@@ -24,13 +24,11 @@ function parseWordRow(row: DeckWordRow): { seenCount: number; word: Word } {
 	 * stored with a numeric value instead of a boolean.
 	 */
 	return {
+		...wordFields,
+		englishWords: JSON.parse(englishWords),
+		isVulgar: Boolean(isVulgar),
+		correctCount: userCorrectCount ?? 0,
 		seenCount: userSeenCount ?? 0,
-		word: {
-			...wordFields,
-			englishWords: JSON.parse(englishWords),
-			isVulgar: Boolean(isVulgar),
-			correctCount: userCorrectCount ?? 0,
-		},
 	};
 }
 
@@ -88,20 +86,16 @@ export default async function getDeck({
 			...deck.wordIds,
 		);
 
-		const parsedRows = rows?.map(parseWordRow) ?? [];
-		const words = parsedRows.map(({ word }) => word);
-		const seenCountByWordId = new Map(
-			parsedRows.map(({ seenCount, word }) => [word.id, seenCount]),
-		);
+		const words = rows?.map(parseWordRow) ?? [];
 
 		/**
 		 * Draw the cards.
-		 * Rank adds a slight bias and rarity still affects the chance.
+		 * Word progress adds a slight bias and rarity still affects the chance.
 		 */
 		const selectedWords = wordRaffle(dedupeByLemma(words), amount, word => {
-			return getDeckRankSelectionWeight({
+			return getDeckWordProgressSelectionWeight({
 				correctCount: word.correctCount,
-				seenCount: seenCountByWordId.get(word.id) ?? 0,
+				seenCount: word.seenCount ?? 0,
 			});
 		});
 

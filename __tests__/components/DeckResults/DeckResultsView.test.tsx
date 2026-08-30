@@ -1,4 +1,4 @@
-import { DeckToTheGate } from '@/data/french/decks';
+import { DeckDawnAtTheDropOff } from '@/data/french/decks';
 import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { makeMockCardDeckState } from '@/src/components/CardDeck/mockCardDeck';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
@@ -37,8 +37,6 @@ jest.mock('@expo/vector-icons/MaterialIcons', () => {
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseLinkProps = jest.mocked(useLinkProps);
 const mockRouterDismissTo = jest.mocked(router.dismissTo);
-const testingImage = { uri: 'testing-deck-image.jpg' };
-
 describe('<DeckResultsView />', () => {
 	beforeEach(() => {
 		mockRouterDismissTo.mockClear();
@@ -64,8 +62,7 @@ describe('<DeckResultsView />', () => {
 			},
 		];
 		const cardDeck = {
-			...DeckToTheGate,
-			image: testingImage,
+			...DeckDawnAtTheDropOff,
 			words,
 		};
 
@@ -85,7 +82,7 @@ describe('<DeckResultsView />', () => {
 	test('renders the deck details and correct and incorrect words', async () => {
 		const { getByText, getAllByText } = await render(<DeckResultsView />);
 
-		getAllByText(DeckToTheGate.title);
+		getAllByText(DeckDawnAtTheDropOff.title);
 
 		getByText('Correct');
 		getByText('cafe');

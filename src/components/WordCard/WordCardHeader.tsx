@@ -2,7 +2,7 @@ import colors from '@/src/app/colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View } from 'react-native';
 import { useCardDeck } from '../CardDeck/useCardDeck';
-import WordRank from '../WordRank';
+import WordProgress from '../WordProgress';
 
 /**
  * WordCardHeader Component
@@ -44,7 +44,7 @@ export default function WordCardHeader() {
 			>
 				<Text style={rarityTextStyle}>{rarity}</Text>
 			</LinearGradient>
-			<WordRank />
+			<WordProgress />
 		</View>
 	);
 }
