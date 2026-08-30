@@ -26,7 +26,7 @@ export interface DeckWordChoice {
 	partOfSpeech?: string;
 }
 
-export interface StorySegment {
+export interface PassageSegment {
 	text: string;
 	wordId?: string;
 	after?: string;
@@ -40,9 +40,9 @@ export interface CardDeck extends Progression {
 	wordIds: string[];
 	words: Word[];
 	wordChoices: DeckWordChoice[];
-	place?: string;
+	place: string;
 	colors: DeckColors;
-	story?: StorySegment[];
+	passage?: PassageSegment[];
 }
 
 /**
@@ -68,6 +68,7 @@ export interface Word {
 	gender?: 'Feminine' | 'Masculine';
 	partOfSpeech?: string;
 	correctCount: number;
+	seenCount?: number;
 	rarity?: CardRarity;
 }
 
@@ -79,4 +80,5 @@ export const initialWordState: Word = {
 	isVulgar: false,
 	CEFR: 'A1',
 	correctCount: 0,
+	seenCount: 0,
 };

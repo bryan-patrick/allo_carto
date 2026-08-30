@@ -1,9 +1,9 @@
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { getCompletionPercentage } from '@/src/util/progression';
-import { getWordRankKeyFromCounts } from '@/src/util/wordRanks';
+import { getWordProgressKeyFromCounts } from '@/src/util/wordProgress';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { getDB } from '../connection';
-import getDeckRankCounts from './getDeckRankCounts';
+import getDeckWordProgressCounts from './getDeckWordProgressCounts';
 import { incrementCorrectCount } from './incrementCorrectCount';
 import { incrementSeenCount } from './incrementSeenCount';
 import updateUserProgress from './updateUserProgress';
@@ -33,14 +33,14 @@ async function updateUserProgressTableItems({
 		 * Recalculate this chapter, place, or deck percentage
 		 * using the user's word counts in the database
 		 */
-		const rankCounts = await getDeckRankCounts({
+		const wordProgressCounts = await getDeckWordProgressCounts({
 			database,
 			userId,
 			wordIds: atlasItem.wordIds,
 		});
 
 		const completionPercentage = getCompletionPercentage({
-			rankCounts,
+			wordProgressCounts,
 			wordCount: atlasItem.wordIds.length,
 		});
 
@@ -89,7 +89,7 @@ export async function writeCorrectAnswer({
 		);
 		const previousCorrectCount = previousProgress?.correctCount ?? 0;
 		const previousSeenCount = previousProgress?.seenCount ?? 0;
-		const previousRank = getWordRankKeyFromCounts({
+		const previousWordProgress = getWordProgressKeyFromCounts({
 			correctCount: previousCorrectCount,
 			seenCount: previousSeenCount,
 		});
@@ -99,16 +99,16 @@ export async function writeCorrectAnswer({
 		 */
 		await incrementCorrectCount(userId, wordId, database);
 
-		const nextRank = getWordRankKeyFromCounts({
+		const nextWordProgress = getWordProgressKeyFromCounts({
 			correctCount: previousCorrectCount + 1,
 			seenCount: previousSeenCount,
 		});
 
 		/**
-		 * A changed rank changes the percentages
+		 * A changed progress stage changes the percentages
 		 * stored in the userProgress table
 		 */
-		if (previousRank !== nextRank) {
+		if (previousWordProgress !== nextWordProgress) {
 			await updateUserProgressTableItems({
 				database,
 				userId,
@@ -135,7 +135,7 @@ export async function writeWordSeen({
 	 */
 	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
 		/**
-		 * Get the word's rank before the seenCount changes
+		 * Get the word's progress before the seenCount changes
 		 */
 		const previousProgress = await database.getFirstAsync<{
 			correctCount: number;
@@ -149,22 +149,22 @@ export async function writeWordSeen({
 		);
 		const previousCorrectCount = previousProgress?.correctCount ?? 0;
 		const previousSeenCount = previousProgress?.seenCount ?? 0;
-		const previousRank = getWordRankKeyFromCounts({
+		const previousWordProgress = getWordProgressKeyFromCounts({
 			correctCount: previousCorrectCount,
 			seenCount: previousSeenCount,
 		});
 
 		await incrementSeenCount(userId, wordId, database);
-		const nextRank = getWordRankKeyFromCounts({
+		const nextWordProgress = getWordProgressKeyFromCounts({
 			correctCount: previousCorrectCount,
 			seenCount: previousSeenCount + 1,
 		});
 
 		/**
-		 * A changed rank changes the percentages
+		 * A changed progress stage changes the percentages
 		 * stored in the userProgress table
 		 */
-		if (previousRank !== nextRank) {
+		if (previousWordProgress !== nextWordProgress) {
 			await updateUserProgressTableItems({
 				database,
 				userId,

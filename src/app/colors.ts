@@ -21,14 +21,6 @@ const colors = {
 			C1: '#3B251C',
 			C2: '#2D1A1B',
 		},
-		rank: {
-			unseen: '#1d2427',
-			fnew: '#2b2b2b',
-			bronze: '#503D2B',
-			silver: '#303946',
-			gold: '#322A20',
-			diamond: '#2B4469',
-		},
 	},
 	light: {
 		primary: '#7BADA6',
@@ -50,14 +42,14 @@ const colors = {
 			C1: '#FFB18E',
 			C2: '#FF8FA2',
 		},
-		rank: {
-			unseen: '#7f8c8d',
-			fnew: '#b7b7b7',
-			bronze: '#CA9E86',
-			silver: '#b2c9e9',
-			gold: '#ffd196',
-			diamond: '#CBE0FF',
-		},
+	},
+	wordProgress: {
+		unseen: '#556B6D',
+		new: '#7D6240',
+		learning: '#98163B',
+		familiar: '#734596',
+		known: '#1A1A1A',
+		mastered: '#006C7A',
 	},
 	rarity: {
 		Common: '#7BADA6',

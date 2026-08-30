@@ -27,7 +27,11 @@ export default function CardDeckSelect() {
 	} = styles;
 
 	const place = findPlaceById(placeId);
-	const decks = place?.decks || [];
+	const decks =
+		place?.decks.map(deck => ({
+			...deck,
+			place: place.name,
+		})) ?? [];
 
 	/**
 	 * Check a deck's lock
