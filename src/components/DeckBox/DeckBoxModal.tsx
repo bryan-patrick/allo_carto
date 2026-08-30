@@ -285,6 +285,7 @@ export default function DeckBoxModal({
 											]}
 										/>
 										<Text style={progressLegendTextStyle}>{name}</Text>
+										<Text style={progressLegendTextStyle}>({wordProgressCounts[key]})</Text>
 									</View>
 								))}
 							</View>
@@ -498,6 +499,7 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.goldenBorder,
 		backgroundColor: '#E8DED5',
 		gap: 4,
+		marginTop: -1,
 	},
 	hidePassageButtonText: {
 		fontSize: 14,
