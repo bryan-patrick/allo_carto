@@ -1,9 +1,20 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Alert, ImageBackground, Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import {
+	Alert,
+	Animated,
+	ImageBackground,
+	Modal,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+} from 'react-native';
 import colors from '../../app/colors';
-import type { DeckRankCounts } from '../../db/queries/getDeckRankCounts';
+import type { DeckWordProgressCounts } from '../../db/queries/getDeckWordProgressCounts';
 import { getDeckCompletionPercent } from '../../util/deckCompletion';
-import type { WordProgressKey } from '../../util/wordRanks';
+import { type WordProgressKey, visibleWordProgressDefinitions } from '../../util/wordProgress';
 import type { CardDeck } from '../CardDeck/cardDeckTypes';
 
 const modalBackground = require('@/src/app/assets/images/decks/paragraph-background.jpg');
@@ -14,9 +25,14 @@ const modalBackground = require('@/src/app/assets/images/decks/paragraph-backgro
 interface DeckBoxModalProps {
 	deck: CardDeck;
 	modalVisible: boolean;
-	rankCounts: DeckRankCounts;
 	setModalVisible: (modalVisible: boolean) => void;
+	wordProgressCounts: DeckWordProgressCounts;
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
+}
+
+interface StoryLineMetric {
+	y: number;
+	height: number;
 }
 
 /**
@@ -25,8 +41,8 @@ interface DeckBoxModalProps {
 export default function DeckBoxModal({
 	deck,
 	modalVisible,
-	rankCounts,
 	setModalVisible,
+	wordProgressCounts,
 	wordProgressKeyByWordId,
 }: DeckBoxModalProps) {
 	/**
@@ -38,25 +54,63 @@ export default function DeckBoxModal({
 		modalInner,
 		modalScrollView,
 		headerStyle,
+		modalTextContainerStyle,
 		modalTextContentStyle,
+		modalTextRulesStyle,
+		modalTextRuleStyle,
 		modalText,
 		titleContainerStyle,
 		titleStyle,
 		placeContainerStyle,
 		placeTextStyle,
+		progressMetaStyle,
+		progressMetaLabelStyle,
+		progressBarContainerStyle,
+		progressBarStyle,
+		progressPercentStyle,
+		wordsSeenStyle,
+		modalFooterStyle,
+		progressTitleStyle,
+		progressLegendStyle,
+		progressLegendItemStyle,
+		progressLegendDotStyle,
+		progressLegendTextStyle,
+		hideParagraphButton,
+		hideParagraphButtonText,
 	} = styles;
+	const [storyLineMetrics, setStoryLineMetrics] = useState<StoryLineMetric[]>([]);
+	const [hideParagraphChevronTranslateY] = useState(() => new Animated.Value(0));
+
+	const totalWordCount = deck.wordIds.length;
+	const wordsSeenCount =
+		wordProgressCounts.new +
+		wordProgressCounts.learning +
+		wordProgressCounts.familiar +
+		wordProgressCounts.known +
+		wordProgressCounts.mastered;
+	const deckCompletionPercent = getDeckCompletionPercent({
+		deckWordCount: totalWordCount,
+		wordProgressCounts,
+	});
 
 	/**
-	 * Header deck completion percentage
+	 * Hide paragraph button animation handlers
 	 */
-	const wordsSeenCount =
-		rankCounts.fnew + rankCounts.bronze + rankCounts.silver + rankCounts.gold + rankCounts.diamond;
-	const deckCompletionPercent = Math.floor(
-		getDeckCompletionPercent({
-			deckWordCount: deck.wordIds.length,
-			rankCounts,
-		}),
-	);
+	function handleHideParagraphButtonPressIn() {
+		Animated.timing(hideParagraphChevronTranslateY, {
+			toValue: 3,
+			duration: 90,
+			useNativeDriver: true,
+		}).start();
+	}
+
+	function handleHideParagraphButtonPressOut() {
+		Animated.timing(hideParagraphChevronTranslateY, {
+			toValue: 0,
+			duration: 140,
+			useNativeDriver: true,
+		}).start();
+	}
 
 	/**
 	 * Render the modal
@@ -84,16 +138,42 @@ export default function DeckBoxModal({
 						 * Modal Header
 						 */}
 						<View style={headerStyle}>
-							<View style={titleContainerStyle}>
-								<Text style={[titleStyle, { color: deck.colors.dark.primary }]}>{deck.title}</Text>
-							</View>
 							<View style={placeContainerStyle}>
 								<MaterialIcons
 									color={'#000000'}
-									size={18}
+									size={16}
 									name="place"
 								/>
 								<Text style={placeTextStyle}>{deck.place}</Text>
+							</View>
+							<View style={titleContainerStyle}>
+								<Text style={[titleStyle, { color: deck.colors.dark.primary }]}>{deck.title}</Text>
+							</View>
+							<View
+								style={progressMetaStyle}
+								accessible={true}
+								accessibilityRole="progressbar"
+								accessibilityLabel={`Deck progress ${deckCompletionPercent} percent. ${wordsSeenCount} of ${totalWordCount} words seen.`}
+								accessibilityValue={{ min: 0, max: 100, now: deckCompletionPercent }}
+							>
+								<Text style={progressMetaLabelStyle}>Deck progress</Text>
+								<Text style={[progressPercentStyle, { color: deck.colors.dark.primary }]}>
+									{deckCompletionPercent}%
+								</Text>
+								<View style={progressBarContainerStyle}>
+									<View
+										style={[
+											progressBarStyle,
+											{
+												backgroundColor: deck.colors.dark.primary,
+												width: `${deckCompletionPercent}%`,
+											},
+										]}
+									/>
+								</View>
+								<Text style={wordsSeenStyle}>
+									{wordsSeenCount} / {totalWordCount} words seen
+								</Text>
 							</View>
 						</View>
 
@@ -106,56 +186,115 @@ export default function DeckBoxModal({
 							persistentScrollbar={true}
 							indicatorStyle={'white'}
 						>
-							<Text style={modalTextContentStyle}>
-								{deck.story &&
-									deck.story.map(({ text, wordId, after }, index) => {
-										const key = `${index}-${wordId ?? text}`;
-										const spaceMaybeButNotAlways = after ?? ' ';
-										const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
-										const progressColor =
-											progress === 'unseen' ? colors.dark.text : colors.dark.rank[progress];
+							<View style={modalTextContainerStyle}>
+								<View
+									accessible={false}
+									pointerEvents="none"
+									style={modalTextRulesStyle}
+								>
+									{storyLineMetrics.map(({ y, height }, index) => (
+										<View
+											key={index}
+											style={[modalTextRuleStyle, { top: y + height }]}
+										/>
+									))}
+								</View>
+								<Text
+									style={modalTextContentStyle}
+									onTextLayout={({ nativeEvent }) => {
+										const nextMetrics = nativeEvent.lines.map(({ y, height }) => ({ y, height }));
 
-										const wordStyle: any = {
-											color: progressColor,
-											fontFamily: 'lexend-400',
-											lineHeight: 32,
-											textDecorationLine: 'underline',
-											textDecorationStyle: 'dotted',
-											textDecorationColor: 'transparent',
-										};
+										setStoryLineMetrics(currentMetrics => {
+											const metricsAreUnchanged =
+												currentMetrics.length === nextMetrics.length &&
+												currentMetrics.every(
+													(metric, index) =>
+														metric.y === nextMetrics[index].y &&
+														metric.height === nextMetrics[index].height,
+												);
 
-										switch (progress) {
-											case 'unseen':
-												wordStyle.color = 'transparent';
-												wordStyle.textDecorationColor = colors.light.goldenBorder;
-												break;
-											case 'fnew':
-												wordStyle.opacity = 0.8;
-												break;
-											case 'silver':
-												break;
-											case 'gold':
-												wordStyle.textShadowRadius = 2;
-												break;
-											case 'diamond':
-												wordStyle.textShadowRadius = 8;
-												break;
-										}
+											return metricsAreUnchanged ? currentMetrics : nextMetrics;
+										});
+									}}
+								>
+									{deck.story &&
+										deck.story.map(({ text, wordId, after }, index) => {
+											const key = `${index}-${wordId ?? text}`;
+											const spaceMaybeButNotAlways = after ?? ' ';
+											const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
+											const progressColor = colors.wordProgress[progress];
 
-										return (
-											<Text
-												key={key}
-												style={modalText}
-											>
-												<Text style={wordStyle}>{text}</Text>
-												{spaceMaybeButNotAlways}
-											</Text>
-										);
-									})}
-							</Text>
+											const wordStyle: any = {
+												color: progressColor,
+												lineHeight: 24,
+												fontSize: 16,
+												textDecorationLine: 'underline',
+												textDecorationStyle: 'solid',
+												textDecorationColor: 'transparent',
+											};
+
+											switch (progress) {
+												case 'unseen':
+													wordStyle.color = 'transparent';
+													wordStyle.textDecorationColor = colors.light.goldenBorder;
+													break;
+											}
+
+											return (
+												<Text
+													key={key}
+													style={modalText}
+												>
+													<Text style={wordStyle}>{text}</Text>
+													{spaceMaybeButNotAlways}
+												</Text>
+											);
+										})}
+								</Text>
+							</View>
 						</ScrollView>
+						<View style={modalFooterStyle}>
+							<Text style={[progressTitleStyle, { color: deck.colors.dark.primary }]}>
+								Word Progress Colors
+							</Text>
+							<View style={progressLegendStyle}>
+								{visibleWordProgressDefinitions.map(({ key, name }) => (
+									<View
+										key={key}
+										style={progressLegendItemStyle}
+									>
+										<View
+											style={[
+												progressLegendDotStyle,
+												{ backgroundColor: colors.wordProgress[key] },
+											]}
+										/>
+										<Text style={progressLegendTextStyle}>{name}</Text>
+									</View>
+								))}
+							</View>
+						</View>
 					</View>
 				</ImageBackground>
+				<Pressable
+					accessibilityRole="button"
+					accessibilityLabel="Hide story"
+					onPress={() => setModalVisible(false)}
+					onPressIn={handleHideParagraphButtonPressIn}
+					onPressOut={handleHideParagraphButtonPressOut}
+					style={hideParagraphButton}
+				>
+					<Text style={[hideParagraphButtonText, { color: deck.colors.dark.primary }]}>
+						Hide paragraph
+					</Text>
+					<Animated.View style={{ transform: [{ translateY: hideParagraphChevronTranslateY }] }}>
+						<MaterialIcons
+							name="expand-more"
+							size={20}
+							color={deck.colors.dark.primary}
+						/>
+					</Animated.View>
+				</Pressable>
 			</View>
 		</Modal>
 	);
@@ -180,6 +319,7 @@ const styles = StyleSheet.create({
 	},
 	modalInner: {
 		paddingLeft: 16,
+		paddingHorizontal: 16,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 16,
@@ -199,26 +339,68 @@ const styles = StyleSheet.create({
 	},
 	placeTextStyle: {
 		fontFamily: 'lexend-400',
-		textTransform: 'uppercase',
 		fontSize: 12,
 	},
-	modalTextContentStyle: {
-		padding: 8,
+	progressMetaStyle: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		gap: 8,
+	},
+	progressMetaLabelStyle: {
+		color: colors.dark.text,
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+	},
+	progressBarContainerStyle: {
+		display: 'flex',
+		flexDirection: 'row',
+		flex: 1,
+		minWidth: 48,
+		height: 8,
+		overflow: 'hidden',
+		borderWidth: 1,
+		borderColor: colors.light.border,
+		borderRadius: 4,
+		backgroundColor: '#00000014',
+	},
+	progressBarStyle: {
+		height: '100%',
+		borderRadius: 4,
+	},
+	progressPercentStyle: {
+		fontFamily: 'lexend-600',
+		fontSize: 12,
+	},
+	wordsSeenStyle: {
+		color: colors.dark.text,
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+	},
+	modalTextContainerStyle: {
+		position: 'relative',
+	},
+	modalTextContentStyle: {},
+	modalTextRulesStyle: {
+		position: 'absolute',
+		top: 8,
+		left: 0,
+		right: 0,
+		bottom: 8,
+	},
+	modalTextRuleStyle: {
+		position: 'absolute',
+		left: 0,
+		right: 0,
+		borderBottomWidth: 1,
+		borderColor: '#D7CDC4',
 	},
 	modalScrollView: {
+		paddingHorizontal: 16,
 		borderColor: colors.light.background,
 	},
-	modalTitleStyle: {
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		position: 'relative',
-		paddingTop: 8,
-		borderWidth: 2,
-		borderBottomWidth: 0,
-		borderTopRightRadius: 12,
-		borderTopLeftRadius: 12,
-	},
+	modalTitleStyle: {},
 	modalHeaderTextStyle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
@@ -233,6 +415,60 @@ const styles = StyleSheet.create({
 	modalText: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
-		fontSize: 16,
+		fontSize: 14,
+	},
+	modalFooterStyle: {
+		paddingVertical: 16,
+		paddingHorizontal: 8,
+		gap: 8,
+	},
+	progressTitleStyle: {
+		fontSize: 12,
+		fontFamily: 'lexend-600',
+		textAlign: 'left',
+		color: colors.dark.text,
+	},
+	progressLegendStyle: {
+		display: 'flex',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'space-between',
+		gap: 8,
+	},
+	progressLegendItemStyle: {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
+	progressLegendDotStyle: {
+		width: 10,
+		height: 10,
+		borderRadius: 5,
+	},
+	progressLegendTextStyle: {
+		color: colors.wordProgress.known,
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+	},
+	hideParagraphButton: {
+		display: 'flex',
+		justifyContent: 'center',
+		alignContent: 'center',
+		alignItems: 'center',
+		flexDirection: 'row',
+		borderWidth: 1,
+		borderTopWidth: 0,
+		paddingVertical: 8,
+		paddingHorizontal: 32,
+		borderBottomRightRadius: 16,
+		borderBottomLeftRadius: 16,
+		borderColor: colors.light.goldenBorder,
+		backgroundColor: '#E8DED5',
+		gap: 4,
+	},
+	hideParagraphButtonText: {
+		fontSize: 14,
+		fontFamily: 'lexend-600',
 	},
 });

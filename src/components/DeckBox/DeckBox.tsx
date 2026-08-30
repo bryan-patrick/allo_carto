@@ -2,17 +2,15 @@ import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import LinkButton from '@/src/components/LinkButton';
-import { RankIcon } from '@/src/components/WordRank';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
-import getDeckRankCounts, {
-	emptyDeckRankCounts,
-	type DeckRankCounts,
-} from '@/src/db/queries/getDeckRankCounts';
+import getDeckWordProgressCounts, {
+	emptyDeckWordProgressCounts,
+	type DeckWordProgressCounts,
+} from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import { findAtlasLocationByPlaceId } from '@/src/util/atlasCompletion';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
-import { getCurrentDeckRankDefinition } from '@/src/util/deckRankProgression';
-import type { WordProgressKey } from '@/src/util/wordRanks';
+import type { WordProgressKey } from '@/src/util/wordProgress';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -49,7 +47,9 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	 */
 	const { id: userId } = useUserContext() ?? {};
 	const { cardDeckDispatch } = useCardDeck();
-	const [rankCounts, setRankCounts] = useState<DeckRankCounts>(emptyDeckRankCounts);
+	const [wordProgressCounts, setWordProgressCounts] = useState<DeckWordProgressCounts>(
+		emptyDeckWordProgressCounts,
+	);
 	const [wordProgressKeyByWordId, setWordProgressKeyByWordId] = useState<
 		Record<string, WordProgressKey>
 	>({});
@@ -72,53 +72,36 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	 */
 	const deckCardCount = wordIds.length;
 	const deckCEFRLabel = CEFR.join(' - ');
-	const deckCompletionPercent = Math.floor(
-		getDeckCompletionPercent({
-			deckWordCount: deckCardCount,
-			rankCounts,
-		}),
-	);
-	const currentDeckRank = getCurrentDeckRankDefinition({
+	const deckCompletionPercent = getDeckCompletionPercent({
 		deckWordCount: deckCardCount,
-		rankCounts,
+		wordProgressCounts,
 	});
 	const deckMetadata = {
 		cardCount: deckCardCount,
 		CEFRLabel: deckCEFRLabel,
 		completionPercent: deckCompletionPercent,
-		/**
-		 * TODO: Add the current deck rank and icon to the deck box.
-		 */
-		currentRank: currentDeckRank,
-		currentRankIcon: (
-			<RankIcon
-				color={colors.dark.rank[currentDeckRank.key]}
-				rank={currentDeckRank.key}
-				size={24}
-			/>
-		),
 	};
 
 	/**
 	 * Data loaders
 	 */
-	const loadRankCounts = useCallback(async () => {
+	const loadWordProgressCounts = useCallback(async () => {
 		try {
 			if (!userId) {
-				setRankCounts(emptyDeckRankCounts);
+				setWordProgressCounts(emptyDeckWordProgressCounts);
 				return;
 			}
 
 			const database = await getDB();
-			const counts = await getDeckRankCounts({
+			const counts = await getDeckWordProgressCounts({
 				database,
 				userId,
 				wordIds,
 			});
 
-			setRankCounts(counts);
+			setWordProgressCounts(counts);
 		} catch (error) {
-			console.error('Could not retrieve deck rank counts:', error);
+			console.error('Could not retrieve deck word progress counts:', error);
 		}
 	}, [userId, wordIds]);
 
@@ -147,9 +130,9 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	 */
 	useFocusEffect(
 		useCallback(() => {
-			loadRankCounts();
+			loadWordProgressCounts();
 			loadStoryWordProgress();
-		}, [loadRankCounts, loadStoryWordProgress]),
+		}, [loadWordProgressCounts, loadStoryWordProgress]),
 	);
 
 	/**
@@ -170,7 +153,7 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	 * Refresh story data and show modal
 	 */
 	async function handleShowStory() {
-		await Promise.all([loadRankCounts(), loadStoryWordProgress()]);
+		await Promise.all([loadWordProgressCounts(), loadStoryWordProgress()]);
 
 		setIsStoryModalVisible(true);
 	}
@@ -232,8 +215,8 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 			<DeckBoxModal
 				deck={deck}
 				modalVisible={isStoryModalVisible}
-				rankCounts={rankCounts}
 				setModalVisible={setIsStoryModalVisible}
+				wordProgressCounts={wordProgressCounts}
 				wordProgressKeyByWordId={wordProgressKeyByWordId}
 			/>
 			<View style={deckBoxContainerStyle}>

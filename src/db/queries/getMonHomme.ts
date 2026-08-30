@@ -1,6 +1,6 @@
-import { WordProgressKey } from '@/src/util/wordRanks';
+import { WordProgressKey } from '@/src/util/wordProgress';
 import { getDB } from '../connection';
-import { DeckRankCounts } from './getDeckRankCounts';
+import { DeckWordProgressCounts } from './getDeckWordProgressCounts';
 
 /**
  * Typing
@@ -15,7 +15,7 @@ export interface StoryProgress {
 export interface DeckProgress {
 	deckId: string;
 	completionPercent: number;
-	rankCounts: DeckRankCounts;
+	wordProgressCounts: DeckWordProgressCounts;
 	story?: StoryProgress;
 	state: 'available' | 'complete' | 'locked';
 }

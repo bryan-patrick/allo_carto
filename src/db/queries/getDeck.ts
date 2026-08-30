@@ -1,5 +1,5 @@
 import type { CardDeck, Word } from '../../components/CardDeck/cardDeckTypes';
-import { getDeckRankSelectionWeight } from '../../util/deckRankSelection';
+import { getDeckWordProgressSelectionWeight } from '../../util/deckWordProgressSelection';
 import wordRaffle from '../../util/wordRaffle';
 import { getDB } from '../connection';
 import type { WordRow } from '../types';
@@ -96,10 +96,10 @@ export default async function getDeck({
 
 		/**
 		 * Draw the cards.
-		 * Rank adds a slight bias and rarity still affects the chance.
+		 * Word progress adds a slight bias and rarity still affects the chance.
 		 */
 		const selectedWords = wordRaffle(dedupeByLemma(words), amount, word => {
-			return getDeckRankSelectionWeight({
+			return getDeckWordProgressSelectionWeight({
 				correctCount: word.correctCount,
 				seenCount: seenCountByWordId.get(word.id) ?? 0,
 			});

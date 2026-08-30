@@ -1,4 +1,4 @@
-import type { DeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
+import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 
 /**
  * Typing
@@ -29,22 +29,26 @@ export type ProgressById = Record<string, UserProgressRow>;
  */
 export function getCompletionPercentage({
 	wordCount,
-	rankCounts,
+	wordProgressCounts,
 }: {
 	wordCount: number;
-	rankCounts: Pick<DeckRankCounts, 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond'>;
+	wordProgressCounts: Pick<
+		DeckWordProgressCounts,
+		'new' | 'learning' | 'familiar' | 'known' | 'mastered'
+	>;
 }): number {
 	if (wordCount === 0) return 0;
 
 	/**
-	 * Each rank is worth more points
+	 * Each progress stage is worth more points.
+	 * These values preserve the existing completion and unlock behavior.
 	 */
 	const earnedPoints =
-		rankCounts.fnew * 0.5 +
-		rankCounts.bronze +
-		rankCounts.silver * 2 +
-		rankCounts.gold * 3 +
-		rankCounts.diamond * 4;
+		wordProgressCounts.new * 0.5 +
+		wordProgressCounts.learning +
+		wordProgressCounts.familiar * 2 +
+		wordProgressCounts.known * 3 +
+		wordProgressCounts.mastered * 4;
 
 	const possiblePoints = wordCount * 4;
 

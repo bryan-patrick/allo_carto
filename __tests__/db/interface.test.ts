@@ -18,11 +18,11 @@ describe('getWordProgressById', () => {
 		mockGetAllAsync.mockReset();
 	});
 
-	test('loads word ranks and queries repeated story words once', async () => {
+	test('loads word progress and queries repeated story words once', async () => {
 		mockGetAllAsync.mockResolvedValueOnce([
 			{ wordId: 'word_new', correctCount: 0, seenCount: 1 },
-			{ wordId: 'word_bronze', correctCount: 3, seenCount: 0 },
-			{ wordId: 'word_silver', correctCount: 7, seenCount: 1 },
+			{ wordId: 'word_learning', correctCount: 3, seenCount: 0 },
+			{ wordId: 'word_familiar', correctCount: 7, seenCount: 1 },
 		]);
 
 		const progressByWordId = await getWordProgressById({
@@ -30,9 +30,9 @@ describe('getWordProgressById', () => {
 			story: [
 				{ text: 'New', wordId: 'word_new' },
 				{ text: 'Unseen', wordId: 'word_unseen' },
-				{ text: 'Bronze', wordId: 'word_bronze' },
-				{ text: 'Silver', wordId: 'word_silver' },
-				{ text: 'Bronze again', wordId: 'word_bronze' },
+				{ text: 'Learning', wordId: 'word_learning' },
+				{ text: 'Familiar', wordId: 'word_familiar' },
+				{ text: 'Learning again', wordId: 'word_learning' },
 				{ text: '.' },
 			],
 		});
@@ -40,12 +40,12 @@ describe('getWordProgressById', () => {
 		const [, userId, ...wordIds] = mockGetAllAsync.mock.calls[0];
 
 		expect(userId).toBe('user_one');
-		expect(wordIds).toEqual(['word_new', 'word_unseen', 'word_bronze', 'word_silver']);
+		expect(wordIds).toEqual(['word_new', 'word_unseen', 'word_learning', 'word_familiar']);
 		expect(progressByWordId).toEqual({
-			word_new: 'fnew',
+			word_new: 'new',
 			word_unseen: 'unseen',
-			word_bronze: 'bronze',
-			word_silver: 'silver',
+			word_learning: 'learning',
+			word_familiar: 'familiar',
 		});
 	});
 });

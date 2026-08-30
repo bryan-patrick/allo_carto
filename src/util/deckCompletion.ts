@@ -1,4 +1,4 @@
-import type { DeckRankCounts } from '@/src/db/queries/getDeckRankCounts';
+import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { getCompletionPercentage } from './progression';
 
 /**
@@ -6,13 +6,18 @@ import { getCompletionPercentage } from './progression';
  */
 export function getDeckCompletionPercent({
 	deckWordCount,
-	rankCounts,
+	wordProgressCounts,
 }: {
 	deckWordCount: number;
-	rankCounts: Pick<DeckRankCounts, 'fnew' | 'bronze' | 'silver' | 'gold' | 'diamond'>;
+	wordProgressCounts: Pick<
+		DeckWordProgressCounts,
+		'new' | 'learning' | 'familiar' | 'known' | 'mastered'
+	>;
 }): number {
-	return getCompletionPercentage({
+	const completionPercentage = getCompletionPercentage({
 		wordCount: deckWordCount,
-		rankCounts,
+		wordProgressCounts,
 	});
+
+	return Math.min(100, Math.max(0, Math.floor(completionPercentage)));
 }
