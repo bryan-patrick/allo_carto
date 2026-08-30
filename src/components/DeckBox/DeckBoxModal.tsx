@@ -14,7 +14,7 @@ import {
 import colors from '../../app/colors';
 import type { DeckWordProgressCounts } from '../../db/queries/getDeckWordProgressCounts';
 import { getDeckCompletionPercent } from '../../util/deckCompletion';
-import { type WordProgressKey, visibleWordProgressDefinitions } from '../../util/wordProgress';
+import { type WordProgressKey, wordProgressDefinitions } from '../../util/wordProgress';
 import type { CardDeck } from '../CardDeck/cardDeckTypes';
 
 const modalBackground = require('@/src/app/assets/images/decks/paragraph-background.jpg');
@@ -33,6 +33,23 @@ interface DeckBoxModalProps {
 interface PassageLineMetric {
 	y: number;
 	height: number;
+}
+
+function getPassageWordOpacity(progress: WordProgressKey, filter: WordProgressKey | null): number {
+	if (!filter) return progress === 'unseen' ? 0.5 : 1;
+
+	return progress === filter ? 1 : 0.2;
+}
+
+function createWordProgressOpacityValues(): Record<WordProgressKey, Animated.Value> {
+	return {
+		unseen: new Animated.Value(getPassageWordOpacity('unseen', null)),
+		new: new Animated.Value(getPassageWordOpacity('new', null)),
+		learning: new Animated.Value(getPassageWordOpacity('learning', null)),
+		familiar: new Animated.Value(getPassageWordOpacity('familiar', null)),
+		known: new Animated.Value(getPassageWordOpacity('known', null)),
+		mastered: new Animated.Value(getPassageWordOpacity('mastered', null)),
+	};
 }
 
 /**
@@ -81,6 +98,11 @@ export default function DeckBoxModal({
 		hidePassageButtonText,
 	} = styles;
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
+	const [activeWordProgressFilter, setActiveWordProgressFilter] = useState<WordProgressKey | null>(
+		null,
+	);
+	const [wordProgressOpacityByKey] = useState(createWordProgressOpacityValues);
+	const [unseenQuestionOpacity] = useState(() => new Animated.Value(0));
 	const [hidePassageChevronTranslateY] = useState(() => new Animated.Value(0));
 
 	const totalWordCount = deck.wordIds.length;
@@ -112,6 +134,29 @@ export default function DeckBoxModal({
 			duration: 140,
 			useNativeDriver: true,
 		}).start();
+	}
+
+	function handleWordProgressFilterPress(progress: WordProgressKey) {
+		const nextProgress = activeWordProgressFilter === progress ? null : progress;
+
+		setActiveWordProgressFilter(nextProgress);
+		Animated.parallel(
+			[
+				...wordProgressDefinitions.map(({ key }) =>
+					Animated.timing(wordProgressOpacityByKey[key], {
+						toValue: getPassageWordOpacity(key, nextProgress),
+						duration: 180,
+						useNativeDriver: true,
+					}),
+				),
+				Animated.timing(unseenQuestionOpacity, {
+					toValue: nextProgress === 'unseen' ? 1 : 0,
+					duration: 180,
+					useNativeDriver: true,
+				}),
+			],
+			{ stopTogether: false },
+		).start();
 	}
 
 	/**
@@ -232,15 +277,12 @@ export default function DeckBoxModal({
 												fontFamily: 'lexend-400',
 												lineHeight: 24,
 												fontSize: 16,
-												textDecorationLine: 'underline',
-												textDecorationStyle: 'solid',
-												textDecorationColor: 'transparent',
+												opacity: wordProgressOpacityByKey[progress],
 											};
 
 											switch (progress) {
 												case 'unseen':
 													wordStyle.color = 'transparent';
-													wordStyle.opacity = 0.5;
 													wordStyle.textDecorationColor = colors.light.goldenBorder;
 													break;
 											}
@@ -252,15 +294,21 @@ export default function DeckBoxModal({
 												>
 													{isUnseen ?
 														<View style={unseenWordContainerStyle}>
-															<Text style={wordStyle}>{text}</Text>
-															<Text
+															<Animated.Text style={wordStyle}>{text}</Animated.Text>
+															<Animated.Text
 																accessible={false}
-																style={unseenWordQuestionStyle}
+																style={[
+																	unseenWordQuestionStyle,
+																	{
+																		color: progressColor,
+																		opacity: unseenQuestionOpacity,
+																	},
+																]}
 															>
 																?
-															</Text>
+															</Animated.Text>
 														</View>
-													:	<Text style={wordStyle}>{text}</Text>}
+													:	<Animated.Text style={wordStyle}>{text}</Animated.Text>}
 													{spaceMaybeButNotAlways}
 												</Text>
 											);
@@ -273,21 +321,29 @@ export default function DeckBoxModal({
 								Word Progress Colors
 							</Text>
 							<View style={progressLegendStyle}>
-								{visibleWordProgressDefinitions.map(({ key, name }) => (
-									<View
-										key={key}
-										style={progressLegendItemStyle}
-									>
-										<View
+								{wordProgressDefinitions.map(({ key, name }) => {
+									const progressColor = colors.wordProgress[key];
+									const isActive = activeWordProgressFilter === key;
+									const wordCount = wordProgressCounts[key];
+
+									return (
+										<Pressable
+											key={key}
+											accessibilityRole="radio"
+											accessibilityLabel={`${name}, ${wordCount} ${wordCount === 1 ? 'word' : 'words'}`}
+											accessibilityState={{ checked: isActive }}
+											onPress={() => handleWordProgressFilterPress(key)}
 											style={[
-												progressLegendDotStyle,
-												{ backgroundColor: colors.wordProgress[key] },
+												progressLegendItemStyle,
+												isActive && { backgroundColor: `${progressColor}33` },
 											]}
-										/>
-										<Text style={progressLegendTextStyle}>{name}</Text>
-										<Text style={progressLegendTextStyle}>({wordProgressCounts[key]})</Text>
-									</View>
-								))}
+										>
+											<View style={[progressLegendDotStyle, { backgroundColor: progressColor }]} />
+											<Text style={progressLegendTextStyle}>{name}</Text>
+											<Text style={progressLegendTextStyle}>({wordCount})</Text>
+										</Pressable>
+									);
+								})}
 							</View>
 						</View>
 					</View>
@@ -356,7 +412,7 @@ const styles = StyleSheet.create({
 	},
 	placeTextStyle: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 14,
 	},
 	progressMetaStyle: {
 		display: 'flex',
@@ -368,7 +424,7 @@ const styles = StyleSheet.create({
 	progressMetaLabelStyle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 14,
 	},
 	progressBarContainerStyle: {
 		display: 'flex',
@@ -388,12 +444,12 @@ const styles = StyleSheet.create({
 	},
 	progressPercentStyle: {
 		fontFamily: 'lexend-600',
-		fontSize: 12,
+		fontSize: 14,
 	},
 	wordsSeenStyle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 14,
 	},
 	modalTextContainerStyle: {
 		position: 'relative',
@@ -445,10 +501,9 @@ const styles = StyleSheet.create({
 		right: 0,
 		color: colors.wordProgress.new,
 		fontFamily: 'lexend-600',
-		fontSize: 12,
+		fontSize: 14,
 		lineHeight: 24,
 		textAlign: 'center',
-		opacity: 0,
 	},
 	modalFooterStyle: {
 		paddingVertical: 16,
@@ -456,7 +511,7 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	progressTitleStyle: {
-		fontSize: 12,
+		fontSize: 14,
 		fontFamily: 'lexend-600',
 		textAlign: 'left',
 		color: colors.dark.text,
@@ -466,13 +521,16 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		justifyContent: 'space-between',
-		gap: 8,
+		gap: 4,
 	},
 	progressLegendItemStyle: {
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 4,
+		paddingHorizontal: 6,
+		paddingVertical: 4,
+		borderRadius: 6,
 	},
 	progressLegendDotStyle: {
 		width: 10,
@@ -482,7 +540,7 @@ const styles = StyleSheet.create({
 	progressLegendTextStyle: {
 		color: colors.wordProgress.known,
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 14,
 	},
 	hidePassageButton: {
 		display: 'flex',

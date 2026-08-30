@@ -1,5 +1,5 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ComponentProps, useEffect, useMemo, useState } from 'react';
+import { ComponentProps, useEffect, useState } from 'react';
 import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import Animated, {
 	useAnimatedStyle,
@@ -10,7 +10,7 @@ import Animated, {
 import colors from '../app/colors';
 import {
 	getWordProgressDefinitionByKey,
-	getWordProgressDefinitionFromCorrectCount,
+	getWordProgressDefinition,
 	WordProgressKey,
 } from '../util/wordProgress';
 import { useCardDeck } from './CardDeck/useCardDeck';
@@ -19,29 +19,14 @@ import { useCardDeck } from './CardDeck/useCardDeck';
  * Typing
  */
 type WordProgressIconProps = Omit<ComponentProps<typeof MaterialIcons>, 'name'> & {
-	progress?: WordProgressKey;
-	score?: number;
+	progress: WordProgressKey;
 };
-
-function getWordProgressColor(score: number = 0) {
-	return colors.wordProgress[getWordProgressDefinitionFromCorrectCount(score).key];
-}
 
 /**
  * WordProgressIcon Component
  */
-export function WordProgressIcon({
-	progress,
-	score = 0,
-	size = 12,
-	color,
-	...props
-}: WordProgressIconProps) {
-	let progressDefinition = getWordProgressDefinitionFromCorrectCount(score);
-
-	if (progress) {
-		progressDefinition = getWordProgressDefinitionByKey(progress);
-	}
+export function WordProgressIcon({ progress, size = 12, color, ...props }: WordProgressIconProps) {
+	const progressDefinition = getWordProgressDefinitionByKey(progress);
 
 	return (
 		<MaterialIcons
@@ -60,23 +45,20 @@ export default function WordProgress() {
 	const { currentCard } = useCardDeck();
 	const [currentScore] = useState(currentCard.correctCount);
 	const [nextScore] = useState(currentCard.correctCount + 1);
-
-	const currentProgress = useMemo(
-		() => getWordProgressDefinitionFromCorrectCount(currentScore),
-		[currentScore],
+	const [currentProgress] = useState(() =>
+		getWordProgressDefinition({
+			correctCount: currentCard.correctCount,
+			seenCount: currentCard.seenCount,
+		}),
 	);
-	const nextProgress = useMemo(
-		() => getWordProgressDefinitionFromCorrectCount(nextScore),
-		[nextScore],
+	const [nextProgress] = useState(() =>
+		getWordProgressDefinition({
+			correctCount: currentCard.correctCount + 1,
+			seenCount: currentCard.seenCount,
+		}),
 	);
-	const currentProgressColor = useMemo(
-		() => ({ backgroundColor: getWordProgressColor(currentScore) }),
-		[currentScore],
-	);
-	const nextProgressColor = useMemo(
-		() => ({ backgroundColor: getWordProgressColor(nextScore) }),
-		[nextScore],
-	);
+	const currentProgressColor = { backgroundColor: colors.wordProgress[currentProgress.key] };
+	const nextProgressColor = { backgroundColor: colors.wordProgress[nextProgress.key] };
 
 	const translateY = useSharedValue(0);
 	const containerY = useAnimatedStyle(() => ({
@@ -115,7 +97,7 @@ export default function WordProgress() {
 					<Animated.Text style={scoreText}>{currentScore}</Animated.Text>
 					<WordProgressIcon
 						style={icon}
-						score={currentScore}
+						progress={currentProgress.key}
 						size={18}
 						color={colors.light.text}
 					/>
@@ -125,7 +107,7 @@ export default function WordProgress() {
 					<Animated.Text style={scoreText}>{nextScore}</Animated.Text>
 					<WordProgressIcon
 						style={icon}
-						score={nextScore}
+						progress={nextProgress.key}
 						size={18}
 						color={colors.light.text}
 					/>

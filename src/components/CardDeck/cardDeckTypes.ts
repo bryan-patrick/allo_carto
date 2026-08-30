@@ -68,6 +68,7 @@ export interface Word {
 	gender?: 'Feminine' | 'Masculine';
 	partOfSpeech?: string;
 	correctCount: number;
+	seenCount?: number;
 	rarity?: CardRarity;
 }
 
@@ -79,4 +80,5 @@ export const initialWordState: Word = {
 	isVulgar: false,
 	CEFR: 'A1',
 	correctCount: 0,
+	seenCount: 0,
 };

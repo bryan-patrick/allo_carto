@@ -1,7 +1,8 @@
 import {
-	getWordProgressDefinitionFromCorrectCount,
+	getWordProgressDefinition,
 	getWordProgressKeyFromCounts,
 	getWordProgressSqlCountSelect,
+	wordProgressDefinitions,
 } from '@/src/util/wordProgress';
 
 describe('wordProgress', () => {
@@ -20,9 +21,21 @@ describe('wordProgress', () => {
 		expect(getWordProgressKeyFromCounts(counts)).toBe(expectedProgress);
 	});
 
-	test('treats a score without seen data as visible progress', () => {
-		expect(getWordProgressDefinitionFromCorrectCount(0).key).toBe('new');
-		expect(getWordProgressDefinitionFromCorrectCount(-1).key).toBe('new');
+	test('defines unseen as a full progress rank', () => {
+		const unseen = getWordProgressDefinition({ correctCount: 0, seenCount: 0 });
+
+		expect(unseen).toEqual({
+			key: 'unseen',
+			name: 'Unseen',
+			minCorrectCount: 0,
+			iconName: 'question-mark',
+		});
+		expect(wordProgressDefinitions[0]).toEqual(unseen);
+	});
+
+	test('distinguishes unseen from a new word with the same score', () => {
+		expect(getWordProgressDefinition({ correctCount: 0, seenCount: 0 }).key).toBe('unseen');
+		expect(getWordProgressDefinition({ correctCount: 0, seenCount: 1 }).key).toBe('new');
 	});
 
 	test('builds a SQL count for every progress key', () => {

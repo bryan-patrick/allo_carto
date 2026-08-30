@@ -18,6 +18,7 @@ export const mockWords: Word[] = [
 		gender: 'Masculine',
 		pronunciation: 'luh shee-ehn',
 		correctCount: 14,
+		seenCount: 14,
 	},
 	{
 		id: 'word_noun_maison',
@@ -32,6 +33,7 @@ export const mockWords: Word[] = [
 		gender: 'Feminine',
 		pronunciation: 'lah meh-zohn',
 		correctCount: 14,
+		seenCount: 14,
 	},
 	{
 		id: 'word_noun_livre',
@@ -46,6 +48,7 @@ export const mockWords: Word[] = [
 		gender: 'Masculine',
 		pronunciation: 'luh leev-uh',
 		correctCount: 7,
+		seenCount: 7,
 	},
 	{
 		id: 'word_noun_pomme',
@@ -60,6 +63,7 @@ export const mockWords: Word[] = [
 		gender: 'Feminine',
 		pronunciation: 'lah pom',
 		correctCount: 11,
+		seenCount: 11,
 	},
 ];
 

@@ -15,7 +15,7 @@ export const wordProgressDefinitions: WordProgressDefinition[] = [
 		key: 'unseen',
 		name: 'Unseen',
 		minCorrectCount: 0,
-		iconName: 'fiber-new',
+		iconName: 'question-mark',
 	},
 	{
 		key: 'new',
@@ -49,26 +49,30 @@ export const wordProgressDefinitions: WordProgressDefinition[] = [
 	},
 ];
 
-export const visibleWordProgressDefinitions = wordProgressDefinitions.filter(
-	({ key }) => key !== 'unseen',
-);
+interface WordProgressCounts {
+	correctCount?: number;
+	seenCount?: number;
+}
 
-export function getWordProgressDefinitionFromCorrectCount(
-	correctCount: number = 0,
-): WordProgressDefinition {
+export function getWordProgressDefinition({
+	correctCount = 0,
+	seenCount = 0,
+}: WordProgressCounts = {}): WordProgressDefinition {
 	const normalizedCorrectCount = Math.max(correctCount, 0);
-	let matchingProgress = wordProgressDefinitions[1];
+
+	if (normalizedCorrectCount === 0 && seenCount === 0) {
+		return wordProgressDefinitions[0];
+	}
 
 	for (let index = wordProgressDefinitions.length - 1; index >= 1; index--) {
 		const progress = wordProgressDefinitions[index];
 
 		if (normalizedCorrectCount >= progress.minCorrectCount) {
-			matchingProgress = progress;
-			break;
+			return progress;
 		}
 	}
 
-	return matchingProgress;
+	return wordProgressDefinitions[1];
 }
 
 /**
@@ -77,15 +81,8 @@ export function getWordProgressDefinitionFromCorrectCount(
 export function getWordProgressKeyFromCounts({
 	correctCount = 0,
 	seenCount = 0,
-}: {
-	correctCount?: number;
-	seenCount?: number;
-}): WordProgressKey {
-	if (correctCount === 0 && seenCount === 0) {
-		return 'unseen';
-	}
-
-	return getWordProgressDefinitionFromCorrectCount(correctCount).key;
+}: WordProgressCounts): WordProgressKey {
+	return getWordProgressDefinition({ correctCount, seenCount }).key;
 }
 
 export function getWordProgressDefinitionByKey(
