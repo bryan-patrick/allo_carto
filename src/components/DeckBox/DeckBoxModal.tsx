@@ -30,7 +30,7 @@ interface DeckBoxModalProps {
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
 }
 
-interface StoryLineMetric {
+interface PassageLineMetric {
 	y: number;
 	height: number;
 }
@@ -75,11 +75,11 @@ export default function DeckBoxModal({
 		progressLegendItemStyle,
 		progressLegendDotStyle,
 		progressLegendTextStyle,
-		hideParagraphButton,
-		hideParagraphButtonText,
+		hidePassageButton,
+		hidePassageButtonText,
 	} = styles;
-	const [storyLineMetrics, setStoryLineMetrics] = useState<StoryLineMetric[]>([]);
-	const [hideParagraphChevronTranslateY] = useState(() => new Animated.Value(0));
+	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
+	const [hidePassageChevronTranslateY] = useState(() => new Animated.Value(0));
 
 	const totalWordCount = deck.wordIds.length;
 	const wordsSeenCount =
@@ -94,18 +94,18 @@ export default function DeckBoxModal({
 	});
 
 	/**
-	 * Hide paragraph button animation handlers
+	 * Hide passage button animation handlers
 	 */
-	function handleHideParagraphButtonPressIn() {
-		Animated.timing(hideParagraphChevronTranslateY, {
+	function handleHidePassageButtonPressIn() {
+		Animated.timing(hidePassageChevronTranslateY, {
 			toValue: 3,
 			duration: 90,
 			useNativeDriver: true,
 		}).start();
 	}
 
-	function handleHideParagraphButtonPressOut() {
-		Animated.timing(hideParagraphChevronTranslateY, {
+	function handleHidePassageButtonPressOut() {
+		Animated.timing(hidePassageChevronTranslateY, {
 			toValue: 0,
 			duration: 140,
 			useNativeDriver: true,
@@ -192,7 +192,7 @@ export default function DeckBoxModal({
 									pointerEvents="none"
 									style={modalTextRulesStyle}
 								>
-									{storyLineMetrics.map(({ y, height }, index) => (
+									{passageLineMetrics.map(({ y, height }, index) => (
 										<View
 											key={index}
 											style={[modalTextRuleStyle, { top: y + height }]}
@@ -204,7 +204,7 @@ export default function DeckBoxModal({
 									onTextLayout={({ nativeEvent }) => {
 										const nextMetrics = nativeEvent.lines.map(({ y, height }) => ({ y, height }));
 
-										setStoryLineMetrics(currentMetrics => {
+										setPassageLineMetrics(currentMetrics => {
 											const metricsAreUnchanged =
 												currentMetrics.length === nextMetrics.length &&
 												currentMetrics.every(
@@ -217,8 +217,8 @@ export default function DeckBoxModal({
 										});
 									}}
 								>
-									{deck.story &&
-										deck.story.map(({ text, wordId, after }, index) => {
+									{deck.passage &&
+										deck.passage.map(({ text, wordId, after }, index) => {
 											const key = `${index}-${wordId ?? text}`;
 											const spaceMaybeButNotAlways = after ?? ' ';
 											const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
@@ -278,16 +278,16 @@ export default function DeckBoxModal({
 				</ImageBackground>
 				<Pressable
 					accessibilityRole="button"
-					accessibilityLabel="Hide story"
+					accessibilityLabel="Hide passage"
 					onPress={() => setModalVisible(false)}
-					onPressIn={handleHideParagraphButtonPressIn}
-					onPressOut={handleHideParagraphButtonPressOut}
-					style={hideParagraphButton}
+					onPressIn={handleHidePassageButtonPressIn}
+					onPressOut={handleHidePassageButtonPressOut}
+					style={hidePassageButton}
 				>
-					<Text style={[hideParagraphButtonText, { color: deck.colors.dark.primary }]}>
-						Hide paragraph
+					<Text style={[hidePassageButtonText, { color: deck.colors.dark.primary }]}>
+						Hide passage
 					</Text>
-					<Animated.View style={{ transform: [{ translateY: hideParagraphChevronTranslateY }] }}>
+					<Animated.View style={{ transform: [{ translateY: hidePassageChevronTranslateY }] }}>
 						<MaterialIcons
 							name="expand-more"
 							size={20}
@@ -323,6 +323,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 16,
+		gap: 8,
 	},
 	headerStyle: {
 		padding: 8,
@@ -451,7 +452,7 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		fontSize: 12,
 	},
-	hideParagraphButton: {
+	hidePassageButton: {
 		display: 'flex',
 		justifyContent: 'center',
 		alignContent: 'center',
@@ -467,7 +468,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#E8DED5',
 		gap: 4,
 	},
-	hideParagraphButtonText: {
+	hidePassageButtonText: {
 		fontSize: 14,
 		fontFamily: 'lexend-600',
 	},

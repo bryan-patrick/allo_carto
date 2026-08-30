@@ -18,7 +18,7 @@ describe('getWordProgressById', () => {
 		mockGetAllAsync.mockReset();
 	});
 
-	test('loads word progress and queries repeated story words once', async () => {
+	test('loads word progress and queries repeated passage words once', async () => {
 		mockGetAllAsync.mockResolvedValueOnce([
 			{ wordId: 'word_new', correctCount: 0, seenCount: 1 },
 			{ wordId: 'word_learning', correctCount: 3, seenCount: 0 },
@@ -27,7 +27,7 @@ describe('getWordProgressById', () => {
 
 		const progressByWordId = await getWordProgressById({
 			userId: 'user_one',
-			story: [
+			passage: [
 				{ text: 'New', wordId: 'word_new' },
 				{ text: 'Unseen', wordId: 'word_unseen' },
 				{ text: 'Learning', wordId: 'word_learning' },

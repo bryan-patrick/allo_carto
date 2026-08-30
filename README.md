@@ -28,7 +28,7 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 - Get rid of the undraw SVG on the "Learn more words!" card
 - Card Collection page
 - Look into how to use the dynamic island
-- We need a key for the story view since new words just kind of look broken...Maybe a different way to view the words? We need to think about this
+- We need a key for the passage view since new words just kind of look broken...Maybe a different way to view the words? We need to think about this
 
 ## Free art and assets credits
 

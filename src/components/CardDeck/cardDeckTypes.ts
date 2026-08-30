@@ -26,7 +26,7 @@ export interface DeckWordChoice {
 	partOfSpeech?: string;
 }
 
-export interface StorySegment {
+export interface PassageSegment {
 	text: string;
 	wordId?: string;
 	after?: string;
@@ -42,7 +42,7 @@ export interface CardDeck extends Progression {
 	wordChoices: DeckWordChoice[];
 	place: string;
 	colors: DeckColors;
-	story?: StorySegment[];
+	passage?: PassageSegment[];
 }
 
 /**

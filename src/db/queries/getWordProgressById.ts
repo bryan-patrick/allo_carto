@@ -1,4 +1,4 @@
-import type { StorySegment } from '@/src/components/CardDeck/cardDeckTypes';
+import type { PassageSegment } from '@/src/components/CardDeck/cardDeckTypes';
 import { getWordProgressKeyFromCounts, type WordProgressKey } from '@/src/util/wordProgress';
 import { getDB } from '../connection';
 
@@ -7,7 +7,7 @@ import { getDB } from '../connection';
  */
 export interface GetWordProgressByIdProps {
 	userId: string;
-	story?: StorySegment[];
+	passage?: PassageSegment[];
 }
 export type PromiseWordProgressKey = Promise<Record<string, WordProgressKey>>;
 
@@ -23,28 +23,28 @@ export type PromiseWordProgressKey = Promise<Record<string, WordProgressKey>>;
  */
 export default async function getWordProgressById({
 	userId,
-	story,
+	passage,
 }: GetWordProgressByIdProps): PromiseWordProgressKey {
 	const result: Record<string, WordProgressKey> = {};
-	const wordIdsFromStory: string[] = [];
+	const wordIdsFromPassage: string[] = [];
 
 	/**
-	 * The story is the source of truth.
-	 * Pull the word ids directly from the story segments.
+	 * The passage is the source of truth.
+	 * Pull the word ids directly from the passage segments.
 	 */
-	if (story) {
-		for (const storySegment of story) {
-			if (storySegment.wordId) {
-				wordIdsFromStory.push(storySegment.wordId);
+	if (passage) {
+		for (const passageSegment of passage) {
+			if (passageSegment.wordId) {
+				wordIdsFromPassage.push(passageSegment.wordId);
 			}
 		}
 	}
 
 	/**
-	 * A story can use the same word more than once.
+	 * A passage can use the same word more than once.
 	 * We only need to ask SQLite about each word once.
 	 */
-	const uniqueWordIdsSet = new Set(wordIdsFromStory);
+	const uniqueWordIdsSet = new Set(wordIdsFromPassage);
 	const uniqueWordIds = Array.from(uniqueWordIdsSet);
 	const progressByWordId: Record<
 		string,

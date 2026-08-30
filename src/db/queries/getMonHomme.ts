@@ -5,7 +5,7 @@ import { DeckWordProgressCounts } from './getDeckWordProgressCounts';
 /**
  * Typing
  */
-export interface StoryProgress {
+export interface PassageProgress {
 	completionPercent: number;
 	wordProgressById: Record<string, WordProgressKey>;
 	totalWordCount: number;
@@ -16,7 +16,7 @@ export interface DeckProgress {
 	deckId: string;
 	completionPercent: number;
 	wordProgressCounts: DeckWordProgressCounts;
-	story?: StoryProgress;
+	passage?: PassageProgress;
 	state: 'available' | 'complete' | 'locked';
 }
 

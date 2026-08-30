@@ -40,7 +40,7 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	/**
 	 * Destructure deck
 	 */
-	const { CEFR, description: deckDescription, title: deckTitle, story, wordIds } = deck;
+	const { CEFR, description: deckDescription, passage, title: deckTitle, wordIds } = deck;
 
 	/**
 	 * Context and state
@@ -53,8 +53,8 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	const [wordProgressKeyByWordId, setWordProgressKeyByWordId] = useState<
 		Record<string, WordProgressKey>
 	>({});
-	const [isStoryModalVisible, setIsStoryModalVisible] = useState(false);
-	const [storyChevronTranslateY] = useState(() => new Animated.Value(0));
+	const [isPassageModalVisible, setIsPassageModalVisible] = useState(false);
+	const [passageChevronTranslateY] = useState(() => new Animated.Value(0));
 
 	/**
 	 * Destructure atlas location and chapter
@@ -105,34 +105,34 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 		}
 	}, [userId, wordIds]);
 
-	const loadStoryWordProgress = useCallback(async () => {
+	const loadPassageWordProgress = useCallback(async () => {
 		try {
 			if (userId) {
-				const storyWordProgressKeyByWordId = await getWordProgressById({
+				const passageWordProgressKeyByWordId = await getWordProgressById({
 					userId,
-					story,
+					passage,
 				});
 
-				setWordProgressKeyByWordId(storyWordProgressKeyByWordId);
+				setWordProgressKeyByWordId(passageWordProgressKeyByWordId);
 				return;
 			}
 
 			setWordProgressKeyByWordId({});
 		} catch (error) {
-			console.error('Could not retrieve story word progress:', error);
+			console.error('Could not retrieve passage word progress:', error);
 		}
-	}, [userId, story]);
+	}, [passage, userId]);
 
 	/**
-	 * The story blips weren't updating when returning
+	 * The passage blips weren't updating when returning
 	 * to the deck selection after completing a deck.
 	 * This forces it.
 	 */
 	useFocusEffect(
 		useCallback(() => {
 			loadWordProgressCounts();
-			loadStoryWordProgress();
-		}, [loadWordProgressCounts, loadStoryWordProgress]),
+			loadPassageWordProgress();
+		}, [loadPassageWordProgress, loadWordProgressCounts]),
 	);
 
 	/**
@@ -150,27 +150,27 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	}, [userId, deck, cardDeckDispatch]);
 
 	/**
-	 * Refresh story data and show modal
+	 * Refresh passage data and show modal
 	 */
-	async function handleShowStory() {
-		await Promise.all([loadWordProgressCounts(), loadStoryWordProgress()]);
+	async function handleShowPassage() {
+		await Promise.all([loadWordProgressCounts(), loadPassageWordProgress()]);
 
-		setIsStoryModalVisible(true);
+		setIsPassageModalVisible(true);
 	}
 
 	/**
-	 * Story button animation handlers
+	 * Passage button animation handlers
 	 */
-	function handleStoryButtonPressIn() {
-		Animated.timing(storyChevronTranslateY, {
+	function handlePassageButtonPressIn() {
+		Animated.timing(passageChevronTranslateY, {
 			toValue: -3,
 			duration: 90,
 			useNativeDriver: true,
 		}).start();
 	}
 
-	function handleStoryButtonPressOut() {
-		Animated.timing(storyChevronTranslateY, {
+	function handlePassageButtonPressOut() {
+		Animated.timing(passageChevronTranslateY, {
 			toValue: 0,
 			duration: 140,
 			useNativeDriver: true,
@@ -196,8 +196,8 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 		deckTitleSeparatorDotStyle,
 		deckTitleStyle,
 		deckDescriptionStyle,
-		storyButtonStyle,
-		storyButtonTextStyle,
+		passageButtonStyle,
+		passageButtonTextStyle,
 		deckInfoContainerStyle,
 		deckInfoColumnStyle,
 		deckInfoColumnSeparatorStyle,
@@ -214,8 +214,8 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 		<>
 			<DeckBoxModal
 				deck={deck}
-				modalVisible={isStoryModalVisible}
-				setModalVisible={setIsStoryModalVisible}
+				modalVisible={isPassageModalVisible}
+				setModalVisible={setIsPassageModalVisible}
 				wordProgressCounts={wordProgressCounts}
 				wordProgressKeyByWordId={wordProgressKeyByWordId}
 			/>
@@ -267,20 +267,20 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 								<Text style={deckTitleStyle}>{deckTitle}</Text>
 								<Text style={deckDescriptionStyle}>{deckDescription}</Text>
 								<Pressable
-									onPress={handleShowStory}
-									onPressIn={handleStoryButtonPressIn}
-									onPressOut={handleStoryButtonPressOut}
-									style={[storyButtonStyle, { borderColor: chapterColor }]}
+									onPress={handleShowPassage}
+									onPressIn={handlePassageButtonPressIn}
+									onPressOut={handlePassageButtonPressOut}
+									style={[passageButtonStyle, { borderColor: chapterColor }]}
 								>
 									<MaterialIcons
 										name="menu-book"
 										size={20}
 										color={chapterColor}
 									/>
-									<Text style={[storyButtonTextStyle, { color: chapterColor }]}>
-										View paragraph
+									<Text style={[passageButtonTextStyle, { color: chapterColor }]}>
+										View passage
 									</Text>
-									<Animated.View style={{ transform: [{ translateY: storyChevronTranslateY }] }}>
+									<Animated.View style={{ transform: [{ translateY: passageChevronTranslateY }] }}>
 										<MaterialIcons
 											name="keyboard-arrow-up"
 											size={20}
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		color: colors.dark.text,
 	},
-	storyButtonStyle: {
+	passageButtonStyle: {
 		display: 'flex',
 		justifyContent: 'center',
 		alignContent: 'center',
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
 		marginVertical: 16,
 		gap: 8,
 	},
-	storyButtonTextStyle: {
+	passageButtonTextStyle: {
 		fontFamily: 'lexend-600',
 	},
 	deckInfoContainerStyle: {

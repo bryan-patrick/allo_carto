@@ -18,7 +18,7 @@ export const DeckDawnAtTheDropOff: CardDeck = {
 			secondary: '#ffffff',
 		},
 	},
-	story: [
+	passage: [
 		{ text: 'Je', wordId: 'word_pronoun_je' },
 		{ text: 'me', wordId: 'word_pronoun_me' },
 		{ text: 'suis', wordId: 'word_auxiliary_suis' },

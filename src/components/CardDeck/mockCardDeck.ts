@@ -74,7 +74,6 @@ export const mockCardDeck: CardDeck = {
 	CEFR: ['A1'],
 	wordIds: mockWords.map(word => word.id),
 	words: mockWords,
-	image: undefined,
 	colors: {
 		dark: {
 			primary: '#111111',

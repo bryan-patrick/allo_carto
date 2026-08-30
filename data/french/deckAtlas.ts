@@ -43,7 +43,7 @@ export interface DeckPlace extends Progression {
 
 /**
  * The idea is:
- * Chapter -> Place -> Story (deck)
+ * Chapter -> Place -> Deck
  */
 export const deckAtlas: DeckAtlas = {
 	chapters: [
