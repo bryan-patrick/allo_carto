@@ -28,7 +28,6 @@ export default function DeckProgress() {
 	 */
 	const { cardDeck: currentCardDeck, currentIndex, correctWords, incorrectWords } = cardDeckState;
 	const { words } = currentCardDeck;
-	const { deckProgressContainerStyle, progressTextStyle, blipContainerStyle, blipStyle } = styles;
 
 	/**
 	 * Card vars
@@ -42,11 +41,11 @@ export default function DeckProgress() {
 	 * Render the component
 	 */
 	return (
-		<View style={deckProgressContainerStyle}>
-			<Text style={progressTextStyle}>
+		<View style={styles.deckProgressContainer}>
+			<Text style={styles.progressText}>
 				Card {currentCard}/{totalCards}
 			</Text>
-			<View style={blipContainerStyle}>
+			<View style={styles.blipContainer}>
 				{
 					/**
 					 * Map and render the blip things
@@ -82,7 +81,7 @@ export default function DeckProgress() {
 							<View
 								key={`progress-blip-${word.id}`}
 								testID={`progress-blip-${word.id}`}
-								style={[blipStyle, dynamicBlipStyle]}
+								style={[styles.blip, dynamicBlipStyle]}
 							/>
 						);
 					})
@@ -93,37 +92,32 @@ export default function DeckProgress() {
 }
 
 /**
- * Shared styles
- */
-const { containerMargin } = sharedStyles;
-
-/**
  * Styles
  */
 const styles = StyleSheet.create({
-	deckProgressContainerStyle: {
+	deckProgressContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
 		maxWidth: '100%',
-		paddingHorizontal: containerMargin,
+		paddingHorizontal: sharedStyles.containerMargin,
 		paddingVertical: 2,
 		backgroundColor: colors.dark.text,
 		gap: 12,
 	},
-	progressTextStyle: {
+	progressText: {
 		fontFamily: 'azeret-mono-600',
 		fontSize: 12,
 		color: colors.light.background,
 	},
-	blipContainerStyle: {
+	blipContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		flexShrink: 1,
 		gap: 4,
 	},
-	blipStyle: {
+	blip: {
 		height: 10,
 		width: 8,
 		flexShrink: 1,

@@ -12,19 +12,17 @@ interface BookProps {
  * Book component (chapter select)
  */
 export default function Book({ children }: BookProps) {
-	const { bookStyle } = styles;
-
 	/**
 	 * Render the component
 	 */
-	return <View style={bookStyle}>{children}</View>;
+	return <View style={styles.book}>{children}</View>;
 }
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-	bookStyle: {
+	book: {
 		borderRadius: 12,
 		overflow: 'hidden',
 		display: 'flex',

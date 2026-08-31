@@ -1,4 +1,4 @@
-import { cloneElement, isValidElement, ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import {
 	GestureResponderEvent,
 	Pressable,
@@ -47,36 +47,33 @@ export default function SecondaryButton({
 	...props
 }: SecondaryButtonProps) {
 	/**
-	 * Destructure styles
-	 */
-	const { buttonStyle, buttonTextRowStyle, buttonTextStyle, fullwidthStyle } = styles;
-
-	/**
-	 * State vars
+	 * State
 	 */
 	const [isPressed, setIsPressed] = useState(false);
 
-	const typeStyle =
-		type === 'outline' ?
-			{
-				backgroundColor: 'transparent',
-				...(color ? { borderColor: color } : {}),
-			}
-		: color ? { backgroundColor: color }
-		: {};
+	/**
+	 * Style vars
+	 */
+	let buttonTypeStyle: ViewStyle = {};
+	let outlineTextStyle: TextStyle = {};
+	let iconElement = SVGElement;
 
-	const outlineTextStyle = type === 'outline' && color ? { color } : {};
-	const iconElement =
-		type === 'outline' && color && isValidElement<{ color?: string }>(SVGElement) ?
-			cloneElement(SVGElement, { color })
-		:	SVGElement;
+	if (type === 'outline') {
+		buttonTypeStyle = { backgroundColor: 'transparent' };
+
+		if (color) {
+			buttonTypeStyle.borderColor = color;
+			outlineTextStyle.color = color;
+		}
+	} else if (color) {
+		buttonTypeStyle = { backgroundColor: color };
+	}
 
 	/**
 	 * Animation vars
 	 */
 	const top = useSharedValue(0);
 	const shadowOffsetHeight = useSharedValue(secondaryButtonShadowHeight);
-
 	const animatedButtonStyle = useAnimatedStyle(() => ({
 		top: top.get(),
 		shadowOffset: {
@@ -125,13 +122,19 @@ export default function SecondaryButton({
 	return (
 		<AnimatedPressable
 			{...props}
-			style={[buttonStyle, animatedButtonStyle, fullwidth && fullwidthStyle, typeStyle, style]}
+			style={[
+				styles.button,
+				animatedButtonStyle,
+				fullwidth && styles.fullwidth,
+				buttonTypeStyle,
+				style,
+			]}
 			onPressIn={handleOnPressIn}
 			onPressOut={handleOnPressOut}
 			hitSlop={4}
 		>
-			<View style={buttonTextRowStyle}>
-				<Text style={[buttonTextStyle, textStyle, outlineTextStyle]}>{children}</Text>
+			<View style={styles.buttonTextRow}>
+				<Text style={[styles.buttonText, textStyle, outlineTextStyle]}>{children}</Text>
 				{iconElement}
 			</View>
 		</AnimatedPressable>
@@ -142,10 +145,7 @@ export default function SecondaryButton({
  * Styles
  */
 const styles = StyleSheet.create({
-	fullwidthStyle: {
-		width: '100%',
-	},
-	buttonStyle: {
+	button: {
 		alignItems: 'center',
 		justifyContent: 'center',
 		borderColor: colors.dark.border,
@@ -162,13 +162,16 @@ const styles = StyleSheet.create({
 		color: colors.dark.primary,
 		gap: 8,
 	},
-	buttonTextRowStyle: {
+	fullwidth: {
+		width: '100%',
+	},
+	buttonTextRow: {
 		alignItems: 'center',
 		flexDirection: 'row',
 		gap: 4,
 		fontSize: 12,
 	},
-	buttonTextStyle: {
+	buttonText: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
 		fontSize: 16,

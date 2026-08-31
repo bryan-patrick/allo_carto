@@ -19,23 +19,18 @@ interface CardProps {
  */
 export default function LinkCard({ title, SVGElement, description, screen, linkText }: CardProps) {
 	/**
-	 * Destructure styles
-	 */
-	const { titleStyle, rowBetweenStyle, colBetweenStyle, cardTextStyle, cardViewStyle } = styles;
-
-	/**
 	 * Different headings for when using an SVG or not
 	 */
-	let heading = <Text style={titleStyle}>{title}</Text>;
+	let heading = <Text style={styles.title}>{title}</Text>;
 
 	if (SVGElement) {
 		heading = (
-			<View style={rowBetweenStyle}>
-				<View style={colBetweenStyle}>
-					<Text style={titleStyle}>{title}</Text>
-					{description && <Text style={cardTextStyle}>{description}</Text>}
+			<View style={styles.headingRow}>
+				<View style={styles.headingColumn}>
+					<Text style={styles.title}>{title}</Text>
+					{description && <Text style={styles.description}>{description}</Text>}
 				</View>
-				<View style={colBetweenStyle}>{SVGElement}</View>
+				<View style={styles.headingColumn}>{SVGElement}</View>
 			</View>
 		);
 	}
@@ -44,7 +39,7 @@ export default function LinkCard({ title, SVGElement, description, screen, linkT
 	 * Render the LinkCard
 	 */
 	return (
-		<View style={cardViewStyle}>
+		<View style={styles.card}>
 			{heading}
 			<LinkButton
 				screen={screen}
@@ -60,28 +55,28 @@ export default function LinkCard({ title, SVGElement, description, screen, linkT
  * Styles
  */
 const styles = StyleSheet.create({
-	cardViewStyle: {
+	card: {
 		backgroundColor: colors.light.background,
 		padding: 16,
 		borderRadius: 8,
 		gap: 16,
 	},
-	titleStyle: {
+	title: {
 		fontSize: 20,
 		fontFamily: 'lexend-600',
 		color: colors.dark.text,
 	},
-	rowBetweenStyle: {
+	headingRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		gap: 12,
 	},
-	colBetweenStyle: {
+	headingColumn: {
 		gap: 12,
 		flexShrink: 1,
 	},
-	cardTextStyle: {
+	description: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 16,

@@ -17,6 +17,9 @@ import { useCallback, useState } from 'react';
 import { Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeckBoxModal from './DeckBoxModal';
 
+/**
+ * Images
+ */
 const deckBoxTopImage = require('@/src/app/assets/images/decks/deck-box-top.png');
 const deckBoxTopMaskImage = require('@/src/app/assets/images/decks/deck-box-top-mask.png');
 const deckBoxLeftBorderImage = require('@/src/app/assets/images/decks/deck-box-border-left.png');
@@ -178,36 +181,6 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	}
 
 	/**
-	 * Destructure styles
-	 */
-	const {
-		deckBoxContainerStyle,
-		deckBoxTopStyle,
-		deckBoxMiddleStyle,
-		deckBoxLeftBorderStyle,
-		deckBoxContentBackgroundStyle,
-		deckBoxContentBorderStyle,
-		chapterBadgeContainerStyle,
-		chapterBadgeStyle,
-		chapterNumberStyle,
-		deckDetailsStyle,
-		chapterHeadingStyle,
-		deckTitleSeparatorStyle,
-		deckTitleSeparatorDotStyle,
-		deckTitleStyle,
-		deckDescriptionStyle,
-		passageButtonStyle,
-		passageButtonTextStyle,
-		deckInfoContainerStyle,
-		deckInfoColumnStyle,
-		deckInfoColumnSeparatorStyle,
-		deckInfoTextStyle,
-		deckBoxRightBorderStyle,
-		deckBoxBottomStyle,
-		selectDeckButtonContainerStyle,
-	} = styles;
-
-	/**
 	 * Render the Deck Box
 	 */
 	return (
@@ -219,65 +192,65 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 				wordProgressCounts={wordProgressCounts}
 				wordProgressKeyByWordId={wordProgressKeyByWordId}
 			/>
-			<View style={deckBoxContainerStyle}>
+			<View style={styles.deckBoxContainer}>
 				<ImageBackground
 					source={deckBoxTopImage}
-					style={deckBoxTopStyle}
+					style={styles.deckBoxTop}
 					resizeMode="stretch"
 				>
 					<ImageBackground
 						source={deckBoxTopMaskImage}
-						style={[deckBoxTopStyle, { zIndex: 1 }]}
+						style={[styles.deckBoxTop, { zIndex: 1 }]}
 						resizeMode="stretch"
 					/>
 				</ImageBackground>
-				<View style={deckBoxMiddleStyle}>
+				<View style={styles.deckBoxMiddle}>
 					<ImageBackground
 						source={deckBoxLeftBorderImage}
-						style={deckBoxLeftBorderStyle}
+						style={styles.deckBoxLeftBorder}
 						resizeMode="stretch"
 					/>
 					<ImageBackground
 						source={deckBoxContentImage}
-						style={deckBoxContentBackgroundStyle}
+						style={styles.deckBoxContentBackground}
 						resizeMode="stretch"
 					>
-						<View style={deckBoxContentBorderStyle}>
+						<View style={styles.deckBoxContentBorder}>
 							{chapter && (
-								<View style={chapterBadgeContainerStyle}>
-									<View style={[chapterBadgeStyle, { backgroundColor: chapterColor }]}>
+								<View style={styles.chapterBadgeContainer}>
+									<View style={[styles.chapterBadge, { backgroundColor: chapterColor }]}>
 										<MaterialIcons
 											name={chapterIconName}
 											size={24}
 											color={colors.light.goldenBorder}
 										/>
-										<Text style={chapterNumberStyle}>{chapterNumber}</Text>
+										<Text style={styles.chapterNumber}>{chapterNumber}</Text>
 									</View>
 								</View>
 							)}
-							<View style={deckDetailsStyle}>
+							<View style={styles.deckDetails}>
 								{chapter && (
-									<Text style={chapterHeadingStyle}>
+									<Text style={styles.chapterHeading}>
 										{chapterLabel} {chapterName}
 									</Text>
 								)}
-								<View style={deckTitleSeparatorStyle}>
-									<View style={deckTitleSeparatorDotStyle} />
+								<View style={styles.deckTitleSeparator}>
+									<View style={styles.deckTitleSeparatorDot} />
 								</View>
-								<Text style={deckTitleStyle}>{deckTitle}</Text>
-								<Text style={deckDescriptionStyle}>{deckDescription}</Text>
+								<Text style={styles.deckTitle}>{deckTitle}</Text>
+								<Text style={styles.deckDescription}>{deckDescription}</Text>
 								<Pressable
 									onPress={handleShowPassage}
 									onPressIn={handlePassageButtonPressIn}
 									onPressOut={handlePassageButtonPressOut}
-									style={[passageButtonStyle, { borderColor: chapterColor }]}
+									style={[styles.passageButton, { borderColor: chapterColor }]}
 								>
 									<MaterialIcons
 										name="menu-book"
 										size={20}
 										color={chapterColor}
 									/>
-									<Text style={[passageButtonTextStyle, { color: chapterColor }]}>
+									<Text style={[styles.passageButtonText, { color: chapterColor }]}>
 										View passage
 									</Text>
 									<Animated.View style={{ transform: [{ translateY: passageChevronTranslateY }] }}>
@@ -289,34 +262,34 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 									</Animated.View>
 								</Pressable>
 							</View>
-							<View style={deckInfoContainerStyle}>
-								<View style={[deckInfoColumnStyle, deckInfoColumnSeparatorStyle]}>
+							<View style={styles.deckInfoContainer}>
+								<View style={[styles.deckInfoColumn, styles.deckInfoColumnSeparator]}>
 									<MaterialIcons
 										name="language"
 										size={24}
 										color={chapterColor}
 									/>
-									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>
+									<Text style={[styles.deckInfoText, { color: chapterColor }]}>
 										{deckMetadata.CEFRLabel}
 									</Text>
 								</View>
-								<View style={[deckInfoColumnStyle, deckInfoColumnSeparatorStyle]}>
+								<View style={[styles.deckInfoColumn, styles.deckInfoColumnSeparator]}>
 									<MaterialIcons
 										name="style"
 										size={24}
 										color={chapterColor}
 									/>
-									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>
+									<Text style={[styles.deckInfoText, { color: chapterColor }]}>
 										{deckMetadata.cardCount} Cards
 									</Text>
 								</View>
-								<View style={deckInfoColumnStyle}>
+								<View style={styles.deckInfoColumn}>
 									<MaterialIcons
 										name="star-outline"
 										size={24}
 										color={chapterColor}
 									/>
-									<Text style={[deckInfoTextStyle, { color: chapterColor }]}>
+									<Text style={[styles.deckInfoText, { color: chapterColor }]}>
 										{deckMetadata.completionPercent}% known
 									</Text>
 								</View>
@@ -325,17 +298,17 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 					</ImageBackground>
 					<ImageBackground
 						source={deckBoxRightBorderImage}
-						style={deckBoxRightBorderStyle}
+						style={styles.deckBoxRightBorder}
 						resizeMode="stretch"
 					/>
 				</View>
 				<ImageBackground
 					source={deckBoxBottomImage}
-					style={deckBoxBottomStyle}
+					style={styles.deckBoxBottom}
 					resizeMode="stretch"
 				/>
 			</View>
-			<View style={selectDeckButtonContainerStyle}>
+			<View style={styles.selectDeckButtonContainer}>
 				<LinkButton
 					accessibilityHint={`Start practicing ${deckTitle}.`}
 					accessibilityLabel={`Select ${deckTitle}`}
@@ -355,38 +328,38 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
  * Styles
  */
 const styles = StyleSheet.create({
-	deckBoxContainerStyle: {
+	deckBoxContainer: {
 		position: 'relative',
 		margin: 8,
 	},
-	deckBoxTopStyle: {
+	deckBoxTop: {
 		width: '100%',
 		aspectRatio: 761 / 135,
 	},
-	deckBoxMiddleStyle: {
+	deckBoxMiddle: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		marginTop: -24,
 	},
-	deckBoxLeftBorderStyle: {
+	deckBoxLeftBorder: {
 		flex: 22,
 	},
-	deckBoxContentBackgroundStyle: {
+	deckBoxContentBackground: {
 		flex: 719,
 	},
-	deckBoxContentBorderStyle: {
+	deckBoxContentBorder: {
 		borderWidth: 2,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
 		margin: 12,
 		marginTop: 6,
 	},
-	chapterBadgeContainerStyle: {
+	chapterBadgeContainer: {
 		justifyContent: 'center',
 		alignItems: 'center',
 		gap: 4,
 	},
-	chapterBadgeStyle: {
+	chapterBadge: {
 		paddingTop: 20,
 		paddingHorizontal: 32,
 		paddingBottom: 8,
@@ -395,13 +368,13 @@ const styles = StyleSheet.create({
 		borderBottomLeftRadius: 8,
 		borderBottomRightRadius: 8,
 	},
-	chapterNumberStyle: {
+	chapterNumber: {
 		textAlign: 'center',
 		color: colors.light.goldenBorder,
 		fontFamily: 'azeret-mono-600',
 		fontSize: 12,
 	},
-	deckDetailsStyle: {
+	deckDetails: {
 		display: 'flex',
 		justifyContent: 'flex-start',
 		alignItems: 'center',
@@ -410,21 +383,21 @@ const styles = StyleSheet.create({
 		margin: 4,
 		gap: 6,
 	},
-	chapterHeadingStyle: {
+	chapterHeading: {
 		flex: 1,
 		fontFamily: 'lexend-400',
 		fontSize: 12,
 		textAlign: 'center',
 		marginBottom: 4,
 	},
-	deckTitleSeparatorStyle: {
+	deckTitleSeparator: {
 		position: 'relative',
 		borderTopWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		marginVertical: 4,
 		width: '50%',
 	},
-	deckTitleSeparatorDotStyle: {
+	deckTitleSeparatorDot: {
 		position: 'absolute',
 		left: '50%',
 		top: '50%',
@@ -434,20 +407,20 @@ const styles = StyleSheet.create({
 		height: 8,
 		backgroundColor: colors.light.goldenBorder,
 	},
-	deckTitleStyle: {
+	deckTitle: {
 		marginTop: 2,
 		fontFamily: 'lexend-600',
 		fontSize: 24,
 		textAlign: 'center',
 		color: colors.dark.text,
 	},
-	deckDescriptionStyle: {
+	deckDescription: {
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 		textAlign: 'center',
 		color: colors.dark.text,
 	},
-	passageButtonStyle: {
+	passageButton: {
 		display: 'flex',
 		justifyContent: 'center',
 		alignContent: 'center',
@@ -459,10 +432,10 @@ const styles = StyleSheet.create({
 		marginVertical: 16,
 		gap: 8,
 	},
-	passageButtonTextStyle: {
+	passageButtonText: {
 		fontFamily: 'lexend-600',
 	},
-	deckInfoContainerStyle: {
+	deckInfoContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		borderTopWidth: 2,
@@ -470,7 +443,7 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.goldenBorder,
 		marginTop: -12,
 	},
-	deckInfoColumnStyle: {
+	deckInfoColumn: {
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -478,23 +451,23 @@ const styles = StyleSheet.create({
 		flex: 1,
 		gap: 4,
 	},
-	deckInfoColumnSeparatorStyle: {
+	deckInfoColumnSeparator: {
 		borderRightWidth: 2,
 		borderColor: colors.light.goldenBorder,
 	},
-	deckInfoTextStyle: {
+	deckInfoText: {
 		fontSize: 14,
 		fontFamily: 'lexend-400',
 	},
-	deckBoxRightBorderStyle: {
+	deckBoxRightBorder: {
 		flex: 23,
 	},
-	deckBoxBottomStyle: {
+	deckBoxBottom: {
 		width: '100%',
 		aspectRatio: 761 / 22,
 		marginTop: -2,
 	},
-	selectDeckButtonContainerStyle: {
+	selectDeckButtonContainer: {
 		marginHorizontal: 8,
 		marginBottom: 16,
 	},

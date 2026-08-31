@@ -12,8 +12,6 @@ interface CoverProps {
  * The "cover" of the book. This includes the image of the chapter.
  */
 export default function Cover({ children }: CoverProps) {
-	const { coverStyle, coverInnerStyle } = styles;
-
 	/**
 	 * Render the component
 	 */
@@ -21,9 +19,9 @@ export default function Cover({ children }: CoverProps) {
 		<ImageBackground
 			resizeMode="stretch"
 			source={require('../../../app/assets/images/book-parts/cover.jpg')}
-			style={coverStyle}
+			style={styles.cover}
 		>
-			<View style={coverInnerStyle}>{children}</View>
+			<View style={styles.coverInner}>{children}</View>
 		</ImageBackground>
 	);
 }
@@ -32,13 +30,13 @@ export default function Cover({ children }: CoverProps) {
  * Styles
  */
 const styles = StyleSheet.create({
-	coverStyle: {
+	cover: {
 		flexGrow: 1,
 		flexShrink: 1,
 		padding: 8,
 		paddingLeft: 0,
 	},
-	coverInnerStyle: {
+	coverInner: {
 		borderWidth: 2,
 		borderBottomRightRadius: 8,
 		borderTopRightRadius: 8,

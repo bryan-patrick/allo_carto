@@ -23,7 +23,7 @@ interface CardContainerProps {
 	isCurrent: boolean;
 }
 
-const MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WORDS_FROM_OTHER_PARTS_OF_SPEECH = 3;
+const MIN_SAME_PART_OF_SPEECH_WRONG_ANSWERS = 3;
 
 function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
 	const lowerCaseCorrectAnswers = new Set(
@@ -56,11 +56,6 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 	const loadedWordId = useRef<string | null>(null);
 	const seenWordId = useRef<string | null>(null);
 	const [cardState, wordCardUIDispatch] = useReducer(wordCardUIReducer, initialWordCardState);
-
-	/**
-	 * Destructure styles
-	 */
-	const { container } = wordCardContainerStyles;
 	const isNextCardButton = cardState.stage === 'CORRECT' || cardState.stage === 'INCORRECT';
 	const nextCardArrowColor =
 		cardState.progress === 'SUCCESS' ? colors.dark.text : colors.light.text;
@@ -110,7 +105,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 
 				if (
 					countWrongAnswerChoices(matchingWordChoices, word.englishWords) <
-					MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WORDS_FROM_OTHER_PARTS_OF_SPEECH
+					MIN_SAME_PART_OF_SPEECH_WRONG_ANSWERS
 				) {
 					matchingWordChoices = deckWordChoices;
 				}
@@ -189,7 +184,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 	 */
 	return (
 		<WordCardUIContext.Provider value={{ cardState, wordCardUIDispatch }}>
-			<Animated.View style={[container, positionStyle]}>
+			<Animated.View style={[styles.container, positionStyle]}>
 				<WordCard isCurrent={isCurrent} />
 				<WordCardSelection
 					articleWords={articleWords}
@@ -214,18 +209,13 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 }
 
 /**
- * Destructure shared styles
- */
-const { containerMargin } = sharedStyles;
-
-/**
  * Styles
  */
-const wordCardContainerStyles = StyleSheet.create({
+const styles = StyleSheet.create({
 	container: {
 		height: '100%',
 		display: 'flex',
-		padding: containerMargin,
+		padding: sharedStyles.containerMargin,
 		justifyContent: 'space-around',
 		left: 500, // animation start position
 	},

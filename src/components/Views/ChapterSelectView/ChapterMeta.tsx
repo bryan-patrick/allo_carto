@@ -17,25 +17,18 @@ export default function ChapterMeta({
 	progressColor = '#08433f',
 }: ChapterMetaProps) {
 	const displayProgressPercent = Math.floor(progressPercent);
-	const {
-		metaRowStyle,
-		metaTextStyle,
-		metaDataStyle,
-		chapterProgressBarContainer,
-		chapterProgressBar,
-	} = styles;
 
 	/**
 	 * Render the component
 	 */
 	return (
 		<View>
-			<View style={metaRowStyle}>
-				<Text style={metaTextStyle}>Progress</Text>
-				<View style={chapterProgressBarContainer}>
+			<View style={styles.metaRow}>
+				<Text style={styles.metaText}>Progress</Text>
+				<View style={styles.progressBarContainer}>
 					<View
 						style={[
-							chapterProgressBar,
+							styles.progressBar,
 							{
 								backgroundColor: progressColor,
 								width: `${displayProgressPercent}%`,
@@ -44,7 +37,7 @@ export default function ChapterMeta({
 					/>
 					<View
 						style={[
-							chapterProgressBar,
+							styles.progressBar,
 							{
 								backgroundColor: `${progressColor}20`,
 								width: '100%',
@@ -56,7 +49,7 @@ export default function ChapterMeta({
 						]}
 					/>
 				</View>
-				<Text style={metaDataStyle}>{displayProgressPercent}%</Text>
+				<Text style={styles.metaData}>{displayProgressPercent}%</Text>
 			</View>
 		</View>
 	);
@@ -66,23 +59,18 @@ export default function ChapterMeta({
  * Styles
  */
 const styles = StyleSheet.create({
-	metaRowStyle: {
+	metaRow: {
 		width: '100%',
 		display: 'flex',
 		flexDirection: 'row',
 		gap: 8,
 	},
-	metaTextStyle: {
+	metaText: {
 		color: colors.dark.text,
 		fontSize: 14,
 		fontFamily: 'lexend-400',
 	},
-	metaDataStyle: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 14,
-	},
-	chapterProgressBarContainer: {
+	progressBarContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		overflow: 'hidden',
@@ -90,8 +78,13 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		flex: 1,
 	},
-	chapterProgressBar: {
+	progressBar: {
 		height: 8,
 		borderRadius: 4,
+	},
+	metaData: {
+		color: colors.dark.text,
+		fontFamily: 'lexend-600',
+		fontSize: 14,
 	},
 });

@@ -15,21 +15,10 @@ interface ChapterLockedButtonProps {
  * ChapterLockedButton component
  */
 export default function ChapterLockedButton({ color, unlockCriteria }: ChapterLockedButtonProps) {
-	const {
-		buttonContainer,
-		criteriaContainer,
-		criteriaMet,
-		criteriaText,
-		lockContainer,
-		lockFlexContainer,
-		reqTitle,
-		criteriaTitle,
-	} = styles;
-
 	return (
-		<View style={[buttonContainer, { borderColor: color }]}>
-			<View style={[lockContainer, { backgroundColor: color }]}>
-				<View style={lockFlexContainer}>
+		<View style={[styles.buttonContainer, { borderColor: color }]}>
+			<View style={[styles.lockContainer, { backgroundColor: color }]}>
+				<View style={styles.lockFlexContainer}>
 					<MaterialIcons
 						color={'#E0D1B7'}
 						size={16}
@@ -37,15 +26,15 @@ export default function ChapterLockedButton({ color, unlockCriteria }: ChapterLo
 					/>
 				</View>
 			</View>
-			<View style={criteriaContainer}>
-				<Text style={reqTitle}>Complete the following to unlock:</Text>
+			<View style={styles.criteriaContainer}>
+				<Text style={styles.reqTitle}>Complete the following to unlock:</Text>
 				{unlockCriteria.map(({ title, isUnlocked, requiredPercentage }, index) => (
 					<Text
 						key={`${title}-${index}`}
-						style={[criteriaText, isUnlocked && criteriaMet]}
+						style={[styles.criteriaText, isUnlocked && styles.criteriaMet]}
 					>
 						• Reach {requiredPercentage}% in{' '}
-						<Text style={[criteriaTitle, isUnlocked && criteriaMet]}>{title}</Text>.
+						<Text style={[styles.criteriaTitle, isUnlocked && styles.criteriaMet]}>{title}</Text>.
 					</Text>
 				))}
 			</View>
@@ -79,10 +68,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		paddingHorizontal: 4,
 	},
-	reqTitle: {
-		fontFamily: 'lexend-600',
-		fontSize: 14,
-	},
 	criteriaContainer: {
 		padding: 4,
 		borderWidth: 2,
@@ -93,6 +78,10 @@ const styles = StyleSheet.create({
 		borderStyle: 'dashed',
 		borderColor: colors.dark.border,
 		gap: 8,
+	},
+	reqTitle: {
+		fontFamily: 'lexend-600',
+		fontSize: 14,
 	},
 	criteriaText: {
 		fontFamily: 'lexend-400',

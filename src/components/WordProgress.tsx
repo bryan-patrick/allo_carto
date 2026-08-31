@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ComponentProps, useEffect, useState } from 'react';
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -9,8 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import colors from '../app/colors';
 import {
-	getWordProgressDefinitionByKey,
 	getWordProgressDefinition,
+	getWordProgressDefinitionByKey,
 	WordProgressKey,
 } from '../util/wordProgress';
 import { useCardDeck } from './CardDeck/useCardDeck';
@@ -43,38 +43,41 @@ export function WordProgressIcon({ progress, size = 12, color, ...props }: WordP
  */
 export default function WordProgress() {
 	const { currentCard } = useCardDeck();
+
+	/**
+	 * State
+	 */
 	const [currentScore] = useState(currentCard.correctCount);
 	const [nextScore] = useState(currentCard.correctCount + 1);
+
 	const [currentProgress] = useState(() =>
 		getWordProgressDefinition({
 			correctCount: currentCard.correctCount,
 			seenCount: currentCard.seenCount,
 		}),
 	);
+
 	const [nextProgress] = useState(() =>
 		getWordProgressDefinition({
 			correctCount: currentCard.correctCount + 1,
 			seenCount: currentCard.seenCount,
 		}),
 	);
-	const currentProgressColor = { backgroundColor: colors.wordProgress[currentProgress.key] };
-	const nextProgressColor = { backgroundColor: colors.wordProgress[nextProgress.key] };
 
+	/**
+	 * Animations / styles
+	 */
+	const currentProgressColorStyle = { backgroundColor: colors.wordProgress[currentProgress.key] };
+	const nextProgressColorStyle = { backgroundColor: colors.wordProgress[nextProgress.key] };
 	const translateY = useSharedValue(0);
-	const containerY = useAnimatedStyle(() => ({
+
+	const animatedContainerStyle = useAnimatedStyle(() => ({
 		transform: [{ translateY: translateY.get() }],
 	}));
 
-	const {
-		wordProgressContainer,
-		animationContainer,
-		currentContainer,
-		nextContainer,
-		scoreText,
-		progressText,
-		icon,
-	} = wordProgressStyles;
-
+	/**
+	 * Trigger the animation
+	 */
 	useEffect(() => {
 		if (currentCard.correctCount !== currentScore) {
 			translateY.set(
@@ -90,35 +93,39 @@ export default function WordProgress() {
 		}
 	}, [currentScore, currentCard.correctCount, translateY]);
 
+	/**
+	 * Render the word progress
+	 */
 	return (
-		<View style={wordProgressContainer}>
-			<Animated.View style={[animationContainer, containerY]}>
-				<Animated.View style={[currentContainer, currentProgressColor]}>
-					<Animated.Text style={scoreText}>{currentScore}</Animated.Text>
+		<View style={styles.wordProgressContainer}>
+			<Animated.View style={[styles.animationContainer, animatedContainerStyle]}>
+				<Animated.View style={[styles.currentContainer, currentProgressColorStyle]}>
+					<Animated.Text style={styles.scoreText}>{currentScore}</Animated.Text>
 					<WordProgressIcon
-						style={icon}
 						progress={currentProgress.key}
 						size={18}
 						color={colors.light.text}
 					/>
-					<Animated.Text style={progressText}>{currentProgress.name}</Animated.Text>
+					<Animated.Text style={styles.progressText}>{currentProgress.name}</Animated.Text>
 				</Animated.View>
-				<Animated.View style={[nextContainer, nextProgressColor]}>
-					<Animated.Text style={scoreText}>{nextScore}</Animated.Text>
+				<Animated.View style={[styles.nextContainer, nextProgressColorStyle]}>
+					<Animated.Text style={styles.scoreText}>{nextScore}</Animated.Text>
 					<WordProgressIcon
-						style={icon}
 						progress={nextProgress.key}
 						size={18}
 						color={colors.light.text}
 					/>
-					<Animated.Text style={progressText}>{nextProgress.name}</Animated.Text>
+					<Animated.Text style={styles.progressText}>{nextProgress.name}</Animated.Text>
 				</Animated.View>
 			</Animated.View>
 		</View>
 	);
 }
 
-const wordProgressStyles = StyleSheet.create<Record<string, ViewStyle & TextStyle>>({
+/**
+ * Styles
+ */
+const styles = StyleSheet.create({
 	wordProgressContainer: {
 		display: 'flex',
 		height: 22,
@@ -161,5 +168,4 @@ const wordProgressStyles = StyleSheet.create<Record<string, ViewStyle & TextStyl
 		fontFamily: 'azeret-mono-600',
 		textTransform: 'uppercase',
 	},
-	icon: {},
 });

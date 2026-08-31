@@ -47,19 +47,8 @@ export default function WordCardButton({
 	/**
 	 * Style vars
 	 */
-	const {
-		containerStyles,
-		pressableStyles,
-		successPressable,
-		disabledPressable,
-		textRow,
-		textStyles,
-		successText,
-		disabledText,
-	} = wordCardButtonStyles;
-
-	const pressableStateStyle = cardState.progress === 'SUCCESS' ? successPressable : null;
-	const textStateStyle = cardState.progress === 'SUCCESS' ? successText : null;
+	const pressableStateStyle = cardState.progress === 'SUCCESS' ? styles.successPressable : null;
+	const textStateStyle = cardState.progress === 'SUCCESS' ? styles.successText : null;
 
 	/**
 	 * State/prop vars
@@ -221,7 +210,7 @@ export default function WordCardButton({
 	 * Render the WordCard
 	 */
 	return (
-		<Animated.View style={[containerStyles, animatedContainerStyle]}>
+		<Animated.View style={animatedContainerStyle}>
 			<AnimatedPressable
 				{...props}
 				disabled={isDisabled}
@@ -229,17 +218,19 @@ export default function WordCardButton({
 				onPressOut={handlePressOut}
 				hitSlop={10}
 				style={[
-					pressableStyles,
+					styles.pressable,
 					pressableStateStyle,
 					animatedShadowStyle,
-					isDisabled && disabledPressable,
+					isDisabled && styles.disabledPressable,
 				]}
 			>
 				<View
-					style={textRow}
+					style={styles.textRow}
 					testID="word-card-button-content"
 				>
-					<Text style={[textStyles, textStateStyle, isDisabled && disabledText]}>{children}</Text>
+					<Text style={[styles.text, textStateStyle, isDisabled && styles.disabledText]}>
+						{children}
+					</Text>
 					{SVGElement}
 				</View>
 			</AnimatedPressable>
@@ -250,9 +241,8 @@ export default function WordCardButton({
 /**
  * Styles
  */
-const wordCardButtonStyles = StyleSheet.create({
-	containerStyles: {},
-	pressableStyles: {
+const styles = StyleSheet.create({
+	pressable: {
 		alignItems: 'center',
 		justifyContent: 'center',
 		borderColor: colors.dark.border,
@@ -265,11 +255,6 @@ const wordCardButtonStyles = StyleSheet.create({
 		shadowOffset: { width: 0, height: 8 },
 		shadowOpacity: 1,
 		shadowRadius: 0,
-	},
-	textStyles: {
-		color: colors.light.text,
-		fontFamily: 'lexend-600',
-		fontSize: 16,
 	},
 	successPressable: {
 		backgroundColor: colors.light.success,
@@ -288,6 +273,11 @@ const wordCardButtonStyles = StyleSheet.create({
 		 * Keep the button the same height before and after its 24px arrow appears.
 		 */
 		minHeight: 24,
+	},
+	text: {
+		color: colors.light.text,
+		fontFamily: 'lexend-600',
+		fontSize: 16,
 	},
 	successText: {
 		color: colors.dark.text,
