@@ -3,11 +3,11 @@ import type { CardRarity, Word } from '../components/CardDeck/cardDeckTypes';
 /**
  * More tickets make a word easier to draw.
  * Fewer tickets make a word harder to draw.
- * 
+ *
  * 	Common: 10,
-	Rare: 5,
-	Epic: 3,
-	Legendary: 1,
+ *  Rare: 5,
+ *  Epic: 3,
+ *  Legendary: 1,
  */
 const numberOfTicketsByRarity: Record<CardRarity, number> = {
 	Common: 10,

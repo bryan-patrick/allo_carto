@@ -26,7 +26,7 @@ const polaroidColorStops: NonNullable<LinearGradientProps['locations']> = [
 ];
 
 const polaroidStyles = {
-	polaroidContainerStyle: {
+	polaroidContainer: {
 		display: 'flex',
 		backgroundColor: colors.light.polaroid,
 		borderRadius: 2,

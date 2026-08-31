@@ -17,43 +17,30 @@ interface SpineProps {
  */
 export default function Spine({ color, index, materialIconName }: SpineProps) {
 	/**
-	 * Destructure styles
-	 */
-	const {
-		spineColorStyle,
-		spineImageStyle,
-		spineStyle,
-		spineInner,
-		borderContainer,
-		iconStyle,
-		spineInnerText,
-	} = styles;
-
-	/**
 	 * Render the component
 	 */
 	return (
-		<View style={[spineStyle, { borderColor: `${color}80` }]}>
+		<View style={[styles.spine, { borderColor: `${color}80` }]}>
 			<ImageBackground
 				source={require('../../../app/assets/images/book-parts/spine.jpg')}
-				style={spineImageStyle}
+				style={styles.spineImage}
 			/>
 			{color && (
 				<View
 					pointerEvents="none"
-					style={[spineColorStyle, { backgroundColor: color }]}
+					style={[styles.spineColor, { backgroundColor: color }]}
 					testID="spine-color-overlay"
 				/>
 			)}
-			<View style={spineInner}>
-				<View style={borderContainer}>
+			<View style={styles.spineInner}>
+				<View style={styles.borderContainer}>
 					<MaterialIcons
 						color={'rgba(255, 255, 255, 0.6)'}
 						name={materialIconName ?? 'flight'}
 						size={24}
-						style={iconStyle}
+						style={styles.icon}
 					/>
-					<Text style={spineInnerText}>{index + 1}</Text>
+					<Text style={styles.spineInnerText}>{index + 1}</Text>
 				</View>
 			</View>
 		</View>
@@ -64,15 +51,10 @@ export default function Spine({ color, index, materialIconName }: SpineProps) {
  * Styles
  */
 const styles = StyleSheet.create({
-	spineColorStyle: {
-		position: 'absolute',
-		mixBlendMode: 'color',
-		bottom: 0,
-		left: 0,
-		right: 0,
-		top: 0,
+	spine: {
+		width: 50,
 	},
-	spineImageStyle: {
+	spineImage: {
 		bottom: 0,
 		left: 0,
 		position: 'absolute',
@@ -81,8 +63,13 @@ const styles = StyleSheet.create({
 		borderRightWidth: 1,
 		borderColor: colors.dark.border,
 	},
-	spineStyle: {
-		width: 50,
+	spineColor: {
+		position: 'absolute',
+		mixBlendMode: 'color',
+		bottom: 0,
+		left: 0,
+		right: 0,
+		top: 0,
 	},
 	spineInner: {
 		backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -104,7 +91,7 @@ const styles = StyleSheet.create({
 		width: '100%',
 		gap: 8,
 	},
-	iconStyle: {
+	icon: {
 		shadowOffset: {
 			height: 0,
 			width: 0,

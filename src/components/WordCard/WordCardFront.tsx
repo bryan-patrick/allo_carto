@@ -48,23 +48,6 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	const { currentCard } = useCardDeck();
 
 	/**
-	 * Destructure Styles
-	 */
-	const { cardFront, hiddenMeasureText } = wordCardFrontStyles;
-
-	const {
-		wordId,
-		wordPronunciation,
-		cardMain,
-		answerSlotContainer,
-		answerSlot,
-		feedbackContainer,
-		feedbackText,
-		wordMetaContainer,
-		wordForm,
-	} = sharedWordCardStyles;
-
-	/**
 	 * Word data
 	 */
 	const {
@@ -87,10 +70,10 @@ const WordCardFront = memo(function WordCardFrontMemo({
 		article: frenchArticle,
 		word: frenchWord,
 	});
-	const articleClass = {
+	const articleVisibilityStyle = {
 		color: cardState.selectedArticle ? colors.dark.text : 'transparent',
 	};
-	const wordClass = {
+	const wordVisibilityStyle = {
 		color: cardState.selectedWord ? colors.dark.text : 'transparent',
 	};
 
@@ -109,17 +92,17 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	 */
 	return (
 		<Animated.View
-			style={[sharedWordCardStyles.wordCardInner, cardFront, wordCardFrontFlippedStyle]}
+			style={[sharedWordCardStyles.wordCardInner, styles.cardFront, wordCardFrontFlippedStyle]}
 		>
 			<WordCardHeader />
-			<View style={cardMain}>
-				<Text style={wordId}>{displayedFrenchWord}</Text>
-				<Text style={wordPronunciation}>({pronunciation})</Text>
-				<View style={wordMetaContainer}>
+			<View style={sharedWordCardStyles.cardMain}>
+				<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
+				<Text style={sharedWordCardStyles.wordPronunciation}>({pronunciation})</Text>
+				<View style={sharedWordCardStyles.wordMetaContainer}>
 					{partOfSpeech && (
 						<Text
 							style={[
-								wordForm,
+								sharedWordCardStyles.wordForm,
 								{
 									borderRightWidth: formCapitalized ? 1 : 0,
 									marginRight: formCapitalized ? 8 : 0,
@@ -130,24 +113,24 @@ const WordCardFront = memo(function WordCardFrontMemo({
 							{partOfSpeechCapitalized}
 						</Text>
 					)}
-					{form && <Text style={wordForm}>{formCapitalized}</Text>}
+					{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
 				</View>
 			</View>
-			<View style={answerSlotContainer}>
+			<View style={sharedWordCardStyles.answerSlotContainer}>
 				{englishArticle && (
 					<>
 						<Text
 							numberOfLines={1}
 							onLayout={handleArticleWidth}
-							style={[answerSlot, hiddenMeasureText]}
+							style={[sharedWordCardStyles.answerSlot, styles.hiddenMeasureText]}
 						>
 							{displayedArticle}
 						</Text>
 						<Animated.Text
 							numberOfLines={1}
 							style={[
-								answerSlot,
-								articleClass,
+								sharedWordCardStyles.answerSlot,
+								articleVisibilityStyle,
 								articleWidthStyle,
 								cardState.progress !== 'SUCCESS' && cardState.selectedArticle && articleSlotStyle,
 							]}
@@ -159,15 +142,15 @@ const WordCardFront = memo(function WordCardFrontMemo({
 				<Text
 					numberOfLines={1}
 					onLayout={handleWordWidth}
-					style={[answerSlot, hiddenMeasureText]}
+					style={[sharedWordCardStyles.answerSlot, styles.hiddenMeasureText]}
 				>
 					{displayedWord}
 				</Text>
 				<Animated.Text
 					numberOfLines={1}
 					style={[
-						answerSlot,
-						wordClass,
+						sharedWordCardStyles.answerSlot,
+						wordVisibilityStyle,
 						wordWidthStyle,
 						cardState.progress !== 'SUCCESS' && cardState.selectedWord && wordSlotStyle,
 					]}
@@ -175,8 +158,13 @@ const WordCardFront = memo(function WordCardFrontMemo({
 					{cardState.selectedWord && displayedWord}
 				</Animated.Text>
 			</View>
-			<View style={feedbackContainer}>
-				<Text style={[feedbackText, cardState.progress !== 'SUCCESS' && feedbackStyle]}>
+			<View style={sharedWordCardStyles.feedbackContainer}>
+				<Text
+					style={[
+						sharedWordCardStyles.feedbackText,
+						cardState.progress !== 'SUCCESS' && feedbackStyle,
+					]}
+				>
 					{FEEDBACK_TEXT_FRONT[cardState.feedbackKey] ?? ''}
 				</Text>
 			</View>
@@ -187,7 +175,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 /**
  * Styles
  */
-export const wordCardFrontStyles = StyleSheet.create({
+const styles = StyleSheet.create({
 	cardFront: {
 		backfaceVisibility: 'hidden',
 		width: '100%',

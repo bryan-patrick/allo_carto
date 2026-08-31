@@ -37,19 +37,6 @@ export default function LockOverlay({
 	style,
 }: LockOverlayProps) {
 	/**
-	 * Destructure styles
-	 */
-	const {
-		completeOverlayStyle,
-		containerStyle,
-		overlayStyle,
-		unlockCriteriaContainerStyle,
-		unlockCriteriaMetStyle,
-		unlockCriteriaTextStyle,
-		unlockCriteriaTitleStyle,
-	} = styles;
-
-	/**
 	 * Overlay vars
 	 */
 	const showLockOverlay = isLocked;
@@ -68,7 +55,7 @@ export default function LockOverlay({
 	 * Render LockOverlay
 	 */
 	return (
-		<View style={[containerStyle, style]}>
+		<View style={[styles.container, style]}>
 			{children}
 			{showOverlay && (
 				<Pressable
@@ -76,7 +63,11 @@ export default function LockOverlay({
 					accessibilityLabel={accessibilityLabel}
 					accessibilityState={{ disabled: true }}
 					onPress={() => undefined}
-					style={[overlayStyle, showCompleteOverlay && completeOverlayStyle, customOverlayStyle]}
+					style={[
+						styles.overlay,
+						showCompleteOverlay && styles.completeOverlay,
+						customOverlayStyle,
+					]}
 					testID={overlayTestID}
 				>
 					{showLockOverlay && (
@@ -94,17 +85,20 @@ export default function LockOverlay({
 						/>
 					)}
 					{unlockCriteria && unlockCriteria.length > 0 && (
-						<View style={unlockCriteriaContainerStyle}>
+						<View style={styles.unlockCriteriaContainer}>
 							{unlockCriteria.map((criterion, index) => (
 								<Text
 									key={`${criterion.title}-${index}`}
-									style={[unlockCriteriaTextStyle, criterion.isUnlocked && unlockCriteriaMetStyle]}
+									style={[
+										styles.unlockCriteriaText,
+										criterion.isUnlocked && styles.unlockCriteriaMet,
+									]}
 								>
 									Reach {criterion.requiredPercentage}% in{' '}
 									<Text
 										style={[
-											unlockCriteriaTitleStyle,
-											criterion.isUnlocked && unlockCriteriaMetStyle,
+											styles.unlockCriteriaTitle,
+											criterion.isUnlocked && styles.unlockCriteriaMet,
 										]}
 									>
 										{criterion.title}
@@ -124,15 +118,10 @@ export default function LockOverlay({
  * Styles
  */
 const styles = StyleSheet.create({
-	completeOverlayStyle: {
-		backgroundColor: colors.light.success,
-		borderColor: colors.dark.success,
-		opacity: 0.75,
-	},
-	containerStyle: {
+	container: {
 		position: 'relative',
 	},
-	overlayStyle: {
+	overlay: {
 		...StyleSheet.absoluteFill,
 		alignItems: 'center',
 		backgroundColor: `#333333dd`,
@@ -140,22 +129,27 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 		zIndex: 10,
 	},
-	unlockCriteriaContainerStyle: {
+	completeOverlay: {
+		backgroundColor: colors.light.success,
+		borderColor: colors.dark.success,
+		opacity: 0.75,
+	},
+	unlockCriteriaContainer: {
 		width: '100%',
 		padding: 16,
 		marginVertical: 16,
 		backgroundColor: colors.light.primary,
 	},
-	unlockCriteriaTextStyle: {
+	unlockCriteriaText: {
 		fontFamily: 'lexend-400',
 		fontSize: 16,
 		textAlign: 'center',
 		color: colors.dark.text,
 	},
-	unlockCriteriaMetStyle: {
+	unlockCriteriaMet: {
 		textDecorationLine: 'line-through',
 	},
-	unlockCriteriaTitleStyle: {
+	unlockCriteriaTitle: {
 		fontFamily: 'lexend-600',
 	},
 });

@@ -97,8 +97,6 @@ function animateCard(
  * Loader Component
  */
 export default function Loader() {
-	const { container, cardContainer, card, cardText, textContainer, text } = styles;
-
 	/**
 	 * Animation values
 	 */
@@ -115,17 +113,17 @@ export default function Loader() {
 	/**
 	 * Animation styles
 	 */
-	const cardOne = useAnimatedStyle(() => ({
+	const cardOneStyle = useAnimatedStyle(() => ({
 		transform: [{ translateX: cardOneX.value }, { rotateZ: `${cardOneRotate.value}deg` }],
 		zIndex: cardOneZIndex.value,
 	}));
 
-	const cardTwo = useAnimatedStyle(() => ({
+	const cardTwoStyle = useAnimatedStyle(() => ({
 		transform: [{ translateX: cardTwoX.value }, { rotateZ: `${cardTwoRotate.value}deg` }],
 		zIndex: cardTwoZIndex.value,
 	}));
 
-	const cardThree = useAnimatedStyle(() => ({
+	const cardThreeStyle = useAnimatedStyle(() => ({
 		transform: [{ translateX: cardThreeX.value }, { rotateZ: `${cardThreeRotate.value}deg` }],
 		zIndex: cardThreeZIndex.value,
 	}));
@@ -153,20 +151,20 @@ export default function Loader() {
 	 * Render the loader
 	 */
 	return (
-		<Animated.View style={container}>
-			<Animated.View style={cardContainer}>
-				<Animated.View style={[card, cardOne]}>
-					<Text style={cardText}>AC</Text>
+		<Animated.View style={styles.container}>
+			<Animated.View style={styles.cardContainer}>
+				<Animated.View style={[styles.card, cardOneStyle]}>
+					<Text style={styles.cardText}>AC</Text>
 				</Animated.View>
-				<Animated.View style={[card, cardTwo]}>
-					<Text style={cardText}>AC</Text>
+				<Animated.View style={[styles.card, cardTwoStyle]}>
+					<Text style={styles.cardText}>AC</Text>
 				</Animated.View>
-				<Animated.View style={[card, cardThree]}>
-					<Text style={cardText}>AC</Text>
+				<Animated.View style={[styles.card, cardThreeStyle]}>
+					<Text style={styles.cardText}>AC</Text>
 				</Animated.View>
 			</Animated.View>
-			<Animated.View style={textContainer}>
-				<Text style={text}>Loading...</Text>
+			<Animated.View style={styles.textContainer}>
+				<Text style={styles.text}>Loading...</Text>
 			</Animated.View>
 		</Animated.View>
 	);

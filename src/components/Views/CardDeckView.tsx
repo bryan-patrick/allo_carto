@@ -15,8 +15,6 @@ interface CardDeckViewProps {
  * CardDeckView component
  */
 export default function CardDeckView({ currentCard }: CardDeckViewProps) {
-	const { wordCardAnimatedView } = cardDeckViewStyles;
-
 	/**
 	 * Render the card deck
 	 */
@@ -27,7 +25,7 @@ export default function CardDeckView({ currentCard }: CardDeckViewProps) {
 				key={currentCard.id}
 				entering={SlideInRight.duration(200)}
 				exiting={SlideOutLeft.duration(200)}
-				style={wordCardAnimatedView}
+				style={styles.wordCardAnimatedView}
 			>
 				<WordCardContainer
 					word={currentCard}
@@ -41,7 +39,7 @@ export default function CardDeckView({ currentCard }: CardDeckViewProps) {
 /**
  * Styles
  */
-const cardDeckViewStyles = StyleSheet.create({
+const styles = StyleSheet.create({
 	wordCardAnimatedView: {
 		flex: 1,
 		position: 'relative',

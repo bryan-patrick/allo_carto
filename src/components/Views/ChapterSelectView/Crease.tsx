@@ -5,20 +5,15 @@ import { ImageBackground, StyleSheet, View } from 'react-native';
  */
 export default function Crease() {
 	/**
-	 * Destructure styles
-	 */
-	const { creaseStyle, innerBorder } = styles;
-
-	/**
 	 * Render the component
 	 */
 	return (
 		<ImageBackground
 			resizeMode="stretch"
 			source={require('../../../app/assets/images/book-parts/crease.jpg')}
-			style={creaseStyle}
+			style={styles.crease}
 		>
-			<View style={innerBorder} />
+			<View style={styles.innerBorder} />
 		</ImageBackground>
 	);
 }
@@ -27,7 +22,7 @@ export default function Crease() {
  * Styles
  */
 const styles = StyleSheet.create({
-	creaseStyle: {
+	crease: {
 		width: 8,
 		paddingTop: 8,
 		paddingBottom: 8,

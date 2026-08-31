@@ -29,8 +29,8 @@ interface MappedButtonProps {
 	isHighlighted: boolean;
 	isSelectedWrong: boolean;
 	progress: CardProgress;
-	highlightStyles?: ViewStyle;
-	highlightTextStyles?: TextStyle;
+	highlightStyle?: ViewStyle;
+	highlightTextStyle?: TextStyle;
 	handler: Dispatch<string>;
 }
 
@@ -48,8 +48,8 @@ const MappedButton = memo(function MappedButtonMemo({
 	isHighlighted,
 	isSelectedWrong,
 	progress,
-	highlightStyles,
-	highlightTextStyles,
+	highlightStyle,
+	highlightTextStyle,
 	handler,
 }: MappedButtonProps) {
 	/**
@@ -58,12 +58,6 @@ const MappedButton = memo(function MappedButtonMemo({
 	const buttonBackgroundColor = useSharedValue(colors.light.background);
 	const buttonBoxShadow = useSharedValue(`0 4px 0 0 ${colors.light.border}`);
 	const buttonY = useSharedValue(0);
-
-	const wcsButtonActive = useAnimatedStyle(() => ({
-		transform: [{ translateY: buttonY.value }],
-		backgroundColor: buttonBackgroundColor.value,
-		boxShadow: buttonBoxShadow.value,
-	}));
 
 	const selectionTiming = useMemo(
 		() => ({
@@ -80,6 +74,15 @@ const MappedButton = memo(function MappedButtonMemo({
 		}),
 		[],
 	);
+
+	/**
+	 * Style vars
+	 */
+	const activeButtonStyle = useAnimatedStyle(() => ({
+		transform: [{ translateY: buttonY.value }],
+		backgroundColor: buttonBackgroundColor.value,
+		boxShadow: buttonBoxShadow.value,
+	}));
 
 	/**
 	 * Handle animation side effects
@@ -128,25 +131,20 @@ const MappedButton = memo(function MappedButtonMemo({
 	]);
 
 	/**
-	 * Destructure Styles
-	 */
-	const { wcsButtonContainer, wcsButton, wcsText } = mappedWordsStyles;
-
-	/**
 	 * Render the words.
 	 * Note the hitslop, it works well here.
 	 */
 	return (
 		<Animated.View
-			style={wcsButtonContainer}
+			style={styles.buttonContainer}
 			key={word}
 		>
 			<AnimatedPressable
-				style={[wcsButton, wcsButtonActive, isHighlighted && highlightStyles]}
+				style={[styles.button, activeButtonStyle, isHighlighted && highlightStyle]}
 				onPress={() => handler(word)}
 				hitSlop={10}
 			>
-				<Text style={[wcsText, isHighlighted && highlightTextStyles]}>{word}</Text>
+				<Text style={[styles.text, isHighlighted && highlightTextStyle]}>{word}</Text>
 			</AnimatedPressable>
 		</Animated.View>
 	);
@@ -168,21 +166,9 @@ const MappedWords = memo(function MappedWordsMemo({
 	const { cardState } = useWordCardUI();
 
 	/**
-	 * Destructure Styles
-	 */
-	const {
-		highlightSuccess,
-		highlightWarning,
-		highlightDanger,
-		highlightTextSuccess,
-		highlightTextWarning,
-		highlightTextDanger,
-	} = mappedWordsStyles;
-
-	/**
 	 * Current card data
 	 */
-	const { highlightArticle, highlightWord, highlightStyles, highlightTextStyles } = useMemo(() => {
+	const { highlightArticle, highlightWord, highlightStyle, highlightTextStyle } = useMemo(() => {
 		const hasArticleMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
 
 		const hasWordMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
@@ -192,29 +178,29 @@ const MappedWords = memo(function MappedWordsMemo({
 				return {
 					highlightArticle: cardState.selectedArticle,
 					highlightWord: cardState.selectedWord,
-					highlightStyles: highlightSuccess,
-					highlightTextStyles: highlightTextSuccess,
+					highlightStyle: styles.highlightSuccess,
+					highlightTextStyle: styles.highlightTextSuccess,
 				};
 			case 'WARNING':
 				return {
 					highlightArticle: hasArticleMistake ? cardState.selectedArticle : null,
 					highlightWord: hasWordMistake ? cardState.selectedWord : null,
-					highlightStyles: highlightWarning,
-					highlightTextStyles: highlightTextWarning,
+					highlightStyle: styles.highlightWarning,
+					highlightTextStyle: styles.highlightTextWarning,
 				};
 			case 'DANGER':
 				return {
 					highlightArticle: hasArticleMistake ? (currentCard.englishArticle ?? '') : null,
 					highlightWord: hasWordMistake ? currentCard.englishWords[0] : null,
-					highlightStyles: highlightDanger,
-					highlightTextStyles: highlightTextDanger,
+					highlightStyle: styles.highlightDanger,
+					highlightTextStyle: styles.highlightTextDanger,
 				};
 			default:
 				return {
 					highlightArticle: null,
 					highlightWord: null,
-					highlightStyles: undefined,
-					highlightTextStyles: undefined,
+					highlightStyle: undefined,
+					highlightTextStyle: undefined,
 				};
 		}
 	}, [
@@ -224,12 +210,6 @@ const MappedWords = memo(function MappedWordsMemo({
 		cardState.selectedWord,
 		cardState.selectedArticle,
 		currentCard.englishArticle,
-		highlightSuccess,
-		highlightWarning,
-		highlightDanger,
-		highlightTextSuccess,
-		highlightTextWarning,
-		highlightTextDanger,
 	]);
 
 	return words.map((word: string) => (
@@ -244,8 +224,8 @@ const MappedWords = memo(function MappedWordsMemo({
 			}
 			isHighlighted={word === highlightArticle || word === highlightWord}
 			progress={cardState.progress}
-			highlightStyles={highlightStyles}
-			highlightTextStyles={highlightTextStyles}
+			highlightStyle={highlightStyle}
+			highlightTextStyle={highlightTextStyle}
 			handler={handler}
 		/>
 	));
@@ -256,11 +236,11 @@ export default MappedWords;
 /**
  * Styles
  */
-const mappedWordsStyles = StyleSheet.create({
-	wcsButtonContainer: {
+const styles = StyleSheet.create({
+	buttonContainer: {
 		display: 'contents',
 	},
-	wcsButton: {
+	button: {
 		flexGrow: 1,
 		display: 'flex',
 		alignItems: 'center',
@@ -273,7 +253,7 @@ const mappedWordsStyles = StyleSheet.create({
 		minWidth: 80,
 		backgroundColor: colors.light.background,
 	},
-	wcsText: {
+	text: {
 		textAlign: 'center',
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',

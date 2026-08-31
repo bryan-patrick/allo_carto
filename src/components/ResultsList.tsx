@@ -17,27 +17,11 @@ interface ResultsListProps {
  */
 export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
 	/**
-	 * Destructure styles
-	 */
-	const {
-		sectionTitleStyle,
-		wordRowContainerStyle,
-		checkMarKContainerStyle,
-		wordRowStyle,
-		wordsListStyle,
-		frenchWordStyle,
-		englishWordStyle,
-		successStyle,
-		dangerStyle,
-		CEFRStyle,
-	} = styles;
-
-	/**
 	 * Is correct or nah?
 	 */
 	const title: string = isCorrect ? 'Correct' : 'Incorrect';
 	const iconColor: string = isCorrect ? colors.dark.success : colors.dark.danger;
-	const isCorrectStyle: TextStyle = isCorrect ? successStyle : dangerStyle;
+	const wordResultStyle: TextStyle = isCorrect ? styles.success : styles.danger;
 	const iconName: ComponentProps<typeof MaterialIcons>['name'] = isCorrect ? 'check' : 'close';
 	const emptyText =
 		isCorrect ?
@@ -48,8 +32,8 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
 	 * Render the results list
 	 */
 	return (
-		<View style={wordsListStyle}>
-			<Text style={sectionTitleStyle}>{title}</Text>
+		<View style={styles.wordsList}>
+			<Text style={styles.sectionTitle}>{title}</Text>
 			{wordArr.length > 0 &&
 				wordArr.map((word: Word) => {
 					const { frenchWord, correctCount, englishWords, CEFR } = word;
@@ -60,20 +44,24 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
 					return (
 						<View
 							key={`${frenchWord}-${correctCount}`}
-							style={wordRowContainerStyle}
+							style={styles.wordRowContainer}
 						>
-							<View style={checkMarKContainerStyle}>
+							<View style={styles.checkMarkContainer}>
 								<MaterialIcons
 									name={iconName}
 									size={24}
 									color={iconColor}
 								/>
-								<View style={wordRowStyle}>
-									<Text style={frenchWordStyle}>{frenchWord}</Text>
-									<Text style={[englishWordStyle, isCorrectStyle]}>{englishWords.join(', ')}</Text>
+								<View style={styles.wordRow}>
+									<Text style={styles.frenchWord}>{frenchWord}</Text>
+									<Text style={[styles.englishWord, wordResultStyle]}>
+										{englishWords.join(', ')}
+									</Text>
 								</View>
 							</View>
-							<Text style={[CEFRStyle, { backgroundColor: colors.light.CEFR[CEFR] }]}>{CEFR}</Text>
+							<Text style={[styles.CEFR, { backgroundColor: colors.light.CEFR[CEFR] }]}>
+								{CEFR}
+							</Text>
 						</View>
 					);
 				})}
@@ -86,13 +74,18 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
  * Styles
  */
 const styles = StyleSheet.create({
-	sectionTitleStyle: {
+	wordsList: {
+		display: 'flex',
+		flexDirection: 'column',
+		padding: 4,
+	},
+	sectionTitle: {
 		fontSize: 18,
 		fontFamily: 'lexend-600',
 		color: colors.dark.text,
 		marginBottom: 2,
 	},
-	wordRowContainerStyle: {
+	wordRowContainer: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
@@ -100,36 +93,30 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.border,
 		paddingVertical: 1,
 	},
-	checkMarKContainerStyle: {
+	checkMarkContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 4,
 	},
-	wordRowStyle: {
+	wordRow: {
 		padding: 2,
 	},
-	wordsListStyle: {
-		display: 'flex',
-		flexDirection: 'column',
-		padding: 4,
-	},
-	frenchWordStyle: {
+	frenchWord: {
 		fontSize: 14,
 		fontFamily: 'lexend-400',
 	},
-	englishWordStyle: {
+	englishWord: {
 		fontSize: 16,
 		fontFamily: 'lexend-600',
 	},
-	successStyle: {
+	success: {
 		color: colors.dark.success,
 	},
-	dangerStyle: {
+	danger: {
 		color: colors.dark.danger,
 	},
-	correctCountStyle: {},
-	CEFRStyle: {
+	CEFR: {
 		fontFamily: 'azeret-mono-600',
 		fontSize: 12,
 		padding: 2,

@@ -12,7 +12,6 @@ import Chapter from './Chapter';
 export default function ChapterSelectView() {
 	const { chapters } = deckAtlas;
 	const { progressById, status } = useUserProgress();
-	const { scrollViewStyle, scrollViewContainerStyle } = styles;
 
 	/**
 	 * Wait for the user's stored percentages
@@ -25,8 +24,8 @@ export default function ChapterSelectView() {
 	 */
 	return (
 		<ScrollView
-			style={scrollViewStyle}
-			contentContainerStyle={scrollViewContainerStyle}
+			style={styles.scrollView}
+			contentContainerStyle={styles.scrollViewContainer}
 		>
 			{chapters.map((chapter: DeckChapter, index) => {
 				const { id } = chapter;
@@ -52,8 +51,8 @@ export default function ChapterSelectView() {
  * Styles
  */
 const styles = StyleSheet.create({
-	scrollViewStyle: {},
-	scrollViewContainerStyle: {
+	scrollView: {},
+	scrollViewContainer: {
 		display: 'flex',
 		flexDirection: 'column',
 		gap: 24,

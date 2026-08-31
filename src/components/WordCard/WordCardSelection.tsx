@@ -16,7 +16,6 @@ interface WordCardSelectionProps {
  */
 export default function WordCardSelection({ articleWords, fillerWords }: WordCardSelectionProps) {
 	const { cardState, wordCardUIDispatch } = useWordCardUI();
-	const { wcsContainer } = wordCardSelectionStyles;
 
 	const handleArticlePressToggle = useCallback(
 		(word: string) => {
@@ -33,7 +32,7 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
 	);
 
 	return (
-		<View style={wcsContainer}>
+		<View style={styles.container}>
 			<MappedWords
 				words={articleWords}
 				activeWord={cardState.selectedArticle}
@@ -51,8 +50,8 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
 /**
  * Styles
  */
-const wordCardSelectionStyles = StyleSheet.create({
-	wcsContainer: {
+const styles = StyleSheet.create({
+	container: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		justifyContent: 'center',
