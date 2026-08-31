@@ -1,5 +1,5 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
 	Alert,
 	Animated,
@@ -42,9 +42,9 @@ interface PassageLineMetric {
  * Helper functions
  */
 function getPassageWordOpacity(progress: WordProgressKey, filter: WordProgressKey | null): number {
-	if (!filter) return progress === 'unseen' ? 0.5 : 1;
+	if (!filter) return progress === 'unseen' ? 0.4 : 1;
 
-	return progress === filter ? 1 : 0.2;
+	return progress === filter ? 1 : 0.15;
 }
 
 function createWordProgressOpacityValues(): Record<WordProgressKey, Animated.Value> {
@@ -68,12 +68,13 @@ export default function DeckBoxModal({
 	wordProgressCounts,
 	wordProgressKeyByWordId,
 }: DeckBoxModalProps) {
+	const passageScrollViewRef = useRef<ScrollView>(null);
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
 	const [activeWordProgressFilter, setActiveWordProgressFilter] = useState<WordProgressKey | null>(
 		null,
 	);
 	const [wordProgressOpacityByKey] = useState(createWordProgressOpacityValues);
-	const [unseenQuestionOpacity] = useState(() => new Animated.Value(0));
+	const [unseenQuestionOpacity] = useState(() => new Animated.Value(0.4));
 	const [hidePassageChevronTranslateY] = useState(() => new Animated.Value(0));
 
 	const totalWordCount = deck.wordIds.length;
@@ -116,13 +117,13 @@ export default function DeckBoxModal({
 				...wordProgressDefinitions.map(({ key }) =>
 					Animated.timing(wordProgressOpacityByKey[key], {
 						toValue: getPassageWordOpacity(key, nextProgress),
-						duration: 180,
+						duration: 120,
 						useNativeDriver: true,
 					}),
 				),
 				Animated.timing(unseenQuestionOpacity, {
-					toValue: nextProgress === 'unseen' ? 1 : 0,
-					duration: 180,
+					toValue: nextProgress === 'unseen' ? 1 : 0.2,
+					duration: 120,
 					useNativeDriver: true,
 				}),
 			],
@@ -140,6 +141,7 @@ export default function DeckBoxModal({
 			backdropColor={colors.dark.text}
 			transparent={false}
 			visible={modalVisible}
+			onShow={() => passageScrollViewRef.current?.flashScrollIndicators()}
 			onRequestClose={() => {
 				Alert.alert('Modal has been closed.');
 				setModalVisible(!modalVisible);
@@ -201,10 +203,11 @@ export default function DeckBoxModal({
 						 * Modal Content
 						 */}
 						<ScrollView
+							ref={passageScrollViewRef}
 							style={styles.modalScrollView}
 							showsVerticalScrollIndicator={true}
 							persistentScrollbar={true}
-							indicatorStyle={'white'}
+							indicatorStyle={'black'}
 						>
 							<View style={styles.modalTextContainer}>
 								<View
@@ -308,7 +311,10 @@ export default function DeckBoxModal({
 											onPress={() => handleWordProgressFilterPress(key)}
 											style={[
 												styles.progressLegendItem,
-												isActive && { backgroundColor: `${progressColor}33` },
+												isActive && {
+													backgroundColor: `${progressColor}33`,
+													borderColor: `${progressColor}66`,
+												},
 											]}
 										>
 											<View
@@ -331,6 +337,11 @@ export default function DeckBoxModal({
 					onPressOut={handleHidePassageButtonPressOut}
 					style={styles.hidePassageButton}
 				>
+					<MaterialIcons
+						name="menu-book"
+						size={20}
+						color={deck.colors.dark.primary}
+					/>
 					<Text style={[styles.hidePassageButtonText, { color: deck.colors.dark.primary }]}>
 						Hide passage
 					</Text>
@@ -427,7 +438,10 @@ const styles = StyleSheet.create({
 	},
 	modalScrollView: {
 		paddingHorizontal: 16,
-		borderColor: colors.light.background,
+		maxHeight: 320,
+		borderColor: colors.light.goldenBorder,
+		borderTopWidth: 1,
+		borderBottomWidth: 1,
 	},
 	modalTextContainer: {
 		position: 'relative',
@@ -454,7 +468,7 @@ const styles = StyleSheet.create({
 	passageWord: {
 		fontFamily: 'lexend-400',
 		fontSize: 16,
-		lineHeight: 24,
+		lineHeight: 28,
 	},
 	unseenPassageWord: {
 		color: 'transparent',
@@ -471,11 +485,14 @@ const styles = StyleSheet.create({
 		color: colors.wordProgress.new,
 		fontFamily: 'lexend-600',
 		fontSize: 14,
-		lineHeight: 24,
+		lineHeight: 28,
+		marginTop: 3,
+		borderBottomWidth: 1,
 		textAlign: 'center',
 	},
 	modalFooter: {
-		paddingVertical: 16,
+		paddingVertical: 8,
+		marginBottom: 8,
 		paddingHorizontal: 8,
 		gap: 8,
 	},
@@ -496,10 +513,14 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
+		borderWidth: 1,
+		borderColor: colors.light.goldenBorder,
+		borderRadius: 4,
+		paddingHorizontal: 4,
+		paddingVertical: 6,
+		flexGrow: 1,
+		flexShrink: 1,
 		gap: 4,
-		paddingHorizontal: 6,
-		paddingVertical: 4,
-		borderRadius: 6,
 	},
 	progressLegendDot: {
 		width: 10,
@@ -525,8 +546,7 @@ const styles = StyleSheet.create({
 		borderBottomLeftRadius: 16,
 		borderColor: colors.light.goldenBorder,
 		backgroundColor: '#E8DED5',
-		gap: 4,
-		marginTop: -1,
+		gap: 8,
 	},
 	hidePassageButtonText: {
 		fontSize: 14,
