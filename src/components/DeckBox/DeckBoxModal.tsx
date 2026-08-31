@@ -68,41 +68,6 @@ export default function DeckBoxModal({
 	wordProgressCounts,
 	wordProgressKeyByWordId,
 }: DeckBoxModalProps) {
-	/**
-	 * Destructure styles
-	 */
-	const {
-		centeredView,
-		modalView,
-		modalInner,
-		modalScrollView,
-		headerStyle,
-		modalTextContainerStyle,
-		modalTextContentStyle,
-		modalTextRulesStyle,
-		modalTextRuleStyle,
-		modalText,
-		unseenWordContainerStyle,
-		unseenWordQuestionStyle,
-		titleContainerStyle,
-		titleStyle,
-		placeContainerStyle,
-		placeTextStyle,
-		progressMetaStyle,
-		progressMetaLabelStyle,
-		progressBarContainerStyle,
-		progressBarStyle,
-		progressPercentStyle,
-		wordsSeenStyle,
-		modalFooterStyle,
-		progressTitleStyle,
-		progressLegendStyle,
-		progressLegendItemStyle,
-		progressLegendDotStyle,
-		progressLegendTextStyle,
-		hidePassageButton,
-		hidePassageButtonText,
-	} = styles;
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
 	const [activeWordProgressFilter, setActiveWordProgressFilter] = useState<WordProgressKey | null>(
 		null,
@@ -180,43 +145,45 @@ export default function DeckBoxModal({
 				setModalVisible(!modalVisible);
 			}}
 		>
-			<View style={centeredView}>
+			<View style={styles.centeredView}>
 				<ImageBackground
-					style={modalView}
+					style={styles.modalView}
 					source={modalBackground}
 					resizeMode="stretch"
 				>
-					<View style={modalInner}>
+					<View style={styles.modalInner}>
 						{/**
 						 * Modal Header
 						 */}
-						<View style={headerStyle}>
-							<View style={placeContainerStyle}>
+						<View style={styles.header}>
+							<View style={styles.placeContainer}>
 								<MaterialIcons
 									color={'#000000'}
 									size={16}
 									name="place"
 								/>
-								<Text style={placeTextStyle}>{deck.place}</Text>
+								<Text style={styles.placeText}>{deck.place}</Text>
 							</View>
-							<View style={titleContainerStyle}>
-								<Text style={[titleStyle, { color: deck.colors.dark.primary }]}>{deck.title}</Text>
+							<View>
+								<Text style={[styles.title, { color: deck.colors.dark.primary }]}>
+									{deck.title}
+								</Text>
 							</View>
 							<View
-								style={progressMetaStyle}
+								style={styles.progressMeta}
 								accessible={true}
 								accessibilityRole="progressbar"
 								accessibilityLabel={`Deck progress ${deckCompletionPercent} percent. ${wordsSeenCount} of ${totalWordCount} words seen.`}
 								accessibilityValue={{ min: 0, max: 100, now: deckCompletionPercent }}
 							>
-								<Text style={progressMetaLabelStyle}>Deck progress</Text>
-								<Text style={[progressPercentStyle, { color: deck.colors.dark.primary }]}>
+								<Text style={styles.progressMetaLabel}>Deck progress</Text>
+								<Text style={[styles.progressPercent, { color: deck.colors.dark.primary }]}>
 									{deckCompletionPercent}%
 								</Text>
-								<View style={progressBarContainerStyle}>
+								<View style={styles.progressBarContainer}>
 									<View
 										style={[
-											progressBarStyle,
+											styles.progressBar,
 											{
 												backgroundColor: deck.colors.dark.primary,
 												width: `${deckCompletionPercent}%`,
@@ -224,7 +191,7 @@ export default function DeckBoxModal({
 										]}
 									/>
 								</View>
-								<Text style={wordsSeenStyle}>
+								<Text style={styles.wordsSeen}>
 									{wordsSeenCount} / {totalWordCount} words seen
 								</Text>
 							</View>
@@ -234,26 +201,25 @@ export default function DeckBoxModal({
 						 * Modal Content
 						 */}
 						<ScrollView
-							style={modalScrollView}
+							style={styles.modalScrollView}
 							showsVerticalScrollIndicator={true}
 							persistentScrollbar={true}
 							indicatorStyle={'white'}
 						>
-							<View style={modalTextContainerStyle}>
+							<View style={styles.modalTextContainer}>
 								<View
 									accessible={false}
 									pointerEvents="none"
-									style={modalTextRulesStyle}
+									style={styles.modalTextRules}
 								>
 									{passageLineMetrics.map(({ y, height }, index) => (
 										<View
 											key={index}
-											style={[modalTextRuleStyle, { top: y + height }]}
+											style={[styles.modalTextRule, { top: y + height }]}
 										/>
 									))}
 								</View>
 								<Text
-									style={modalTextContentStyle}
 									onTextLayout={({ nativeEvent }) => {
 										const nextMetrics = nativeEvent.lines.map(({ y, height }) => ({ y, height }));
 
@@ -278,33 +244,31 @@ export default function DeckBoxModal({
 											const isUnseen = progress === 'unseen';
 											const progressColor = colors.wordProgress[progress];
 
-											const wordStyle: any = {
+											const progressStyle = {
 												color: progressColor,
-												fontFamily: 'lexend-400',
-												lineHeight: 24,
-												fontSize: 16,
 												opacity: wordProgressOpacityByKey[progress],
 											};
-
-											switch (progress) {
-												case 'unseen':
-													wordStyle.color = 'transparent';
-													wordStyle.textDecorationColor = colors.light.goldenBorder;
-													break;
-											}
 
 											return (
 												<Text
 													key={key}
-													style={modalText}
+													style={styles.modalText}
 												>
 													{isUnseen ?
-														<View style={unseenWordContainerStyle}>
-															<Animated.Text style={wordStyle}>{text}</Animated.Text>
+														<View style={styles.unseenWordContainer}>
+															<Animated.Text
+																style={[
+																	styles.passageWord,
+																	progressStyle,
+																	styles.unseenPassageWord,
+																]}
+															>
+																{text}
+															</Animated.Text>
 															<Animated.Text
 																accessible={false}
 																style={[
-																	unseenWordQuestionStyle,
+																	styles.unseenWordQuestion,
 																	{
 																		color: progressColor,
 																		opacity: unseenQuestionOpacity,
@@ -314,7 +278,10 @@ export default function DeckBoxModal({
 																?
 															</Animated.Text>
 														</View>
-													:	<Animated.Text style={wordStyle}>{text}</Animated.Text>}
+													:	<Animated.Text style={[styles.passageWord, progressStyle]}>
+															{text}
+														</Animated.Text>
+													}
 													{spaceMaybeButNotAlways}
 												</Text>
 											);
@@ -322,11 +289,11 @@ export default function DeckBoxModal({
 								</Text>
 							</View>
 						</ScrollView>
-						<View style={modalFooterStyle}>
-							<Text style={[progressTitleStyle, { color: deck.colors.dark.primary }]}>
+						<View style={styles.modalFooter}>
+							<Text style={[styles.progressTitle, { color: deck.colors.dark.primary }]}>
 								Word Progress Colors
 							</Text>
-							<View style={progressLegendStyle}>
+							<View style={styles.progressLegend}>
 								{wordProgressDefinitions.map(({ key, name }) => {
 									const progressColor = colors.wordProgress[key];
 									const isActive = activeWordProgressFilter === key;
@@ -340,13 +307,15 @@ export default function DeckBoxModal({
 											accessibilityState={{ checked: isActive }}
 											onPress={() => handleWordProgressFilterPress(key)}
 											style={[
-												progressLegendItemStyle,
+												styles.progressLegendItem,
 												isActive && { backgroundColor: `${progressColor}33` },
 											]}
 										>
-											<View style={[progressLegendDotStyle, { backgroundColor: progressColor }]} />
-											<Text style={progressLegendTextStyle}>{name}</Text>
-											<Text style={progressLegendTextStyle}>({wordCount})</Text>
+											<View
+												style={[styles.progressLegendDot, { backgroundColor: progressColor }]}
+											/>
+											<Text style={styles.progressLegendText}>{name}</Text>
+											<Text style={styles.progressLegendText}>({wordCount})</Text>
 										</Pressable>
 									);
 								})}
@@ -360,9 +329,9 @@ export default function DeckBoxModal({
 					onPress={() => setModalVisible(false)}
 					onPressIn={handleHidePassageButtonPressIn}
 					onPressOut={handleHidePassageButtonPressOut}
-					style={hidePassageButton}
+					style={styles.hidePassageButton}
 				>
-					<Text style={[hidePassageButtonText, { color: deck.colors.dark.primary }]}>
+					<Text style={[styles.hidePassageButtonText, { color: deck.colors.dark.primary }]}>
 						Hide passage
 					</Text>
 					<Animated.View style={{ transform: [{ translateY: hidePassageChevronTranslateY }] }}>
@@ -403,36 +372,39 @@ const styles = StyleSheet.create({
 		borderRadius: 16,
 		gap: 8,
 	},
-	headerStyle: {
+	header: {
 		padding: 8,
 		gap: 4,
 	},
-	titleContainerStyle: {},
-	titleStyle: {
-		fontSize: 24,
-		fontFamily: 'lexend-600',
-	},
-	placeContainerStyle: {
+	placeContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 	},
-	placeTextStyle: {
+	placeText: {
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 	},
-	progressMetaStyle: {
+	title: {
+		fontSize: 24,
+		fontFamily: 'lexend-600',
+	},
+	progressMeta: {
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		gap: 8,
 	},
-	progressMetaLabelStyle: {
+	progressMetaLabel: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 	},
-	progressBarContainerStyle: {
+	progressPercent: {
+		fontFamily: 'lexend-600',
+		fontSize: 14,
+	},
+	progressBarContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		flex: 1,
@@ -444,63 +416,54 @@ const styles = StyleSheet.create({
 		borderRadius: 4,
 		backgroundColor: '#00000014',
 	},
-	progressBarStyle: {
+	progressBar: {
 		height: '100%',
 		borderRadius: 4,
 	},
-	progressPercentStyle: {
-		fontFamily: 'lexend-600',
-		fontSize: 14,
-	},
-	wordsSeenStyle: {
+	wordsSeen: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 	},
-	modalTextContainerStyle: {
+	modalScrollView: {
+		paddingHorizontal: 16,
+		borderColor: colors.light.background,
+	},
+	modalTextContainer: {
 		position: 'relative',
 	},
-	modalTextContentStyle: {},
-	modalTextRulesStyle: {
+	modalTextRules: {
 		position: 'absolute',
 		top: 0,
 		left: 0,
 		right: 0,
 		bottom: 0,
 	},
-	modalTextRuleStyle: {
+	modalTextRule: {
 		position: 'absolute',
 		left: 0,
 		right: 0,
 		borderBottomWidth: 1,
 		borderColor: '#D7CDC4',
 	},
-	modalScrollView: {
-		paddingHorizontal: 16,
-		borderColor: colors.light.background,
-	},
-	modalTitleStyle: {},
-	modalHeaderTextStyle: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 14,
-		textAlign: 'center',
-	},
-	modalHeaderMonospaceTextStyle: {
-		color: colors.dark.text,
-		fontFamily: 'azeret-mono-600',
-		fontSize: 14,
-	},
 	modalText: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 	},
-	unseenWordContainerStyle: {
+	passageWord: {
+		fontFamily: 'lexend-400',
+		fontSize: 16,
+		lineHeight: 24,
+	},
+	unseenPassageWord: {
+		color: 'transparent',
+	},
+	unseenWordContainer: {
 		position: 'relative',
 		flexDirection: 'row',
 	},
-	unseenWordQuestionStyle: {
+	unseenWordQuestion: {
 		position: 'absolute',
 		top: 0,
 		left: 0,
@@ -511,25 +474,25 @@ const styles = StyleSheet.create({
 		lineHeight: 24,
 		textAlign: 'center',
 	},
-	modalFooterStyle: {
+	modalFooter: {
 		paddingVertical: 16,
 		paddingHorizontal: 8,
 		gap: 8,
 	},
-	progressTitleStyle: {
+	progressTitle: {
 		fontSize: 14,
 		fontFamily: 'lexend-600',
 		textAlign: 'left',
 		color: colors.dark.text,
 	},
-	progressLegendStyle: {
+	progressLegend: {
 		display: 'flex',
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		justifyContent: 'space-between',
 		gap: 4,
 	},
-	progressLegendItemStyle: {
+	progressLegendItem: {
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -538,12 +501,12 @@ const styles = StyleSheet.create({
 		paddingVertical: 4,
 		borderRadius: 6,
 	},
-	progressLegendDotStyle: {
+	progressLegendDot: {
 		width: 10,
 		height: 10,
 		borderRadius: 5,
 	},
-	progressLegendTextStyle: {
+	progressLegendText: {
 		color: colors.wordProgress.known,
 		fontFamily: 'lexend-400',
 		fontSize: 14,

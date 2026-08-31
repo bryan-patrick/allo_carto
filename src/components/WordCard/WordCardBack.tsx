@@ -1,4 +1,3 @@
-import colors from '@/src/app/colors';
 import { memo } from 'react';
 import { type ViewStyle, StyleSheet, Text, TextStyle, View } from 'react-native';
 import Animated, { type AnimatedStyle } from 'react-native-reanimated';
@@ -39,23 +38,6 @@ const WordCardBack = memo(function WordCardBackMemo({
 	const { currentCard } = useCardDeck();
 
 	/**
-	 * Destructure Styles
-	 */
-	const { cardBack } = wordCardBackStyles;
-
-	const {
-		wordId,
-		wordPronunciation,
-		cardMain,
-		answerSlotContainer,
-		answerSlot,
-		feedbackContainer,
-		feedbackText,
-		wordMetaContainer,
-		wordForm,
-	} = sharedWordCardStyles;
-
-	/**
 	 * Word data
 	 */
 	const {
@@ -89,16 +71,18 @@ const WordCardBack = memo(function WordCardBackMemo({
 	 * Render the back of the WordCard
 	 */
 	return (
-		<Animated.View style={[sharedWordCardStyles.wordCardInner, cardBack, wordCardBackFlippedStyle]}>
+		<Animated.View
+			style={[sharedWordCardStyles.wordCardInner, styles.cardBack, wordCardBackFlippedStyle]}
+		>
 			<WordCardHeader />
-			<View style={cardMain}>
-				<Text style={wordId}>{displayedFrenchWord}</Text>
-				<Text style={wordPronunciation}>({pronunciation})</Text>
-				<View style={wordMetaContainer}>
+			<View style={sharedWordCardStyles.cardMain}>
+				<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
+				<Text style={sharedWordCardStyles.wordPronunciation}>({pronunciation})</Text>
+				<View style={sharedWordCardStyles.wordMetaContainer}>
 					{partOfSpeech && (
 						<Text
 							style={[
-								wordForm,
+								sharedWordCardStyles.wordForm,
 								{
 									borderRightWidth: formCapitalized ? 1 : 0,
 									marginRight: formCapitalized ? 8 : 0,
@@ -109,27 +93,27 @@ const WordCardBack = memo(function WordCardBackMemo({
 							{partOfSpeechCapitalized}
 						</Text>
 					)}
-					{form && <Text style={wordForm}>{formCapitalized}</Text>}
+					{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
 				</View>
 			</View>
-			<View style={answerSlotContainer}>
+			<View style={sharedWordCardStyles.answerSlotContainer}>
 				{englishArticle && (
 					<Animated.Text
 						numberOfLines={1}
-						style={[answerSlot, articleSlotStyle, articleWidthStyle]}
+						style={[sharedWordCardStyles.answerSlot, articleSlotStyle, articleWidthStyle]}
 					>
 						{displayedArticle}
 					</Animated.Text>
 				)}
 				<Animated.Text
 					numberOfLines={1}
-					style={[answerSlot, wordSlotStyle, wordWidthStyle]}
+					style={[sharedWordCardStyles.answerSlot, wordSlotStyle, wordWidthStyle]}
 				>
 					{displayedWord}
 				</Animated.Text>
 			</View>
-			<View style={feedbackContainer}>
-				<Text style={[feedbackText, feedbackStyle]}>
+			<View style={sharedWordCardStyles.feedbackContainer}>
+				<Text style={[sharedWordCardStyles.feedbackText, feedbackStyle]}>
 					{FEEDBACK_TEXT_BACK[cardState.feedbackKey] ?? ''}
 				</Text>
 			</View>
@@ -145,15 +129,12 @@ export default WordCardBack;
 /**
  * Styles
  */
-const wordCardBackStyles = StyleSheet.create({
+const styles = StyleSheet.create({
 	cardBack: {
 		...StyleSheet.absoluteFill,
 		zIndex: 10,
 		height: '100%',
 		backfaceVisibility: 'hidden',
 		transform: [{ perspective: 1000 }, { rotateY: '180deg' }],
-	},
-	cardBackSuccess: {
-		backgroundColor: colors.light.success,
 	},
 });

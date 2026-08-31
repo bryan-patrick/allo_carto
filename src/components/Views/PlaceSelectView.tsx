@@ -17,31 +17,6 @@ const postmarkBackgroundImage = require('@/src/app/assets/images/postcard-parts/
 export default function PlaceSelectView() {
 	const { progressById, status } = useUserProgress();
 
-	/**
-	 * DestructureStyles
-	 */
-	const {
-		viewStyle,
-		chapterTitleContainerStyle,
-		chapterIndexStyle,
-		chapterTitleStyle,
-		chapterContainerStyle,
-		placeContainerStyle,
-		placeTitleTextStyle,
-		titleContainer,
-		postMarkImageStyle,
-		placeImageStyle,
-		placeDescriptionTextStyle,
-		progressTextStyle,
-		progressBarsContainer,
-		progressBarStyle,
-		placeSelectButtonStyle,
-		placeSelectButtonTextStyle,
-		postcardStack,
-		postCardBorder,
-		progressContainer,
-	} = styles;
-
 	const { id } = useLocalSearchParams<{ id?: string }>();
 	const selectedChapter = findChapterById(id);
 
@@ -56,10 +31,10 @@ export default function PlaceSelectView() {
 	 */
 	if (!selectedChapter) {
 		return (
-			<View style={viewStyle}>
-				<View style={chapterTitleContainerStyle}>
-					<Text style={chapterIndexStyle}>Unknown chapter</Text>
-					<Text style={chapterTitleStyle}>Please go back and select a chapter.</Text>
+			<View style={styles.view}>
+				<View style={styles.chapterTitleContainer}>
+					<Text style={styles.chapterIndex}>Unknown chapter</Text>
+					<Text style={styles.chapterTitle}>Please go back and select a chapter.</Text>
 				</View>
 			</View>
 		);
@@ -70,10 +45,10 @@ export default function PlaceSelectView() {
 	 */
 	if (!isItemUnlocked({ id: selectedChapter.id, progressById })) {
 		return (
-			<View style={viewStyle}>
-				<View style={chapterTitleContainerStyle}>
-					<Text style={chapterIndexStyle}>Chapter locked</Text>
-					<Text style={chapterTitleStyle}>Complete its requirements before continuing.</Text>
+			<View style={styles.view}>
+				<View style={styles.chapterTitleContainer}>
+					<Text style={styles.chapterIndex}>Chapter locked</Text>
+					<Text style={styles.chapterTitle}>Complete its requirements before continuing.</Text>
 				</View>
 			</View>
 		);
@@ -85,12 +60,12 @@ export default function PlaceSelectView() {
 	 * Render the card grid
 	 */
 	return (
-		<View style={viewStyle}>
-			<View style={chapterTitleContainerStyle}>
-				<Text style={chapterIndexStyle}>{label}</Text>
-				<Text style={chapterTitleStyle}>{name}</Text>
+		<View style={styles.view}>
+			<View style={styles.chapterTitleContainer}>
+				<Text style={styles.chapterIndex}>{label}</Text>
+				<Text style={styles.chapterTitle}>{name}</Text>
 			</View>
-			<ScrollView contentContainerStyle={chapterContainerStyle}>
+			<ScrollView contentContainerStyle={styles.chapterContainer}>
 				{
 					/**
 					 * Map the chapter's places
@@ -111,12 +86,12 @@ export default function PlaceSelectView() {
 						return (
 							<View
 								key={placeId}
-								style={postcardStack}
+								style={styles.postcardStack}
 							>
 								<ImageBackground
 									source={postmarkBackgroundImage}
 									style={[
-										placeContainerStyle,
+										styles.placeContainer,
 										{
 											transform: [{ rotate }],
 											padding: 0,
@@ -130,27 +105,27 @@ export default function PlaceSelectView() {
 								/>
 								<ImageBackground
 									source={postmarkBackgroundImage}
-									style={placeContainerStyle}
+									style={styles.placeContainer}
 								>
-									<View style={postCardBorder}>
-										<View style={titleContainer}>
-											<Text style={placeTitleTextStyle}>{name}</Text>
+									<View style={styles.postcardBorder}>
+										<View style={styles.titleContainer}>
+											<Text style={styles.placeTitleText}>{name}</Text>
 											<ImageBackground
 												source={postmarkImage}
-												style={postMarkImageStyle}
+												style={styles.postmarkImage}
 											/>
 										</View>
 										<Image
 											source={image}
-											style={placeImageStyle}
+											style={styles.placeImage}
 										/>
-										<Text style={placeDescriptionTextStyle}>{description}</Text>
-										<View style={progressContainer}>
-											<Text style={progressTextStyle}>Words known: {progressPercent}%</Text>
-											<View style={progressBarsContainer}>
+										<Text style={styles.placeDescriptionText}>{description}</Text>
+										<View style={styles.progressContainer}>
+											<Text style={styles.progressText}>Words known: {progressPercent}%</Text>
+											<View style={styles.progressBarsContainer}>
 												<View
 													style={[
-														progressBarStyle,
+														styles.progressBar,
 														{
 															width: `${progressPercent}%`,
 															backgroundColor: colors.dark.primary,
@@ -159,7 +134,7 @@ export default function PlaceSelectView() {
 												/>
 												<View
 													style={[
-														progressBarStyle,
+														styles.progressBar,
 														{
 															position: 'absolute',
 															width: '100%',
@@ -174,11 +149,11 @@ export default function PlaceSelectView() {
 											arrowSize={18}
 											contentPaddingVertical={8}
 											disabled={isLocked}
-											style={placeSelectButtonStyle}
+											style={styles.placeSelectButton}
 											screen={'(routes)/CardDeckSelect'}
 											params={{ placeId }}
 										>
-											<Text style={placeSelectButtonTextStyle}>View decks</Text>
+											<Text style={styles.placeSelectButtonText}>View decks</Text>
 										</LinkButton>
 									</View>
 								</ImageBackground>
@@ -192,40 +167,39 @@ export default function PlaceSelectView() {
 }
 
 /**
- * Shared styles
- */
-const { containerMargin } = sharedStyles;
-
-/**
  * Styles
- * TODO: styles
  */
 const styles = StyleSheet.create({
-	viewStyle: {
+	view: {
 		flex: 1,
 	},
-	chapterTitleContainerStyle: {
-		paddingHorizontal: containerMargin,
+	chapterTitleContainer: {
+		paddingHorizontal: sharedStyles.containerMargin,
 		paddingVertical: 16,
 	},
-	chapterIndexStyle: {
+	chapterIndex: {
 		textAlign: 'center',
 		textTransform: 'uppercase',
 		color: colors.light.text,
 	},
-	chapterTitleStyle: {
+	chapterTitle: {
 		textAlign: 'center',
 		width: '100%',
 		fontFamily: 'lexend-600',
 		fontSize: 20,
 		color: colors.light.text,
 	},
-	chapterContainerStyle: {
+	chapterContainer: {
 		display: 'flex',
 		margin: 8,
 		gap: 8,
 	},
-	placeContainerStyle: {
+	postcardStack: {
+		display: 'flex',
+		margin: 8,
+		position: 'relative',
+	},
+	placeContainer: {
 		padding: 8,
 		backgroundColor: colors.dark.background,
 		borderWidth: 1,
@@ -233,32 +207,13 @@ const styles = StyleSheet.create({
 		borderColor: colors.dark.border,
 		overflow: 'hidden',
 	},
-	postCardBorder: {
+	postcardBorder: {
 		borderWidth: 1,
 		borderRadius: 12,
 		borderColor: colors.light.goldenBorder,
 		paddingVertical: 2,
 		paddingHorizontal: 16,
 		gap: 2,
-	},
-	progressContainer: {
-		marginTop: 4,
-	},
-	placeTitleTextStyle: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 18,
-		flex: 1.2,
-	},
-	postMarkImageStyle: {
-		flex: 1,
-		aspectRatio: '12 / 5',
-		opacity: 0.6,
-	},
-	postcardStack: {
-		display: 'flex',
-		margin: 8,
-		position: 'relative',
 	},
 	titleContainer: {
 		width: '100%',
@@ -270,15 +225,29 @@ const styles = StyleSheet.create({
 		gap: 16,
 		flexWrap: 'wrap',
 	},
-	placeImageStyle: {
+	placeTitleText: {
+		color: colors.dark.text,
+		fontFamily: 'lexend-600',
+		fontSize: 18,
+		flex: 1.2,
+	},
+	postmarkImage: {
+		flex: 1,
+		aspectRatio: '12 / 5',
+		opacity: 0.6,
+	},
+	placeImage: {
 		aspectRatio: '5 / 2',
 		width: '100%',
 		height: 'auto',
 	},
-	placeDescriptionTextStyle: {
+	placeDescriptionText: {
 		fontSize: 14,
 	},
-	progressTextStyle: {
+	progressContainer: {
+		marginTop: 4,
+	},
+	progressText: {
 		fontSize: 12,
 	},
 	progressBarsContainer: {
@@ -288,15 +257,15 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		marginBottom: 16,
 	},
-	progressBarStyle: {
+	progressBar: {
 		width: '10%',
 		height: 8,
 		borderColor: colors.light.border,
 	},
-	placeSelectButtonStyle: {
+	placeSelectButton: {
 		marginBottom: 4,
 	},
-	placeSelectButtonTextStyle: {
+	placeSelectButtonText: {
 		fontSize: 14,
 	},
 });
