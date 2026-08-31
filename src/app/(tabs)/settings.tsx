@@ -7,8 +7,6 @@ import { resetDB } from '../../db/interface';
 
 export default function Settings() {
 	const { reloadProgress } = useUserProgress();
-	const { container, debugSection, disabledPressable, heading, pressable, resetPressable, text } =
-		styles;
 
 	/**
 	 * State
@@ -51,45 +49,49 @@ export default function Settings() {
 	}
 
 	return (
-		<View style={container}>
+		<View style={styles.container}>
 			<Pressable
-				style={pressable}
+				style={styles.pressable}
 				onPress={() => impactAsync(ImpactFeedbackStyle.Light)}
 			>
-				<Text style={text}>Light</Text>
+				<Text style={styles.text}>Light</Text>
 			</Pressable>
 			<Pressable
-				style={pressable}
+				style={styles.pressable}
 				onPress={() => impactAsync(ImpactFeedbackStyle.Medium)}
 			>
-				<Text style={text}>Medium</Text>
+				<Text style={styles.text}>Medium</Text>
 			</Pressable>
 			<Pressable
-				style={pressable}
+				style={styles.pressable}
 				onPress={() => impactAsync(ImpactFeedbackStyle.Heavy)}
 			>
-				<Text style={text}>Heavy</Text>
+				<Text style={styles.text}>Heavy</Text>
 			</Pressable>
 			<Pressable
-				style={pressable}
+				style={styles.pressable}
 				onPress={() => impactAsync(ImpactFeedbackStyle.Rigid)}
 			>
-				<Text style={text}>Rigid</Text>
+				<Text style={styles.text}>Rigid</Text>
 			</Pressable>
 			<Pressable
-				style={pressable}
+				style={styles.pressable}
 				onPress={() => impactAsync(ImpactFeedbackStyle.Soft)}
 			>
-				<Text style={text}>Soft</Text>
+				<Text style={styles.text}>Soft</Text>
 			</Pressable>
-			<View style={debugSection}>
-				<Text style={heading}>Debug</Text>
+			<View style={styles.debugSection}>
+				<Text style={styles.heading}>Debug</Text>
 				<Pressable
 					disabled={isResettingDB}
-					style={[pressable, resetPressable, isResettingDB && disabledPressable]}
+					style={[
+						styles.pressable,
+						styles.resetPressable,
+						isResettingDB && styles.disabledPressable,
+					]}
 					onPress={confirmResetDB}
 				>
-					<Text style={text}>{isResettingDB ? 'Resetting DB...' : 'Reset DB'}</Text>
+					<Text style={styles.text}>{isResettingDB ? 'Resetting DB...' : 'Reset DB'}</Text>
 				</Pressable>
 			</View>
 		</View>
@@ -104,6 +106,15 @@ const styles = StyleSheet.create({
 		height: '100%',
 		gap: 8,
 	},
+	pressable: {
+		padding: 32,
+		margin: 4,
+		borderWidth: 2,
+		borderColor: '#FFAABB',
+	},
+	text: {
+		color: '#ffffff',
+	},
 	debugSection: {
 		alignItems: 'center',
 		gap: 8,
@@ -114,19 +125,10 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-700',
 		fontSize: 20,
 	},
-	pressable: {
-		padding: 32,
-		margin: 4,
-		borderWidth: 2,
-		borderColor: '#FFAABB',
-	},
 	resetPressable: {
 		borderColor: colors.light.danger,
 	},
 	disabledPressable: {
 		opacity: 0.6,
-	},
-	text: {
-		color: '#ffffff',
 	},
 });

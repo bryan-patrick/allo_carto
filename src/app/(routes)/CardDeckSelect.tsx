@@ -14,18 +14,6 @@ export default function CardDeckSelect() {
 	const { placeId } = useLocalSearchParams<{ placeId?: string }>();
 	const { progressById, status } = useUserProgress();
 
-	/**
-	 * Destructure styles
-	 */
-	const {
-		cardGridStyle,
-		noDecksContainerStyle,
-		noDecksTextStyle,
-		deckNameContainerStyle,
-		deckNameTextStyle,
-		deckDescriptionTextStyle,
-	} = styles;
-
 	const place = findPlaceById(placeId);
 	const decks =
 		place?.decks.map(deck => ({
@@ -51,8 +39,8 @@ export default function CardDeckSelect() {
 	 */
 	if (place && !isItemUnlocked({ id: place.id, progressById })) {
 		return (
-			<View style={noDecksContainerStyle}>
-				<Text style={noDecksTextStyle}>This place is locked.</Text>
+			<View style={styles.noDecksContainer}>
+				<Text style={styles.noDecksText}>This place is locked.</Text>
 			</View>
 		);
 	}
@@ -62,9 +50,9 @@ export default function CardDeckSelect() {
 	 */
 	return (
 		<>
-			<View style={deckNameContainerStyle}>
-				<Text style={deckNameTextStyle}>{place?.name}</Text>
-				<Text style={deckDescriptionTextStyle}>{place?.description}</Text>
+			<View style={styles.deckNameContainer}>
+				<Text style={styles.deckNameText}>{place?.name}</Text>
+				<Text style={styles.deckDescriptionText}>{place?.description}</Text>
 			</View>
 			{decks.length > 0 && (
 				<FlatList
@@ -72,7 +60,7 @@ export default function CardDeckSelect() {
 					 * BG color is for scroll bounce
 					 */
 					style={{ backgroundColor: colors.dark.text }}
-					contentContainerStyle={cardGridStyle}
+					contentContainerStyle={styles.cardGrid}
 					renderItem={({ item }) => (
 						<DeckBox
 							deck={item}
@@ -86,8 +74,8 @@ export default function CardDeckSelect() {
 				/>
 			)}
 			{decks.length === 0 && (
-				<View style={noDecksContainerStyle}>
-					<Text style={noDecksTextStyle}>Sorry! No decks found.</Text>
+				<View style={styles.noDecksContainer}>
+					<Text style={styles.noDecksText}>Sorry! No decks found.</Text>
 				</View>
 			)}
 		</>
@@ -98,21 +86,21 @@ export default function CardDeckSelect() {
  * Styles
  */
 const styles = StyleSheet.create({
-	deckNameContainerStyle: {
+	deckNameContainer: {
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
 		padding: 16,
 		backgroundColor: colors.dark.text,
 	},
-	deckNameTextStyle: {
+	deckNameText: {
 		textAlign: 'center',
 		width: '100%',
 		fontFamily: 'lexend-600',
 		fontSize: 18,
 		color: colors.light.text,
 	},
-	deckDescriptionTextStyle: {
+	deckDescriptionText: {
 		textAlign: 'center',
 		width: '100%',
 		fontFamily: 'lexend-400',
@@ -120,17 +108,17 @@ const styles = StyleSheet.create({
 		paddingTop: 4,
 		color: colors.light.text,
 	},
-	cardGridStyle: {
+	cardGrid: {
 		display: 'flex',
 		backgroundColor: colors.dark.text,
 		gap: 8,
 		margin: 8,
 	},
-	noDecksContainerStyle: {
+	noDecksContainer: {
 		display: 'flex',
 		padding: 12,
 	},
-	noDecksTextStyle: {
+	noDecksText: {
 		textAlign: 'center',
 		color: colors.light.text,
 	},

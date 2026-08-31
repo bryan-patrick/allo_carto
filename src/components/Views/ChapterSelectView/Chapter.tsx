@@ -43,17 +43,6 @@ export default function Chapter({
 	const unlockCriteria = getUnlockCriteria(chapter, progressById);
 
 	/**
-	 * Destructure styles
-	 */
-	const {
-		chapterContainerInnerStyle,
-		chapterTitleContainerStyle,
-		labelStyle,
-		chapterTitleStyle,
-		chapterImageContainerStyle,
-	} = styles;
-
-	/**
 	 * Render the component
 	 */
 	return (
@@ -65,14 +54,14 @@ export default function Chapter({
 			/>
 			<Crease />
 			<Cover>
-				<View style={chapterContainerInnerStyle}>
+				<View style={styles.chapterContainerInner}>
 					{!isLocked && (
 						<>
-							<View style={chapterTitleContainerStyle}>
-								<Text style={labelStyle}>{label}</Text>
-								<Text style={chapterTitleStyle}>{name}</Text>
+							<View style={styles.chapterTitleContainer}>
+								<Text style={styles.label}>{label}</Text>
+								<Text style={styles.chapterTitle}>{name}</Text>
 							</View>
-							<View style={[chapterImageContainerStyle]}></View>
+							<View style={styles.chapterImageContainer} />
 							<ChapterMeta
 								progressPercent={progressPercent}
 								progressColor={color ?? '#000000'}
@@ -99,7 +88,7 @@ export default function Chapter({
  * Styles
  */
 const styles = StyleSheet.create({
-	chapterContainerInnerStyle: {
+	chapterContainerInner: {
 		display: 'flex',
 		alignItems: 'center',
 		flexDirection: 'column',
@@ -107,29 +96,25 @@ const styles = StyleSheet.create({
 		padding: 12,
 		gap: 12,
 	},
-	chapterTitleContainerStyle: {
+	chapterTitleContainer: {
 		flexShrink: 1,
 		wordWrap: 'wrap',
 	},
-	labelStyle: {
+	label: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 12,
 		textAlign: 'center',
 		textTransform: 'uppercase',
 	},
-	chapterTitleStyle: {
+	chapterTitle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
 		fontSize: 18,
 		textAlign: 'center',
 	},
-	chapterImageContainerStyle: {
+	chapterImageContainer: {
 		display: 'flex',
 		flexDirection: 'row',
-	},
-	chapterImageStyle: {
-		height: 200,
-		width: 260,
 	},
 });
