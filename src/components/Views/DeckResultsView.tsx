@@ -56,19 +56,14 @@ export default function DeckResultsView() {
 	}
 
 	/**
-	 * Destructure styles
-	 */
-	const { titleStyle, titleRowStyle, resultsContainerStyle, wordsFlexRows } = styles;
-
-	/**
 	 * Render the deck results
 	 */
 	return (
 		<ScrollView>
-			<View style={resultsContainerStyle}>
+			<View style={styles.resultsContainer}>
 				<View>
-					<View style={titleRowStyle}>
-						<Text style={titleStyle}>Good job! You completed {resultsTitleArticle} </Text>
+					<View style={styles.titleRow}>
+						<Text style={styles.title}>Good job! You completed {resultsTitleArticle} </Text>
 						<GradientText
 							text={title}
 							colors={[
@@ -78,10 +73,10 @@ export default function DeckResultsView() {
 							fontSize={20}
 							fontWeight={600}
 						/>
-						<Text style={titleStyle}> deck.</Text>
+						<Text style={styles.title}> deck.</Text>
 					</View>
 				</View>
-				<View style={wordsFlexRows}>
+				<View style={styles.wordsFlexRows}>
 					<ResultsList
 						wordArr={correctWords}
 						isCorrect={true}
@@ -98,18 +93,13 @@ export default function DeckResultsView() {
 }
 
 /**
- * Destructure shared styles
- */
-const { containerMargin } = sharedStyles;
-
-/**
  * Styles
  */
 const styles = StyleSheet.create({
-	resultsContainerStyle: {
+	resultsContainer: {
 		display: 'flex',
 		backgroundColor: colors.light.background,
-		margin: containerMargin,
+		margin: sharedStyles.containerMargin,
 		borderRadius: 16,
 		boxShadow: `0 16px 0 ${colors.dark.border}`,
 		overflow: 'hidden',
@@ -118,12 +108,12 @@ const styles = StyleSheet.create({
 		padding: 16,
 		gap: 16,
 	},
-	titleRowStyle: {
+	titleRow: {
 		alignItems: 'baseline',
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 	},
-	titleStyle: {
+	title: {
 		fontSize: 20,
 		fontFamily: 'lexend-400',
 	},

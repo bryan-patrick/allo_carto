@@ -96,11 +96,6 @@ export default function LinkButton({
 		},
 	}));
 
-	/**
-	 * Destructure styles
-	 */
-	const { linkButton, fullwidthStyle, linkText, innerRow } = styles;
-
 	let allTheProps = { ...pressableProps, ...props };
 	let deckColorStyles: ViewStyle = {};
 	let typeStyle: ViewStyle = {};
@@ -213,10 +208,10 @@ export default function LinkButton({
 				buttonPressOut?.(event);
 			}}
 			style={[
-				linkButton,
+				styles.linkButton,
 				deckColorStyles,
 				animatedButtonStyle,
-				fullwidth && fullwidthStyle,
+				fullwidth && styles.fullwidth,
 				typeStyle,
 				style,
 			]}
@@ -224,7 +219,7 @@ export default function LinkButton({
 		>
 			<View
 				style={[
-					innerRow,
+					styles.innerRow,
 					{
 						paddingHorizontal: contentPaddingHorizontal,
 						paddingVertical: contentPaddingVertical,
@@ -232,7 +227,7 @@ export default function LinkButton({
 				]}
 			>
 				{iconElement}
-				<Text style={[linkText, outlineTextStyle]}>{children}</Text>
+				<Text style={[styles.linkText, outlineTextStyle]}>{children}</Text>
 				{useArrow && (
 					<SVGRightArrow
 						height={String(arrowSize)}
@@ -249,9 +244,6 @@ export default function LinkButton({
  * Styles
  */
 const styles = StyleSheet.create({
-	fullwidthStyle: {
-		width: '100%',
-	},
 	linkButton: {
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -266,10 +258,8 @@ const styles = StyleSheet.create({
 		shadowRadius: 0,
 		gap: 8,
 	},
-	linkText: {
-		color: colors.light.text,
-		fontFamily: 'lexend-600',
-		fontSize: 14,
+	fullwidth: {
+		width: '100%',
 	},
 	innerRow: {
 		width: '100%',
@@ -281,5 +271,10 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		flexDirection: 'row',
 		gap: 4,
+	},
+	linkText: {
+		color: colors.light.text,
+		fontFamily: 'lexend-600',
+		fontSize: 14,
 	},
 });
