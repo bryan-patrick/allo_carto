@@ -20,11 +20,6 @@ export default function ChapterSelectButton({
 	const { id, color } = chapter;
 
 	/**
-	 * Destructure styles
-	 */
-	const { chapterSelectButtonTextStyle } = styles;
-
-	/**
 	 * Render the component
 	 */
 	return (
@@ -37,7 +32,7 @@ export default function ChapterSelectButton({
 			disabled={disabled}
 			fullwidth
 		>
-			<Text style={chapterSelectButtonTextStyle}>Select Chapter</Text>
+			<Text style={styles.chapterSelectButtonText}>Select Chapter</Text>
 		</LinkButton>
 	);
 }
@@ -46,7 +41,7 @@ export default function ChapterSelectButton({
  * Styles
  */
 const styles = StyleSheet.create({
-	chapterSelectButtonTextStyle: {
+	chapterSelectButtonText: {
 		fontSize: 14,
 	},
 });
