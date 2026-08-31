@@ -17,6 +17,9 @@ import { getDeckCompletionPercent } from '../../util/deckCompletion';
 import { type WordProgressKey, wordProgressDefinitions } from '../../util/wordProgress';
 import type { CardDeck } from '../CardDeck/cardDeckTypes';
 
+/**
+ * Images
+ */
 const modalBackground = require('@/src/app/assets/images/decks/paragraph-background.jpg');
 
 /**
@@ -35,6 +38,9 @@ interface PassageLineMetric {
 	height: number;
 }
 
+/**
+ * Helper functions
+ */
 function getPassageWordOpacity(progress: WordProgressKey, filter: WordProgressKey | null): number {
 	if (!filter) return progress === 'unseen' ? 0.5 : 1;
 

@@ -2,7 +2,6 @@ import { router } from 'expo-router';
 import { useContext, useEffect, useLayoutEffect, useMemo } from 'react';
 import { type LayoutChangeEvent, StyleSheet, TextStyle, View } from 'react-native';
 import { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import colors from '../../app/colors';
 import { CardDeckContext } from '../CardDeck/cardDeckContext';
 import { sharedWordCardStyles } from './sharedWordCardStyles';
 import { useWordCardUI } from './useWordCardUI';
@@ -30,42 +29,34 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 	 */
 	const { cardState } = useWordCardUI();
 	const { cardDeckState, cardDeckDispatch } = useContext(CardDeckContext);
-
-	/**
-	 * Styles
-	 */
-	const {
-		feedbackSuccess,
-		feedbackWarning,
-		feedbackError,
-		answerSlotSuccess,
-		answerSlotWarning,
-		answerSlotError,
-	} = sharedWordCardStyles;
-	const { wordCard } = wordCardStyles;
-
 	const hasArticleMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
 	const hasWordMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
 
+	/**
+	 * Style vars
+	 */
 	let feedbackStyle: TextStyle = {};
 	let articleSlotStyle: TextStyle = {};
 	let wordSlotStyle: TextStyle = {};
 
 	switch (cardState.progress) {
 		case 'SUCCESS':
-			feedbackStyle = feedbackSuccess;
-			articleSlotStyle = answerSlotSuccess;
-			wordSlotStyle = answerSlotSuccess;
+			feedbackStyle = sharedWordCardStyles.feedbackSuccess;
+			articleSlotStyle = sharedWordCardStyles.answerSlotSuccess;
+			wordSlotStyle = sharedWordCardStyles.answerSlotSuccess;
 			break;
 		case 'WARNING':
-			feedbackStyle = feedbackWarning;
-			if (hasArticleMistake) articleSlotStyle = answerSlotWarning;
-			if (hasWordMistake) wordSlotStyle = answerSlotWarning;
+			feedbackStyle = sharedWordCardStyles.feedbackWarning;
+			if (hasArticleMistake) articleSlotStyle = sharedWordCardStyles.answerSlotWarning;
+			if (hasWordMistake) wordSlotStyle = sharedWordCardStyles.answerSlotWarning;
 			break;
 		case 'DANGER':
-			feedbackStyle = feedbackError;
-			articleSlotStyle = hasArticleMistake ? answerSlotError : answerSlotSuccess;
-			wordSlotStyle = hasWordMistake ? answerSlotError : answerSlotSuccess;
+			feedbackStyle = sharedWordCardStyles.feedbackError;
+			articleSlotStyle = sharedWordCardStyles.answerSlotSuccess;
+			wordSlotStyle = sharedWordCardStyles.answerSlotSuccess;
+
+			if (hasArticleMistake) articleSlotStyle = sharedWordCardStyles.answerSlotError;
+			if (hasWordMistake) wordSlotStyle = sharedWordCardStyles.answerSlotError;
 			break;
 	}
 
@@ -152,7 +143,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 	 * Render the card
 	 */
 	return (
-		<View style={wordCard}>
+		<View style={styles.wordCard}>
 			<WordCardFront
 				handleWordWidth={handleWordWidth}
 				handleArticleWidth={handleArticleWidth}
@@ -178,19 +169,11 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 /**
  * Styles
  */
-const wordCardStyles = StyleSheet.create({
+const styles = StyleSheet.create({
 	wordCard: {
 		borderRadius: 8,
 		alignContent: 'center',
 		alignItems: 'center',
 		justifyContent: 'center',
-	},
-	cardBack: {
-		...StyleSheet.absoluteFill,
-		backgroundColor: colors.light.border,
-		zIndex: 10,
-		height: '100%',
-		backfaceVisibility: 'hidden',
-		transform: [{ perspective: 1000 }, { rotateY: '180deg' }],
 	},
 });

@@ -29,19 +29,6 @@ export default function TabsLayout({ size = 28 }) {
 				}}
 			/>
 			<Tabs.Screen
-				name="Stats"
-				options={{
-					title: 'Stats',
-					tabBarIcon: ({ color }) => (
-						<MaterialIcons
-							color={color}
-							size={size}
-							name="star"
-						/>
-					),
-				}}
-			/>
-			<Tabs.Screen
 				name="settings"
 				options={{
 					title: 'Settings',

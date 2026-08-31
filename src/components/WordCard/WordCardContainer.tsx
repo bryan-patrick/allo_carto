@@ -23,7 +23,7 @@ interface CardContainerProps {
 	isCurrent: boolean;
 }
 
-const MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WORDS_FROM_OTHER_PARTS_OF_SPEECH = 3;
+const MIN_SAME_PART_OF_SPEECH_WRONG_ANSWERS = 3;
 
 function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
 	const lowerCaseCorrectAnswers = new Set(
@@ -56,7 +56,6 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 	const loadedWordId = useRef<string | null>(null);
 	const seenWordId = useRef<string | null>(null);
 	const [cardState, wordCardUIDispatch] = useReducer(wordCardUIReducer, initialWordCardState);
-
 	const isNextCardButton = cardState.stage === 'CORRECT' || cardState.stage === 'INCORRECT';
 	const nextCardArrowColor =
 		cardState.progress === 'SUCCESS' ? colors.dark.text : colors.light.text;
@@ -106,7 +105,7 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 
 				if (
 					countWrongAnswerChoices(matchingWordChoices, word.englishWords) <
-					MIN_WRONG_ANSWERS_NEEDED_TO_USE_PART_OF_SPEECH_FILTER_ELSE_WE_WILL_USE_WORDS_FROM_OTHER_PARTS_OF_SPEECH
+					MIN_SAME_PART_OF_SPEECH_WRONG_ANSWERS
 				) {
 					matchingWordChoices = deckWordChoices;
 				}

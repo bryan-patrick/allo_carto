@@ -1,4 +1,4 @@
-import { cloneElement, isValidElement, ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import {
 	GestureResponderEvent,
 	Pressable,
@@ -47,24 +47,27 @@ export default function SecondaryButton({
 	...props
 }: SecondaryButtonProps) {
 	/**
-	 * State vars
+	 * State
 	 */
 	const [isPressed, setIsPressed] = useState(false);
+
+	/**
+	 * Style vars
+	 */
 	let buttonTypeStyle: ViewStyle = {};
+	let outlineTextStyle: TextStyle = {};
+	let iconElement = SVGElement;
 
 	if (type === 'outline') {
 		buttonTypeStyle = { backgroundColor: 'transparent' };
 
-		if (color) buttonTypeStyle.borderColor = color;
+		if (color) {
+			buttonTypeStyle.borderColor = color;
+			outlineTextStyle.color = color;
+		}
 	} else if (color) {
 		buttonTypeStyle = { backgroundColor: color };
 	}
-
-	const outlineTextStyle = type === 'outline' && color ? { color } : {};
-	const iconElement =
-		type === 'outline' && color && isValidElement<{ color?: string }>(SVGElement) ?
-			cloneElement(SVGElement, { color })
-		:	SVGElement;
 
 	/**
 	 * Animation vars

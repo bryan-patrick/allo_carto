@@ -17,6 +17,9 @@ import { useCallback, useState } from 'react';
 import { Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeckBoxModal from './DeckBoxModal';
 
+/**
+ * Images
+ */
 const deckBoxTopImage = require('@/src/app/assets/images/decks/deck-box-top.png');
 const deckBoxTopMaskImage = require('@/src/app/assets/images/decks/deck-box-top-mask.png');
 const deckBoxLeftBorderImage = require('@/src/app/assets/images/decks/deck-box-border-left.png');

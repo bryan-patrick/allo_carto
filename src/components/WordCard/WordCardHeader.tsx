@@ -15,6 +15,9 @@ export default function WordCardHeader() {
 	 */
 	const { rarity = 'Common' } = currentCard;
 
+	/**
+	 * Render the WordCardHeader
+	 */
 	return (
 		<View style={styles.cardHeaderContainer}>
 			<View
@@ -41,6 +44,9 @@ export default function WordCardHeader() {
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	cardHeaderContainer: {
 		display: 'flex',
