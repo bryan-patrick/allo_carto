@@ -11,38 +11,30 @@ export default function WordCardHeader() {
 	const { currentCard } = useCardDeck();
 
 	/**
-	 * Destructure styles
+	 * Card vars
 	 */
 	const { rarity = 'Common' } = currentCard;
 
-	const {
-		cardHeaderContainer,
-		cardCEFRLevel,
-		CEFRContainerStyle,
-		rarityContainerStyle,
-		rarityTextStyle,
-	} = styles;
-
 	return (
-		<View style={cardHeaderContainer}>
+		<View style={styles.cardHeaderContainer}>
 			<View
 				style={[
-					CEFRContainerStyle,
+					styles.CEFRContainer,
 					{
 						backgroundColor: colors.light.CEFR[currentCard.CEFR],
 					},
 				]}
 			>
-				<Text style={[cardCEFRLevel]}>{currentCard.CEFR}</Text>
+				<Text style={styles.cardCEFRLevel}>{currentCard.CEFR}</Text>
 			</View>
 			<LinearGradient
 				start={{ x: 0, y: 0 }}
 				end={{ x: 1, y: 1 }}
 				colors={[colors.rarity[rarity], colors.light.primary, colors.dark.primary]}
 				locations={[0.25, 0.65, 1]}
-				style={rarityContainerStyle}
+				style={styles.rarityContainer}
 			>
-				<Text style={rarityTextStyle}>{rarity}</Text>
+				<Text style={styles.rarityText}>{rarity}</Text>
 			</LinearGradient>
 			<WordProgress />
 		</View>
@@ -61,7 +53,7 @@ const styles = StyleSheet.create({
 		borderTopRightRadius: 8,
 		borderColor: colors.light.border,
 	},
-	CEFRContainerStyle: {
+	CEFRContainer: {
 		display: 'flex',
 		flexDirection: 'column',
 		alignItems: 'center',
@@ -76,7 +68,7 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		borderColor: colors.light.border,
 	},
-	rarityContainerStyle: {
+	rarityContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -84,7 +76,7 @@ const styles = StyleSheet.create({
 		paddingLeft: 8,
 		flexGrow: 1,
 	},
-	rarityTextStyle: {
+	rarityText: {
 		fontFamily: 'azeret-mono-400',
 	},
 });

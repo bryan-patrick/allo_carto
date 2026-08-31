@@ -12,14 +12,12 @@ interface ViewCardsViewProps {
  * ViewCardsView component
  */
 export default function ViewCardsView({ deck }: ViewCardsViewProps) {
-	const { containerStyle, cardStyle, titleStyle, metaTextStyle } = styles;
-
 	const title = deck?.title ?? 'Some Deck';
 	const cardCount = deck?.wordIds.length ?? 0;
 
 	return (
-		<ScrollView contentContainerStyle={containerStyle}>
-			<View style={cardStyle}>
+		<ScrollView contentContainerStyle={styles.container}>
+			<View style={styles.card}>
 				{deck && (
 					<>
 						<GradientText
@@ -28,13 +26,13 @@ export default function ViewCardsView({ deck }: ViewCardsViewProps) {
 							fontWeight={700}
 							text={title}
 						/>
-						<Text style={metaTextStyle}>{cardCount} cards</Text>
+						<Text style={styles.metaText}>{cardCount} cards</Text>
 					</>
 				)}
 				{!deck && (
 					<>
-						<Text style={titleStyle}>{title}</Text>
-						<Text style={metaTextStyle}>Deck not found.</Text>
+						<Text style={styles.title}>{title}</Text>
+						<Text style={styles.metaText}>Deck not found.</Text>
 					</>
 				)}
 			</View>
@@ -43,18 +41,13 @@ export default function ViewCardsView({ deck }: ViewCardsViewProps) {
 }
 
 /**
- * Shared styles
- */
-const { containerMargin } = sharedStyles;
-
-/**
  * Styles
  */
 const styles = StyleSheet.create({
-	containerStyle: {
-		padding: containerMargin,
+	container: {
+		padding: sharedStyles.containerMargin,
 	},
-	cardStyle: {
+	card: {
 		backgroundColor: colors.light.background,
 		borderColor: colors.light.border,
 		borderRadius: 8,
@@ -63,12 +56,12 @@ const styles = StyleSheet.create({
 		gap: 8,
 		padding: 16,
 	},
-	titleStyle: {
+	title: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-700',
 		fontSize: 22,
 	},
-	metaTextStyle: {
+	metaText: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 14,
