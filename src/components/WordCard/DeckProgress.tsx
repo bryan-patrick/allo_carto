@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
 		paddingHorizontal: sharedStyles.containerMargin,
 		paddingVertical: 2,
 		backgroundColor: colors.dark.text,
-		gap: 12,
+		gap: 4,
 	},
 	progressText: {
 		fontFamily: 'azeret-mono-600',
-		fontSize: 12,
+		fontSize: 10,
 		color: colors.light.background,
 	},
 	blipContainer: {
@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
 		width: 8,
 		flexShrink: 1,
 		borderWidth: 1,
-		borderRadius: 2,
 		borderColor: colors.light.background,
 	},
 });

@@ -52,9 +52,9 @@ const colors = {
 		mastered: '#006C7A',
 	},
 	rarity: {
-		Common: '#F1E6D3',
-		Rare: '#84a1ff',
-		Epic: '#BC85FF',
+		Common: '#F6DAAC',
+		Rare: '#C3C96E',
+		Epic: '#E55C67',
 		Legendary: '#ffa200',
 	},
 };
