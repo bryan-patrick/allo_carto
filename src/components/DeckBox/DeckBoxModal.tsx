@@ -1,4 +1,4 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useRef, useState } from 'react';
 import {
 	Alert,
@@ -38,6 +38,8 @@ interface PassageLineMetric {
 	height: number;
 }
 
+const defaultUnseenQuestionOpacity = 0.4;
+
 /**
  * Helper functions
  */
@@ -74,7 +76,7 @@ export default function DeckBoxModal({
 		null,
 	);
 	const [wordProgressOpacityByKey] = useState(createWordProgressOpacityValues);
-	const [unseenQuestionOpacity] = useState(() => new Animated.Value(0.4));
+	const [unseenQuestionOpacity] = useState(() => new Animated.Value(defaultUnseenQuestionOpacity));
 	const [hidePassageChevronTranslateY] = useState(() => new Animated.Value(0));
 
 	const totalWordCount = deck.wordIds.length;
@@ -84,6 +86,7 @@ export default function DeckBoxModal({
 		wordProgressCounts.familiar +
 		wordProgressCounts.known +
 		wordProgressCounts.mastered;
+
 	const deckCompletionPercent = getDeckCompletionPercent({
 		deckWordCount: totalWordCount,
 		wordProgressCounts,
@@ -95,7 +98,7 @@ export default function DeckBoxModal({
 	function handleHidePassageButtonPressIn() {
 		Animated.timing(hidePassageChevronTranslateY, {
 			toValue: 3,
-			duration: 90,
+			duration: 120,
 			useNativeDriver: true,
 		}).start();
 	}
@@ -103,7 +106,7 @@ export default function DeckBoxModal({
 	function handleHidePassageButtonPressOut() {
 		Animated.timing(hidePassageChevronTranslateY, {
 			toValue: 0,
-			duration: 140,
+			duration: 120,
 			useNativeDriver: true,
 		}).start();
 	}
@@ -122,7 +125,10 @@ export default function DeckBoxModal({
 					}),
 				),
 				Animated.timing(unseenQuestionOpacity, {
-					toValue: nextProgress === 'unseen' ? 1 : 0.2,
+					toValue:
+						nextProgress === null ? defaultUnseenQuestionOpacity
+						: nextProgress === 'unseen' ? 1
+						: 0.15,
 					duration: 120,
 					useNativeDriver: true,
 				}),
@@ -158,15 +164,15 @@ export default function DeckBoxModal({
 						 * Modal Header
 						 */}
 						<View style={styles.header}>
-							<View style={styles.placeContainer}>
-								<MaterialIcons
-									color={'#000000'}
-									size={16}
-									name="place"
-								/>
-								<Text style={styles.placeText}>{deck.place}</Text>
-							</View>
 							<View>
+								<View style={styles.placeContainer}>
+									<Text style={styles.placeText}>{deck.place}</Text>
+									<MaterialSymbol
+										color={'#000000'}
+										size={16}
+										name="location_on"
+									/>
+								</View>
 								<Text style={[styles.title, { color: deck.colors.dark.primary }]}>
 									{deck.title}
 								</Text>
@@ -175,10 +181,10 @@ export default function DeckBoxModal({
 								style={styles.progressMeta}
 								accessible={true}
 								accessibilityRole="progressbar"
-								accessibilityLabel={`Deck progress ${deckCompletionPercent} percent. ${wordsSeenCount} of ${totalWordCount} words seen.`}
+								accessibilityLabel={`Word progress ${deckCompletionPercent} percent. ${wordsSeenCount} of ${totalWordCount} seen.`}
 								accessibilityValue={{ min: 0, max: 100, now: deckCompletionPercent }}
 							>
-								<Text style={styles.progressMetaLabel}>Deck progress</Text>
+								<Text style={styles.progressMetaLabel}>Word progress</Text>
 								<Text style={[styles.progressPercent, { color: deck.colors.dark.primary }]}>
 									{deckCompletionPercent}%
 								</Text>
@@ -194,7 +200,7 @@ export default function DeckBoxModal({
 									/>
 								</View>
 								<Text style={styles.wordsSeen}>
-									{wordsSeenCount} / {totalWordCount} words seen
+									{wordsSeenCount} / {totalWordCount} seen
 								</Text>
 							</View>
 						</View>
@@ -337,8 +343,8 @@ export default function DeckBoxModal({
 					onPressOut={handleHidePassageButtonPressOut}
 					style={styles.hidePassageButton}
 				>
-					<MaterialIcons
-						name="menu-book"
+					<MaterialSymbol
+						name="menu_book"
 						size={20}
 						color={deck.colors.dark.primary}
 					/>
@@ -346,8 +352,8 @@ export default function DeckBoxModal({
 						Hide passage
 					</Text>
 					<Animated.View style={{ transform: [{ translateY: hidePassageChevronTranslateY }] }}>
-						<MaterialIcons
-							name="expand-more"
+						<MaterialSymbol
+							name="expand_more"
 							size={20}
 							color={deck.colors.dark.primary}
 						/>

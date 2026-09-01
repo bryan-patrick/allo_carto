@@ -2,6 +2,7 @@ import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import LinkButton from '@/src/components/LinkButton';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
 	emptyDeckWordProgressCounts,
@@ -11,7 +12,6 @@ import { useUserContext } from '@/src/db/useUserContext';
 import { findAtlasLocationByPlaceId } from '@/src/util/atlasCompletion';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import type { WordProgressKey } from '@/src/util/wordProgress';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -66,7 +66,7 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	const {
 		color: chapterColor = colors.dark.primary,
 		label: chapterLabel = '',
-		materialIconName: chapterIconName = 'help-outline',
+		materialSymbolName: chapterSymbolName = 'help',
 		name: chapterName = '',
 	} = chapter ?? {};
 
@@ -219,8 +219,8 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 							{chapter && (
 								<View style={styles.chapterBadgeContainer}>
 									<View style={[styles.chapterBadge, { backgroundColor: chapterColor }]}>
-										<MaterialIcons
-											name={chapterIconName}
+										<MaterialSymbol
+											name={chapterSymbolName}
 											size={24}
 											color={colors.light.goldenBorder}
 										/>
@@ -231,7 +231,7 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 							<View style={styles.deckDetails}>
 								{chapter && (
 									<Text style={styles.chapterHeading}>
-										{chapterLabel} {chapterName}
+										{chapterLabel}: {chapterName}
 									</Text>
 								)}
 								<View style={styles.deckTitleSeparator}>
@@ -245,17 +245,17 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 									onPressOut={handlePassageButtonPressOut}
 									style={[styles.passageButton, { borderColor: chapterColor }]}
 								>
-									<MaterialIcons
-										name="menu-book"
-										size={20}
+									<MaterialSymbol
+										name="menu_book"
+										size={24}
 										color={chapterColor}
 									/>
 									<Text style={[styles.passageButtonText, { color: chapterColor }]}>
 										View passage
 									</Text>
 									<Animated.View style={{ transform: [{ translateY: passageChevronTranslateY }] }}>
-										<MaterialIcons
-											name="keyboard-arrow-up"
+										<MaterialSymbol
+											name="keyboard_arrow_up"
 											size={20}
 											color={chapterColor}
 										/>
@@ -264,8 +264,8 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 							</View>
 							<View style={styles.deckInfoContainer}>
 								<View style={[styles.deckInfoColumn, styles.deckInfoColumnSeparator]}>
-									<MaterialIcons
-										name="language"
+									<MaterialSymbol
+										name="globe"
 										size={24}
 										color={chapterColor}
 									/>
@@ -274,8 +274,8 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 									</Text>
 								</View>
 								<View style={[styles.deckInfoColumn, styles.deckInfoColumnSeparator]}>
-									<MaterialIcons
-										name="style"
+									<MaterialSymbol
+										name="cards_star"
 										size={24}
 										color={chapterColor}
 									/>
@@ -284,13 +284,13 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 									</Text>
 								</View>
 								<View style={styles.deckInfoColumn}>
-									<MaterialIcons
-										name="star-outline"
+									<MaterialSymbol
+										name="school"
 										size={24}
 										color={chapterColor}
 									/>
 									<Text style={[styles.deckInfoText, { color: chapterColor }]}>
-										{deckMetadata.completionPercent}% known
+										{deckMetadata.completionPercent}% Known
 									</Text>
 								</View>
 							</View>
@@ -351,8 +351,8 @@ const styles = StyleSheet.create({
 		borderWidth: 2,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
-		margin: 12,
-		marginTop: 6,
+		margin: 8,
+		marginTop: 4,
 	},
 	chapterBadgeContainer: {
 		justifyContent: 'center',
@@ -362,9 +362,9 @@ const styles = StyleSheet.create({
 	chapterBadge: {
 		paddingTop: 20,
 		paddingHorizontal: 32,
-		paddingBottom: 8,
+		paddingBottom: 4,
 		justifyContent: 'center',
-		gap: 4,
+		gap: 2,
 		borderBottomLeftRadius: 8,
 		borderBottomRightRadius: 8,
 	},
@@ -380,15 +380,13 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		flex: 1,
 		padding: 8,
-		margin: 4,
-		gap: 6,
+		gap: 8,
 	},
 	chapterHeading: {
 		flex: 1,
 		fontFamily: 'lexend-400',
 		fontSize: 12,
 		textAlign: 'center',
-		marginBottom: 4,
 	},
 	deckTitleSeparator: {
 		position: 'relative',
@@ -408,7 +406,6 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.light.goldenBorder,
 	},
 	deckTitle: {
-		marginTop: 2,
 		fontFamily: 'lexend-600',
 		fontSize: 24,
 		textAlign: 'center',
@@ -428,8 +425,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		borderTopWidth: 1,
 		borderBottomWidth: 1,
-		paddingVertical: 8,
-		marginVertical: 16,
+		paddingVertical: 4,
+		marginVertical: 8,
 		gap: 8,
 	},
 	passageButtonText: {
@@ -439,9 +436,8 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'row',
 		borderTopWidth: 2,
-		paddingVertical: 16,
+		paddingVertical: 8,
 		borderColor: colors.light.goldenBorder,
-		marginTop: -12,
 	},
 	deckInfoColumn: {
 		display: 'flex',
@@ -468,7 +464,7 @@ const styles = StyleSheet.create({
 		marginTop: -2,
 	},
 	selectDeckButtonContainer: {
-		marginHorizontal: 8,
+		marginHorizontal: 16,
 		marginBottom: 16,
 	},
 });

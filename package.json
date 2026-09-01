@@ -29,8 +29,8 @@
 	},
 	"private": true,
 	"dependencies": {
+		"@expo-google-fonts/material-symbols": "^0.4.42",
 		"@expo/metro-runtime": "~57.0.8",
-		"@expo/vector-icons": "^15.0.2",
 		"@react-native-masked-view/masked-view": "0.3.2",
 		"expo": "~57.0.11",
 		"expo-asset": "~57.0.7",
@@ -45,7 +45,6 @@
 		"expo-splash-screen": "~57.0.5",
 		"expo-sqlite": "~57.0.1",
 		"expo-status-bar": "~57.0.1",
-		"expo-symbols": "~57.0.2",
 		"expo-system-ui": "~57.0.2",
 		"expo-web-browser": "~57.0.2",
 		"react": "19.2.3",

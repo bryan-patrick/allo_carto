@@ -9,12 +9,6 @@ import { render } from '@testing-library/react-native';
 
 jest.mock('@/src/components/CardDeck/useCardDeck');
 
-jest.mock('@expo/vector-icons/MaterialIcons', () => {
-	const { Text } = jest.requireActual('react-native');
-
-	return jest.fn(({ name }) => <Text>{name}</Text>);
-});
-
 const mockUseCardDeck = jest.mocked(useCardDeck);
 
 async function showWordProgress(correctCount: number, seenCount: number) {
@@ -42,14 +36,14 @@ describe('<WordProgress />', () => {
 		const { getByText } = await showWordProgress(0, 0);
 
 		getByText('Unseen');
-		getByText('question-mark');
+		getByText('question_mark');
 	});
 
 	test('shows the New rank for a seen card with no correct answers', async () => {
 		const { getAllByText, queryByText } = await showWordProgress(0, 1);
 
 		expect(getAllByText('New')).toHaveLength(2);
-		expect(getAllByText('fiber-new')).toHaveLength(2);
+		expect(getAllByText('fiber_new')).toHaveLength(2);
 		expect(queryByText('Unseen')).toBeNull();
 	});
 });

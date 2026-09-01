@@ -35,7 +35,7 @@ export default function Chapter({
 	/**
 	 * Destructure chapter
 	 */
-	const { label, name, color, materialIconName } = chapter;
+	const { label, name, color, materialSymbolName } = chapter;
 
 	/**
 	 * Get the unlock criteria
@@ -50,7 +50,7 @@ export default function Chapter({
 			<Spine
 				color={color}
 				index={index}
-				materialIconName={materialIconName}
+				materialSymbolName={materialSymbolName}
 			/>
 			<Crease />
 			<Cover>

@@ -28,12 +28,6 @@ jest.mock('expo-audio', () => ({
 	})),
 }));
 
-jest.mock('@expo/vector-icons/MaterialIcons', () => {
-	const { Text } = jest.requireActual('react-native');
-
-	return jest.fn(({ name }) => <Text>{name}</Text>);
-});
-
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseLinkProps = jest.mocked(useLinkProps);
 const mockRouterDismissTo = jest.mocked(router.dismissTo);

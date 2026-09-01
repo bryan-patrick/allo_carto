@@ -1,11 +1,16 @@
 import type { ProgressById, UserProgressRow } from '@/src/util/progression';
-import { getDB } from '../connection';
+import type { SQLiteDatabase } from 'expo-sqlite';
 
 /**
  * Load a user's userProgress rows into an ID lookup
  */
-export default async function getUserProgress(userId: string): Promise<ProgressById> {
-	const database = await getDB();
+export default async function getUserProgress({
+	database,
+	userId,
+}: {
+	database: SQLiteDatabase;
+	userId: string;
+}): Promise<ProgressById> {
 	const rows = await database.getAllAsync<UserProgressRow>(
 		`
 		SELECT

@@ -1,13 +1,10 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import type { ComponentProps } from 'react';
-
 export type WordProgressKey = 'unseen' | 'new' | 'learning' | 'familiar' | 'known' | 'mastered';
 
 export interface WordProgressDefinition {
 	key: WordProgressKey;
 	name: string;
 	minCorrectCount: number;
-	iconName: ComponentProps<typeof MaterialIcons>['name'];
+	symbolName: string;
 }
 
 export const wordProgressDefinitions: WordProgressDefinition[] = [
@@ -15,37 +12,37 @@ export const wordProgressDefinitions: WordProgressDefinition[] = [
 		key: 'unseen',
 		name: 'Unseen',
 		minCorrectCount: 0,
-		iconName: 'question-mark',
+		symbolName: 'question_mark',
 	},
 	{
 		key: 'new',
 		name: 'New',
 		minCorrectCount: 0,
-		iconName: 'fiber-new',
+		symbolName: 'fiber_new',
 	},
 	{
 		key: 'learning',
 		name: 'Learning',
 		minCorrectCount: 3,
-		iconName: 'school',
+		symbolName: 'school',
 	},
 	{
 		key: 'familiar',
 		name: 'Familiar',
 		minCorrectCount: 7,
-		iconName: 'task-alt',
+		symbolName: 'task_alt',
 	},
 	{
 		key: 'known',
 		name: 'Known',
 		minCorrectCount: 12,
-		iconName: 'book',
+		symbolName: 'book',
 	},
 	{
 		key: 'mastered',
 		name: 'Mastered',
 		minCorrectCount: 15,
-		iconName: 'star',
+		symbolName: 'star',
 	},
 ];
 

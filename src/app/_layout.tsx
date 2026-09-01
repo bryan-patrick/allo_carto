@@ -1,3 +1,4 @@
+import { MaterialSymbols_400Regular } from '@expo-google-fonts/material-symbols/400Regular';
 import { setAudioModeAsync } from 'expo-audio';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -31,12 +32,12 @@ export default function AppLayout() {
 	 */
 	const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
 	const [user, setUser] = useState<UserRow | null>(null);
-	const [isDatabaseReady, setIsDatabaseReady] = useState(false);
 
 	/**
 	 * Load our fonts
 	 */
-	useFonts({
+	const [fontsLoaded, fontError] = useFonts({
+		MaterialSymbols_400Regular,
 		'lexend-400': require('./assets/fonts/lexend-400.ttf'),
 		'lexend-600': require('./assets/fonts/lexend-600.ttf'),
 		'lexend-700': require('./assets/fonts/lexend-700.ttf'),
@@ -75,8 +76,15 @@ export default function AppLayout() {
 		await getTables();
 		const monHomme = await getMonHomme();
 		setUser(monHomme);
-		setIsDatabaseReady(true);
 	}, []);
+
+	if (fontError) {
+		throw fontError;
+	}
+
+	if (!fontsLoaded) {
+		return <Loader />;
+	}
 
 	/**
 	 * The (tabs) dir are navigable routes on the bottom bar
@@ -95,16 +103,13 @@ export default function AppLayout() {
 						cardDeckDispatch,
 					}}
 				>
-					<UserProgressProvider
-						isDatabaseReady={isDatabaseReady}
-						userId={user?.id}
-					>
-						<Suspense fallback={<Loader />}>
-							<SQLiteProvider
-								databaseName="allo_carto.db"
-								onInit={initDB}
-								useSuspense
-							>
+					<Suspense fallback={<Loader />}>
+						<SQLiteProvider
+							databaseName="allo_carto.db"
+							onInit={initDB}
+							useSuspense
+						>
+							<UserProgressProvider userId={user?.id}>
 								<Stack>
 									<Stack.Screen
 										name="(tabs)"
@@ -167,9 +172,9 @@ export default function AppLayout() {
 										}}
 									/>
 								</Stack>
-							</SQLiteProvider>
-						</Suspense>
-					</UserProgressProvider>
+							</UserProgressProvider>
+						</SQLiteProvider>
+					</Suspense>
 				</CardDeckContext>
 			</ThemeProvider>
 		</UserContext>
