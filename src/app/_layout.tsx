@@ -1,3 +1,4 @@
+import { MaterialSymbols_400Regular } from '@expo-google-fonts/material-symbols/400Regular';
 import { setAudioModeAsync } from 'expo-audio';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -36,7 +37,8 @@ export default function AppLayout() {
 	/**
 	 * Load our fonts
 	 */
-	useFonts({
+	const [fontsLoaded, fontError] = useFonts({
+		MaterialSymbols_400Regular,
 		'lexend-400': require('./assets/fonts/lexend-400.ttf'),
 		'lexend-600': require('./assets/fonts/lexend-600.ttf'),
 		'lexend-700': require('./assets/fonts/lexend-700.ttf'),
@@ -77,6 +79,14 @@ export default function AppLayout() {
 		setUser(monHomme);
 		setIsDatabaseReady(true);
 	}, []);
+
+	if (fontError) {
+		throw fontError;
+	}
+
+	if (!fontsLoaded) {
+		return <Loader />;
+	}
 
 	/**
 	 * The (tabs) dir are navigable routes on the bottom bar

@@ -1,7 +1,6 @@
 import { DeckDawnAtTheDropOff } from '@/data/french/decks';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { Progression } from '@/src/util/progression';
-import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { ImageSourcePropType } from 'react-native';
 
 /**
@@ -21,8 +20,6 @@ export interface DeckAtlas {
 	chapters: DeckChapter[];
 }
 
-export type MaterialIconName = keyof typeof MaterialIcons.glyphMap;
-
 export interface DeckChapter extends Progression {
 	id: string;
 	name: string;
@@ -30,7 +27,7 @@ export interface DeckChapter extends Progression {
 	label: string;
 	image?: ImageSourcePropType;
 	color?: string;
-	materialIconName?: MaterialIconName;
+	materialSymbolName?: string;
 }
 
 export interface DeckPlace extends Progression {
@@ -53,7 +50,7 @@ export const deckAtlas: DeckAtlas = {
 			label: 'Chapter 1',
 			image: aVeryFrenchTravelDay,
 			color: '#253749',
-			materialIconName: 'flight',
+			materialSymbolName: 'flight',
 			places: [
 				{
 					id: 'aeroport-oiseau',
@@ -94,7 +91,7 @@ export const deckAtlas: DeckAtlas = {
 			label: 'Epilogue:',
 			image: lostAndSecretDecks,
 			color: '#473022',
-			materialIconName: 'pets',
+			materialSymbolName: 'bath_soak',
 			places: [
 				{
 					id: 'rue-saint-matou',

@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
 	chapterContainer: {
 		display: 'flex',
 		margin: 8,
-		gap: 8,
+		gap: 16,
 	},
 	postcardStack: {
 		display: 'flex',
