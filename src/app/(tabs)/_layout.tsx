@@ -1,5 +1,5 @@
-import MaterialIcons from '@/node_modules/@expo/vector-icons/MaterialIcons';
-import { Tabs } from '@/node_modules/expo-router';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
+import { Tabs } from 'expo-router';
 import colors from '../colors';
 
 /**
@@ -20,7 +20,7 @@ export default function TabsLayout({ size = 28 }) {
 					title: 'Home',
 					headerTitle: 'Allo',
 					tabBarIcon: ({ color }) => (
-						<MaterialIcons
+						<MaterialSymbol
 							color={color}
 							size={size}
 							name="home"
@@ -33,7 +33,7 @@ export default function TabsLayout({ size = 28 }) {
 				options={{
 					title: 'Settings',
 					tabBarIcon: ({ color }) => (
-						<MaterialIcons
+						<MaterialSymbol
 							color={color}
 							size={size}
 							name="settings"

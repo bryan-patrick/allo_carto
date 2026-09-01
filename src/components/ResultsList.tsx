@@ -1,7 +1,6 @@
 import colors from '@/src/app/colors';
 import { Word } from '@/src/components/CardDeck/cardDeckTypes';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ComponentProps } from 'react';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { StyleSheet, Text, TextStyle, View } from 'react-native';
 
 /**
@@ -22,7 +21,7 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
 	const title: string = isCorrect ? 'Correct' : 'Incorrect';
 	const iconColor: string = isCorrect ? colors.dark.success : colors.dark.danger;
 	const wordResultStyle: TextStyle = isCorrect ? styles.success : styles.danger;
-	const iconName: ComponentProps<typeof MaterialIcons>['name'] = isCorrect ? 'check' : 'close';
+	const symbolName = isCorrect ? 'check' : 'close';
 	const emptyText =
 		isCorrect ?
 			"You didn't get any correct. Try again!"
@@ -47,8 +46,8 @@ export default function ResultsList({ isCorrect, wordArr }: ResultsListProps) {
 							style={styles.wordRowContainer}
 						>
 							<View style={styles.checkMarkContainer}>
-								<MaterialIcons
-									name={iconName}
+								<MaterialSymbol
+									name={symbolName}
 									size={24}
 									color={iconColor}
 								/>

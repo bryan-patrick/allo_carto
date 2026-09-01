@@ -1,4 +1,3 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ComponentProps, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -14,11 +13,12 @@ import {
 	WordProgressKey,
 } from '../util/wordProgress';
 import { useCardDeck } from './CardDeck/useCardDeck';
+import MaterialSymbol from './MaterialSymbol';
 
 /**
  * Typing
  */
-type WordProgressIconProps = Omit<ComponentProps<typeof MaterialIcons>, 'name'> & {
+type WordProgressIconProps = Omit<ComponentProps<typeof MaterialSymbol>, 'name'> & {
 	progress: WordProgressKey;
 };
 
@@ -29,11 +29,11 @@ export function WordProgressIcon({ progress, size = 12, color, ...props }: WordP
 	const progressDefinition = getWordProgressDefinitionByKey(progress);
 
 	return (
-		<MaterialIcons
+		<MaterialSymbol
 			{...props}
 			color={color ?? colors.wordProgress[progressDefinition.key]}
 			size={size}
-			name={progressDefinition.iconName}
+			name={progressDefinition.symbolName}
 		/>
 	);
 }

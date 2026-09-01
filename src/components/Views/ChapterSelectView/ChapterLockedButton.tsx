@@ -1,6 +1,6 @@
 import colors from '@/src/app/colors';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { UnlockCriteria } from '@/src/util/atlasCompletion';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { StyleSheet, Text, View } from 'react-native';
 
 /**
@@ -19,7 +19,7 @@ export default function ChapterLockedButton({ color, unlockCriteria }: ChapterLo
 		<View style={[styles.buttonContainer, { borderColor: color }]}>
 			<View style={[styles.lockContainer, { backgroundColor: color }]}>
 				<View style={styles.lockFlexContainer}>
-					<MaterialIcons
+					<MaterialSymbol
 						color={'#E0D1B7'}
 						size={16}
 						name="lock"

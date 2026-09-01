@@ -28,7 +28,7 @@ describe('wordProgress', () => {
 			key: 'unseen',
 			name: 'Unseen',
 			minCorrectCount: 0,
-			iconName: 'question-mark',
+			symbolName: 'question_mark',
 		});
 		expect(wordProgressDefinitions[0]).toEqual(unseen);
 	});

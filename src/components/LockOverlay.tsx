@@ -1,8 +1,8 @@
 import type { UnlockCriteria } from '@/src/util/atlasCompletion';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ReactNode } from 'react';
 import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import colors from '../app/colors';
+import MaterialSymbol from './MaterialSymbol';
 import SVGCheck from './SVG/SVGCheck';
 
 /**
@@ -71,7 +71,7 @@ export default function LockOverlay({
 					testID={overlayTestID}
 				>
 					{showLockOverlay && (
-						<MaterialIcons
+						<MaterialSymbol
 							color={colors.light.text}
 							name="lock"
 							size={32}
