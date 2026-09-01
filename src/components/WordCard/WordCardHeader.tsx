@@ -13,7 +13,7 @@ export default function WordCardHeader() {
 	/**
 	 * Card vars
 	 */
-	const { rarity = 'Common' } = currentCard;
+	const { rarity } = currentCard;
 
 	/**
 	 * Render the WordCardHeader
@@ -23,18 +23,17 @@ export default function WordCardHeader() {
 			<View
 				style={[
 					styles.CEFRContainer,
-					{
-						backgroundColor: colors.light.CEFR[currentCard.CEFR],
-					},
+					{ backgroundColor: `${colors.light.CEFR[currentCard.CEFR]}26` },
 				]}
 			>
-				<Text style={styles.cardCEFRLevel}>{currentCard.CEFR}</Text>
+				<Text style={[styles.cardCEFRLevel, { color: colors.dark.CEFR[currentCard.CEFR] }]}>
+					{currentCard.CEFR}
+				</Text>
 			</View>
 			<LinearGradient
 				start={{ x: 0, y: 0 }}
 				end={{ x: 1, y: 1 }}
-				colors={[colors.rarity[rarity], colors.light.primary, colors.dark.primary]}
-				locations={[0.25, 0.65, 1]}
+				colors={[`${colors.rarity[rarity]}88`, '#ffffff00']}
 				style={styles.rarityContainer}
 			>
 				<Text style={styles.rarityText}>{rarity}</Text>

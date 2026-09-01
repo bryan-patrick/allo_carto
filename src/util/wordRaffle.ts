@@ -18,10 +18,9 @@ const numberOfTicketsByRarity: Record<CardRarity, number> = {
 
 function getWordRaffleTickets(word: Word, getWeightMultiplier: (word: Word) => number): number {
 	let result = 0;
-	const wordRarity = word.rarity ?? 'Common';
 	const weightMultiplier = getWeightMultiplier(word);
 
-	result = numberOfTicketsByRarity[wordRarity] * weightMultiplier;
+	result = numberOfTicketsByRarity[word.rarity] * weightMultiplier;
 
 	return result;
 }
