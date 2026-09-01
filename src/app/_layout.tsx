@@ -32,7 +32,6 @@ export default function AppLayout() {
 	 */
 	const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
 	const [user, setUser] = useState<UserRow | null>(null);
-	const [isDatabaseReady, setIsDatabaseReady] = useState(false);
 
 	/**
 	 * Load our fonts
@@ -77,7 +76,6 @@ export default function AppLayout() {
 		await getTables();
 		const monHomme = await getMonHomme();
 		setUser(monHomme);
-		setIsDatabaseReady(true);
 	}, []);
 
 	if (fontError) {
@@ -105,16 +103,13 @@ export default function AppLayout() {
 						cardDeckDispatch,
 					}}
 				>
-					<UserProgressProvider
-						isDatabaseReady={isDatabaseReady}
-						userId={user?.id}
-					>
-						<Suspense fallback={<Loader />}>
-							<SQLiteProvider
-								databaseName="allo_carto.db"
-								onInit={initDB}
-								useSuspense
-							>
+					<Suspense fallback={<Loader />}>
+						<SQLiteProvider
+							databaseName="allo_carto.db"
+							onInit={initDB}
+							useSuspense
+						>
+							<UserProgressProvider userId={user?.id}>
 								<Stack>
 									<Stack.Screen
 										name="(tabs)"
@@ -177,9 +172,9 @@ export default function AppLayout() {
 										}}
 									/>
 								</Stack>
-							</SQLiteProvider>
-						</Suspense>
-					</UserProgressProvider>
+							</UserProgressProvider>
+						</SQLiteProvider>
+					</Suspense>
 				</CardDeckContext>
 			</ThemeProvider>
 		</UserContext>

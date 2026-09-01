@@ -1,4 +1,5 @@
 import type { ProgressById } from '@/src/util/progression';
+import { useSQLiteContext } from 'expo-sqlite';
 import {
 	createContext,
 	type ReactNode,
@@ -44,13 +45,13 @@ export const UserProgressContext = createContext<UserProgressContextValue>(initi
  */
 export function UserProgressProvider({
 	children,
-	isDatabaseReady,
 	userId,
 }: {
 	children: ReactNode;
-	isDatabaseReady: boolean;
 	userId?: string;
 }) {
+	const database = useSQLiteContext();
+
 	/**
 	 * State
 	 */
@@ -63,19 +64,19 @@ export function UserProgressProvider({
 	 * Reload userProgress rows from the database
 	 */
 	const refreshProgress = useCallback(async () => {
-		if (!isDatabaseReady || !userId) {
+		if (!userId) {
 			setProgressById({});
 			setStatus('loading');
 		} else {
 			try {
-				setProgressById(await getUserProgress(userId));
+				setProgressById(await getUserProgress({ database, userId }));
 				setStatus('ready');
 			} catch (error) {
 				console.error('Could not retrieve user progress:', error);
 				setStatus('error');
 			}
 		}
-	}, [isDatabaseReady, userId]);
+	}, [database, userId]);
 
 	/**
 	 * Load userProgress rows when the database is ready
@@ -117,10 +118,10 @@ export function UserProgressProvider({
 	const recordCorrectAnswer = useCallback(
 		async (wordId: string): Promise<boolean> => {
 			return runProgressWrite(async () => {
-				await writeCorrectAnswer({ userId: userId!, wordId });
+				await writeCorrectAnswer({ database, userId: userId!, wordId });
 			});
 		},
-		[runProgressWrite, userId],
+		[database, runProgressWrite, userId],
 	);
 
 	/**
@@ -129,10 +130,10 @@ export function UserProgressProvider({
 	const recordWordSeen = useCallback(
 		async (wordId: string): Promise<boolean> => {
 			return runProgressWrite(async () => {
-				await writeWordSeen({ userId: userId!, wordId });
+				await writeWordSeen({ database, userId: userId!, wordId });
 			});
 		},
-		[runProgressWrite, userId],
+		[database, runProgressWrite, userId],
 	);
 
 	/**

@@ -10,6 +10,10 @@ jest.mock('@/src/db/queries/writeUserProgress', () => ({
 	writeCorrectAnswer: jest.fn(),
 	writeWordSeen: jest.fn(),
 }));
+jest.mock('expo-sqlite', () => {
+	const database = {};
+	return { useSQLiteContext: () => database };
+});
 
 const mockGetUserProgress = jest.mocked(getUserProgress);
 const mockWriteCorrectAnswer = jest.mocked(writeCorrectAnswer);
@@ -26,14 +30,7 @@ function deferred<T>() {
 }
 
 function Wrapper({ children }: { children: ReactNode }) {
-	return (
-		<UserProgressProvider
-			isDatabaseReady
-			userId="user_one"
-		>
-			{children}
-		</UserProgressProvider>
-	);
+	return <UserProgressProvider userId="user_one">{children}</UserProgressProvider>;
 }
 
 describe('<UserProgressProvider />', () => {

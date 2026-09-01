@@ -2,7 +2,6 @@ import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { getCompletionPercentage } from '@/src/util/progression';
 import { getWordProgressKeyFromCounts } from '@/src/util/wordProgress';
 import type { SQLiteDatabase } from 'expo-sqlite';
-import { getDB } from '../connection';
 import getDeckWordProgressCounts from './getDeckWordProgressCounts';
 import { incrementCorrectCount } from './incrementCorrectCount';
 import { incrementSeenCount } from './incrementSeenCount';
@@ -62,14 +61,14 @@ async function updateUserProgressTableItems({
  * changed deck, place, and chapter percentages
  */
 export async function writeCorrectAnswer({
+	database: sqliteDatabase,
 	userId,
 	wordId,
 }: {
+	database: SQLiteDatabase;
 	userId: string;
 	wordId: string;
 }): Promise<void> {
-	const sqliteDatabase = await getDB();
-
 	/**
 	 * Keep the whole write together
 	 */
@@ -122,14 +121,14 @@ export async function writeCorrectAnswer({
  * Save that a word was seen
  */
 export async function writeWordSeen({
+	database: sqliteDatabase,
 	userId,
 	wordId,
 }: {
+	database: SQLiteDatabase;
 	userId: string;
 	wordId: string;
 }): Promise<void> {
-	const sqliteDatabase = await getDB();
-
 	/**
 	 * Seen writes use the same lock
 	 */
