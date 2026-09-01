@@ -38,13 +38,13 @@ interface PassageLineMetric {
 	height: number;
 }
 
-const defaultUnseenQuestionOpacity = 0.4;
+const defaultUnseenQuestionOpacity = 0.25;
 
 /**
  * Helper functions
  */
 function getPassageWordOpacity(progress: WordProgressKey, filter: WordProgressKey | null): number {
-	if (!filter) return progress === 'unseen' ? 0.4 : 1;
+	if (!filter) return progress === 'unseen' ? 0.25 : 1;
 
 	return progress === filter ? 1 : 0.15;
 }
@@ -303,7 +303,7 @@ export default function DeckBoxModal({
 								Word Progress Colors
 							</Text>
 							<View style={styles.progressLegend}>
-								{wordProgressDefinitions.map(({ key, name }) => {
+								{wordProgressDefinitions.map(({ key, name, symbolName }) => {
 									const progressColor = colors.wordProgress[key];
 									const isActive = activeWordProgressFilter === key;
 									const wordCount = wordProgressCounts[key];
@@ -323,8 +323,11 @@ export default function DeckBoxModal({
 												},
 											]}
 										>
-											<View
-												style={[styles.progressLegendDot, { backgroundColor: progressColor }]}
+											<MaterialSymbol
+												name={symbolName}
+												size={16}
+												color={progressColor}
+												style={styles.progressLegendIcon}
 											/>
 											<Text style={styles.progressLegendText}>{name}</Text>
 											<Text style={styles.progressLegendText}>({wordCount})</Text>
@@ -528,10 +531,8 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		gap: 4,
 	},
-	progressLegendDot: {
-		width: 10,
-		height: 10,
-		borderRadius: 5,
+	progressLegendIcon: {
+		width: 16,
 	},
 	progressLegendText: {
 		color: colors.wordProgress.known,
