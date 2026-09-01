@@ -18,7 +18,7 @@ export const wordProgressDefinitions: WordProgressDefinition[] = [
 		key: 'new',
 		name: 'New',
 		minCorrectCount: 1,
-		symbolName: 'wb_incandescent',
+		symbolName: 'featured_seasonal_and_gifts',
 	},
 	{
 		key: 'learning',

@@ -92,7 +92,7 @@ const MappedButton = memo(function MappedButtonMemo({
 			case 'SUCCESS':
 			case 'DANGER':
 				if (isCorrectWord) {
-					buttonY.value = withTiming(-6, answerRevealTiming);
+					buttonY.value = withTiming(-5, answerRevealTiming);
 					buttonBackgroundColor.value = withTiming(colors.light.success, answerRevealTiming);
 				} else {
 					buttonBackgroundColor.value = withTiming(colors.light.border, answerRevealTiming);
@@ -104,17 +104,17 @@ const MappedButton = memo(function MappedButtonMemo({
 					buttonBackgroundColor.value = withTiming(colors.light.background, answerRevealTiming);
 				}
 
-				buttonBoxShadow.value = `0 6px 0 0 ${colors.dark.border}`;
+				buttonBoxShadow.value = `0 5px 0 0 ${colors.dark.border}`;
 				break;
 			default:
 				if (isActive) {
-					buttonBackgroundColor.value = colors.dark.primaryActive;
-					buttonY.value = withTiming(6, selectionTiming);
+					buttonBackgroundColor.value = colors.light.border;
+					buttonY.value = withTiming(5, selectionTiming);
 					buttonBoxShadow.value = `0 0 0 0 transparent`;
 				} else {
 					buttonY.value = withTiming(0, selectionTiming);
 					buttonBackgroundColor.value = withTiming(colors.light.background, selectionTiming);
-					buttonBoxShadow.value = `0 6px 0 0 ${colors.light.border}`;
+					buttonBoxShadow.value = `0 5px 0 0 ${colors.light.border}`;
 				}
 				break;
 		}
@@ -142,7 +142,7 @@ const MappedButton = memo(function MappedButtonMemo({
 			<AnimatedPressable
 				style={[styles.button, activeButtonStyle, isHighlighted && highlightStyle]}
 				onPress={() => handler(word)}
-				hitSlop={10}
+				hitSlop={5}
 			>
 				<Text style={[styles.text, isHighlighted && highlightTextStyle]}>{word}</Text>
 			</AnimatedPressable>
@@ -248,7 +248,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		borderRadius: 8,
 		borderColor: 'transparent',
-		padding: 14,
+		paddingVertical: 12,
+		paddingHorizontal: 4,
 		maxWidth: '50%',
 		minWidth: 80,
 		backgroundColor: colors.light.background,

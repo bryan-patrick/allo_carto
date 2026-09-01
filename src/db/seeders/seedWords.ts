@@ -59,7 +59,7 @@ export default async function seedWords(): Promise<void> {
 					word.gender ?? null,
 					word.partOfSpeech ?? null,
 					word.correctCount,
-					word.rarity ?? null,
+					word.rarity,
 				],
 			);
 		});

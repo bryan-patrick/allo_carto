@@ -1,6 +1,8 @@
 import colors from '@/src/app/colors';
 import { memo } from 'react';
 import {
+	ImageBackground,
+	ImageSourcePropType,
 	type LayoutChangeEvent,
 	StyleSheet,
 	Text,
@@ -17,6 +19,8 @@ import { useWordCardUI } from './useWordCardUI';
 import { FEEDBACK_TEXT_FRONT } from './wordCardContext';
 import WordCardHeader from './WordCardHeader';
 
+const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
+
 /**
  * Typing
  */
@@ -29,6 +33,7 @@ interface WordCardFrontProps {
 	wordSlotStyle: TextStyle;
 	handleArticleWidth: (event: LayoutChangeEvent) => void;
 	handleWordWidth: (event: LayoutChangeEvent) => void;
+	background: ImageSourcePropType;
 }
 
 /**
@@ -43,6 +48,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	feedbackStyle,
 	articleSlotStyle,
 	wordSlotStyle,
+	background,
 }: WordCardFrontProps) {
 	const { cardState } = useWordCardUI();
 	const { currentCard } = useCardDeck();
@@ -91,8 +97,10 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	 * Render the front of the WordCard
 	 */
 	return (
-		<Animated.View
+		<AnimatedImageBackground
 			style={[sharedWordCardStyles.wordCardInner, styles.cardFront, wordCardFrontFlippedStyle]}
+			source={background}
+			resizeMode="cover"
 		>
 			<WordCardHeader />
 			<View style={sharedWordCardStyles.cardMain}>
@@ -168,7 +176,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 					{FEEDBACK_TEXT_FRONT[cardState.feedbackKey] ?? ''}
 				</Text>
 			</View>
-		</Animated.View>
+		</AnimatedImageBackground>
 	);
 });
 

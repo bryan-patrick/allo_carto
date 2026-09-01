@@ -96,6 +96,7 @@ describe('<WordCardContainer />', () => {
 			CEFR: 'A1',
 			partOfSpeech: 'noun',
 			correctCount: 14,
+			rarity: 'Common',
 		};
 
 		const { rerender } = await render(
@@ -148,6 +149,7 @@ describe('<WordCardContainer />', () => {
 			CEFR: 'A1',
 			partOfSpeech: 'expression',
 			correctCount: 0,
+			rarity: 'Common',
 		};
 		const cardDeck = makeMockCardDeck({
 			words: [word],
@@ -194,6 +196,7 @@ describe('<WordCardContainer />', () => {
 			CEFR: 'A1',
 			partOfSpeech: 'noun',
 			correctCount: 14,
+			rarity: 'Common',
 		};
 
 		await render(

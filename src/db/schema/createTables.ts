@@ -23,7 +23,7 @@ async function createWordsTable(): Promise<void> {
 					gender TEXT,
 					partOfSpeech TEXT,
 					correctCount INTEGER NOT NULL,
-					rarity TEXT
+					rarity TEXT NOT NULL
 				);
 			`);
 	});

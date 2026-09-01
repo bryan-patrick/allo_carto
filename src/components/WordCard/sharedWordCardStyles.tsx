@@ -10,8 +10,8 @@ export const sharedWordCardStyles = StyleSheet.create({
 		alignContent: 'center',
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: colors.light.background,
 		borderRadius: 8,
+		overflow: 'hidden',
 	},
 	cardMain: {
 		alignItems: 'center',
@@ -89,14 +89,14 @@ export const sharedWordCardStyles = StyleSheet.create({
 	},
 	feedbackSuccess: {
 		color: colors.dark.success,
-		backgroundColor: colors.light.success,
+		backgroundColor: `${colors.light.success}`,
 	},
 	feedbackWarning: {
 		color: colors.dark.warning,
-		backgroundColor: colors.light.warning,
+		backgroundColor: `${colors.light.warning}`,
 	},
 	feedbackError: {
 		color: colors.dark.danger,
-		backgroundColor: colors.light.danger,
+		backgroundColor: `${colors.light.danger}`,
 	},
 });

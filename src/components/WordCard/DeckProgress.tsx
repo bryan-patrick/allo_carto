@@ -51,7 +51,7 @@ export default function DeckProgress() {
 					 * Map and render the blip things
 					 */
 					words.map((word: Word, index: number) => {
-						const rarity: CardRarity = word.rarity ?? 'Common';
+						const rarity: CardRarity = word.rarity;
 						const rarityColor: string = colors.rarity[rarity];
 						const isCorrect: boolean = correctWordIds.has(word.id);
 						const isIncorrect: boolean = incorrectWordIds.has(word.id);

@@ -13,7 +13,7 @@ export default function WordCardHeader() {
 	/**
 	 * Card vars
 	 */
-	const { rarity = 'Common' } = currentCard;
+	const { rarity } = currentCard;
 
 	/**
 	 * Render the WordCardHeader
@@ -33,8 +33,7 @@ export default function WordCardHeader() {
 			<LinearGradient
 				start={{ x: 0, y: 0 }}
 				end={{ x: 1, y: 1 }}
-				colors={[colors.rarity[rarity], colors.light.primary, colors.dark.primary]}
-				locations={[0.25, 0.65, 1]}
+				colors={[`${colors.rarity[rarity]}88`, '#ffffff00']}
 				style={styles.rarityContainer}
 			>
 				<Text style={styles.rarityText}>{rarity}</Text>
