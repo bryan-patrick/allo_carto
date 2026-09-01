@@ -39,6 +39,7 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
 		isVulgar: false,
 		CEFR: 'A1',
 		correctCount: 14,
+		rarity: 'Common',
 	};
 
 	mockUseCardDeck.mockReturnValue({

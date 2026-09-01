@@ -44,6 +44,7 @@ describe('<DeckResultsView />', () => {
 				isVulgar: false,
 				CEFR: 'A1',
 				correctCount: 1,
+				rarity: 'Common',
 			},
 			{
 				id: 'word_noun_the',
@@ -53,6 +54,7 @@ describe('<DeckResultsView />', () => {
 				isVulgar: false,
 				CEFR: 'A1',
 				correctCount: 0,
+				rarity: 'Common',
 			},
 		];
 		const cardDeck = {

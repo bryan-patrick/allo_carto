@@ -15,6 +15,7 @@ const cardWithArticle: Word = {
 	isVulgar: false,
 	CEFR: 'A1',
 	correctCount: 14,
+	rarity: 'Common',
 };
 
 const cardWithoutArticle: Word = {
@@ -25,6 +26,7 @@ const cardWithoutArticle: Word = {
 	isVulgar: false,
 	CEFR: 'A1',
 	correctCount: 3,
+	rarity: 'Common',
 };
 
 function makeState(overrides: Partial<WordCardStateProps> = {}): WordCardStateProps {

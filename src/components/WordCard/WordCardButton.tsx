@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
 	},
 	successPressable: {
 		backgroundColor: colors.light.success,
-		shadowColor: colors.light.border,
+		shadowColor: colors.dark.success,
 	},
 	disabledPressable: {
 		backgroundColor: colors.dark.border,

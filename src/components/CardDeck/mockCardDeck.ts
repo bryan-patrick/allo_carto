@@ -19,6 +19,7 @@ export const mockWords: Word[] = [
 		pronunciation: 'luh shee-ehn',
 		correctCount: 14,
 		seenCount: 14,
+		rarity: 'Common',
 	},
 	{
 		id: 'word_noun_maison',
@@ -34,6 +35,7 @@ export const mockWords: Word[] = [
 		pronunciation: 'lah meh-zohn',
 		correctCount: 14,
 		seenCount: 14,
+		rarity: 'Common',
 	},
 	{
 		id: 'word_noun_livre',
@@ -49,6 +51,7 @@ export const mockWords: Word[] = [
 		pronunciation: 'luh leev-uh',
 		correctCount: 7,
 		seenCount: 7,
+		rarity: 'Common',
 	},
 	{
 		id: 'word_noun_pomme',
@@ -64,6 +67,7 @@ export const mockWords: Word[] = [
 		pronunciation: 'lah pom',
 		correctCount: 11,
 		seenCount: 11,
+		rarity: 'Common',
 	},
 ];
 

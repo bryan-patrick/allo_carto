@@ -67,8 +67,12 @@ export default function WordProgress() {
 	/**
 	 * Animations / styles
 	 */
-	const currentProgressColorStyle = { backgroundColor: colors.wordProgress[currentProgress.key] };
-	const nextProgressColorStyle = { backgroundColor: colors.wordProgress[nextProgress.key] };
+	const currentProgressBackgroundStyle = {
+		backgroundColor: `${colors.wordProgress[currentProgress.key]}26`,
+	};
+	const nextProgressBackgroundStyle = {
+		backgroundColor: `${colors.wordProgress[nextProgress.key]}26`,
+	};
 	const translateY = useSharedValue(0);
 
 	const animatedContainerStyle = useAnimatedStyle(() => ({
@@ -99,21 +103,21 @@ export default function WordProgress() {
 	return (
 		<View style={styles.wordProgressContainer}>
 			<Animated.View style={[styles.animationContainer, animatedContainerStyle]}>
-				<Animated.View style={[styles.currentContainer, currentProgressColorStyle]}>
+				<Animated.View style={[styles.currentContainer, currentProgressBackgroundStyle]}>
 					<Animated.Text style={styles.scoreText}>{currentScore}</Animated.Text>
 					<WordProgressIcon
 						progress={currentProgress.key}
 						size={18}
-						color={colors.light.text}
+						color={colors.dark.text}
 					/>
 					<Animated.Text style={styles.progressText}>{currentProgress.name}</Animated.Text>
 				</Animated.View>
-				<Animated.View style={[styles.nextContainer, nextProgressColorStyle]}>
+				<Animated.View style={[styles.nextContainer, nextProgressBackgroundStyle]}>
 					<Animated.Text style={styles.scoreText}>{nextScore}</Animated.Text>
 					<WordProgressIcon
 						progress={nextProgress.key}
 						size={18}
-						color={colors.light.text}
+						color={colors.dark.text}
 					/>
 					<Animated.Text style={styles.progressText}>{nextProgress.name}</Animated.Text>
 				</Animated.View>
@@ -129,7 +133,6 @@ const styles = StyleSheet.create({
 	wordProgressContainer: {
 		display: 'flex',
 		height: 22,
-		backgroundColor: colors.dark.background,
 	},
 	animationContainer: {
 		display: 'flex',
@@ -158,12 +161,11 @@ const styles = StyleSheet.create({
 		borderLeftWidth: 1,
 	},
 	scoreText: {
-		color: colors.light.text,
 		fontSize: 14,
 		fontFamily: 'azeret-mono-600',
 	},
 	progressText: {
-		color: colors.light.text,
+		color: colors.dark.text,
 		fontSize: 10,
 		fontFamily: 'azeret-mono-600',
 		textTransform: 'uppercase',

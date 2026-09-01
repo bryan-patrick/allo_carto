@@ -23,6 +23,7 @@ describe('<WordCardSelection />', () => {
 			isVulgar: false,
 			CEFR: 'A1',
 			correctCount: 14,
+			rarity: 'Common',
 		};
 		const cardDeck = makeMockCardDeck({ words: [currentCard] });
 		const wordCardUIDispatch = jest.fn();

@@ -165,14 +165,6 @@ export default function DeckBoxModal({
 						 */}
 						<View style={styles.header}>
 							<View>
-								<View style={styles.placeContainer}>
-									<Text style={styles.placeText}>{deck.place}</Text>
-									<MaterialSymbol
-										color={'#000000'}
-										size={16}
-										name="location_on"
-									/>
-								</View>
 								<Text style={[styles.title, { color: deck.colors.dark.primary }]}>
 									{deck.title}
 								</Text>
@@ -385,8 +377,8 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 	},
 	modalInner: {
-		paddingLeft: 16,
 		paddingHorizontal: 16,
+		paddingVertical: 8,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 16,

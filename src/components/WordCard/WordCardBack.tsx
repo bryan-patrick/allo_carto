@@ -1,5 +1,13 @@
 import { memo } from 'react';
-import { type ViewStyle, StyleSheet, Text, TextStyle, View } from 'react-native';
+import {
+	type ViewStyle,
+	ImageBackground,
+	ImageSourcePropType,
+	StyleSheet,
+	Text,
+	TextStyle,
+	View,
+} from 'react-native';
 import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import formatFrenchWordWithArticle from '../../util/formatFrenchWordWithArticle';
 import { useCardDeck } from '../CardDeck/useCardDeck';
@@ -7,6 +15,8 @@ import { sharedWordCardStyles } from './sharedWordCardStyles';
 import { useWordCardUI } from './useWordCardUI';
 import { FEEDBACK_TEXT_BACK } from './wordCardContext';
 import WordCardHeader from './WordCardHeader';
+
+const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 
 /**
  * Typing
@@ -18,6 +28,7 @@ interface WordCardBackProps {
 	feedbackStyle: TextStyle;
 	articleSlotStyle: TextStyle;
 	wordSlotStyle: TextStyle;
+	background: ImageSourcePropType;
 }
 
 /**
@@ -30,6 +41,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 	feedbackStyle,
 	articleSlotStyle,
 	wordSlotStyle,
+	background,
 }: WordCardBackProps) {
 	/**
 	 * State
@@ -71,8 +83,12 @@ const WordCardBack = memo(function WordCardBackMemo({
 	 * Render the back of the WordCard
 	 */
 	return (
-		<Animated.View
+		<AnimatedImageBackground
 			style={[sharedWordCardStyles.wordCardInner, styles.cardBack, wordCardBackFlippedStyle]}
+			source={background}
+			imageStyle={{ transform: [{ scaleX: -1 }] }}
+
+			resizeMode="cover"
 		>
 			<WordCardHeader />
 			<View style={sharedWordCardStyles.cardMain}>
@@ -117,7 +133,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 					{FEEDBACK_TEXT_BACK[cardState.feedbackKey] ?? ''}
 				</Text>
 			</View>
-		</Animated.View>
+		</AnimatedImageBackground>
 	);
 });
 

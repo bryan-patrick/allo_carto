@@ -1,12 +1,29 @@
 import { router } from 'expo-router';
 import { useContext, useEffect, useLayoutEffect, useMemo } from 'react';
-import { type LayoutChangeEvent, StyleSheet, TextStyle, View } from 'react-native';
+import {
+	ImageSourcePropType,
+	type LayoutChangeEvent,
+	StyleSheet,
+	TextStyle,
+	View,
+} from 'react-native';
 import { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { CardDeckContext } from '../CardDeck/cardDeckContext';
+import { useCardDeck } from '../CardDeck/useCardDeck';
 import { sharedWordCardStyles } from './sharedWordCardStyles';
 import { useWordCardUI } from './useWordCardUI';
 import WordCardBack from './WordCardBack';
 import WordCardFront from './WordCardFront';
+
+/**
+ * Card backgrounds (by rarity)
+ */
+const cardBgs: Record<string, ImageSourcePropType> = {
+	Common: require('@/src/app/assets/images/card-bgs/card-bg-common.jpg'),
+	Rare: require('@/src/app/assets/images/card-bgs/card-bg-rare.jpg'),
+	Epic: require('@/src/app/assets/images/card-bgs/card-bg-epic.jpg'),
+	Legendary: require('@/src/app/assets/images/card-bgs/card-bg-legendary.jpg'),
+};
 
 /**
  * Typing
@@ -28,6 +45,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 	 * State
 	 */
 	const { cardState } = useWordCardUI();
+	const { currentCard } = useCardDeck();
 	const { cardDeckState, cardDeckDispatch } = useContext(CardDeckContext);
 	const hasArticleMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
 	const hasWordMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
@@ -153,6 +171,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 				feedbackStyle={feedbackStyle}
 				articleSlotStyle={articleSlotStyle}
 				wordSlotStyle={wordSlotStyle}
+				background={cardBgs[currentCard.rarity]}
 			/>
 			<WordCardBack
 				wordCardBackFlippedStyle={wordCardBackFlippedStyle}
@@ -161,6 +180,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 				feedbackStyle={feedbackStyle}
 				articleSlotStyle={articleSlotStyle}
 				wordSlotStyle={wordSlotStyle}
+				background={cardBgs[currentCard.rarity]}
 			/>
 		</View>
 	);
@@ -171,7 +191,6 @@ export default function WordCard({ isCurrent }: WordCardProps) {
  */
 const styles = StyleSheet.create({
 	wordCard: {
-		borderRadius: 8,
 		alignContent: 'center',
 		alignItems: 'center',
 		justifyContent: 'center',

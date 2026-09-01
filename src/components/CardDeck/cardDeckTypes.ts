@@ -69,7 +69,7 @@ export interface Word {
 	partOfSpeech?: string;
 	correctCount: number;
 	seenCount?: number;
-	rarity?: CardRarity;
+	rarity: CardRarity;
 }
 
 export const initialWordState: Word = {
@@ -81,4 +81,5 @@ export const initialWordState: Word = {
 	CEFR: 'A1',
 	correctCount: 0,
 	seenCount: 0,
+	rarity: 'Common',
 };

@@ -15,6 +15,6 @@ export interface WordRow {
 	gender?: Word['gender'];
 	partOfSpeech?: string;
 	correctCount: number;
-	rarity?: CardRarity;
+	rarity: CardRarity;
 	userCorrectCount: number;
 }
