@@ -250,6 +250,7 @@ const styles = StyleSheet.create({
 		borderColor: 'transparent',
 		paddingVertical: 12,
 		paddingHorizontal: 4,
+		flexShrink: 1,
 		maxWidth: '50%',
 		minWidth: 80,
 		backgroundColor: colors.light.background,

@@ -23,12 +23,12 @@ export default function WordCardHeader() {
 			<View
 				style={[
 					styles.CEFRContainer,
-					{
-						backgroundColor: colors.light.CEFR[currentCard.CEFR],
-					},
+					{ backgroundColor: `${colors.light.CEFR[currentCard.CEFR]}26` },
 				]}
 			>
-				<Text style={styles.cardCEFRLevel}>{currentCard.CEFR}</Text>
+				<Text style={[styles.cardCEFRLevel, { color: colors.dark.CEFR[currentCard.CEFR] }]}>
+					{currentCard.CEFR}
+				</Text>
 			</View>
 			<LinearGradient
 				start={{ x: 0, y: 0 }}

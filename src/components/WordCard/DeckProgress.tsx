@@ -5,16 +5,6 @@ import { type CardRarity, Word } from '../CardDeck/cardDeckTypes';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 
 /**
- * Controls the glow radius for the blips
- */
-const glowRadiusByRarity: Record<CardRarity, number> = {
-	Common: 0,
-	Rare: 4,
-	Epic: 8,
-	Legendary: 16,
-};
-
-/**
  * DeckProgress component
  */
 export default function DeckProgress() {
@@ -59,19 +49,14 @@ export default function DeckProgress() {
 						const isCurrent: boolean = index + 1 === currentCard;
 						const isFilled: boolean = isCompleted || isCorrect || isIncorrect;
 						const blipColor: string = isIncorrect ? colors.light.danger : rarityColor;
-						const glowRadius: number = glowRadiusByRarity[rarity];
 
 						/**
 						 * Dynamic Blip styles
 						 */
 						const dynamicBlipStyle: ViewStyle = {
-							borderColor: blipColor,
-							backgroundColor: isFilled ? blipColor : 'transparent',
+							borderColor: isFilled ? blipColor : colors.light.border,
+							backgroundColor: isFilled && !isIncorrect ? blipColor : 'transparent',
 							opacity: isFilled || isCurrent ? 1 : 0.5,
-							shadowColor: blipColor,
-							shadowOffset: { width: 0, height: 0 },
-							shadowOpacity: isFilled && glowRadius ? 1 : 0,
-							shadowRadius: glowRadius,
 						};
 
 						/**
@@ -104,24 +89,23 @@ const styles = StyleSheet.create({
 		paddingHorizontal: sharedStyles.containerMargin,
 		paddingVertical: 2,
 		backgroundColor: colors.dark.text,
-		gap: 4,
+		gap: 8,
 	},
 	progressText: {
 		fontFamily: 'azeret-mono-600',
-		fontSize: 10,
+		fontSize: 11,
 		color: colors.light.background,
 	},
 	blipContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		flexShrink: 1,
-		gap: 4,
+		gap: 2,
 	},
 	blip: {
-		height: 10,
-		width: 8,
+		height: 8,
+		width: 6,
 		flexShrink: 1,
 		borderWidth: 1,
-		borderColor: colors.light.background,
 	},
 });
