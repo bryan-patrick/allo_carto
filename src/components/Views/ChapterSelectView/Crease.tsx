@@ -1,3 +1,4 @@
+import colors from '@/src/app/colors';
 import { ImageBackground, StyleSheet, View } from 'react-native';
 
 /**
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
 	innerBorder: {
 		borderTopWidth: 2,
 		borderBottomWidth: 2,
-		borderColor: 'rgba(0, 0, 0, 0.4)',
+		borderColor: colors.utility.cardBorder,
 		flexGrow: 1,
 	},
 });

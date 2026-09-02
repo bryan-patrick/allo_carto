@@ -57,6 +57,9 @@ const colors = {
 		Epic: '#E55C67',
 		Legendary: '#ffa200',
 	},
+	utility: {
+		cardBorder: 'rgba(0, 0, 0, 0.15)',
+	},
 };
 
 export default colors;
