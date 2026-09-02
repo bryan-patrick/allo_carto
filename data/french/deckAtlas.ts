@@ -23,6 +23,7 @@ export interface DeckAtlas {
 export interface DeckChapter extends Progression {
 	id: string;
 	name: string;
+	description: string;
 	places: DeckPlace[];
 	label: string;
 	image?: ImageSourcePropType;
@@ -33,7 +34,6 @@ export interface DeckChapter extends Progression {
 export interface DeckPlace extends Progression {
 	id: string;
 	name: string;
-	description: string;
 	decks: CardDeck[];
 	image?: ImageSourcePropType;
 }
@@ -47,16 +47,16 @@ export const deckAtlas: DeckAtlas = {
 		{
 			id: 'a-very-french-travel-day',
 			name: 'A Very French Travel Day',
+			description:
+				'Flights, feathers, occasional bread delays. These decks focus on situations while travelling.',
 			label: 'Chapter 1',
 			image: aVeryFrenchTravelDay,
-			color: '#253749',
+			color: '#454A36',
 			materialSymbolName: 'flight',
 			places: [
 				{
 					id: 'aeroport-oiseau',
 					name: 'Aéroport Oiseau',
-					description:
-						'Flights, feathers, occasional bread delays. These decks focus on situations while travelling.',
 					image: aeroportOiseau,
 					decks: [DeckDawnAtTheDropOff],
 				},
@@ -69,7 +69,6 @@ export const deckAtlas: DeckAtlas = {
 						},
 					],
 					name: 'Hôtel Bonne Chance',
-					description: 'Clean sheets. Questionable luck.',
 					image: hotelChance,
 					decks: [],
 				},
@@ -88,15 +87,15 @@ export const deckAtlas: DeckAtlas = {
 				},
 			],
 			name: 'Lost and Secret Decks',
+			description: 'Bonsoir, hooman. Bienvenue.',
 			label: 'Epilogue:',
 			image: lostAndSecretDecks,
 			color: '#473022',
-			materialSymbolName: 'bath_soak',
+			materialSymbolName: 'key',
 			places: [
 				{
 					id: 'rue-saint-matou',
 					name: 'Rue Saint Matou',
-					description: 'Bonsoir, hooman. Bienvenue.',
 					image: rueSaintMatou,
 					decks: [],
 				},

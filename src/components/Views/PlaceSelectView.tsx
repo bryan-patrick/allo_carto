@@ -54,7 +54,7 @@ export default function PlaceSelectView() {
 		);
 	}
 
-	const { name, places, label } = selectedChapter;
+	const { name, description, places, label } = selectedChapter;
 
 	/**
 	 * Render the card grid
@@ -64,6 +64,7 @@ export default function PlaceSelectView() {
 			<View style={styles.chapterTitleContainer}>
 				<Text style={styles.chapterIndex}>{label}</Text>
 				<Text style={styles.chapterTitle}>{name}</Text>
+				<Text style={styles.chapterDescription}>{description}</Text>
 			</View>
 			<ScrollView contentContainerStyle={styles.chapterContainer}>
 				{
@@ -73,7 +74,7 @@ export default function PlaceSelectView() {
 					places.map((place: DeckPlace, index: number) => {
 						const isEven = index % 2 === 0;
 						const rotate = isEven ? '-3deg' : '3deg';
-						const { id: placeId, name, description, image } = place;
+						const { id: placeId, name, image } = place;
 						const progressPercent = Math.floor(progressById[placeId]?.completionPercentage ?? 0);
 						const isLocked = !isItemUnlocked({
 							id: placeId,
@@ -119,7 +120,6 @@ export default function PlaceSelectView() {
 											source={image}
 											style={styles.placeImage}
 										/>
-										<Text style={styles.placeDescriptionText}>{description}</Text>
 										<View style={styles.progressContainer}>
 											<Text style={styles.progressText}>Words known: {progressPercent}%</Text>
 											<View style={styles.progressBarsContainer}>
@@ -189,6 +189,12 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		color: colors.light.text,
 	},
+	chapterDescription: {
+		textAlign: 'center',
+		fontFamily: 'lexend-400',
+		fontSize: 14,
+		color: colors.light.text,
+	},
 	chapterContainer: {
 		display: 'flex',
 		margin: 8,
@@ -240,9 +246,6 @@ const styles = StyleSheet.create({
 		aspectRatio: '5 / 2',
 		width: '100%',
 		height: 'auto',
-	},
-	placeDescriptionText: {
-		fontSize: 14,
 	},
 	progressContainer: {
 		marginTop: 4,

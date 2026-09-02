@@ -8,6 +8,7 @@ import { StyleSheet, Text } from 'react-native';
 interface ChapterSelectButtonProps {
 	chapter: DeckChapter;
 	disabled?: boolean;
+	progressPercent?: number;
 }
 
 /**
@@ -16,8 +17,10 @@ interface ChapterSelectButtonProps {
 export default function ChapterSelectButton({
 	chapter,
 	disabled = false,
+	progressPercent = 0,
 }: ChapterSelectButtonProps) {
 	const { id, color } = chapter;
+	const selectText = progressPercent > 0 ? 'Continue Chapter' : 'Start Chapter';
 
 	/**
 	 * Render the component
@@ -32,7 +35,7 @@ export default function ChapterSelectButton({
 			disabled={disabled}
 			fullwidth
 		>
-			<Text style={styles.chapterSelectButtonText}>Select Chapter</Text>
+			<Text style={styles.chapterSelectButtonText}>{selectText}</Text>
 		</LinkButton>
 	);
 }
