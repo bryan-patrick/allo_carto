@@ -131,9 +131,10 @@ export default function AppLayout() {
 										name="(routes)/ChapterSelect"
 										options={{
 											headerShown: true,
+											headerTransparent: true,
 											headerBackTitle: 'Back',
 											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: 'Select a chapter',
+											headerTitle: '',
 										}}
 									/>
 									<Stack.Screen

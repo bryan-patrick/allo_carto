@@ -1,3 +1,4 @@
+import colors from '@/src/app/colors';
 import type { ReactNode } from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
 
@@ -41,6 +42,6 @@ const styles = StyleSheet.create({
 		borderBottomRightRadius: 8,
 		borderTopRightRadius: 8,
 		borderLeftWidth: 0,
-		borderColor: 'rgba(0, 0, 0, 0.4)',
+		borderColor: colors.utility.cardBorder,
 	},
 });

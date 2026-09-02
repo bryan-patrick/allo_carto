@@ -4,7 +4,7 @@ import { getUnlockCriteria } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
 import { StyleSheet, Text, View } from 'react-native';
 import Book from './Book';
-import ChapterLockedButton from './ChapterLockedButton';
+import ChapterLockedSection from './ChapterLockedSection';
 import ChapterMeta from './ChapterMeta';
 import ChapterSelectButton from './ChapterSelectButton';
 import Cover from './Cover';
@@ -35,7 +35,7 @@ export default function Chapter({
 	/**
 	 * Destructure chapter
 	 */
-	const { label, name, color, materialSymbolName } = chapter;
+	const { label, name, description, color, materialSymbolName } = chapter;
 
 	/**
 	 * Get the unlock criteria
@@ -54,12 +54,17 @@ export default function Chapter({
 			/>
 			<Crease />
 			<Cover>
-				<View style={styles.chapterContainerInner}>
+				<View style={[styles.chapterContainerInner, { padding: isLocked ? 6 : 12 }]}>
 					{!isLocked && (
 						<>
 							<View style={styles.chapterTitleContainer}>
-								<Text style={styles.label}>{label}</Text>
+								<Text style={[styles.label, { color: chapter.color }]}>{label}</Text>
 								<Text style={styles.chapterTitle}>{name}</Text>
+								<View style={styles.separatorContainer}>
+									<View style={[styles.separatorBox, { backgroundColor: chapter.color }]} />
+									<View style={styles.separatorLine} />
+								</View>
+								<Text style={styles.chapterDescription}>{description}</Text>
 							</View>
 							<View style={styles.chapterImageContainer} />
 							<ChapterMeta
@@ -69,11 +74,12 @@ export default function Chapter({
 							<ChapterSelectButton
 								chapter={chapter}
 								disabled={isLocked}
+								progressPercent={progressPercent}
 							/>
 						</>
 					)}
 					{isLocked && (
-						<ChapterLockedButton
+						<ChapterLockedSection
 							color={chapter.color ?? '#000000'}
 							unlockCriteria={unlockCriteria}
 						/>
@@ -89,29 +95,47 @@ export default function Chapter({
  */
 const styles = StyleSheet.create({
 	chapterContainerInner: {
-		display: 'flex',
-		alignItems: 'center',
-		flexDirection: 'column',
-		justifyContent: 'center',
 		padding: 12,
 		gap: 12,
 	},
 	chapterTitleContainer: {
 		flexShrink: 1,
 		wordWrap: 'wrap',
+		gap: 4,
 	},
 	label: {
 		color: colors.dark.text,
-		fontFamily: 'lexend-400',
-		fontSize: 12,
-		textAlign: 'center',
+		fontFamily: 'lexend-600',
 		textTransform: 'uppercase',
+		fontSize: 12,
 	},
 	chapterTitle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
 		fontSize: 18,
-		textAlign: 'center',
+	},
+	separatorContainer: {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		marginVertical: 4,
+		marginRight: 4,
+	},
+	separatorBox: {
+		height: 6,
+		width: 6,
+		transform: 'rotate(45deg)',
+	},
+	separatorLine: {
+		flex: 1,
+		borderBottomWidth: 1,
+		borderColor: colors.utility.cardBorder,
+	},
+	chapterDescription: {
+		color: colors.dark.text,
+		fontFamily: 'lexend-400',
+		fontSize: 14,
 	},
 	chapterImageContainer: {
 		display: 'flex',

@@ -52,7 +52,6 @@ export default function CardDeckSelect() {
 		<>
 			<View style={styles.deckNameContainer}>
 				<Text style={styles.deckNameText}>{place?.name}</Text>
-				<Text style={styles.deckDescriptionText}>{place?.description}</Text>
 			</View>
 			{decks.length > 0 && (
 				<FlatList
@@ -98,14 +97,6 @@ const styles = StyleSheet.create({
 		width: '100%',
 		fontFamily: 'lexend-600',
 		fontSize: 18,
-		color: colors.light.text,
-	},
-	deckDescriptionText: {
-		textAlign: 'center',
-		width: '100%',
-		fontFamily: 'lexend-400',
-		fontSize: 14,
-		paddingTop: 4,
 		color: colors.light.text,
 	},
 	cardGrid: {

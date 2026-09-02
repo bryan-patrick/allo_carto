@@ -51,7 +51,7 @@ export default function Spine({ color, index, materialSymbolName }: SpineProps) 
  */
 const styles = StyleSheet.create({
 	spine: {
-		width: 50,
+		width: 55,
 	},
 	spineImage: {
 		bottom: 0,
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
 		top: 0,
 	},
 	spineInner: {
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		backgroundColor: 'rgba(0, 0, 0, 0.4)',
 		flexGrow: 1,
 		padding: 8,
 		paddingRight: 0,
@@ -86,9 +86,9 @@ const styles = StyleSheet.create({
 		borderRightWidth: 0,
 		borderTopLeftRadius: 8,
 		borderBottomLeftRadius: 8,
-		borderColor: 'rgba(0, 0, 0, 0.4)',
+		borderColor: colors.utility.cardBorder,
 		width: '100%',
-		gap: 8,
+		gap: 4,
 	},
 	icon: {
 		shadowOffset: {

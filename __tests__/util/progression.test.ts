@@ -43,12 +43,12 @@ function makeAtlas(): DeckAtlas {
 			{
 				id: 'chapter_one',
 				name: 'Chapter one',
+				description: 'The first chapter',
 				label: 'Chapter 1',
 				places: [
 					{
 						id: 'place_one',
 						name: 'Place one',
-						description: 'The first place',
 						decks: [firstDeck, secondDeck],
 					},
 				],
@@ -56,6 +56,7 @@ function makeAtlas(): DeckAtlas {
 			{
 				id: 'chapter_two',
 				name: 'Chapter two',
+				description: 'The second chapter',
 				label: 'Chapter 2',
 				unlockRequirements: [
 					{
@@ -67,7 +68,6 @@ function makeAtlas(): DeckAtlas {
 					{
 						id: 'place_two',
 						name: 'Place two',
-						description: 'The second place',
 						decks: [
 							makeMockCardDeck({
 								id: 'deck_three',

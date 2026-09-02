@@ -12,6 +12,8 @@ export const sharedWordCardStyles = StyleSheet.create({
 		justifyContent: 'center',
 		borderRadius: 8,
 		overflow: 'hidden',
+		borderWidth: 4,
+		borderColor: colors.light.border,
 	},
 	cardMain: {
 		alignItems: 'center',
