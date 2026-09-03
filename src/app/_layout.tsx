@@ -141,8 +141,9 @@ export default function AppLayout() {
 										name="(routes)/PlaceSelect"
 										options={{
 											headerShown: true,
+											headerTransparent: true,
 											headerBackTitle: 'Home',
-											headerTitle: 'Select a place',
+											headerTitle: '',
 											headerBackButtonDisplayMode: 'minimal',
 										}}
 									/>

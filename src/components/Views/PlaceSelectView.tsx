@@ -1,21 +1,23 @@
 import { DeckPlace } from '@/data/french/deckAtlas';
-import sharedStyles from '@/src/app/sharedStyles';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findChapterById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../../app/colors';
 import LinkButton from '../LinkButton';
 
 const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-postmark.png');
 const postmarkBackgroundImage = require('@/src/app/assets/images/postcard-parts/background.jpg');
+const voxCat = require('@/src/app/assets/images/places/places-bg.jpg');
 
 /**
  * PlaceSelectView component
  */
 export default function PlaceSelectView() {
 	const { progressById, status } = useUserProgress();
+	const paddingTop = useSafeAreaInsets().top;
 
 	const { id } = useLocalSearchParams<{ id?: string }>();
 	const selectedChapter = findChapterById(id);
@@ -31,8 +33,8 @@ export default function PlaceSelectView() {
 	 */
 	if (!selectedChapter) {
 		return (
-			<View style={styles.view}>
-				<View style={styles.chapterTitleContainer}>
+			<View style={styles.background}>
+				<View style={styles.titleContainer}>
 					<Text style={styles.chapterIndex}>Unknown chapter</Text>
 					<Text style={styles.chapterTitle}>Please go back and select a chapter.</Text>
 				</View>
@@ -45,8 +47,8 @@ export default function PlaceSelectView() {
 	 */
 	if (!isItemUnlocked({ id: selectedChapter.id, progressById })) {
 		return (
-			<View style={styles.view}>
-				<View style={styles.chapterTitleContainer}>
+			<View style={styles.background}>
+				<View style={styles.titleContainer}>
 					<Text style={styles.chapterIndex}>Chapter locked</Text>
 					<Text style={styles.chapterTitle}>Complete its requirements before continuing.</Text>
 				</View>
@@ -60,13 +62,16 @@ export default function PlaceSelectView() {
 	 * Render the card grid
 	 */
 	return (
-		<View style={styles.view}>
-			<View style={styles.chapterTitleContainer}>
-				<Text style={styles.chapterIndex}>{label}</Text>
-				<Text style={styles.chapterTitle}>{name}</Text>
-				<Text style={styles.chapterDescription}>{description}</Text>
-			</View>
-			<ScrollView contentContainerStyle={styles.chapterContainer}>
+		<ImageBackground
+			style={styles.background}
+			source={voxCat}
+		>
+			<ScrollView contentContainerStyle={styles.scrollViewContainer}>
+				<View style={[styles.titleContainer, { paddingTop }]}>
+					<Text style={styles.chapterIndex}>{label}</Text>
+					<Text style={styles.chapterTitle}>{name}</Text>
+					<Text style={styles.chapterDescription}>{description}</Text>
+				</View>
 				{
 					/**
 					 * Map the chapter's places
@@ -109,7 +114,7 @@ export default function PlaceSelectView() {
 									style={styles.placeContainer}
 								>
 									<View style={styles.postcardBorder}>
-										<View style={styles.titleContainer}>
+										<View style={styles.postcardTitleContainer}>
 											<Text style={styles.placeTitleText}>{name}</Text>
 											<ImageBackground
 												source={postmarkImage}
@@ -162,7 +167,7 @@ export default function PlaceSelectView() {
 					})
 				}
 			</ScrollView>
-		</View>
+		</ImageBackground>
 	);
 }
 
@@ -170,12 +175,12 @@ export default function PlaceSelectView() {
  * Styles
  */
 const styles = StyleSheet.create({
-	view: {
-		flex: 1,
+	background: {
+		height: '100%',
 	},
-	chapterTitleContainer: {
-		paddingHorizontal: sharedStyles.containerMargin,
-		paddingVertical: 16,
+	titleContainer: {
+		marginTop: 32,
+		gap: 4,
 	},
 	chapterIndex: {
 		textAlign: 'center',
@@ -195,10 +200,11 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: colors.light.text,
 	},
-	chapterContainer: {
+	scrollViewContainer: {
 		display: 'flex',
-		margin: 8,
+		padding: 8,
 		gap: 16,
+		backgroundColor: 'rgba(0, 0, 0, 0.45)',
 	},
 	postcardStack: {
 		display: 'flex',
@@ -218,18 +224,16 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		borderColor: colors.light.goldenBorder,
 		paddingVertical: 2,
-		paddingHorizontal: 16,
+		paddingHorizontal: 4,
 		gap: 2,
 	},
-	titleContainer: {
-		width: '100%',
+	postcardTitleContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		alignContent: 'center',
 		alignItems: 'center',
-		gap: 16,
 		flexWrap: 'wrap',
+		gap: 4,
 	},
 	placeTitleText: {
 		color: colors.dark.text,
@@ -247,9 +251,6 @@ const styles = StyleSheet.create({
 		width: '100%',
 		height: 'auto',
 	},
-	progressContainer: {
-		marginTop: 4,
-	},
 	progressText: {
 		fontSize: 12,
 	},
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: colors.light.border,
 		borderRadius: 8,
-		marginBottom: 16,
+		marginBottom: 8,
 	},
 	progressBar: {
 		width: '10%',

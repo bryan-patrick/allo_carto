@@ -5,15 +5,20 @@ import { StyleSheet } from 'react-native';
  * Shared style - front and back of cards
  */
 export const sharedWordCardStyles = StyleSheet.create({
+	wordCardContainer: {
+		borderRadius: 12,
+		overflow: 'hidden',
+		borderWidth: 4,
+		borderColor: colors.light.border,
+	},
 	wordCardInner: {
 		display: 'flex',
 		alignContent: 'center',
 		alignItems: 'center',
 		justifyContent: 'center',
+		borderWidth: 1,
+		borderColor: colors.dark.border,
 		borderRadius: 8,
-		overflow: 'hidden',
-		borderWidth: 4,
-		borderColor: colors.light.border,
 	},
 	cardMain: {
 		alignItems: 'center',
@@ -75,7 +80,7 @@ export const sharedWordCardStyles = StyleSheet.create({
 		height: 'auto',
 		marginTop: 16,
 		borderTopWidth: 1,
-		borderTopColor: colors.light.border,
+		borderTopColor: colors.dark.border,
 	},
 	feedbackText: {
 		textAlign: 'center',
@@ -85,8 +90,6 @@ export const sharedWordCardStyles = StyleSheet.create({
 		fontFamily: 'lexend-600',
 		paddingHorizontal: 4,
 		paddingVertical: 8,
-		borderBottomLeftRadius: 8,
-		borderBottomRightRadius: 8,
 		color: colors.dark.success,
 	},
 	feedbackSuccess: {
