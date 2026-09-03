@@ -1,4 +1,4 @@
-import { deckAtlas } from '@/data/french/deckAtlas';
+import { storyAtlas } from '@/data/french/storyAtlas';
 import sharedStyles from '@/src/app/sharedStyles';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { router } from 'expo-router';
@@ -11,10 +11,10 @@ import ResultsList from '../ResultsList';
 
 const englishVowels = ['a', 'e', 'i', 'o', 'u', 'y'];
 
-function findDeckPlaceId(cardDeck: CardDeck) {
-	for (const chapter of deckAtlas.chapters) {
-		for (const place of chapter.places) {
-			const deck = place.decks.find(deck => {
+function findDeckChapterId(cardDeck: CardDeck) {
+	for (const story of storyAtlas.stories) {
+		for (const chapter of story.chapters) {
+			const deck = chapter.decks.find(deck => {
 				const isSameTitle = deck.title === cardDeck.title;
 				const hasSameWordCount = deck.wordIds.length === cardDeck.wordIds.length;
 				const hasSameWords = deck.wordIds.every(wordId => {
@@ -24,7 +24,7 @@ function findDeckPlaceId(cardDeck: CardDeck) {
 				return isSameTitle && hasSameWordCount && hasSameWords;
 			});
 
-			if (deck) return place.id;
+			if (deck) return chapter.id;
 		}
 	}
 }
@@ -41,13 +41,13 @@ export default function DeckResultsView() {
 	const { correctWords, incorrectWords } = cardDeckState;
 	const isFirstLetterAVowel = englishVowels.includes(title.split('')[0].toLowerCase());
 	const resultsTitleArticle = isFirstLetterAVowel ? 'an' : 'a';
-	const placeId = findDeckPlaceId(cardDeckState.cardDeck);
+	const chapterId = findDeckChapterId(cardDeckState.cardDeck);
 
 	function handleFinish() {
-		if (placeId) {
+		if (chapterId) {
 			router.dismissTo({
 				pathname: '/CardDeckSelect',
-				params: { placeId },
+				params: { chapterId },
 			});
 			return;
 		}

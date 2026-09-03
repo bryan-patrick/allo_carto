@@ -6,15 +6,15 @@ import { StyleSheet, Text, View } from 'react-native';
 /**
  * Typing
  */
-interface ChapterLockedButtonProps {
+interface StoryLockedSectionProps {
 	color: string;
 	unlockCriteria: UnlockCriteria[];
 }
 
 /**
- * ChapterLockedButton component
+ * StoryLockedSection component
  */
-export default function ChapterLockedSection({ color, unlockCriteria }: ChapterLockedButtonProps) {
+export default function StoryLockedSection({ color, unlockCriteria }: StoryLockedSectionProps) {
 	return (
 		<View style={[styles.section, { borderColor: color }]}>
 			<MaterialSymbol

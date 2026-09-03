@@ -1,7 +1,7 @@
-import type { DeckAtlas } from '@/data/french/deckAtlas';
+import type { StoryAtlas } from '@/data/french/storyAtlas';
 import { makeMockCardDeck } from '@/src/components/CardDeck/mockCardDeck';
 import {
-	findAtlasLocationByPlaceId,
+	findAtlasLocationByChapterId,
 	getAtlasCompletionItems,
 	isItemUnlocked,
 } from '@/src/util/atlasCompletion';
@@ -22,7 +22,7 @@ function makeProgressById(percentages: Record<string, number>): ProgressById {
 	return result;
 }
 
-function makeAtlas(): DeckAtlas {
+function makeAtlas(): StoryAtlas {
 	const firstDeck = makeMockCardDeck({
 		id: 'deck_one',
 		wordIds: ['shared_word', 'first_word', 'shared_word'],
@@ -39,35 +39,37 @@ function makeAtlas(): DeckAtlas {
 	});
 
 	return {
-		chapters: [
+		stories: [
 			{
-				id: 'chapter_one',
-				name: 'Chapter one',
-				description: 'The first chapter',
-				label: 'Chapter 1',
-				places: [
+				id: 'story_one',
+				name: 'Story one',
+				description: 'The first story',
+				category: 'Travel',
+				chapters: [
 					{
-						id: 'place_one',
-						name: 'Place one',
+						id: 'chapter_one',
+						label: 'Chapter 1',
+						name: 'Chapter one',
 						decks: [firstDeck, secondDeck],
 					},
 				],
 			},
 			{
-				id: 'chapter_two',
-				name: 'Chapter two',
-				description: 'The second chapter',
-				label: 'Chapter 2',
+				id: 'story_two',
+				name: 'Story two',
+				description: 'The second story',
+				category: 'Mystery',
 				unlockRequirements: [
 					{
-						id: 'chapter_one',
+						id: 'story_one',
 						requiredCompletionPercentage: 50,
 					},
 				],
-				places: [
+				chapters: [
 					{
-						id: 'place_two',
-						name: 'Place two',
+						id: 'chapter_two',
+						label: 'Chapter 1',
+						name: 'Chapter two',
 						decks: [
 							makeMockCardDeck({
 								id: 'deck_three',
@@ -82,17 +84,15 @@ function makeAtlas(): DeckAtlas {
 }
 
 describe('progression', () => {
-	test('finds a place with its parent chapter and chapter position', () => {
+	test('finds a chapter with its parent story', () => {
 		const atlas = makeAtlas();
-		const location = findAtlasLocationByPlaceId('place_two', atlas);
+		const location = findAtlasLocationByChapterId('chapter_two', atlas);
 
 		expect(location).toEqual({
-			chapter: atlas.chapters[1],
-			place: atlas.chapters[1].places[0],
-			chapterIndex: 1,
-			chapterNumber: 2,
+			story: atlas.stories[1],
+			chapter: atlas.stories[1].chapters[0],
 		});
-		expect(findAtlasLocationByPlaceId('missing_place', atlas)).toBeUndefined();
+		expect(findAtlasLocationByChapterId('missing_chapter', atlas)).toBeUndefined();
 	});
 
 	test('calculates full-precision familiarity without stacking New points', () => {
@@ -125,20 +125,20 @@ describe('progression', () => {
 		).toBe(0);
 	});
 
-	test('deduplicates words within decks, places, and chapters', () => {
+	test('deduplicates words within decks, chapters, and stories', () => {
 		const details = getAtlasCompletionItems(makeAtlas());
 
 		expect(details.find(item => item.id === 'deck_one')?.wordIds).toEqual([
 			'shared_word',
 			'first_word',
 		]);
-		expect(details.find(item => item.id === 'place_one')?.wordIds).toEqual([
+		expect(details.find(item => item.id === 'chapter_one')?.wordIds).toEqual([
 			'shared_word',
 			'first_word',
 			'second_word',
 			'third_word',
 		]);
-		expect(details.find(item => item.id === 'chapter_one')?.wordIds).toEqual([
+		expect(details.find(item => item.id === 'story_one')?.wordIds).toEqual([
 			'shared_word',
 			'first_word',
 			'second_word',
@@ -160,7 +160,7 @@ describe('progression', () => {
 			isItemUnlocked({
 				atlas,
 				id: 'deck_three',
-				progressById: makeProgressById({ chapter_one: 50 }),
+				progressById: makeProgressById({ story_one: 50 }),
 			}),
 		).toBe(true);
 	});

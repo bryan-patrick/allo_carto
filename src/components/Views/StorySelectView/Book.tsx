@@ -9,7 +9,7 @@ interface BookProps {
 }
 
 /**
- * Book component (chapter select)
+ * Book component (story select)
  */
 export default function Book({ children }: BookProps) {
 	/**
@@ -23,7 +23,9 @@ export default function Book({ children }: BookProps) {
  */
 const styles = StyleSheet.create({
 	book: {
-		borderRadius: 12,
+		borderRadius: 4,
+		borderTopRightRadius: 12,
+		borderBottomRightRadius: 12,
 		overflow: 'hidden',
 		display: 'flex',
 		flexDirection: 'row',

@@ -84,54 +84,56 @@ const WordCardBack = memo(function WordCardBackMemo({
 	 */
 	return (
 		<AnimatedImageBackground
-			style={[sharedWordCardStyles.wordCardInner, styles.cardBack, wordCardBackFlippedStyle]}
+			style={[sharedWordCardStyles.wordCardContainer, styles.cardBack, wordCardBackFlippedStyle]}
 			source={background}
 			imageStyle={{ transform: [{ scaleX: -1 }] }}
 
 			resizeMode="cover"
 		>
-			<WordCardHeader />
-			<View style={sharedWordCardStyles.cardMain}>
-				<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
-				<Text style={sharedWordCardStyles.wordPronunciation}>({pronunciation})</Text>
-				<View style={sharedWordCardStyles.wordMetaContainer}>
-					{partOfSpeech && (
-						<Text
-							style={[
-								sharedWordCardStyles.wordForm,
-								{
-									borderRightWidth: formCapitalized ? 1 : 0,
-									marginRight: formCapitalized ? 8 : 0,
-									paddingRight: formCapitalized ? 8 : 0,
-								},
-							]}
-						>
-							{partOfSpeechCapitalized}
-						</Text>
-					)}
-					{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
+			<View style={sharedWordCardStyles.wordCardInner}>
+				<WordCardHeader />
+				<View style={sharedWordCardStyles.cardMain}>
+					<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
+					<Text style={sharedWordCardStyles.wordPronunciation}>({pronunciation})</Text>
+					<View style={sharedWordCardStyles.wordMetaContainer}>
+						{partOfSpeech && (
+							<Text
+								style={[
+									sharedWordCardStyles.wordForm,
+									{
+										borderRightWidth: formCapitalized ? 1 : 0,
+										marginRight: formCapitalized ? 8 : 0,
+										paddingRight: formCapitalized ? 8 : 0,
+									},
+								]}
+							>
+								{partOfSpeechCapitalized}
+							</Text>
+						)}
+						{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
+					</View>
 				</View>
-			</View>
-			<View style={sharedWordCardStyles.answerSlotContainer}>
-				{englishArticle && (
+				<View style={sharedWordCardStyles.answerSlotContainer}>
+					{englishArticle && (
+						<Animated.Text
+							numberOfLines={1}
+							style={[sharedWordCardStyles.answerSlot, articleSlotStyle, articleWidthStyle]}
+						>
+							{displayedArticle}
+						</Animated.Text>
+					)}
 					<Animated.Text
 						numberOfLines={1}
-						style={[sharedWordCardStyles.answerSlot, articleSlotStyle, articleWidthStyle]}
+						style={[sharedWordCardStyles.answerSlot, wordSlotStyle, wordWidthStyle]}
 					>
-						{displayedArticle}
+						{displayedWord}
 					</Animated.Text>
-				)}
-				<Animated.Text
-					numberOfLines={1}
-					style={[sharedWordCardStyles.answerSlot, wordSlotStyle, wordWidthStyle]}
-				>
-					{displayedWord}
-				</Animated.Text>
-			</View>
-			<View style={sharedWordCardStyles.feedbackContainer}>
-				<Text style={[sharedWordCardStyles.feedbackText, feedbackStyle]}>
-					{FEEDBACK_TEXT_BACK[cardState.feedbackKey] ?? ''}
-				</Text>
+				</View>
+				<View style={sharedWordCardStyles.feedbackContainer}>
+					<Text style={[sharedWordCardStyles.feedbackText, feedbackStyle]}>
+						{FEEDBACK_TEXT_BACK[cardState.feedbackKey] ?? ''}
+					</Text>
+				</View>
 			</View>
 		</AnimatedImageBackground>
 	);

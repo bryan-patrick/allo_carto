@@ -128,21 +128,22 @@ export default function AppLayout() {
 										}}
 									/>
 									<Stack.Screen
-										name="(routes)/ChapterSelect"
+										name="(routes)/StorySelect"
 										options={{
 											headerShown: true,
 											headerTransparent: true,
-											headerBackTitle: 'Back',
+											headerBackTitle: 'Home',
 											headerBackButtonDisplayMode: 'minimal',
 											headerTitle: '',
 										}}
 									/>
 									<Stack.Screen
-										name="(routes)/PlaceSelect"
+										name="(routes)/ChapterSelect"
 										options={{
 											headerShown: true,
-											headerBackTitle: 'Home',
-											headerTitle: 'Select a place',
+											headerTransparent: true,
+											headerBackTitle: 'Back',
+											headerTitle: '',
 											headerBackButtonDisplayMode: 'minimal',
 										}}
 									/>

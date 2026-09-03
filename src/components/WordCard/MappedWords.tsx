@@ -1,6 +1,6 @@
 import colors from '@/src/app/colors';
 import { Dispatch, memo, useEffect, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import Animated, {
 	Easing,
 	useAnimatedStyle,
@@ -56,7 +56,7 @@ const MappedButton = memo(function MappedButtonMemo({
 	 * Animation vars
 	 */
 	const buttonBackgroundColor = useSharedValue(colors.light.background);
-	const buttonBoxShadow = useSharedValue(`0 4px 0 0 ${colors.light.border}`);
+	const buttonBoxShadow = useSharedValue(`0 4px 0 -1px ${colors.light.border}`);
 	const buttonY = useSharedValue(0);
 
 	const selectionTiming = useMemo(
@@ -104,7 +104,7 @@ const MappedButton = memo(function MappedButtonMemo({
 					buttonBackgroundColor.value = withTiming(colors.light.background, answerRevealTiming);
 				}
 
-				buttonBoxShadow.value = `0 5px 0 0 ${colors.dark.border}`;
+				buttonBoxShadow.value = `0 5px 0 -1px ${colors.dark.border}`;
 				break;
 			default:
 				if (isActive) {
@@ -114,7 +114,7 @@ const MappedButton = memo(function MappedButtonMemo({
 				} else {
 					buttonY.value = withTiming(0, selectionTiming);
 					buttonBackgroundColor.value = withTiming(colors.light.background, selectionTiming);
-					buttonBoxShadow.value = `0 5px 0 0 ${colors.light.border}`;
+					buttonBoxShadow.value = `0 5px 0 -1px ${colors.light.border}`;
 				}
 				break;
 		}
@@ -144,7 +144,9 @@ const MappedButton = memo(function MappedButtonMemo({
 				onPress={() => handler(word)}
 				hitSlop={5}
 			>
-				<Text style={[styles.text, isHighlighted && highlightTextStyle]}>{word}</Text>
+				<View style={styles.textContainer}>
+					<Text style={[styles.text, isHighlighted && highlightTextStyle]}>{word}</Text>
+				</View>
 			</AnimatedPressable>
 		</Animated.View>
 	);
@@ -241,19 +243,25 @@ const styles = StyleSheet.create({
 		display: 'contents',
 	},
 	button: {
-		flexGrow: 1,
 		display: 'flex',
 		alignItems: 'center',
 		alignContent: 'center',
 		justifyContent: 'center',
-		borderRadius: 8,
-		borderColor: 'transparent',
-		paddingVertical: 12,
-		paddingHorizontal: 4,
+		flexGrow: 1,
+		borderRadius: 6,
 		flexShrink: 1,
 		maxWidth: '50%',
-		minWidth: 80,
+		borderColor: colors.light.border,
 		backgroundColor: colors.light.background,
+		minWidth: 80,
+	},
+	textContainer: {
+		alignSelf: 'stretch',
+		paddingVertical: 12,
+		paddingHorizontal: 2,
+		borderWidth: 1,
+		borderColor: colors.dark.border,
+		borderRadius: 6,
 	},
 	text: {
 		textAlign: 'center',

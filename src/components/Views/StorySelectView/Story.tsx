@@ -1,12 +1,12 @@
-import type { DeckChapter } from '@/data/french/deckAtlas';
+import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import { getUnlockCriteria } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
 import { StyleSheet, Text, View } from 'react-native';
 import Book from './Book';
-import ChapterLockedSection from './ChapterLockedSection';
-import ChapterMeta from './ChapterMeta';
-import ChapterSelectButton from './ChapterSelectButton';
+import StoryLockedSection from './StoryLockedSection';
+import StoryMeta from './StoryMeta';
+import StorySelectButton from './StorySelectButton';
 import Cover from './Cover';
 import Crease from './Crease';
 import Spine from './Spine';
@@ -14,33 +14,26 @@ import Spine from './Spine';
 /**
  * Typing
  */
-interface ChapterProps {
-	chapter: DeckChapter;
-	index: number;
+interface StoryProps {
+	story: DeckStory;
 	isLocked: boolean;
 	progressById: ProgressById;
 	progressPercent: number;
 }
 
 /**
- * Chapter component
+ * Story component
  */
-export default function Chapter({
-	chapter,
-	progressById,
-	progressPercent,
-	index,
-	isLocked,
-}: ChapterProps) {
+export default function Story({ story, progressById, progressPercent, isLocked }: StoryProps) {
 	/**
-	 * Destructure chapter
+	 * Destructure story
 	 */
-	const { label, name, description, color, materialSymbolName } = chapter;
+	const { category, name, description, color, materialSymbolName } = story;
 
 	/**
 	 * Get the unlock criteria
 	 */
-	const unlockCriteria = getUnlockCriteria(chapter, progressById);
+	const unlockCriteria = getUnlockCriteria(story, progressById);
 
 	/**
 	 * Render the component
@@ -49,38 +42,38 @@ export default function Chapter({
 		<Book>
 			<Spine
 				color={color}
-				index={index}
 				materialSymbolName={materialSymbolName}
+				category={category}
 			/>
 			<Crease />
 			<Cover>
-				<View style={[styles.chapterContainerInner, { padding: isLocked ? 6 : 12 }]}>
+				<View style={[styles.storyContainerInner, { padding: isLocked ? 6 : 12 }]}>
 					{!isLocked && (
 						<>
-							<View style={styles.chapterTitleContainer}>
-								<Text style={[styles.label, { color: chapter.color }]}>{label}</Text>
-								<Text style={styles.chapterTitle}>{name}</Text>
+							<View style={styles.storyTitleContainer}>
+								<Text style={[styles.category, { color }]}>{category}</Text>
+								<Text style={styles.storyTitle}>{name}</Text>
 								<View style={styles.separatorContainer}>
-									<View style={[styles.separatorBox, { backgroundColor: chapter.color }]} />
+									<View style={[styles.separatorBox, { backgroundColor: color }]} />
 									<View style={styles.separatorLine} />
 								</View>
-								<Text style={styles.chapterDescription}>{description}</Text>
+								<Text style={styles.storyDescription}>{description}</Text>
 							</View>
-							<View style={styles.chapterImageContainer} />
-							<ChapterMeta
+							<View style={styles.storyImageContainer} />
+							<StoryMeta
 								progressPercent={progressPercent}
 								progressColor={color ?? '#000000'}
 							/>
-							<ChapterSelectButton
-								chapter={chapter}
+							<StorySelectButton
+								story={story}
 								disabled={isLocked}
 								progressPercent={progressPercent}
 							/>
 						</>
 					)}
 					{isLocked && (
-						<ChapterLockedSection
-							color={chapter.color ?? '#000000'}
+						<StoryLockedSection
+							color={color ?? '#000000'}
 							unlockCriteria={unlockCriteria}
 						/>
 					)}
@@ -94,22 +87,22 @@ export default function Chapter({
  * Styles
  */
 const styles = StyleSheet.create({
-	chapterContainerInner: {
+	storyContainerInner: {
 		padding: 12,
 		gap: 12,
 	},
-	chapterTitleContainer: {
+	storyTitleContainer: {
 		flexShrink: 1,
 		wordWrap: 'wrap',
 		gap: 4,
 	},
-	label: {
+	category: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
 		textTransform: 'uppercase',
 		fontSize: 12,
 	},
-	chapterTitle: {
+	storyTitle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
 		fontSize: 18,
@@ -132,12 +125,12 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderColor: colors.utility.cardBorder,
 	},
-	chapterDescription: {
+	storyDescription: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 	},
-	chapterImageContainer: {
+	storyImageContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 	},
