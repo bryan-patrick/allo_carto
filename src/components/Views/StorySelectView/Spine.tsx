@@ -1,20 +1,22 @@
+import type { StoryCategory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import VerticalText from '@/src/components/VerticalText';
+import { ImageBackground, StyleSheet, View } from 'react-native';
 
 /**
  * Typing
  */
 interface SpineProps {
+	category: StoryCategory;
 	color?: string;
-	index: number;
 	materialSymbolName?: string;
 }
 
 /**
  * The spine graphic component (of the book)
  */
-export default function Spine({ color, index, materialSymbolName }: SpineProps) {
+export default function Spine({ color, category, materialSymbolName }: SpineProps) {
 	/**
 	 * Render the component
 	 */
@@ -36,10 +38,13 @@ export default function Spine({ color, index, materialSymbolName }: SpineProps) 
 					<MaterialSymbol
 						color={'rgba(255, 255, 255, 0.6)'}
 						name={materialSymbolName ?? 'flight'}
-						size={24}
+						size={16}
 						style={styles.icon}
 					/>
-					<Text style={styles.spineInnerText}>{index + 1}</Text>
+					<VerticalText
+						word={category}
+						textStyle={styles.category}
+					/>
 				</View>
 			</View>
 		</View>
@@ -98,10 +103,16 @@ const styles = StyleSheet.create({
 		shadowOpacity: 1,
 		shadowColor: '#000000',
 		shadowRadius: 1,
+		borderBottomWidth: 1,
+		paddingBottom: 4,
+		marginBottom: 4,
+		borderColor: 'rgba(255, 255, 255, 0.2)',
 	},
-	spineInnerText: {
+	category: {
 		color: 'rgba(255, 255, 255, 0.6)',
 		fontFamily: 'azeret-mono-600',
-		fontSize: 16,
+		fontSize: 10,
+		lineHeight: 11,
+		textTransform: 'uppercase',
 	},
 });

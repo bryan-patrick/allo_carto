@@ -1,5 +1,5 @@
-import type { DeckAtlas, DeckChapter, DeckPlace } from '@/data/french/deckAtlas';
-import { deckAtlas } from '@/data/french/deckAtlas';
+import type { DeckChapter, DeckStory, StoryAtlas } from '@/data/french/storyAtlas';
+import { storyAtlas } from '@/data/french/storyAtlas';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { ProgressById, Progression, ProgressType } from './progression';
 
@@ -13,12 +13,12 @@ interface AtlasCompletionItem {
 }
 
 interface GetAtlasItemsContainingWordProps {
-	atlas?: DeckAtlas;
+	atlas?: StoryAtlas;
 	wordId: string;
 }
 
 interface FindCompletionPathProps {
-	atlas?: DeckAtlas;
+	atlas?: StoryAtlas;
 	id: string;
 }
 
@@ -32,11 +32,9 @@ export interface UnlockCriteria {
 	title: string;
 }
 
-export interface AtlasLocation {
+export interface AtlasChapterLocation {
+	story: DeckStory;
 	chapter: DeckChapter;
-	place: DeckPlace;
-	chapterIndex: number;
-	chapterNumber: number;
 }
 
 /**
@@ -55,39 +53,39 @@ function getUniqueWordIds(decks: CardDeck[]): string[] {
 }
 
 /**
- * Get every deck from every place in a chapter.
+ * Get every deck from every chapter in a story.
  */
-function getChapterDecks(chapter: DeckChapter): CardDeck[] {
-	const chapterDecks: CardDeck[] = [];
+function getStoryDecks(story: DeckStory): CardDeck[] {
+	const storyDecks: CardDeck[] = [];
 
-	for (const place of chapter.places) {
-		chapterDecks.push(...place.decks);
+	for (const chapter of story.chapters) {
+		storyDecks.push(...chapter.decks);
 	}
 
-	return chapterDecks;
+	return storyDecks;
 }
 
 /**
- * Get every chapter, place, and deck with the words used to calculate its completion.
+ * Get every story, chapter, and deck with the words used to calculate its completion.
  */
-export function getAtlasCompletionItems(atlas: DeckAtlas = deckAtlas): AtlasCompletionItem[] {
+export function getAtlasCompletionItems(atlas: StoryAtlas = storyAtlas): AtlasCompletionItem[] {
 	const completionItems: AtlasCompletionItem[] = [];
 
-	for (const chapter of atlas.chapters) {
+	for (const story of atlas.stories) {
 		completionItems.push({
-			id: chapter.id,
-			type: 'chapter',
-			wordIds: getUniqueWordIds(getChapterDecks(chapter)),
+			id: story.id,
+			type: 'story',
+			wordIds: getUniqueWordIds(getStoryDecks(story)),
 		});
 
-		for (const place of chapter.places) {
+		for (const chapter of story.chapters) {
 			completionItems.push({
-				id: place.id,
-				type: 'place',
-				wordIds: getUniqueWordIds(place.decks),
+				id: chapter.id,
+				type: 'chapter',
+				wordIds: getUniqueWordIds(chapter.decks),
 			});
 
-			for (const deck of place.decks) {
+			for (const deck of chapter.decks) {
 				completionItems.push({
 					id: deck.id,
 					type: 'deck',
@@ -101,10 +99,10 @@ export function getAtlasCompletionItems(atlas: DeckAtlas = deckAtlas): AtlasComp
 }
 
 /**
- * Get every chapter, place, and deck that contains a word.
+ * Get every story, chapter, and deck that contains a word.
  */
 export function getAtlasItemsContainingWord({
-	atlas = deckAtlas,
+	atlas = storyAtlas,
 	wordId,
 }: GetAtlasItemsContainingWordProps): AtlasCompletionItem[] {
 	const matchingItems: AtlasCompletionItem[] = [];
@@ -119,19 +117,19 @@ export function getAtlasItemsContainingWord({
 }
 
 /**
- * Get the path from a chapter (top level) to an item (chapter/place/deck).
+ * Get the path from a story (top level) to an item (story/chapter/deck).
  *
- * A chapter returns [chapter], a place returns [chapter, place], and a deck returns [chapter, place, deck].
+ * A story returns [story], a chapter returns [story, chapter], and a deck returns [story, chapter, deck].
  */
-function findCompletionPath({ atlas = deckAtlas, id }: FindCompletionPathProps): Progression[] {
-	for (const chapter of atlas.chapters) {
-		if (chapter.id === id) return [chapter];
+function findCompletionPath({ atlas = storyAtlas, id }: FindCompletionPathProps): Progression[] {
+	for (const story of atlas.stories) {
+		if (story.id === id) return [story];
 
-		for (const place of chapter.places) {
-			if (place.id === id) return [chapter, place];
+		for (const chapter of story.chapters) {
+			if (chapter.id === id) return [story, chapter];
 
-			for (const deck of place.decks) {
-				if (deck.id === id) return [chapter, place, deck];
+			for (const deck of chapter.decks) {
+				if (deck.id === id) return [story, chapter, deck];
 			}
 		}
 	}
@@ -143,7 +141,7 @@ function findCompletionPath({ atlas = deckAtlas, id }: FindCompletionPathProps):
  * An item is only unlocked when it and all of its parents have met their unlock requirements.
  */
 export function isItemUnlocked({
-	atlas = deckAtlas,
+	atlas = storyAtlas,
 	id,
 	progressById,
 }: IsItemUnlockedProps): boolean {
@@ -165,61 +163,59 @@ export function isItemUnlocked({
 }
 
 /**
- * Find a chapter by its progress id.
+ * Find a story by its progress id.
  */
-export function findChapterById(
+export function findStoryById(
 	id: string | undefined,
-	atlas: DeckAtlas = deckAtlas,
-): DeckChapter | undefined {
-	for (const chapter of atlas.chapters) {
-		if (chapter.id === id) return chapter;
+	atlas: StoryAtlas = storyAtlas,
+): DeckStory | undefined {
+	for (const story of atlas.stories) {
+		if (story.id === id) return story;
 	}
 }
 
 /**
- * Find a place and its parent chapter by the place's progress id.
+ * Find a chapter and its parent story by the chapter's progress id.
  */
-export function findAtlasLocationByPlaceId(
-	placeId: string | undefined,
-	atlas: DeckAtlas = deckAtlas,
-): AtlasLocation | undefined {
-	if (!placeId) return;
+export function findAtlasLocationByChapterId(
+	chapterId: string | undefined,
+	atlas: StoryAtlas = storyAtlas,
+): AtlasChapterLocation | undefined {
+	if (!chapterId) return;
 
-	for (const [chapterIndex, chapter] of atlas.chapters.entries()) {
-		const place = chapter.places.find(place => place.id === placeId);
+	for (const story of atlas.stories) {
+		const chapter = story.chapters.find(chapter => chapter.id === chapterId);
 
-		if (place) {
+		if (chapter) {
 			return {
+				story,
 				chapter,
-				place,
-				chapterIndex,
-				chapterNumber: chapterIndex + 1,
 			};
 		}
 	}
 }
 
 /**
- * Find a place by its progress id.
+ * Find a chapter by its progress id.
  */
-export function findPlaceById(
+export function findChapterById(
 	id: string | undefined,
-	atlas: DeckAtlas = deckAtlas,
-): DeckPlace | undefined {
-	return findAtlasLocationByPlaceId(id, atlas)?.place;
+	atlas: StoryAtlas = storyAtlas,
+): DeckChapter | undefined {
+	return findAtlasLocationByChapterId(id, atlas)?.chapter;
 }
 
 /**
  * Get the display name for any item.
  */
-function getItemName(id: string, atlas: DeckAtlas = deckAtlas): string {
-	for (const chapter of atlas.chapters) {
-		if (chapter.id === id) return chapter.name;
+function getItemName(id: string, atlas: StoryAtlas = storyAtlas): string {
+	for (const story of atlas.stories) {
+		if (story.id === id) return story.name;
 
-		for (const place of chapter.places) {
-			if (place.id === id) return place.name;
+		for (const chapter of story.chapters) {
+			if (chapter.id === id) return chapter.name;
 
-			for (const deck of place.decks) {
+			for (const deck of chapter.decks) {
 				if (deck.id === id) return deck.title;
 			}
 		}
@@ -234,7 +230,7 @@ function getItemName(id: string, atlas: DeckAtlas = deckAtlas): string {
 export function getUnlockCriteria(
 	item: Progression,
 	progressById: ProgressById,
-	atlas: DeckAtlas = deckAtlas,
+	atlas: StoryAtlas = storyAtlas,
 ): UnlockCriteria[] {
 	const requirements = item.unlockRequirements ?? [];
 

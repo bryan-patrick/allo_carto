@@ -96,7 +96,7 @@ async function createUserProgressTable(): Promise<void> {
 			CREATE TABLE IF NOT EXISTS userProgress (
 				userId TEXT NOT NULL,
 				id TEXT NOT NULL,
-				type TEXT NOT NULL CHECK (type IN ('chapter', 'place', 'deck')),
+				type TEXT NOT NULL CHECK (type IN ('story', 'chapter', 'deck')),
 				completionPercentage REAL NOT NULL DEFAULT 0
 					CHECK (completionPercentage >= 0 AND completionPercentage <= 100),
 				PRIMARY KEY (userId, id),

@@ -98,83 +98,85 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	 */
 	return (
 		<AnimatedImageBackground
-			style={[sharedWordCardStyles.wordCardInner, styles.cardFront, wordCardFrontFlippedStyle]}
+			style={[sharedWordCardStyles.wordCardContainer, styles.cardFront, wordCardFrontFlippedStyle]}
 			source={background}
 			resizeMode="cover"
 		>
-			<WordCardHeader />
-			<View style={sharedWordCardStyles.cardMain}>
-				<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
-				<Text style={sharedWordCardStyles.wordPronunciation}>({pronunciation})</Text>
-				<View style={sharedWordCardStyles.wordMetaContainer}>
-					{partOfSpeech && (
-						<Text
-							style={[
-								sharedWordCardStyles.wordForm,
-								{
-									borderRightWidth: formCapitalized ? 1 : 0,
-									marginRight: formCapitalized ? 8 : 0,
-									paddingRight: formCapitalized ? 8 : 0,
-								},
-							]}
-						>
-							{partOfSpeechCapitalized}
-						</Text>
-					)}
-					{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
+			<View style={sharedWordCardStyles.wordCardInner}>
+				<WordCardHeader />
+				<View style={sharedWordCardStyles.cardMain}>
+					<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
+					<Text style={sharedWordCardStyles.wordPronunciation}>({pronunciation})</Text>
+					<View style={sharedWordCardStyles.wordMetaContainer}>
+						{partOfSpeech && (
+							<Text
+								style={[
+									sharedWordCardStyles.wordForm,
+									{
+										borderRightWidth: formCapitalized ? 1 : 0,
+										marginRight: formCapitalized ? 8 : 0,
+										paddingRight: formCapitalized ? 8 : 0,
+									},
+								]}
+							>
+								{partOfSpeechCapitalized}
+							</Text>
+						)}
+						{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
+					</View>
 				</View>
-			</View>
-			<View style={sharedWordCardStyles.answerSlotContainer}>
-				{englishArticle && (
-					<>
-						<Text
-							numberOfLines={1}
-							onLayout={handleArticleWidth}
-							style={[sharedWordCardStyles.answerSlot, styles.hiddenMeasureText]}
-						>
-							{displayedArticle}
-						</Text>
-						<Animated.Text
-							numberOfLines={1}
-							style={[
-								sharedWordCardStyles.answerSlot,
-								articleVisibilityStyle,
-								articleWidthStyle,
-								cardState.progress !== 'SUCCESS' && cardState.selectedArticle && articleSlotStyle,
-							]}
-						>
-							{cardState.selectedArticle && displayedArticle}
-						</Animated.Text>
-					</>
-				)}
-				<Text
-					numberOfLines={1}
-					onLayout={handleWordWidth}
-					style={[sharedWordCardStyles.answerSlot, styles.hiddenMeasureText]}
-				>
-					{displayedWord}
-				</Text>
-				<Animated.Text
-					numberOfLines={1}
-					style={[
-						sharedWordCardStyles.answerSlot,
-						wordVisibilityStyle,
-						wordWidthStyle,
-						cardState.progress !== 'SUCCESS' && cardState.selectedWord && wordSlotStyle,
-					]}
-				>
-					{cardState.selectedWord && displayedWord}
-				</Animated.Text>
-			</View>
-			<View style={sharedWordCardStyles.feedbackContainer}>
-				<Text
-					style={[
-						sharedWordCardStyles.feedbackText,
-						cardState.progress !== 'SUCCESS' && feedbackStyle,
-					]}
-				>
-					{FEEDBACK_TEXT_FRONT[cardState.feedbackKey] ?? ''}
-				</Text>
+				<View style={sharedWordCardStyles.answerSlotContainer}>
+					{englishArticle && (
+						<>
+							<Text
+								numberOfLines={1}
+								onLayout={handleArticleWidth}
+								style={[sharedWordCardStyles.answerSlot, styles.hiddenMeasureText]}
+							>
+								{displayedArticle}
+							</Text>
+							<Animated.Text
+								numberOfLines={1}
+								style={[
+									sharedWordCardStyles.answerSlot,
+									articleVisibilityStyle,
+									articleWidthStyle,
+									cardState.progress !== 'SUCCESS' && cardState.selectedArticle && articleSlotStyle,
+								]}
+							>
+								{cardState.selectedArticle && displayedArticle}
+							</Animated.Text>
+						</>
+					)}
+					<Text
+						numberOfLines={1}
+						onLayout={handleWordWidth}
+						style={[sharedWordCardStyles.answerSlot, styles.hiddenMeasureText]}
+					>
+						{displayedWord}
+					</Text>
+					<Animated.Text
+						numberOfLines={1}
+						style={[
+							sharedWordCardStyles.answerSlot,
+							wordVisibilityStyle,
+							wordWidthStyle,
+							cardState.progress !== 'SUCCESS' && cardState.selectedWord && wordSlotStyle,
+						]}
+					>
+						{cardState.selectedWord && displayedWord}
+					</Animated.Text>
+				</View>
+				<View style={sharedWordCardStyles.feedbackContainer}>
+					<Text
+						style={[
+							sharedWordCardStyles.feedbackText,
+							cardState.progress !== 'SUCCESS' && feedbackStyle,
+						]}
+					>
+						{FEEDBACK_TEXT_FRONT[cardState.feedbackKey] ?? ''}
+					</Text>
+				</View>
 			</View>
 		</AnimatedImageBackground>
 	);

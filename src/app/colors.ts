@@ -27,7 +27,7 @@ const colors = {
 		secondary: '#F6E5C9',
 		text: '#F7F7F7',
 		polaroid: '#EAEAEA',
-		background: '#F5E8D3',
+		background: '#DDD0BB',
 		border: '#90846F',
 		secondaryBorder: '#6B474B',
 		goldenBorder: '#BCA073',

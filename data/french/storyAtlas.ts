@@ -7,32 +7,35 @@ import type { ImageSourcePropType } from 'react-native';
  * Image paths
  */
 
-const aeroportOiseau = require('@/src/app/assets/images/places/aeroport-oiseau.png');
-const hotelChance = require('@/src/app/assets/images/places/chateau-frontenac.png');
-const rueSaintMatou = require('@/src/app/assets/images/places/rue-saint-matou.jpg');
-const aVeryFrenchTravelDay = require('@/src/app/assets/images/chapters/a-very-french-travel-day.png');
-const lostAndSecretDecks = require('@/src/app/assets/images/chapters/lost-and-secret-decks.png');
+const aeroportOiseau = require('@/src/app/assets/images/chapters/aeroport-oiseau.png');
+const hotelChance = require('@/src/app/assets/images/chapters/chateau-frontenac.png');
+const rueSaintMatou = require('@/src/app/assets/images/chapters/rue-saint-matou.jpg');
+const aVeryFrenchTravelDay = require('@/src/app/assets/images/stories/a-very-french-travel-day.png');
+const lostAndSecretDecks = require('@/src/app/assets/images/stories/lost-and-secret-decks.png');
 
 /**
  * Typing
  */
-export interface DeckAtlas {
-	chapters: DeckChapter[];
+export type StoryCategory = 'Mystery' | 'Travel';
+
+export interface StoryAtlas {
+	stories: DeckStory[];
 }
 
-export interface DeckChapter extends Progression {
+export interface DeckStory extends Progression {
 	id: string;
 	name: string;
 	description: string;
-	places: DeckPlace[];
-	label: string;
+	category: StoryCategory;
+	chapters: DeckChapter[];
 	image?: ImageSourcePropType;
 	color?: string;
 	materialSymbolName?: string;
 }
 
-export interface DeckPlace extends Progression {
+export interface DeckChapter extends Progression {
 	id: string;
+	label: string;
 	name: string;
 	decks: CardDeck[];
 	image?: ImageSourcePropType;
@@ -40,28 +43,30 @@ export interface DeckPlace extends Progression {
 
 /**
  * The idea is:
- * Chapter -> Place -> Deck
+ * Story -> Chapter -> Deck
  */
-export const deckAtlas: DeckAtlas = {
-	chapters: [
+export const storyAtlas: StoryAtlas = {
+	stories: [
 		{
 			id: 'a-very-french-travel-day',
 			name: 'A Very French Travel Day',
 			description:
 				'Flights, feathers, occasional bread delays. These decks focus on situations while travelling.',
-			label: 'Chapter 1',
+			category: 'Travel',
 			image: aVeryFrenchTravelDay,
 			color: '#454A36',
 			materialSymbolName: 'flight',
-			places: [
+			chapters: [
 				{
 					id: 'aeroport-oiseau',
+					label: 'Chapter 1',
 					name: 'Aéroport Oiseau',
 					image: aeroportOiseau,
 					decks: [DeckDawnAtTheDropOff],
 				},
 				{
 					id: 'hotel-bonne-chance',
+					label: 'Chapter 2',
 					unlockRequirements: [
 						{
 							id: 'aeroport-oiseau',
@@ -88,13 +93,14 @@ export const deckAtlas: DeckAtlas = {
 			],
 			name: 'Lost and Secret Decks',
 			description: 'Bonsoir, hooman. Bienvenue.',
-			label: 'Epilogue:',
+			category: 'Mystery',
 			image: lostAndSecretDecks,
 			color: '#473022',
 			materialSymbolName: 'key',
-			places: [
+			chapters: [
 				{
 					id: 'rue-saint-matou',
+					label: 'Chapter 1',
 					name: 'Rue Saint Matou',
 					image: rueSaintMatou,
 					decks: [],
@@ -107,6 +113,6 @@ export const deckAtlas: DeckAtlas = {
 /**
  * Get every playable deck in progression order.
  */
-export function getDecks(atlas: DeckAtlas = deckAtlas): CardDeck[] {
-	return atlas.chapters.flatMap(chapter => chapter.places.flatMap(place => place.decks));
+export function getDecks(atlas: StoryAtlas = storyAtlas): CardDeck[] {
+	return atlas.stories.flatMap(story => story.chapters.flatMap(chapter => chapter.decks));
 }

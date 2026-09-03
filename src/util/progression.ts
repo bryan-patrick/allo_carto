@@ -3,7 +3,7 @@ import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgres
 /**
  * Typing
  */
-export type ProgressType = 'chapter' | 'place' | 'deck';
+export type ProgressType = 'story' | 'chapter' | 'deck';
 
 export interface UnlockRequirement {
 	id: string;

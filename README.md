@@ -23,7 +23,7 @@ https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
 - Rank indicator while doing a deck (probably on the top bar somewhere)
 - Later ranks need input fields instead of multi choice. Maybe a prestige?
 - Rank indicator while doing a deck
-- Deck count on place selection view
+- Deck count on chapter selection view
 - Word count per day/history feature along with words learned per day delta
 - Get rid of the undraw SVG on the "Learn more words!" card
 - Card Collection page

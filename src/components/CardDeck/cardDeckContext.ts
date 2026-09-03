@@ -34,7 +34,7 @@ export const initialCardDeckState: CardDeckStateProps = {
 		id: '',
 		title: '',
 		description: '',
-		place: '',
+		chapter: '',
 		CEFR: [],
 		wordIds: [],
 		words: [initialWordState],

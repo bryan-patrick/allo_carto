@@ -4,18 +4,15 @@ import { StyleSheet, Text, View } from 'react-native';
 /**
  * Typing
  */
-interface ChapterMetaProps {
+interface StoryMetaProps {
 	progressPercent: number;
 	progressColor: string;
 }
 
 /**
- * Chapter meta component, currently only renders progress.
+ * Story meta component, currently only renders progress.
  */
-export default function ChapterMeta({
-	progressPercent,
-	progressColor = '#08433f',
-}: ChapterMetaProps) {
+export default function StoryMeta({ progressPercent, progressColor = '#08433f' }: StoryMetaProps) {
 	const displayProgressPercent = Math.floor(progressPercent);
 
 	/**

@@ -78,7 +78,7 @@ export const mockCardDeck: CardDeck = {
 	id: 'deck__testing',
 	title: 'Testing deck',
 	description: 'A deck for tests',
-	place: 'Testing Place',
+	chapter: 'Testing Chapter',
 	CEFR: ['A1'],
 	wordIds: mockWords.map(word => word.id),
 	words: mockWords,

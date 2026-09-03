@@ -4,7 +4,7 @@ export const DeckDawnAtTheDropOff: CardDeck = {
 	id: 'deck__dawn_at_the_drop_off',
 	title: 'Dawn at the Drop Off',
 	description: 'The start of our journey. Cat included.',
-	place: 'Aéroport Oiseau',
+	chapter: 'Aéroport Oiseau',
 	CEFR: ['A1', 'A2'],
 	words: [],
 	wordChoices: [],

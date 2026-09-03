@@ -9,7 +9,7 @@ import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
-import { findAtlasLocationByPlaceId } from '@/src/util/atlasCompletion';
+import { findAtlasLocationByChapterId } from '@/src/util/atlasCompletion';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { router, useFocusEffect } from 'expo-router';
@@ -33,13 +33,13 @@ const deckBoxBottomImage = require('@/src/app/assets/images/decks/deck-box-borde
 interface DeckBoxProps {
 	deck: CardDeck;
 	isLocked: boolean;
-	placeId?: string;
+	chapterId?: string;
 }
 
 /**
  * DeckBox component
  */
-export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
+export default function DeckBox({ deck, isLocked, chapterId }: DeckBoxProps) {
 	/**
 	 * Destructure deck
 	 */
@@ -60,15 +60,15 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 	const [passageChevronTranslateY] = useState(() => new Animated.Value(0));
 
 	/**
-	 * Destructure atlas location and chapter
+	 * Destructure atlas location and story
 	 */
-	const { chapter, chapterNumber } = findAtlasLocationByPlaceId(placeId) ?? {};
+	const { story } = findAtlasLocationByChapterId(chapterId) ?? {};
 	const {
-		color: chapterColor = colors.dark.primary,
-		label: chapterLabel = '',
-		materialSymbolName: chapterSymbolName = 'help',
-		name: chapterName = '',
-	} = chapter ?? {};
+		category: storyCategory = '',
+		color: storyColor = colors.dark.primary,
+		materialSymbolName: storySymbolName = 'help',
+		name: storyName = '',
+	} = story ?? {};
 
 	/**
 	 * Deck metadata
@@ -216,22 +216,21 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 						resizeMode="stretch"
 					>
 						<View style={styles.deckBoxContentBorder}>
-							{chapter && (
-								<View style={styles.chapterBadgeContainer}>
-									<View style={[styles.chapterBadge, { backgroundColor: chapterColor }]}>
+							{story && (
+								<View style={styles.storyBadgeContainer}>
+									<View style={[styles.storyBadge, { backgroundColor: storyColor }]}>
 										<MaterialSymbol
-											name={chapterSymbolName}
+											name={storySymbolName}
 											size={24}
 											color={colors.light.goldenBorder}
 										/>
-										<Text style={styles.chapterNumber}>{chapterNumber}</Text>
 									</View>
 								</View>
 							)}
 							<View style={styles.deckDetails}>
-								{chapter && (
-									<Text style={styles.chapterHeading}>
-										{chapterLabel}: {chapterName}
+								{story && (
+									<Text style={styles.storyHeading}>
+										{storyCategory}: {storyName}
 									</Text>
 								)}
 								<View style={styles.deckTitleSeparator}>
@@ -243,21 +242,21 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 									onPress={handleShowPassage}
 									onPressIn={handlePassageButtonPressIn}
 									onPressOut={handlePassageButtonPressOut}
-									style={[styles.passageButton, { borderColor: chapterColor }]}
+									style={[styles.passageButton, { borderColor: storyColor }]}
 								>
 									<MaterialSymbol
 										name="menu_book"
 										size={24}
-										color={chapterColor}
+										color={storyColor}
 									/>
-									<Text style={[styles.passageButtonText, { color: chapterColor }]}>
+									<Text style={[styles.passageButtonText, { color: storyColor }]}>
 										View passage
 									</Text>
 									<Animated.View style={{ transform: [{ translateY: passageChevronTranslateY }] }}>
 										<MaterialSymbol
 											name="keyboard_arrow_up"
 											size={20}
-											color={chapterColor}
+											color={storyColor}
 										/>
 									</Animated.View>
 								</Pressable>
@@ -267,9 +266,9 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 									<MaterialSymbol
 										name="globe"
 										size={24}
-										color={chapterColor}
+										color={storyColor}
 									/>
-									<Text style={[styles.deckInfoText, { color: chapterColor }]}>
+									<Text style={[styles.deckInfoText, { color: storyColor }]}>
 										{deckMetadata.CEFRLabel}
 									</Text>
 								</View>
@@ -277,9 +276,9 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 									<MaterialSymbol
 										name="cards_star"
 										size={24}
-										color={chapterColor}
+										color={storyColor}
 									/>
-									<Text style={[styles.deckInfoText, { color: chapterColor }]}>
+									<Text style={[styles.deckInfoText, { color: storyColor }]}>
 										{deckMetadata.cardCount} Cards
 									</Text>
 								</View>
@@ -287,9 +286,9 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 									<MaterialSymbol
 										name="school"
 										size={24}
-										color={chapterColor}
+										color={storyColor}
 									/>
-									<Text style={[styles.deckInfoText, { color: chapterColor }]}>
+									<Text style={[styles.deckInfoText, { color: storyColor }]}>
 										{deckMetadata.completionPercent}% Known
 									</Text>
 								</View>
@@ -312,7 +311,7 @@ export default function DeckBox({ deck, isLocked, placeId }: DeckBoxProps) {
 				<LinkButton
 					accessibilityHint={`Start practicing ${deckTitle}.`}
 					accessibilityLabel={`Select ${deckTitle}`}
-					color={chapterColor}
+					color={storyColor}
 					disabled={isLocked}
 					fullwidth
 					handler={handleSelectDeck}
@@ -354,12 +353,12 @@ const styles = StyleSheet.create({
 		margin: 8,
 		marginTop: 4,
 	},
-	chapterBadgeContainer: {
+	storyBadgeContainer: {
 		justifyContent: 'center',
 		alignItems: 'center',
 		gap: 4,
 	},
-	chapterBadge: {
+	storyBadge: {
 		paddingTop: 20,
 		paddingHorizontal: 32,
 		paddingBottom: 4,
@@ -367,12 +366,6 @@ const styles = StyleSheet.create({
 		gap: 2,
 		borderBottomLeftRadius: 8,
 		borderBottomRightRadius: 8,
-	},
-	chapterNumber: {
-		textAlign: 'center',
-		color: colors.light.goldenBorder,
-		fontFamily: 'azeret-mono-600',
-		fontSize: 12,
 	},
 	deckDetails: {
 		display: 'flex',
@@ -382,7 +375,7 @@ const styles = StyleSheet.create({
 		padding: 8,
 		gap: 8,
 	},
-	chapterHeading: {
+	storyHeading: {
 		flex: 1,
 		fontFamily: 'lexend-400',
 		fontSize: 12,

@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderTopLeftRadius: 8,
 		borderTopRightRadius: 8,
-		borderColor: colors.light.border,
+		borderColor: colors.dark.border,
 	},
 	CEFRContainer: {
 		display: 'flex',
