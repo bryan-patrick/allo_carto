@@ -85,9 +85,9 @@ export const sharedWordCardStyles = StyleSheet.create({
 	},
 	feedbackText: {
 		textAlign: 'center',
-		fontSize: 14,
-		lineHeight: 18,
-		minHeight: 18,
+		fontSize: 15,
+		lineHeight: 22,
+		minHeight: 22,
 		fontFamily: 'lexend-600',
 		paddingHorizontal: 4,
 		paddingVertical: 4,
