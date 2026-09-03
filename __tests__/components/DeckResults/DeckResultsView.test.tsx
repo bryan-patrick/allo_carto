@@ -89,13 +89,13 @@ describe('<DeckResultsView />', () => {
 		getByText('tea');
 	});
 
-	test('dismisses results back to the selected place deck list when pressing finish', async () => {
+	test('dismisses results back to the selected chapter deck list when pressing finish', async () => {
 		const { getByText } = await render(<DeckResultsView />);
 
 		await fireEvent.press(getByText('Finish'));
 		expect(mockRouterDismissTo).toHaveBeenCalledWith({
 			pathname: '/CardDeckSelect',
-			params: { placeId: 'aeroport-oiseau' },
+			params: { chapterId: 'aeroport-oiseau' },
 		});
 	});
 });

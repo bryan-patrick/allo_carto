@@ -1,6 +1,6 @@
 import colors from '@/src/app/colors';
 import { Dispatch, memo, useEffect, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import Animated, {
 	Easing,
 	useAnimatedStyle,
@@ -144,7 +144,9 @@ const MappedButton = memo(function MappedButtonMemo({
 				onPress={() => handler(word)}
 				hitSlop={5}
 			>
-				<Text style={[styles.text, isHighlighted && highlightTextStyle]}>{word}</Text>
+				<View style={styles.textContainer}>
+					<Text style={[styles.text, isHighlighted && highlightTextStyle]}>{word}</Text>
+				</View>
 			</AnimatedPressable>
 		</Animated.View>
 	);
@@ -241,20 +243,27 @@ const styles = StyleSheet.create({
 		display: 'contents',
 	},
 	button: {
-		flexGrow: 1,
 		display: 'flex',
 		alignItems: 'center',
 		alignContent: 'center',
 		justifyContent: 'center',
+		flexGrow: 1,
 		borderRadius: 8,
-		paddingVertical: 12,
-		paddingHorizontal: 4,
 		flexShrink: 1,
 		maxWidth: '50%',
-		minWidth: 80,
-		borderWidth: 1,
 		borderColor: colors.light.border,
 		backgroundColor: colors.light.background,
+		minWidth: 80,
+	},
+	textContainer: {
+		paddingVertical: 12,
+		paddingHorizontal: 4,
+		borderWidth: 1,
+		borderColor: colors.dark.border,
+		flexGrow: 1,
+		padding: 4,
+		width: '100%',
+		borderRadius: 7,
 	},
 	text: {
 		textAlign: 'center',

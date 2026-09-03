@@ -1,4 +1,4 @@
-import { deckAtlas } from '@/data/french/deckAtlas';
+import { storyAtlas } from '@/data/french/storyAtlas';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import Loader from '@/src/components/Loader';
 import ViewCardsView from '@/src/components/Views/ViewCardsView';
@@ -12,7 +12,7 @@ import { Text } from 'react-native';
  */
 interface ViewCardsRouteParams {
 	deckTitle?: string;
-	placeId?: string;
+	chapterId?: string;
 }
 
 /**
@@ -33,13 +33,16 @@ function getRouteParam(routeParam: string | string[] | undefined) {
 /**
  * Find the deck from the route
  */
-function findDeckByRouteParams({ deckTitle, placeId }: ViewCardsRouteParams): CardDeck | undefined {
+function findDeckByRouteParams({
+	deckTitle,
+	chapterId,
+}: ViewCardsRouteParams): CardDeck | undefined {
 	let routeDeck: CardDeck | undefined;
 
-	for (const chapter of deckAtlas.chapters) {
-		for (const place of chapter.places) {
-			if (place.id === placeId) {
-				routeDeck = place.decks.find(deck => deck.title === deckTitle);
+	for (const story of storyAtlas.stories) {
+		for (const chapter of story.chapters) {
+			if (chapter.id === chapterId) {
+				routeDeck = chapter.decks.find(deck => deck.title === deckTitle);
 			}
 		}
 	}
@@ -54,10 +57,10 @@ export default function ViewCards() {
 	const { progressById, status } = useUserProgress();
 	const routeParams = useLocalSearchParams();
 	const deckTitle = getRouteParam(routeParams.deckTitle);
-	const placeId = getRouteParam(routeParams.placeId);
+	const chapterId = getRouteParam(routeParams.chapterId);
 	const deck = findDeckByRouteParams({
 		deckTitle,
-		placeId,
+		chapterId,
 	});
 
 	/**

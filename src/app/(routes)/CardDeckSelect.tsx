@@ -2,7 +2,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findPlaceById, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { findChapterById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import colors from '../colors';
@@ -11,14 +11,14 @@ import colors from '../colors';
  * CardDeckSelect component
  */
 export default function CardDeckSelect() {
-	const { placeId } = useLocalSearchParams<{ placeId?: string }>();
+	const { chapterId } = useLocalSearchParams<{ chapterId?: string }>();
 	const { progressById, status } = useUserProgress();
 
-	const place = findPlaceById(placeId);
+	const chapter = findChapterById(chapterId);
 	const decks =
-		place?.decks.map(deck => ({
+		chapter?.decks.map(deck => ({
 			...deck,
-			place: place.name,
+			chapter: chapter.name,
 		})) ?? [];
 
 	/**
@@ -35,12 +35,12 @@ export default function CardDeckSelect() {
 	if (status === 'error') return <Text>Could not load deck progress.</Text>;
 
 	/**
-	 * Block locked places
+	 * Block locked chapters
 	 */
-	if (place && !isItemUnlocked({ id: place.id, progressById })) {
+	if (chapter && !isItemUnlocked({ id: chapter.id, progressById })) {
 		return (
 			<View style={styles.noDecksContainer}>
-				<Text style={styles.noDecksText}>This place is locked.</Text>
+				<Text style={styles.noDecksText}>This chapter is locked.</Text>
 			</View>
 		);
 	}
@@ -51,7 +51,7 @@ export default function CardDeckSelect() {
 	return (
 		<>
 			<View style={styles.deckNameContainer}>
-				<Text style={styles.deckNameText}>{place?.name}</Text>
+				<Text style={styles.deckNameText}>{chapter?.name}</Text>
 			</View>
 			{decks.length > 0 && (
 				<FlatList
@@ -64,7 +64,7 @@ export default function CardDeckSelect() {
 						<DeckBox
 							deck={item}
 							isLocked={getIsDeckLocked(item)}
-							placeId={placeId}
+							chapterId={chapterId}
 						/>
 					)}
 					keyExtractor={deck => deck.id}

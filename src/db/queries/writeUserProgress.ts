@@ -9,7 +9,7 @@ import updateUserProgress from './updateUserProgress';
 
 /**
  * Update the userProgress table rows affected by new word progress
- * These rows belong to decks, places, and chapters
+ * These rows belong to decks, chapters, and stories
  */
 async function updateUserProgressTableItems({
 	database,
@@ -21,7 +21,7 @@ async function updateUserProgressTableItems({
 	wordId: string;
 }): Promise<void> {
 	/**
-	 * The atlas tells us which chapters, places, and decks contain the word
+	 * The atlas tells us which stories, chapters, and decks contain the word
 	 */
 	const atlasItems = getAtlasItemsContainingWord({
 		wordId,
@@ -29,7 +29,7 @@ async function updateUserProgressTableItems({
 
 	for (const atlasItem of atlasItems) {
 		/**
-		 * Recalculate this chapter, place, or deck percentage
+		 * Recalculate this story, chapter, or deck percentage
 		 * using the user's word counts in the database
 		 */
 		const wordProgressCounts = await getDeckWordProgressCounts({
@@ -58,7 +58,7 @@ async function updateUserProgressTableItems({
 
 /**
  * Increment a word's correctCount and save any
- * changed deck, place, and chapter percentages
+ * changed deck, chapter, and story percentages
  */
 export async function writeCorrectAnswer({
 	database: sqliteDatabase,

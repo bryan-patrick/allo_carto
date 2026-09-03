@@ -1,5 +1,5 @@
-import type { DeckChapter } from '@/data/french/deckAtlas';
-import { deckAtlas } from '@/data/french/deckAtlas';
+import type { DeckStory } from '@/data/french/storyAtlas';
+import { storyAtlas } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
@@ -7,15 +7,15 @@ import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialSymbol from '../../MaterialSymbol';
-import Chapter from './Chapter';
+import Story from './Story';
 
-const rueStVallierO = require('@/src/app/assets/images/chapters/rue-st-vallier-o.jpg');
+const rueStVallierO = require('@/src/app/assets/images/stories/rue-st-vallier-o.jpg');
 
 /**
- * Component chapter select view
+ * Component story select view
  */
-export default function ChapterSelectView() {
-	const { chapters } = deckAtlas;
+export default function StorySelectView() {
+	const { stories } = storyAtlas;
 	const { progressById, status } = useUserProgress();
 	const paddingTop = useSafeAreaInsets().top;
 
@@ -23,7 +23,7 @@ export default function ChapterSelectView() {
 	 * Wait for the user's stored percentages
 	 */
 	if (status === 'loading') return <Loader />;
-	if (status === 'error') return <Text>Could not load chapter progress.</Text>;
+	if (status === 'error') return <Text>Could not load story progress.</Text>;
 
 	/**
 	 * Render the component
@@ -41,21 +41,20 @@ export default function ChapterSelectView() {
 					<MaterialSymbol
 						name="auto_stories"
 						size={32}
-						style={styles.chapterIcon}
+						style={styles.storyIcon}
 						color={colors.light.goldenBorder}
 					/>
-					<Text style={styles.title}>Select a Chapter</Text>
+					<Text style={styles.title}>Select a Story</Text>
 					<Text style={styles.description}>Continue your French journey.</Text>
 				</View>
-				{chapters.map((chapter: DeckChapter, index) => {
-					const { id } = chapter;
+				{stories.map((story: DeckStory) => {
+					const { id } = story;
 					const isLocked = !isItemUnlocked({ id, progressById });
 					const progressPercent = progressById[id]?.completionPercentage ?? 0;
 
 					return (
-						<Chapter
-							chapter={chapter}
-							index={index}
+						<Story
+							story={story}
 							isLocked={isLocked}
 							key={id}
 							progressById={progressById}
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
 		marginTop: 32,
 		gap: 4,
 	},
-	chapterIcon: {
+	storyIcon: {
 		textShadowColor: '#000000',
 		textShadowRadius: 20,
 		textShadowOffset: {

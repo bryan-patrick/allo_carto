@@ -10,7 +10,7 @@ interface CoverProps {
 }
 
 /**
- * The "cover" of the book. This includes the image of the chapter.
+ * The "cover" of the book. This includes the story details.
  */
 export default function Cover({ children }: CoverProps) {
 	/**

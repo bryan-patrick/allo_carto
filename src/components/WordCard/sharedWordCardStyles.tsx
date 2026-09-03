@@ -8,7 +8,7 @@ export const sharedWordCardStyles = StyleSheet.create({
 	wordCardContainer: {
 		borderRadius: 12,
 		overflow: 'hidden',
-		borderWidth: 4,
+		borderWidth: 3,
 		borderColor: colors.light.border,
 	},
 	wordCardInner: {
@@ -16,9 +16,10 @@ export const sharedWordCardStyles = StyleSheet.create({
 		alignContent: 'center',
 		alignItems: 'center',
 		justifyContent: 'center',
+		overflow: 'hidden',
 		borderWidth: 1,
 		borderColor: colors.dark.border,
-		borderRadius: 8,
+		borderRadius: 9,
 	},
 	cardMain: {
 		alignItems: 'center',

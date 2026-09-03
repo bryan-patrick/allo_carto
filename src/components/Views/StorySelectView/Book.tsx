@@ -9,7 +9,7 @@ interface BookProps {
 }
 
 /**
- * Book component (chapter select)
+ * Book component (story select)
  */
 export default function Book({ children }: BookProps) {
 	/**
