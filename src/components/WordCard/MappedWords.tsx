@@ -56,7 +56,7 @@ const MappedButton = memo(function MappedButtonMemo({
 	 * Animation vars
 	 */
 	const buttonBackgroundColor = useSharedValue(colors.light.background);
-	const buttonBoxShadow = useSharedValue(`0 4px 0 0 ${colors.light.border}`);
+	const buttonBoxShadow = useSharedValue(`0 4px 0 -1px ${colors.light.border}`);
 	const buttonY = useSharedValue(0);
 
 	const selectionTiming = useMemo(
@@ -104,7 +104,7 @@ const MappedButton = memo(function MappedButtonMemo({
 					buttonBackgroundColor.value = withTiming(colors.light.background, answerRevealTiming);
 				}
 
-				buttonBoxShadow.value = `0 5px 0 0 ${colors.dark.border}`;
+				buttonBoxShadow.value = `0 5px 0 -1px ${colors.dark.border}`;
 				break;
 			default:
 				if (isActive) {
@@ -114,7 +114,7 @@ const MappedButton = memo(function MappedButtonMemo({
 				} else {
 					buttonY.value = withTiming(0, selectionTiming);
 					buttonBackgroundColor.value = withTiming(colors.light.background, selectionTiming);
-					buttonBoxShadow.value = `0 5px 0 0 ${colors.light.border}`;
+					buttonBoxShadow.value = `0 5px 0 -1px ${colors.light.border}`;
 				}
 				break;
 		}
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
 		alignContent: 'center',
 		justifyContent: 'center',
 		flexGrow: 1,
-		borderRadius: 8,
+		borderRadius: 6,
 		flexShrink: 1,
 		maxWidth: '50%',
 		borderColor: colors.light.border,
@@ -256,14 +256,12 @@ const styles = StyleSheet.create({
 		minWidth: 80,
 	},
 	textContainer: {
+		alignSelf: 'stretch',
 		paddingVertical: 12,
-		paddingHorizontal: 4,
+		paddingHorizontal: 2,
 		borderWidth: 1,
 		borderColor: colors.dark.border,
-		flexGrow: 1,
-		padding: 4,
-		width: '100%',
-		borderRadius: 7,
+		borderRadius: 6,
 	},
 	text: {
 		textAlign: 'center',
