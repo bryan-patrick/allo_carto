@@ -77,7 +77,9 @@ export default function ChapterSelectView() {
 						color={colors.light.goldenBorder}
 					/>
 					<Text style={styles.storyTitleText}>Select a Chapter</Text>
-					<Text style={styles.storyDescriptionText}>{description}</Text>
+					<Text style={styles.storyDescriptionText}>
+						Continue {name}, a {category} story.
+					</Text>
 				</View>
 				{
 					/**
@@ -192,6 +194,7 @@ const styles = StyleSheet.create({
 	},
 	storyHeader: {
 		marginTop: 32,
+		padding: 4,
 		gap: 4,
 	},
 	storyCategoryText: {

@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
 	titleContainer: {
 		marginTop: 32,
 		gap: 4,
+		padding: 4,
 	},
 	storyIcon: {
 		textShadowColor: '#000000',
