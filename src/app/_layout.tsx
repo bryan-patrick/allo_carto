@@ -151,9 +151,10 @@ export default function AppLayout() {
 										name="(routes)/CardDeckSelect"
 										options={{
 											headerShown: true,
+											headerTransparent: true,
 											headerBackTitle: 'Back',
+											headerTitle: '',
 											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: 'Select a deck',
 										}}
 									/>
 									<Stack.Screen

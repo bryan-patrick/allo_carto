@@ -1,11 +1,15 @@
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findChapterById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../colors';
+
+const deckSelectBackgroundImage = require('@/src/app/assets/images/decks/deck-select-bg.jpg');
 
 /**
  * CardDeckSelect component
@@ -13,7 +17,7 @@ import colors from '../colors';
 export default function CardDeckSelect() {
 	const { chapterId } = useLocalSearchParams<{ chapterId?: string }>();
 	const { progressById, status } = useUserProgress();
-
+	const paddingTop = useSafeAreaInsets().top;
 	const chapter = findChapterById(chapterId);
 	const decks =
 		chapter?.decks.map(deck => ({
@@ -49,35 +53,46 @@ export default function CardDeckSelect() {
 	 * Render the card grid
 	 */
 	return (
-		<>
-			<View style={styles.deckNameContainer}>
-				<Text style={styles.deckNameText}>{chapter?.name}</Text>
-			</View>
-			{decks.length > 0 && (
-				<FlatList
-					/**
-					 * BG color is for scroll bounce
-					 */
-					style={{ backgroundColor: colors.dark.text }}
-					contentContainerStyle={styles.cardGrid}
-					renderItem={({ item }) => (
-						<DeckBox
-							deck={item}
-							isLocked={getIsDeckLocked(item)}
-							chapterId={chapterId}
-						/>
-					)}
-					keyExtractor={deck => deck.id}
-					overScrollMode="always"
-					data={decks}
-				/>
-			)}
-			{decks.length === 0 && (
-				<View style={styles.noDecksContainer}>
-					<Text style={styles.noDecksText}>Sorry! No decks found.</Text>
+		<ImageBackground
+			style={styles.screenBackground}
+			source={deckSelectBackgroundImage}
+		>
+			<ScrollView
+				contentContainerStyle={styles.scrollContentContainer}
+				style={styles.scrollView}
+			>
+				<View style={[styles.chapterHeader, { paddingTop }]}>
+					<MaterialSymbol
+						name="owl"
+						size={32}
+						style={styles.chapterIcon}
+						color={colors.light.goldenBorder}
+					/>
+					<Text style={styles.chapterTitleText}>Select a Deck</Text>
+					<Text style={styles.chapterDescriptionText}>
+						Preview a deck’s passage, or select it to begin practicing its words.
+					</Text>
 				</View>
-			)}
-		</>
+				{decks.length > 0 && (
+					<View style={styles.cardGrid}>
+						{decks.map(deck => (
+							<View key={deck.id}>
+								<DeckBox
+									deck={deck}
+									isLocked={getIsDeckLocked(deck)}
+									chapterId={chapterId}
+								/>
+							</View>
+						))}
+					</View>
+				)}
+				{decks.length === 0 && (
+					<View style={styles.noDecksContainer}>
+						<Text style={styles.noDecksText}>Sorry! No decks found.</Text>
+					</View>
+				)}
+			</ScrollView>
+		</ImageBackground>
 	);
 }
 
@@ -85,25 +100,57 @@ export default function CardDeckSelect() {
  * Styles
  */
 const styles = StyleSheet.create({
-	deckNameContainer: {
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		padding: 16,
-		backgroundColor: colors.dark.text,
+	screenBackground: {
+		height: '100%',
 	},
-	deckNameText: {
-		textAlign: 'center',
-		width: '100%',
+	scrollContentContainer: {
+		display: 'flex',
+		flexGrow: 1,
+		padding: 8,
+		gap: 16,
+	},
+	scrollView: {
+		backgroundColor: 'rgba(15, 15, 13, 0.4)',
+	},
+	chapterHeader: {
+		marginTop: 40,
+		padding: 4,
+		gap: 4,
+	},
+	chapterIcon: {
+		textShadowColor: '#000000',
+		textShadowRadius: 20,
+		textShadowOffset: {
+			width: 0,
+			height: 0,
+		},
+	},
+	chapterTitleText: {
 		fontFamily: 'lexend-600',
-		fontSize: 18,
-		color: colors.light.text,
+		fontSize: 20,
+		textAlign: 'center',
+		color: colors.light.background,
+		textShadowColor: '#000000',
+		textShadowRadius: 50,
+		textShadowOffset: {
+			width: 0,
+			height: 0,
+		},
+	},
+	chapterDescriptionText: {
+		textAlign: 'center',
+		fontFamily: 'lexend-400',
+		color: colors.light.goldenBorder,
+		textShadowColor: '#000000',
+		textShadowRadius: 20,
+		textShadowOffset: {
+			width: 0,
+			height: 0,
+		},
 	},
 	cardGrid: {
 		display: 'flex',
-		backgroundColor: colors.dark.text,
 		gap: 8,
-		margin: 8,
 	},
 	noDecksContainer: {
 		display: 'flex',
