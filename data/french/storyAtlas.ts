@@ -1,4 +1,4 @@
-import { DeckDawnAtTheDropOff } from '@/data/french/decks';
+import { DeckDawnAtTheDropOff, DeckWaitingAtTheGate } from '@/data/french/decks';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { Progression } from '@/src/util/progression';
 import type { ImageSourcePropType } from 'react-native';
@@ -62,7 +62,7 @@ export const storyAtlas: StoryAtlas = {
 					label: 'Chapter 1',
 					name: 'Aéroport Oiseau',
 					image: aeroportOiseau,
-					decks: [DeckDawnAtTheDropOff],
+					decks: [DeckDawnAtTheDropOff, DeckWaitingAtTheGate],
 				},
 				{
 					id: 'hotel-bonne-chance',

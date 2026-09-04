@@ -1,10 +1,10 @@
 import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import LockedSection from '@/src/components/LockedSection';
 import { getUnlockCriteria } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
 import { StyleSheet, Text, View } from 'react-native';
 import Book from './Book';
-import StoryLockedSection from './StoryLockedSection';
 import StoryMeta from './StoryMeta';
 import StorySelectButton from './StorySelectButton';
 import Cover from './Cover';
@@ -72,7 +72,7 @@ export default function Story({ story, progressById, progressPercent, isLocked }
 						</>
 					)}
 					{isLocked && (
-						<StoryLockedSection
+						<LockedSection
 							color={color ?? '#000000'}
 							unlockCriteria={unlockCriteria}
 						/>
