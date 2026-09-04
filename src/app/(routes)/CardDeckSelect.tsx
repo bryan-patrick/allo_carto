@@ -3,7 +3,7 @@ import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findChapterById, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -81,6 +81,7 @@ export default function CardDeckSelect() {
 									deck={deck}
 									isLocked={getIsDeckLocked(deck)}
 									chapterId={chapterId}
+									unlockCriteria={getUnlockCriteria(deck, progressById)}
 								/>
 							</View>
 						))}
