@@ -1,7 +1,8 @@
 import type { DeckChapter } from '@/data/french/storyAtlas';
 import Loader from '@/src/components/Loader';
+import LockedSection from '@/src/components/LockedSection';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findStoryById, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -94,6 +95,8 @@ export default function ChapterSelectView() {
 							id: chapterId,
 							progressById,
 						});
+						const unlockCriteria = getUnlockCriteria(chapter, progressById);
+						const selectText = progressPercent > 0 ? 'Continue chapter' : 'Start chapter';
 
 						/**
 						 * Render the chapter view/card
@@ -133,47 +136,58 @@ export default function ChapterSelectView() {
 												style={styles.chapterPostmarkImage}
 											/>
 										</View>
-										<Image
-											source={image}
-											style={styles.chapterImage}
-										/>
-										<View style={styles.chapterProgressContainer}>
-											<Text style={styles.chapterProgressText}>
-												Words known: {progressPercent}%
-											</Text>
-											<View style={styles.chapterProgressBarTrack}>
-												<View
-													style={[
-														styles.chapterProgressBar,
-														{
-															width: `${progressPercent}%`,
-															backgroundColor: colors.dark.primary,
-															zIndex: 1,
-														},
-													]}
-												/>
-												<View
-													style={[
-														styles.chapterProgressBar,
-														{
-															position: 'absolute',
-															width: '100%',
-														},
-													]}
+										{isLocked && (
+											<View style={styles.lockedInner}>
+												<LockedSection
+													color={colors.dark.primary}
+													unlockCriteria={unlockCriteria}
 												/>
 											</View>
-										</View>
-										<LinkButton
-											hitSlop={5}
-											arrowSize={18}
-											contentPaddingVertical={8}
-											disabled={isLocked}
-											style={styles.chapterSelectButton}
-											screen={'(routes)/CardDeckSelect'}
-											params={{ chapterId }}
-										>
-											<Text style={styles.chapterSelectButtonText}>View decks</Text>
-										</LinkButton>
+										)}
+										{!isLocked && (
+											<>
+												<Image
+													source={image}
+													style={styles.chapterImage}
+												/>
+												<View style={styles.chapterProgressContainer}>
+													<Text style={styles.chapterProgressText}>
+														Words known: {progressPercent}%
+													</Text>
+													<View style={styles.chapterProgressBarTrack}>
+														<View
+															style={[
+																styles.chapterProgressBar,
+																{
+																	width: `${progressPercent}%`,
+																	backgroundColor: colors.dark.primary,
+																	zIndex: 1,
+																},
+															]}
+														/>
+														<View
+															style={[
+																styles.chapterProgressBar,
+																{
+																	position: 'absolute',
+																	width: '100%',
+																},
+															]}
+														/>
+													</View>
+												</View>
+												<LinkButton
+													hitSlop={5}
+													arrowSize={18}
+													contentPaddingVertical={8}
+													style={styles.chapterSelectButton}
+													screen={'(routes)/CardDeckSelect'}
+													params={{ chapterId }}
+												>
+													<Text style={styles.chapterSelectButtonText}>{selectText}</Text>
+												</LinkButton>
+											</>
+										)}
 									</View>
 								</ImageBackground>
 							</View>
@@ -191,6 +205,10 @@ export default function ChapterSelectView() {
 const styles = StyleSheet.create({
 	screenBackground: {
 		height: '100%',
+	},
+	lockedInner: {
+		paddingVertical: 16,
+		marginBottom: 24,
 	},
 	storyHeader: {
 		marginTop: 40,

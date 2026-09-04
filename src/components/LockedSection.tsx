@@ -1,20 +1,20 @@
 import colors from '@/src/app/colors';
-import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { UnlockCriteria } from '@/src/util/atlasCompletion';
 import { StyleSheet, Text, View } from 'react-native';
+import MaterialSymbol from './MaterialSymbol';
 
-/**
- * Typing
- */
-interface StoryLockedSectionProps {
-	color: string;
+interface LockedSectionProps {
+	color?: string;
 	unlockCriteria: UnlockCriteria[];
 }
 
 /**
- * StoryLockedSection component
+ * Explains how to unlock a story, chapter, or deck.
  */
-export default function StoryLockedSection({ color, unlockCriteria }: StoryLockedSectionProps) {
+export default function LockedSection({
+	color = colors.utility.cardBorder,
+	unlockCriteria,
+}: LockedSectionProps) {
 	return (
 		<View style={[styles.section, { borderColor: color }]}>
 			<MaterialSymbol
@@ -23,14 +23,14 @@ export default function StoryLockedSection({ color, unlockCriteria }: StoryLocke
 				name="lock"
 			/>
 			<View style={styles.criteria}>
-				<Text style={styles.criteriatitle}>Complete the following to unlock:</Text>
+				<Text style={styles.criteriaTitle}>Complete the following to unlock:</Text>
 				{unlockCriteria.map(({ title, isUnlocked, requiredPercentage }, index) => (
 					<Text
 						key={`${title}-${index}`}
 						style={[styles.criteriaText, isUnlocked && styles.criteriaMet]}
 					>
 						• Reach {requiredPercentage}% in{' '}
-						<Text style={[styles.criteriaReq, isUnlocked && styles.criteriaMet]}>{title}</Text>.
+						<Text style={isUnlocked && styles.criteriaMet}>{title}</Text>.
 					</Text>
 				))}
 			</View>
@@ -38,26 +38,20 @@ export default function StoryLockedSection({ color, unlockCriteria }: StoryLocke
 	);
 }
 
-/**
- * Styles
- */
 const styles = StyleSheet.create({
 	section: {
-		display: 'flex',
-		justifyContent: 'center',
-		alignContent: 'center',
 		alignItems: 'center',
+		justifyContent: 'center',
 		borderStyle: 'dashed',
 		borderWidth: 1,
 		paddingVertical: 6,
 		paddingHorizontal: 6,
-		borderColor: colors.utility.cardBorder,
 	},
 	criteria: {
 		marginVertical: 8,
 		gap: 4,
 	},
-	criteriatitle: {
+	criteriaTitle: {
 		textAlign: 'center',
 		fontFamily: 'lexend-600',
 		fontSize: 14,
@@ -69,5 +63,4 @@ const styles = StyleSheet.create({
 	criteriaMet: {
 		textDecorationLine: 'line-through',
 	},
-	criteriaReq: {},
 });
