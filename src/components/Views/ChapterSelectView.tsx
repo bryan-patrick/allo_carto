@@ -56,7 +56,7 @@ export default function ChapterSelectView() {
 		);
 	}
 
-	const { name, description, chapters, category } = selectedStory;
+	const { name, chapters, category } = selectedStory;
 
 	/**
 	 * Render the card grid
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
 		height: '100%',
 	},
 	storyHeader: {
-		marginTop: 32,
+		marginTop: 40,
 		padding: 4,
 		gap: 4,
 	},
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
 		gap: 16,
 	},
 	scrollView: {
-		backgroundColor: 'rgba(25, 25, 23, 0.4)',
+		backgroundColor: 'rgba(35, 35, 30, 0.25)',
 	},
 	chapterPostcardStack: {
 		display: 'flex',

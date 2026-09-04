@@ -23,9 +23,9 @@ import DeckBoxModal from './DeckBoxModal';
 const deckBoxTopImage = require('@/src/app/assets/images/decks/deck-box-top.png');
 const deckBoxTopMaskImage = require('@/src/app/assets/images/decks/deck-box-top-mask.png');
 const deckBoxLeftBorderImage = require('@/src/app/assets/images/decks/deck-box-border-left.png');
-const deckBoxContentImage = require('@/src/app/assets/images/decks/deck-box-content-area.png');
 const deckBoxRightBorderImage = require('@/src/app/assets/images/decks/deck-box-border-right.png');
 const deckBoxBottomImage = require('@/src/app/assets/images/decks/deck-box-border-bottom.png');
+const deckBoxBg = require('@/src/app/assets/images/decks/deck-box-bg.jpg');
 
 /**
  * Typing
@@ -211,7 +211,7 @@ export default function DeckBox({ deck, isLocked, chapterId }: DeckBoxProps) {
 						resizeMode="stretch"
 					/>
 					<ImageBackground
-						source={deckBoxContentImage}
+						source={deckBoxBg}
 						style={styles.deckBoxContentBackground}
 						resizeMode="stretch"
 					>
@@ -284,7 +284,7 @@ export default function DeckBox({ deck, isLocked, chapterId }: DeckBoxProps) {
 								</View>
 								<View style={styles.deckInfoColumn}>
 									<MaterialSymbol
-										name="school"
+										name="cognition_2"
 										size={24}
 										color={storyColor}
 									/>
