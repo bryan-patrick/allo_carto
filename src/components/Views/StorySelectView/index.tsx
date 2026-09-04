@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
 		height: '100%',
 	},
 	titleContainer: {
-		marginTop: 32,
+		marginTop: 40,
 		gap: 4,
 		padding: 4,
 	},
