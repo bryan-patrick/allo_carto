@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../app/colors';
 import MaterialSymbol from './MaterialSymbol';
 
@@ -15,11 +16,13 @@ interface ViewIndicatorProps {
  * View Indicator component
  */
 export default function ViewIndicator({ views, currentViewIndex }: ViewIndicatorProps) {
+	const paddingTop = useSafeAreaInsets().top;
+
 	/**
 	 * Render the thing
 	 */
 	return (
-		<View style={styles.indicator}>
+		<View style={[styles.indicator, { paddingTop }]}>
 			{views.map((view, i) => {
 				const isLast: boolean = i === views.length - 1;
 				const isCurrent: boolean = currentViewIndex === i;

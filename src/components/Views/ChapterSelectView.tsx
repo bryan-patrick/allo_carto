@@ -1,6 +1,7 @@
 import type { DeckChapter } from '@/data/french/storyAtlas';
 import Loader from '@/src/components/Loader';
 import LockedSection from '@/src/components/LockedSection';
+import ViewIndicator from '@/src/components/ViewIndicator';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
@@ -32,8 +33,8 @@ export default function ChapterSelectView() {
 	 */
 	if (!selectedStory) {
 		return (
-			<View style={styles.screenBackground}>
-				<View style={styles.storyHeader}>
+			<View style={styles.background}>
+				<View style={styles.header}>
 					<Text style={styles.storyCategoryText}>Unknown story</Text>
 					<Text style={styles.storyTitleText}>Please go back and select a story.</Text>
 				</View>
@@ -46,8 +47,8 @@ export default function ChapterSelectView() {
 	 */
 	if (!isItemUnlocked({ id: selectedStory.id, progressById })) {
 		return (
-			<View style={styles.screenBackground}>
-				<View style={styles.storyHeader}>
+			<View style={styles.background}>
+				<View style={styles.header}>
 					<Text style={styles.storyCategoryText}>Story locked</Text>
 					<Text style={styles.storyTitleText}>Complete its requirements before continuing.</Text>
 				</View>
@@ -62,15 +63,18 @@ export default function ChapterSelectView() {
 	 */
 	return (
 		<ImageBackground
-			style={styles.screenBackground}
+			style={styles.background}
 			source={chaptersBackgroundImage}
 		>
 			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
 				contentContainerStyle={styles.scrollContentContainer}
 				style={styles.scrollView}
 			>
-				<View style={[styles.storyHeader]}>
+				<ViewIndicator
+					views={['Story', 'Chapter', 'Deck']}
+					currentViewIndex={1}
+				/>
+				<View style={styles.header}>
 					<MaterialSymbol
 						name="raven"
 						size={32}
@@ -202,16 +206,27 @@ export default function ChapterSelectView() {
  * Styles
  */
 const styles = StyleSheet.create({
-	screenBackground: {
+	background: {
 		height: '100%',
+	},
+	scrollContentContainer: {
+		display: 'flex',
+		flexGrow: 1,
+		paddingHorizontal: 8,
+		paddingVertical: 16,
+		gap: 16,
+	},
+	header: {
+		paddingVertical: 16,
+		paddingHorizontal: 4,
+		gap: 4,
+	},
+	scrollView: {
+		backgroundColor: 'rgba(35, 35, 30, 0.25)',
 	},
 	lockedInner: {
 		paddingVertical: 16,
 		marginBottom: 24,
-	},
-	storyHeader: {
-		padding: 4,
-		gap: 4,
 	},
 	storyCategoryText: {
 		textAlign: 'center',
@@ -240,14 +255,6 @@ const styles = StyleSheet.create({
 			width: 0,
 			height: 0,
 		},
-	},
-	scrollContentContainer: {
-		display: 'flex',
-		padding: 8,
-		gap: 16,
-	},
-	scrollView: {
-		backgroundColor: 'rgba(35, 35, 30, 0.25)',
 	},
 	chapterPostcardStack: {
 		display: 'flex',
