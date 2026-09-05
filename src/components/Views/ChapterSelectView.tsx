@@ -5,7 +5,6 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../../app/colors';
 import LinkButton from '../LinkButton';
 import MaterialSymbol from '../MaterialSymbol';
@@ -20,7 +19,6 @@ const chaptersBackgroundImage = require('@/src/app/assets/images/chapters/chapte
 export default function ChapterSelectView() {
 	const { progressById, status } = useUserProgress();
 	const { storyId } = useLocalSearchParams<{ storyId?: string }>();
-	const paddingTop = useSafeAreaInsets().top;
 	const selectedStory = findStoryById(storyId);
 
 	/**
@@ -68,10 +66,11 @@ export default function ChapterSelectView() {
 			source={chaptersBackgroundImage}
 		>
 			<ScrollView
+				contentInsetAdjustmentBehavior="automatic"
 				contentContainerStyle={styles.scrollContentContainer}
 				style={styles.scrollView}
 			>
-				<View style={[styles.storyHeader, { paddingTop }]}>
+				<View style={[styles.storyHeader]}>
 					<MaterialSymbol
 						name="raven"
 						size={32}
@@ -211,7 +210,6 @@ const styles = StyleSheet.create({
 		marginBottom: 24,
 	},
 	storyHeader: {
-		marginTop: 40,
 		padding: 4,
 		gap: 4,
 	},

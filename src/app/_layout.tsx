@@ -8,6 +8,7 @@ import { Suspense, useCallback, useEffect, useReducer, useState } from 'react';
 import { CardDeckContext, initialCardDeckState } from '../components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '../components/CardDeck/cardDeckReducer';
 import Loader from '../components/Loader';
+import ViewIndicator from '../components/ViewIndicator';
 import { getTables, setDB } from '../db/interface';
 import getMonHomme, { UserRow } from '../db/queries/getMonHomme';
 import { UserContext } from '../db/userContext';
@@ -134,7 +135,12 @@ export default function AppLayout() {
 											headerTransparent: true,
 											headerBackTitle: 'Home',
 											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: '',
+											headerTitle: () => (
+												<ViewIndicator
+													views={['Story', 'Chapter', 'Deck']}
+													currentViewIndex={0}
+												/>
+											),
 										}}
 									/>
 									<Stack.Screen
@@ -143,7 +149,12 @@ export default function AppLayout() {
 											headerShown: true,
 											headerTransparent: true,
 											headerBackTitle: 'Back',
-											headerTitle: '',
+											headerTitle: () => (
+												<ViewIndicator
+													views={['Story', 'Chapter', 'Deck']}
+													currentViewIndex={1}
+												/>
+											),
 											headerBackButtonDisplayMode: 'minimal',
 										}}
 									/>
@@ -153,7 +164,12 @@ export default function AppLayout() {
 											headerShown: true,
 											headerTransparent: true,
 											headerBackTitle: 'Back',
-											headerTitle: '',
+											headerTitle: () => (
+												<ViewIndicator
+													views={['Story', 'Chapter', 'Deck']}
+													currentViewIndex={2}
+												/>
+											),
 											headerBackButtonDisplayMode: 'minimal',
 										}}
 									/>
