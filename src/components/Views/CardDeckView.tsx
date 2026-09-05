@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { Word } from '../CardDeck/cardDeckTypes';
-import DeckProgress from '../WordCard/DeckProgress';
 import WordCardContainer from '../WordCard/WordCardContainer';
 
 /**
@@ -20,7 +19,6 @@ export default function CardDeckView({ currentCard }: CardDeckViewProps) {
 	 */
 	return (
 		<>
-			<DeckProgress />
 			<Animated.View
 				key={currentCard.id}
 				entering={SlideInRight.duration(200)}
