@@ -6,7 +6,6 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../colors';
 
 const deckSelectBackgroundImage = require('@/src/app/assets/images/decks/deck-select-bg.jpg');
@@ -17,7 +16,6 @@ const deckSelectBackgroundImage = require('@/src/app/assets/images/decks/deck-se
 export default function CardDeckSelect() {
 	const { chapterId } = useLocalSearchParams<{ chapterId?: string }>();
 	const { progressById, status } = useUserProgress();
-	const paddingTop = useSafeAreaInsets().top;
 	const chapter = findChapterById(chapterId);
 	const decks =
 		chapter?.decks.map(deck => ({
@@ -58,10 +56,11 @@ export default function CardDeckSelect() {
 			source={deckSelectBackgroundImage}
 		>
 			<ScrollView
+				contentInsetAdjustmentBehavior="automatic"
 				contentContainerStyle={styles.scrollContentContainer}
 				style={styles.scrollView}
 			>
-				<View style={[styles.chapterHeader, { paddingTop }]}>
+				<View style={styles.chapterHeader}>
 					<MaterialSymbol
 						name="owl"
 						size={32}
@@ -114,7 +113,6 @@ const styles = StyleSheet.create({
 		backgroundColor: 'rgba(15, 15, 13, 0.4)',
 	},
 	chapterHeader: {
-		marginTop: 40,
 		padding: 4,
 		gap: 4,
 	},

@@ -5,7 +5,6 @@ import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialSymbol from '../../MaterialSymbol';
 import Story from './Story';
 
@@ -17,7 +16,6 @@ const rueStVallierO = require('@/src/app/assets/images/stories/rue-st-vallier-o.
 export default function StorySelectView() {
 	const { stories } = storyAtlas;
 	const { progressById, status } = useUserProgress();
-	const paddingTop = useSafeAreaInsets().top;
 
 	/**
 	 * Wait for the user's stored percentages
@@ -34,10 +32,11 @@ export default function StorySelectView() {
 			source={rueStVallierO}
 		>
 			<ScrollView
+				contentInsetAdjustmentBehavior="automatic"
 				style={styles.scrollView}
 				contentContainerStyle={styles.scrollViewContainer}
 			>
-				<View style={[styles.titleContainer, { paddingTop }]}>
+				<View style={styles.titleContainer}>
 					<MaterialSymbol
 						name="auto_stories"
 						size={32}
@@ -75,7 +74,6 @@ const styles = StyleSheet.create({
 		height: '100%',
 	},
 	titleContainer: {
-		marginTop: 40,
 		gap: 4,
 		padding: 4,
 	},
