@@ -59,14 +59,19 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
-		gap: 8,
-		zIndex: 1000,
+		gap: 4,
 	},
 	name: {
 		color: '#ff0000',
 		fontFamily: 'lexend-600',
 		fontSize: 12,
 		lineHeight: 12,
+		textShadowColor: '#000000',
+		textShadowRadius: 1,
+		textShadowOffset: {
+			width: 0,
+			height: 0,
+		},
 	},
 	hasCurrent: {
 		fontFamily: 'lexend-700',

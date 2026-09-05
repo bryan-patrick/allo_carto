@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		color: colors.light.goldenBorder,
 		textShadowColor: '#000000',
-		textShadowRadius: 20,
+		textShadowRadius: 1,
 		textShadowOffset: {
 			width: 0,
 			height: 0,

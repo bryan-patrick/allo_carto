@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
 	},
 	chapterIcon: {
 		textShadowColor: '#000000',
-		textShadowRadius: 20,
+		textShadowRadius: 1,
 		textShadowOffset: {
 			width: 0,
 			height: 0,
