@@ -8,7 +8,7 @@ import { Suspense, useCallback, useEffect, useReducer, useState } from 'react';
 import { CardDeckContext, initialCardDeckState } from '../components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '../components/CardDeck/cardDeckReducer';
 import Loader from '../components/Loader';
-import ViewIndicator from '../components/ViewIndicator';
+import DeckProgress from '../components/WordCard/DeckProgress';
 import { getTables, setDB } from '../db/interface';
 import getMonHomme, { UserRow } from '../db/queries/getMonHomme';
 import { UserContext } from '../db/userContext';
@@ -125,7 +125,7 @@ export default function AppLayout() {
 											headerShown: true,
 											headerBackTitle: 'Back',
 											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: 'Deck',
+											headerTitle: () => <DeckProgress />,
 										}}
 									/>
 									<Stack.Screen
@@ -135,12 +135,7 @@ export default function AppLayout() {
 											headerTransparent: true,
 											headerBackTitle: 'Home',
 											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: () => (
-												<ViewIndicator
-													views={['Story', 'Chapter', 'Deck']}
-													currentViewIndex={0}
-												/>
-											),
+											headerTitle: '',
 										}}
 									/>
 									<Stack.Screen
@@ -149,12 +144,7 @@ export default function AppLayout() {
 											headerShown: true,
 											headerTransparent: true,
 											headerBackTitle: 'Back',
-											headerTitle: () => (
-												<ViewIndicator
-													views={['Story', 'Chapter', 'Deck']}
-													currentViewIndex={1}
-												/>
-											),
+											headerTitle: '',
 											headerBackButtonDisplayMode: 'minimal',
 										}}
 									/>
@@ -164,12 +154,7 @@ export default function AppLayout() {
 											headerShown: true,
 											headerTransparent: true,
 											headerBackTitle: 'Back',
-											headerTitle: () => (
-												<ViewIndicator
-													views={['Story', 'Chapter', 'Deck']}
-													currentViewIndex={2}
-												/>
-											),
+											headerTitle: '',
 											headerBackButtonDisplayMode: 'minimal',
 										}}
 									/>

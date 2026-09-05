@@ -2,6 +2,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import ViewIndicator from '@/src/components/ViewIndicator';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
@@ -52,15 +53,18 @@ export default function CardDeckSelect() {
 	 */
 	return (
 		<ImageBackground
-			style={styles.screenBackground}
+			style={styles.background}
 			source={deckSelectBackgroundImage}
 		>
 			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
 				contentContainerStyle={styles.scrollContentContainer}
 				style={styles.scrollView}
 			>
-				<View style={styles.chapterHeader}>
+				<ViewIndicator
+					views={['Story', 'Chapter', 'Deck']}
+					currentViewIndex={2}
+				/>
+				<View style={styles.header}>
 					<MaterialSymbol
 						name="owl"
 						size={32}
@@ -100,21 +104,23 @@ export default function CardDeckSelect() {
  * Styles
  */
 const styles = StyleSheet.create({
-	screenBackground: {
+	background: {
 		height: '100%',
 	},
 	scrollContentContainer: {
 		display: 'flex',
 		flexGrow: 1,
-		padding: 8,
+		paddingHorizontal: 8,
+		paddingVertical: 16,
 		gap: 16,
+	},
+	header: {
+		paddingVertical: 16,
+		paddingHorizontal: 4,
+		gap: 4,
 	},
 	scrollView: {
 		backgroundColor: 'rgba(15, 15, 13, 0.4)',
-	},
-	chapterHeader: {
-		padding: 4,
-		gap: 4,
 	},
 	chapterIcon: {
 		textShadowColor: '#000000',

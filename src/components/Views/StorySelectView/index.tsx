@@ -2,6 +2,7 @@ import type { DeckStory } from '@/data/french/storyAtlas';
 import { storyAtlas } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import Loader from '@/src/components/Loader';
+import ViewIndicator from '@/src/components/ViewIndicator';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -32,11 +33,14 @@ export default function StorySelectView() {
 			source={rueStVallierO}
 		>
 			<ScrollView
-				contentInsetAdjustmentBehavior="automatic"
+				contentContainerStyle={styles.scrollContentContainer}
 				style={styles.scrollView}
-				contentContainerStyle={styles.scrollViewContainer}
 			>
-				<View style={styles.titleContainer}>
+				<ViewIndicator
+					views={['Story', 'Chapter', 'Deck']}
+					currentViewIndex={0}
+				/>
+				<View style={styles.header}>
 					<MaterialSymbol
 						name="auto_stories"
 						size={32}
@@ -73,9 +77,19 @@ const styles = StyleSheet.create({
 	background: {
 		height: '100%',
 	},
-	titleContainer: {
+	scrollContentContainer: {
+		display: 'flex',
+		flexGrow: 1,
+		paddingVertical: 16,
+		gap: 16,
+	},
+	header: {
+		paddingVertical: 16,
+		paddingHorizontal: 4,
 		gap: 4,
-		padding: 4,
+	},
+	scrollView: {
+		backgroundColor: 'rgba(0, 0, 0, 0.45)',
 	},
 	storyIcon: {
 		textShadowColor: '#000000',
@@ -107,14 +121,5 @@ const styles = StyleSheet.create({
 			width: 0,
 			height: 0,
 		},
-	},
-	scrollView: {
-		backgroundColor: 'rgba(0, 0, 0, 0.45)',
-	},
-	scrollViewContainer: {
-		display: 'flex',
-		flexDirection: 'column',
-		gap: 24,
-		paddingVertical: 16,
 	},
 });
