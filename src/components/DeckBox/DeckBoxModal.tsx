@@ -176,7 +176,7 @@ export default function DeckBoxModal({
 								accessibilityLabel={`Word progress ${deckCompletionPercent} percent. ${wordsSeenCount} of ${totalWordCount} seen.`}
 								accessibilityValue={{ min: 0, max: 100, now: deckCompletionPercent }}
 							>
-								<Text style={styles.progressMetaLabel}>Word progress</Text>
+								<Text style={styles.progressMetaLabel}>Words known</Text>
 								<Text style={[styles.progressPercent, { color: deck.colors.dark.primary }]}>
 									{deckCompletionPercent}%
 								</Text>
@@ -544,7 +544,7 @@ const styles = StyleSheet.create({
 		borderBottomRightRadius: 16,
 		borderBottomLeftRadius: 16,
 		borderColor: colors.light.goldenBorder,
-		backgroundColor: '#E8DED5',
+		backgroundColor: colors.light.secondary,
 		gap: 8,
 	},
 	hidePassageButtonText: {

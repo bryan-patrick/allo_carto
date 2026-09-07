@@ -21,7 +21,7 @@ export default function StoryMeta({ progressPercent, progressColor = '#08433f' }
 	return (
 		<View>
 			<View style={styles.metaRow}>
-				<Text style={styles.metaText}>Progress</Text>
+				<Text style={styles.metaText}>Words Known</Text>
 				<View style={styles.progressBarContainer}>
 					<View
 						style={[

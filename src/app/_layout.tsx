@@ -146,6 +146,9 @@ export default function AppLayout() {
 											headerBackTitle: 'Back',
 											headerTitle: '',
 											headerBackButtonDisplayMode: 'minimal',
+											scrollEdgeEffects: {
+												top: 'hidden',
+											},
 										}}
 									/>
 									<Stack.Screen
@@ -163,6 +166,7 @@ export default function AppLayout() {
 										options={{
 											headerShown: true,
 											headerBackTitle: 'Back',
+											headerTransparent: true,
 											headerBackButtonDisplayMode: 'minimal',
 											headerTitle: 'View cards',
 										}}

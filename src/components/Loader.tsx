@@ -1,219 +1,27 @@
-import { useEffect } from 'react';
-import { StyleSheet, Text } from 'react-native';
-import Animated, {
-	Easing,
-	type SharedValue,
-	useAnimatedStyle,
-	useSharedValue,
-	withDelay,
-	withRepeat,
-	withSequence,
-	withTiming,
-} from 'react-native-reanimated';
+import { StyleSheet, Text, View } from 'react-native';
 import colors from '../app/colors';
 
 /**
- * Animation consts
- */
-const CARD_X = 100;
-const CARD_ROTATE = 180;
-const CARD_MOVE_DURATION = 800;
-const TOP_CARD_Z_INDEX = 3;
-const UNDER_DECK_Z_INDEX = -1;
-const DECK_Z_INDEX = 1;
-const CARD_ONE_DELAY = 0;
-const CARD_TWO_DELAY = 900;
-const CARD_THREE_DELAY = 1800;
-const CARD_REST_DURATION = 1800;
-
-/**
- * Helper function to animate the cards
- */
-function animateCard(
-	x: SharedValue<number>,
-	rotate: SharedValue<number>,
-	zIndex: SharedValue<number>,
-	delay: number,
-) {
-	/**
-	 * 3 cards stacked on top of each other
-	 * First, they move to the side
-	 */
-	x.value = withDelay(
-		delay,
-		withRepeat(
-			withSequence(
-				withTiming(CARD_X, {
-					duration: CARD_MOVE_DURATION,
-					easing: Easing.inOut(Easing.ease),
-				}),
-				withTiming(0, {
-					duration: CARD_MOVE_DURATION,
-					easing: Easing.inOut(Easing.ease),
-				}),
-				withDelay(CARD_REST_DURATION, withTiming(0, { duration: 0 })),
-			),
-			-1,
-		),
-	);
-
-	/**
-	 * While moving to the side, the cards should be rotating
-	 */
-	rotate.value = withDelay(
-		delay,
-		withRepeat(
-			withSequence(
-				withTiming(CARD_ROTATE, {
-					duration: CARD_MOVE_DURATION * 2,
-					easing: Easing.inOut(Easing.ease),
-				}),
-				withTiming(0, { duration: 0 }),
-				withDelay(CARD_REST_DURATION, withTiming(0, { duration: 0 })),
-			),
-			-1,
-		),
-	);
-
-	/**
-	 * Mid rotation and off to the side,
-	 * set the zIndex to a lower value
-	 */
-	zIndex.value = withDelay(
-		delay,
-		withRepeat(
-			withSequence(
-				withTiming(TOP_CARD_Z_INDEX, { duration: 0 }),
-				withDelay(CARD_MOVE_DURATION, withTiming(UNDER_DECK_Z_INDEX, { duration: 0 })),
-				withDelay(CARD_MOVE_DURATION, withTiming(DECK_Z_INDEX, { duration: 0 })),
-				withDelay(CARD_REST_DURATION, withTiming(DECK_Z_INDEX, { duration: 0 })),
-			),
-			-1,
-		),
-	);
-}
-
-/**
- * Loader Component
+ * A simple fallback while application data is loading.
  */
 export default function Loader() {
-	/**
-	 * Animation values
-	 */
-	const cardOneX = useSharedValue<number>(0);
-	const cardOneRotate = useSharedValue<number>(0);
-	const cardOneZIndex = useSharedValue<number>(3);
-	const cardTwoX = useSharedValue<number>(0);
-	const cardTwoRotate = useSharedValue<number>(0);
-	const cardTwoZIndex = useSharedValue<number>(2);
-	const cardThreeX = useSharedValue<number>(0);
-	const cardThreeRotate = useSharedValue<number>(0);
-	const cardThreeZIndex = useSharedValue<number>(1);
-
-	/**
-	 * Animation styles
-	 */
-	const cardOneStyle = useAnimatedStyle(() => ({
-		transform: [{ translateX: cardOneX.value }, { rotateZ: `${cardOneRotate.value}deg` }],
-		zIndex: cardOneZIndex.value,
-	}));
-
-	const cardTwoStyle = useAnimatedStyle(() => ({
-		transform: [{ translateX: cardTwoX.value }, { rotateZ: `${cardTwoRotate.value}deg` }],
-		zIndex: cardTwoZIndex.value,
-	}));
-
-	const cardThreeStyle = useAnimatedStyle(() => ({
-		transform: [{ translateX: cardThreeX.value }, { rotateZ: `${cardThreeRotate.value}deg` }],
-		zIndex: cardThreeZIndex.value,
-	}));
-
-	/**
-	 * Trigger the animations
-	 */
-	useEffect(() => {
-		animateCard(cardOneX, cardOneRotate, cardOneZIndex, CARD_ONE_DELAY);
-		animateCard(cardTwoX, cardTwoRotate, cardTwoZIndex, CARD_TWO_DELAY);
-		animateCard(cardThreeX, cardThreeRotate, cardThreeZIndex, CARD_THREE_DELAY);
-	}, [
-		cardOneRotate,
-		cardOneX,
-		cardOneZIndex,
-		cardThreeRotate,
-		cardThreeX,
-		cardThreeZIndex,
-		cardTwoRotate,
-		cardTwoX,
-		cardTwoZIndex,
-	]);
-
-	/**
-	 * Render the loader
-	 */
 	return (
-		<Animated.View style={styles.container}>
-			<Animated.View style={styles.cardContainer}>
-				<Animated.View style={[styles.card, cardOneStyle]}>
-					<Text style={styles.cardText}>AC</Text>
-				</Animated.View>
-				<Animated.View style={[styles.card, cardTwoStyle]}>
-					<Text style={styles.cardText}>AC</Text>
-				</Animated.View>
-				<Animated.View style={[styles.card, cardThreeStyle]}>
-					<Text style={styles.cardText}>AC</Text>
-				</Animated.View>
-			</Animated.View>
-			<Animated.View style={styles.textContainer}>
-				<Text style={styles.text}>Loading...</Text>
-			</Animated.View>
-		</Animated.View>
+		<View style={styles.container}>
+			<Text style={styles.text}>Loading</Text>
+		</View>
 	);
 }
 
-/**
- * Styles
- */
 const styles = StyleSheet.create({
 	container: {
-		height: '100%',
+		alignItems: 'center',
 		backgroundColor: colors.dark.background,
-	},
-	cardContainer: {
-		width: '100%',
-		height: '50%',
-		justifyContent: 'flex-end',
-		alignContent: 'flex-end',
-		alignItems: 'center',
-		marginBottom: 8,
-	},
-	card: {
-		position: 'absolute',
-		backgroundColor: colors.dark.primary,
-		borderColor: colors.dark.border,
-		borderWidth: 4,
-		borderRadius: 12,
-		paddingHorizontal: 20,
-		paddingVertical: 40,
-		transform: [
-			{
-				translateX: 0,
-			},
-		],
-	},
-	cardText: {
-		fontFamily: 'lexend-600',
-		fontSize: 20,
-		color: colors.dark.border,
-	},
-	textContainer: {
-		marginTop: 8,
 		flex: 1,
-		alignItems: 'center',
-		height: '50%',
+		justifyContent: 'center',
 	},
 	text: {
-		fontFamily: 'lexend-600',
-		fontSize: 18,
 		color: colors.light.text,
+		fontFamily: 'lexend-400',
+		fontSize: 16,
 	},
 });

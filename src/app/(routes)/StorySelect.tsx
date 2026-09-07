@@ -1,5 +1,5 @@
-import StorySelectView from '@/src/components/Views/StorySelectView';
+import { Redirect } from 'expo-router';
 
 export default function StorySelect() {
-	return <StorySelectView />;
+	return <Redirect href="/(tabs)" />;
 }

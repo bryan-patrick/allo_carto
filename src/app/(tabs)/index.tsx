@@ -1,39 +1,8 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
-import LinkCard from '../../components/LinkCard';
-import SVGCards from '../../components/SVG/SVGCards';
-import colors from '../colors';
+import StorySelectView from '@/src/components/Views/StorySelectView';
 
 /**
- * HomeScreen view - Index of the (tabs) dir routes
+ * Story selection is the application's home screen.
  */
-export default function HomeScreen() {
-	return (
-		<View style={styles.container}>
-			<StatusBar style="light" />
-			<LinkCard
-				screen="(routes)/StorySelect"
-				title="Learn more words!"
-				linkText="Review a deck"
-				description="Progress through stories, chapters, and decks!"
-				SVGElement={
-					<SVGCards
-						height={'120px'}
-						width={'130px'}
-						color={colors.dark.secondary}
-					/>
-				}
-			/>
-		</View>
-	);
+export default function StorySelectScreen() {
+	return <StorySelectView />;
 }
-
-/**
- * Styles
- */
-const styles = StyleSheet.create({
-	container: {
-		margin: 24,
-		gap: 24,
-	},
-});

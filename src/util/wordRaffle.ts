@@ -13,7 +13,7 @@ const numberOfTicketsByRarity: Record<CardRarity, number> = {
 	Common: 10,
 	Rare: 5,
 	Epic: 3,
-	Legendary: 1,
+	Legendary: 100,
 };
 
 function getWordRaffleTickets(word: Word, getWeightMultiplier: (word: Word) => number): number {

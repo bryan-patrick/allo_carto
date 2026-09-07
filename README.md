@@ -2,43 +2,45 @@
 
 ![App preview](preview.jpg)
 
-Pronunciations aren't official, they're just kinda like this:
+Allô Carto is a flashcard app I’m building to help people (including me) learn Québec French through stories. The other language apps had a hard time keeping my attention so I started building my own.
+
+The basic idea is that instead of studying a bunch of completely disconnected things, the cards in Allô Carto are tied to stories. You can read through a story without knowing everything, study the decks associated with it, and then come back and understand more of what you read. The better you know the vocabulary, the more the story starts to make sense.
+
+It's still very much a work in progress, but it's also been one of the most fun things I've worked on in a long time and building it has helped me remember why I liked making software in the first place.
+
+Eventually I'd like to polish it up and put it on the App Store, but for now I'm mostly just having fun building the thing.
+
+## Built with
+
+- [Expo](https://expo.dev/) and [React Native](https://reactnative.dev/)
+- TypeScript and Expo Router
+- SQLite for on-device vocabulary and progress data
+- Jest and React Native Testing Library for tests
+
+## Roadmap
+
+- Collections and collectible cards
+- Unlockables and achievements
+- More ways to study a deck, including reverse and english-to-french multiple choice modes. Also prestiging a mastered word is on the list
+- I will be adding history focused content, especially history related stuff
+
+## A note about AI
+
+AI has been used in a few parts of the project. Some of my own photographs were transformed into stylized artwork with AI tools, and copilot helped with portions of the backend data stuff and for writing tests and a lot of the refactoring.
+
+## Pronunciation notes
+
+The pronunciation guides are intentionally informal approximations rather than official phonetic transcriptions:
 
 - `an` / `en`: `ahn`
 - `on`: `ohn`
 - `in` / `ain` / `ein`: `an`
 - `un`: `uhn`
 
-The final `n` usually means do the french nasal sound but idk, it's confusing so we include it a lot anyway.
+The final `n` is generally there to suggest a French nasal sound. It is included often because these guides favor being approachable over being linguistically exact.
 
-### Fonts
+## Fonts
 
-**Lexend** is used throughout the application, with **Azeret Mono** for compact rank/CEFR labels. Static font weights live in `app/assets/fonts/` and are loaded asynchronously via the `useFonts` hook in Expo.
+**Lexend** is used throughout the application, with **Azeret Mono** for compact rank/CEFR labels. Static font weights live in `src/app/assets/fonts/` and are loaded asynchronously via the `useFonts` hook in Expo.
 
-https://blog.logrocket.com/how-to-add-custom-fonts-react-native/
-
-## TODO
-
-- App icon and cleaning out the images dir
-- Rank indicator while doing a deck (probably on the top bar somewhere)
-- Later ranks need input fields instead of multi choice. Maybe a prestige?
-- Rank indicator while doing a deck
-- Deck count on chapter selection view
-- Word count per day/history feature along with words learned per day delta
-- Get rid of the undraw SVG on the "Learn more words!" card
-- Card Collection page
-- Look into how to use the dynamic island
-- We need a key for the passage view since new words just kind of look broken...Maybe a different way to view the words? We need to think about this
-
-## Free art and assets credits
-
-### Placeholder images
-
-- [unDraw](https://undraw.co/)
-- [Fabnel LDN — Vibrant aisle in supermarket with drinks display (Pexels)](https://www.pexels.com/photo/vibrant-aisle-in-supermarket-with-drinks-display-33690927/) — Temporary artwork for the Grocery Store deck.
-- [Dawn drop off](https://unsplash.com/photos/cars-on-a-road-vxaTycfb78w?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink)
-- [Trouble in the terminal](https://unsplash.com/photos/building-interior-photograph-l5fDJ3I-9Uk?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink)
-- [To the gate](https://www.pexels.com/photo/airbus-at-airport-16562841/)
-- [Elevator epics](https://www.pexels.com/photo/hand-picking-the-floor-in-the-elevator-16026071/)
-
-"Blaming on his boots the faults of his feet" - Vlad
+[Adding custom fonts in React Native](https://blog.logrocket.com/how-to-add-custom-fonts-react-native/)
