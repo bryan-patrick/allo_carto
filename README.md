@@ -6,9 +6,7 @@ Allô Carto is a flashcard app I’m building to help people (including me) lear
 
 The basic idea is that instead of studying a bunch of completely disconnected things, the cards in Allô Carto are tied to stories. You can read through a story without knowing everything, study the decks associated with it, and then come back and understand more of what you read. The better you know the vocabulary, the more the story starts to make sense.
 
-It's still very much a work in progress, but it's also been one of the most fun things I've worked on in a long time and building it has helped me remember why I liked making software in the first place.
-
-Eventually I'd like to polish it up and put it on the App Store, but for now I'm mostly just having fun building the thing.
+It's still very much a work in progress. Eventually I'd like to polish it up and put it on the App Store, but for now I'm mostly just having fun building the thing.
 
 ## Built with
 
