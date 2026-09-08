@@ -36,6 +36,9 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		padding: 8,
 		paddingLeft: 0,
+		borderTopRightRadius: 8,
+		borderBottomRightRadius: 8,
+		overflow: 'hidden',
 	},
 	coverInner: {
 		borderWidth: 2,
