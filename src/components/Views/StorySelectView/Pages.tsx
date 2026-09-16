@@ -23,16 +23,17 @@ const styles = StyleSheet.create({
 	pagesContainer: {
 		position: 'relative',
 		backgroundColor: 'rgba(0, 0, 0, 0.15)',
+		marginBottom: 8,
 	},
 	pages: {
 		width: '100%',
-		height: 8,
+		height: 16,
 		zIndex: -1,
 	},
 	pagesOffset: {
 		position: 'absolute',
 		width: '100%',
-		height: 8,
+		height: 16,
 		top: -5,
 		zIndex: -2,
 	},
