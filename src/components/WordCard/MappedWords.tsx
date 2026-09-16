@@ -92,7 +92,7 @@ const MappedButton = memo(function MappedButtonMemo({
 			case 'SUCCESS':
 			case 'DANGER':
 				if (isCorrectWord) {
-					buttonY.value = withTiming(-5, answerRevealTiming);
+					buttonY.value = withTiming(-4, answerRevealTiming);
 					buttonBackgroundColor.value = withTiming(colors.light.success, answerRevealTiming);
 				} else {
 					buttonBackgroundColor.value = withTiming(colors.light.border, answerRevealTiming);
@@ -104,17 +104,17 @@ const MappedButton = memo(function MappedButtonMemo({
 					buttonBackgroundColor.value = withTiming(colors.light.background, answerRevealTiming);
 				}
 
-				buttonBoxShadow.value = `0 5px 0 -1px ${colors.dark.border}`;
+				buttonBoxShadow.value = `0 4px 0 -1px ${colors.dark.border}`;
 				break;
 			default:
 				if (isActive) {
 					buttonBackgroundColor.value = colors.light.border;
-					buttonY.value = withTiming(5, selectionTiming);
+					buttonY.value = withTiming(4, selectionTiming);
 					buttonBoxShadow.value = `0 0 0 0 transparent`;
 				} else {
 					buttonY.value = withTiming(0, selectionTiming);
 					buttonBackgroundColor.value = withTiming(colors.light.background, selectionTiming);
-					buttonBoxShadow.value = `0 5px 0 -1px ${colors.light.border}`;
+					buttonBoxShadow.value = `0 4px 0 -1px ${colors.light.border}`;
 				}
 				break;
 		}
@@ -243,22 +243,25 @@ const styles = StyleSheet.create({
 		display: 'contents',
 	},
 	button: {
+		position: 'relative',
 		display: 'flex',
 		alignItems: 'center',
 		alignContent: 'center',
 		justifyContent: 'center',
 		flexGrow: 1,
-		borderRadius: 6,
 		flexShrink: 1,
+		borderRadius: 6,
 		maxWidth: '50%',
 		borderColor: colors.light.border,
 		backgroundColor: colors.light.background,
-		minWidth: 80,
+		minWidth: 60,
 	},
 	textContainer: {
-		alignSelf: 'stretch',
+		width: '100%',
+		flexGrow: 1,
+		justifyContent: 'center',
 		paddingVertical: 12,
-		paddingHorizontal: 2,
+		paddingHorizontal: 12,
 		borderWidth: 1,
 		borderColor: colors.dark.border,
 		borderRadius: 6,

@@ -320,7 +320,8 @@ export const words_a1_dawn_drop_off: Word[] = [
 	{
 		id: 'word_adverb_peu',
 		frenchWord: 'peu',
-		englishWords: ['a little'],
+		englishWords: ['little'],
+		englishArticle: 'a',
 		isVulgar: false,
 		lemmaId: 'peu',
 		partOfSpeech: 'adverb',
@@ -632,7 +633,7 @@ export const words_a1_dawn_drop_off: Word[] = [
 	{
 		id: 'word_preposition_au',
 		frenchWord: 'au',
-		englishWords: ['to the', 'at the'],
+		englishWords: ['at the'],
 		isVulgar: false,
 		lemmaId: 'word_preposition_a',
 		form: 'contraction',
@@ -817,7 +818,8 @@ export const words_a1_dawn_drop_off: Word[] = [
 	{
 		id: 'word_verb_attendre',
 		frenchWord: 'attendre',
-		englishWords: ['to wait'],
+		englishWords: ['wait'],
+		englishArticle: 'to',
 		isVulgar: false,
 		lemmaId: 'attendre',
 		form: 'infinitive',
