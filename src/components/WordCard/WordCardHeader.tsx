@@ -83,5 +83,6 @@ const styles = StyleSheet.create({
 	},
 	rarityText: {
 		fontFamily: 'azeret-mono-400',
+		fontSize: 14,
 	},
 });
