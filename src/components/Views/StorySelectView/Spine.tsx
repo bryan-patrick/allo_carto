@@ -57,6 +57,8 @@ export default function Spine({ color, category, materialSymbolName }: SpineProp
 const styles = StyleSheet.create({
 	spine: {
 		width: 55,
+		borderTopLeftRadius: 4,
+		overflow: 'hidden', // the image doesn't support border radius
 	},
 	spineImage: {
 		bottom: 0,
@@ -94,6 +96,13 @@ const styles = StyleSheet.create({
 		borderColor: colors.utility.cardBorder,
 		width: '100%',
 		gap: 4,
+		shadowColor: colors.dark.border,
+		shadowOffset: {
+			width: 0,
+			height: 0,
+		},
+		shadowOpacity: 1,
+		shadowRadius: 2,
 	},
 	icon: {
 		shadowOffset: {
