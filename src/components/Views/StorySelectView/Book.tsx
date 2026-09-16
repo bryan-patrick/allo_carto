@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Pages from './Pages';
 
 /**
  * Typing
@@ -15,21 +16,26 @@ export default function Book({ children }: BookProps) {
 	/**
 	 * Render the component
 	 */
-	return <View style={styles.book}>{children}</View>;
+	return (
+		<View style={styles.bookContainer}>
+			<View style={styles.book}>{children}</View>
+			<Pages />
+		</View>
+	);
 }
 
 /**
  * Styles
  */
 const styles = StyleSheet.create({
-	book: {
-		borderRadius: 4,
-		borderTopRightRadius: 12,
-		borderBottomRightRadius: 12,
-		overflow: 'hidden',
-		display: 'flex',
-		flexDirection: 'row',
+	bookContainer: {
 		marginHorizontal: 16,
 		marginBottom: 8,
+		borderBottomRightRadius: 8,
+		overflow: 'hidden',
+	},
+	book: {
+		display: 'flex',
+		flexDirection: 'row',
 	},
 });

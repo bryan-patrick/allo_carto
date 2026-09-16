@@ -5,11 +5,11 @@ import { getUnlockCriteria } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
 import { StyleSheet, Text, View } from 'react-native';
 import Book from './Book';
-import StoryMeta from './StoryMeta';
-import StorySelectButton from './StorySelectButton';
 import Cover from './Cover';
 import Crease from './Crease';
 import Spine from './Spine';
+import StoryMeta from './StoryMeta';
+import StorySelectButton from './StorySelectButton';
 
 /**
  * Typing

@@ -291,9 +291,6 @@ export default function DeckBoxModal({
 							</View>
 						</ScrollView>
 						<View style={styles.modalFooter}>
-							<Text style={[styles.progressTitle, { color: deck.colors.dark.primary }]}>
-								Word Progress Colors
-							</Text>
 							<View style={styles.progressLegend}>
 								{wordProgressDefinitions.map(({ key, name, symbolName }) => {
 									const progressColor = colors.wordProgress[key];
@@ -367,6 +364,13 @@ const styles = StyleSheet.create({
 		width: '100%',
 		padding: 8,
 		flex: 1,
+		shadowColor: colors.light.goldenBorder,
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 1,
+		shadowRadius: 1,
 	},
 	modalView: {
 		display: 'flex',
@@ -514,7 +518,9 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'center',
 		borderWidth: 1,
+		minWidth: '40%', // grid hack
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 4,
 		paddingHorizontal: 4,
@@ -522,9 +528,6 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		flexShrink: 1,
 		gap: 4,
-	},
-	progressLegendIcon: {
-		width: 16,
 	},
 	progressLegendText: {
 		color: colors.wordProgress.known,
@@ -540,7 +543,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderTopWidth: 0,
 		paddingVertical: 8,
-		paddingHorizontal: 32,
+		paddingHorizontal: 24,
 		borderBottomRightRadius: 16,
 		borderBottomLeftRadius: 16,
 		borderColor: colors.light.goldenBorder,
