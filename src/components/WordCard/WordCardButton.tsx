@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.dark.primary,
 		borderRadius: 12,
 		borderWidth: 2,
-		padding: 16,
+		padding: 12,
 		gap: 16,
 		shadowColor: colors.dark.border,
 		shadowOffset: { width: 0, height: 8 },

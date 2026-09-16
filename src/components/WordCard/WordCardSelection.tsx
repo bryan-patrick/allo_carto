@@ -52,9 +52,9 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
  */
 const styles = StyleSheet.create({
 	container: {
+		justifyContent: 'center',
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		justifyContent: 'center',
-		gap: 14,
+		gap: 12,
 	},
 });

@@ -44,4 +44,27 @@ describe('word definitions', () => {
 
 		expect(wordsWithDuplicatedArticles).toEqual([]);
 	});
+
+	test('keep leading English articles in the first answer slot', () => {
+		const wordsWithEmbeddedArticles = seedWords.flatMap(word =>
+			word.englishWords
+				.filter(englishWord => /^(a|an|the)\s/i.test(englishWord))
+				.map(() => word.id),
+		);
+
+		expect(wordsWithEmbeddedArticles).toEqual([]);
+	});
+
+	test('keep the English infinitive marker in the first answer slot', () => {
+		const malformedInfinitives = seedWords
+			.filter(word => word.form === 'infinitive')
+			.filter(
+				word =>
+					word.englishArticle !== 'to' ||
+					word.englishWords.some(englishWord => /^to\s/i.test(englishWord)),
+			)
+			.map(word => word.id);
+
+		expect(malformedInfinitives).toEqual([]);
+	});
 });

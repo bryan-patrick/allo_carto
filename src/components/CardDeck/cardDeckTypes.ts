@@ -14,6 +14,7 @@ export type WordForm =
 	| 'past participle'
 	| 'plural'
 	| 'possessive'
+	| 'present participle'
 	| 'present';
 
 export interface DeckColors {

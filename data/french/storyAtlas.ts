@@ -1,4 +1,4 @@
-import { DeckDawnAtTheDropOff } from '@/data/french/decks';
+import { DeckAnAmberApproach, DeckDawnAtTheDropOff } from '@/data/french/decks';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { Progression } from '@/src/util/progression';
 import type { ImageSourcePropType } from 'react-native';
@@ -47,7 +47,7 @@ export const storyAtlas: StoryAtlas = {
 		{
 			id: 'a-very-french-travel-day',
 			name: 'A Very French Travel Day',
-			description: 'Flights, feathers, occasional bread delays. This deck focuses on travelling.',
+			description: 'Flights, feathers, occasional bread delays. These decks focus on travelling.',
 			category: 'Travel',
 			image: aVeryFrenchTravelDay,
 			color: '#454A36',
@@ -58,7 +58,7 @@ export const storyAtlas: StoryAtlas = {
 					label: 'Chapter 1',
 					name: 'Aéroport Oiseau',
 					image: aeroportOiseau,
-					decks: [DeckDawnAtTheDropOff],
+					decks: [DeckDawnAtTheDropOff, DeckAnAmberApproach],
 				},
 			],
 		},
