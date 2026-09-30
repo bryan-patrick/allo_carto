@@ -80,7 +80,7 @@ export default function DeckBox({ deck, isLocked, chapterId, unlockCriteria }: D
 		deckWordCount: deckCardCount,
 		wordProgressCounts,
 	});
-	const selectAction = deckCompletionPercent > 0 ? 'Continue' : 'Start';
+	const selectAction = deckCompletionPercent > 0 ? 'Continue' : 'Review';
 	const selectText = `${selectAction} deck`;
 	const deckMetadata = {
 		cardCount: deckCardCount,
@@ -221,18 +221,6 @@ export default function DeckBox({ deck, isLocked, chapterId, unlockCriteria }: D
 						resizeMode="stretch"
 					>
 						<View style={styles.deckBoxContentBorder}>
-							{story && (
-								<View style={styles.storyBadgeContainer}>
-									<View style={[styles.storyBadge, { backgroundColor: storyColor }]}>
-										<MaterialSymbol
-											name={storySymbolName}
-											size={20}
-											color={colors.light.goldenBorder}
-										/>
-										<Text style={styles.storyCategory}>{storyCategory}</Text>
-									</View>
-								</View>
-							)}
 							{isLocked && (
 								<View style={styles.lockedInner}>
 									<LockedSection
@@ -247,19 +235,57 @@ export default function DeckBox({ deck, isLocked, chapterId, unlockCriteria }: D
 										<Text style={styles.deckTitle}>{deckTitle}</Text>
 										<Text style={styles.deckDescription}>{deckDescription}</Text>
 									</View>
+								</View>
+							)}
+							{!isLocked && (
+								<View style={styles.deckInfoContainer}>
+									<View style={[styles.deckInfoColumn, styles.deckInfoColumnSeparator]}>
+										<MaterialSymbol
+											name="globe"
+											size={20}
+											color={storyColor}
+										/>
+										<Text style={[styles.deckInfoText, { color: storyColor }]}>
+											{deckMetadata.CEFRLabel}
+										</Text>
+									</View>
+									<View style={[styles.deckInfoColumn, styles.deckInfoColumnSeparator]}>
+										<MaterialSymbol
+											name="cards_star"
+											size={20}
+											color={storyColor}
+										/>
+										<Text style={[styles.deckInfoText, { color: storyColor }]}>
+											{deckMetadata.cardCount} Cards
+										</Text>
+									</View>
+									<View style={styles.deckInfoColumn}>
+										<MaterialSymbol
+											name="cognition_2"
+											size={20}
+											color={storyColor}
+										/>
+										<Text style={[styles.deckInfoText, { color: storyColor }]}>
+											{deckMetadata.completionPercent}% Known
+										</Text>
+									</View>
+								</View>
+							)}
+							{!isLocked && (
+								<View style={styles.selectDeckButtonContainer}>
 									<Pressable
 										onPress={handleShowPassage}
 										onPressIn={handlePassageButtonPressIn}
 										onPressOut={handlePassageButtonPressOut}
 										style={[styles.passageButton, { borderColor: storyColor }]}
 									>
-										<MaterialSymbol
+										{/* <MaterialSymbol
 											name="menu_book"
-											size={24}
+											size={20}
 											color={storyColor}
-										/>
+										/> */}
 										<Text style={[styles.passageButtonText, { color: storyColor }]}>
-											View passage
+											Read passage
 										</Text>
 										<Animated.View
 											style={{ transform: [{ translateY: passageChevronTranslateY }] }}
@@ -271,52 +297,13 @@ export default function DeckBox({ deck, isLocked, chapterId, unlockCriteria }: D
 											/>
 										</Animated.View>
 									</Pressable>
-								</View>
-							)}
-							{!isLocked && (
-								<View style={styles.deckInfoContainer}>
-									<View style={[styles.deckInfoColumn, styles.deckInfoColumnSeparator]}>
-										<MaterialSymbol
-											name="globe"
-											size={22}
-											color={storyColor}
-										/>
-										<Text style={[styles.deckInfoText, { color: storyColor }]}>
-											{deckMetadata.CEFRLabel}
-										</Text>
-									</View>
-									<View style={[styles.deckInfoColumn, styles.deckInfoColumnSeparator]}>
-										<MaterialSymbol
-											name="cards_star"
-											size={22}
-											color={storyColor}
-										/>
-										<Text style={[styles.deckInfoText, { color: storyColor }]}>
-											{deckMetadata.cardCount} Cards
-										</Text>
-									</View>
-									<View style={styles.deckInfoColumn}>
-										<MaterialSymbol
-											name="cognition_2"
-											size={22}
-											color={storyColor}
-										/>
-										<Text style={[styles.deckInfoText, { color: storyColor }]}>
-											{deckMetadata.completionPercent}% Known
-										</Text>
-									</View>
-								</View>
-							)}
-							{!isLocked && (
-								<View style={styles.selectDeckButtonContainer}>
 									<LinkButton
 										accessibilityHint={`${selectAction} practicing ${deckTitle}.`}
 										accessibilityLabel={`${selectText}: ${deckTitle}`}
 										arrowColor={colors.light.background}
 										color={storyColor}
-										fullwidth
-										contentPaddingVertical={6}
 										handler={handleSelectDeck}
+										fullwidth
 									>
 										<Text style={styles.selectDeckButtonText}>{selectText}</Text>
 									</LinkButton>
@@ -346,11 +333,12 @@ export default function DeckBox({ deck, isLocked, chapterId, unlockCriteria }: D
 const styles = StyleSheet.create({
 	deckBoxContainer: {
 		position: 'relative',
-		margin: 8,
+		marginHorizontal: 8,
+		marginBottom: 4,
 	},
 	deckBoxTop: {
 		width: '100%',
-		aspectRatio: 761 / 135,
+		aspectRatio: 761 / 94,
 	},
 	deckBoxMiddle: {
 		flexDirection: 'row',
@@ -364,25 +352,18 @@ const styles = StyleSheet.create({
 		flex: 719,
 	},
 	deckBoxContentBorder: {
+		margin: 8,
+		marginTop: 4,
 		borderWidth: 2,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
-		margin: 8,
-		marginTop: 4,
 	},
 	storyBadgeContainer: {
+		position: 'absolute',
 		justifyContent: 'center',
 		alignItems: 'center',
-		gap: 4,
-	},
-	storyBadge: {
-		paddingTop: 20,
-		paddingHorizontal: 32,
-		paddingBottom: 4,
-		justifyContent: 'center',
-		gap: 2,
-		borderBottomLeftRadius: 8,
-		borderBottomRightRadius: 8,
+		alignSelf: 'center',
+		top: -4,
 	},
 	lockedInner: {
 		paddingVertical: 24,
@@ -392,13 +373,20 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		justifyContent: 'flex-start',
 		alignItems: 'center',
+		padding: 2,
 		flex: 1,
-		padding: 4,
 		gap: 4,
 	},
 	titleContainer: {
-		padding: 4,
-		gap: 8,
+		paddingTop: 12,
+		paddingBottom: 12,
+		borderWidth: 1,
+		borderColor: colors.light.goldenBorder,
+		borderRadius: 6,
+		borderBottomRightRadius: 0,
+		borderBottomLeftRadius: 0,
+		width: '100%',
+		gap: 4,
 	},
 	storyCategory: {
 		fontFamily: 'lexend-700',
@@ -410,7 +398,7 @@ const styles = StyleSheet.create({
 		position: 'relative',
 		borderTopWidth: 1,
 		borderColor: colors.light.goldenBorder,
-		marginVertical: 6,
+		marginVertical: 4,
 		width: '50%',
 	},
 	deckTitleSeparatorDot: {
@@ -425,11 +413,11 @@ const styles = StyleSheet.create({
 	},
 	deckTitle: {
 		fontFamily: 'lexend-600',
-		fontSize: 20,
-		lineHeight: 20,
+		fontSize: 18,
+		lineHeight: 18,
 		textAlign: 'center',
 		color: colors.dark.text,
-		marginTop: 8,
+		marginTop: 12,
 	},
 	deckDescription: {
 		fontFamily: 'lexend-400',
@@ -444,30 +432,30 @@ const styles = StyleSheet.create({
 		alignContent: 'center',
 		alignItems: 'center',
 		flexDirection: 'row',
-		borderTopWidth: 1,
-		borderBottomWidth: 1,
+		borderWidth: 1,
+		borderRadius: 6,
 		paddingVertical: 4,
-		marginVertical: 8,
-		gap: 8,
 	},
 	passageButtonText: {
-		fontFamily: 'lexend-600',
+		fontFamily: 'lexend-700',
+		fontSize: 14,
 	},
 	deckInfoContainer: {
 		display: 'flex',
 		flexDirection: 'row',
-		borderTopWidth: 1,
 		borderBottomWidth: 1,
-		paddingVertical: 4,
+		borderTopWidth: 1,
 		borderColor: colors.light.goldenBorder,
 	},
 	deckInfoColumn: {
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
+		minWidth: '33.3333%',
 		flexGrow: 1,
+		flexShrink: 1,
 		flex: 1,
-		gap: 1,
+		paddingVertical: 4,
 	},
 	deckInfoColumnSeparator: {
 		borderRightWidth: 1,
@@ -486,8 +474,15 @@ const styles = StyleSheet.create({
 		marginTop: -2,
 	},
 	selectDeckButtonContainer: {
-		marginHorizontal: 8,
-		marginVertical: 8,
+		borderWidth: 1,
+		borderColor: colors.light.goldenBorder,
+		borderBottomRightRadius: 6,
+		borderBottomLeftRadius: 6,
+		paddingVertical: 8,
+		paddingHorizontal: 12,
+		marginHorizontal: 2,
+		marginVertical: 2,
+		gap: 8,
 	},
 	selectDeckButtonText: {
 		color: colors.light.background,
