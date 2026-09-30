@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
 	},
 	cardGrid: {
 		display: 'flex',
-		gap: 8,
+		gap: 0,
 	},
 	noDecksContainer: {
 		display: 'flex',

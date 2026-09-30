@@ -27,13 +27,13 @@ const styles = StyleSheet.create({
 	},
 	pages: {
 		width: '100%',
-		height: 16,
+		height: 10,
 		zIndex: -1,
 	},
 	pagesOffset: {
 		position: 'absolute',
 		width: '100%',
-		height: 16,
+		height: 10,
 		top: -5,
 		zIndex: -2,
 	},
