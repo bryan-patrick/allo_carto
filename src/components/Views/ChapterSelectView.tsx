@@ -181,8 +181,6 @@ export default function ChapterSelectView() {
 												</View>
 												<LinkButton
 													hitSlop={5}
-													arrowSize={18}
-													contentPaddingVertical={8}
 													style={styles.chapterSelectButton}
 													screen={'(routes)/CardDeckSelect'}
 													params={{ chapterId }}
