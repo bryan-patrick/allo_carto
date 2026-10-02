@@ -1,4 +1,5 @@
 import type { PassageSegment } from '@/src/components/CardDeck/cardDeckTypes';
+import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import { getWordProgressKeyFromCounts, type WordProgressKey } from '@/src/util/wordProgress';
 import { getDB } from '../connection';
 
@@ -26,26 +27,7 @@ export default async function getWordProgressById({
 	passage,
 }: GetWordProgressByIdProps): PromiseWordProgressKey {
 	const result: Record<string, WordProgressKey> = {};
-	const wordIdsFromPassage: string[] = [];
-
-	/**
-	 * The passage is the source of truth.
-	 * Pull the word ids directly from the passage segments.
-	 */
-	if (passage) {
-		for (const passageSegment of passage) {
-			if (passageSegment.wordId) {
-				wordIdsFromPassage.push(passageSegment.wordId);
-			}
-		}
-	}
-
-	/**
-	 * A passage can use the same word more than once.
-	 * We only need to ask SQLite about each word once.
-	 */
-	const uniqueWordIdsSet = new Set(wordIdsFromPassage);
-	const uniqueWordIds = Array.from(uniqueWordIdsSet);
+	const uniqueWordIds = getPassageWordIds(passage ?? []);
 	const progressByWordId: Record<
 		string,
 		{

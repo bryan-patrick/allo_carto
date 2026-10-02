@@ -2,6 +2,7 @@
  * The context for handling canonical card data and state
  */
 import { createContext, type Dispatch } from 'react';
+import { createCardDeck } from '@/src/util/createCardDeck';
 import { CardDeckAction } from './cardDeckReducer';
 import type { CardDeck, Word } from './cardDeckTypes';
 import { initialWordState } from './cardDeckTypes';
@@ -30,13 +31,13 @@ export const initialCardDeckState: CardDeckStateProps = {
 	currentId: '',
 	correctWords: [],
 	incorrectWords: [],
-	cardDeck: {
+	cardDeck: createCardDeck({
 		id: '',
 		title: '',
 		description: '',
 		chapter: '',
 		CEFR: [],
-		wordIds: [],
+		passage: [],
 		words: [initialWordState],
 		wordChoices: [],
 		colors: {
@@ -49,7 +50,7 @@ export const initialCardDeckState: CardDeckStateProps = {
 				secondary: '#ffffff',
 			},
 		},
-	},
+	}),
 };
 
 export const CardDeckContext = createContext<CardDeckContextType>({
