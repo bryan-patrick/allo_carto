@@ -1,10 +1,14 @@
-import { DeckAnAmberApproach, DeckDawnAtTheDropOff } from '@/data/french/decks';
+import {
+	DeckACabAndACloseCall,
+	DeckAnAmberApproach,
+	DeckDawnAtTheDropOff,
+} from '@/data/french/decks';
 import { getDecks, storyAtlas } from '@/data/french/storyAtlas';
 import { seedWords, words_a1, words_an_amber_approach } from '@/data/french/words';
 
 describe('story atlas content', () => {
-	test('contains the two airport decks in story order', () => {
-		expect(getDecks()).toEqual([DeckDawnAtTheDropOff, DeckAnAmberApproach]);
+	test('contains the airport decks in story order', () => {
+		expect(getDecks()).toEqual([DeckDawnAtTheDropOff, DeckAnAmberApproach, DeckACabAndACloseCall]);
 	});
 
 	test('seeds exactly the words used by the playable decks', () => {
@@ -14,9 +18,41 @@ describe('story atlas content', () => {
 		expect(seedWordIds).toEqual(deckWordIds);
 	});
 
-	test('keeps both decks in the airport story and chapter', () => {
-		expect(storyAtlas.stories).toHaveLength(1);
+	test('keeps the decks in the airport story and chapter', () => {
+		expect(storyAtlas.stories).toHaveLength(2);
 		expect(storyAtlas.stories[0].chapters).toHaveLength(1);
+	});
+
+	test('includes the empty History story with its yellow spine', () => {
+		expect(storyAtlas.stories[1]).toMatchObject({
+			id: 'stories-on-the-plains',
+			name: 'Stories on the Plains',
+			description:
+				'Born from a walk through les plaines d’Abraham, these decks follow the plaques, monuments, and stories that reveal Québec’s past.',
+			category: 'History',
+			color: '#B58A1F',
+			materialSymbolName: 'history_edu',
+			chapters: [],
+		});
+	});
+
+	test('unlocks A Cab and a Close Call at one percent of the previous deck', () => {
+		expect(DeckACabAndACloseCall.unlockRequirements).toEqual([
+			{
+				id: 'deck__an_amber_approach',
+				requiredCompletionPercentage: 1,
+			},
+		]);
+	});
+
+	test('preserves the complete A Cab and a Close Call passage', () => {
+		const renderedPassage = DeckACabAndACloseCall.passage
+			?.map(({ text, after }) => `${text}${after ?? ' '}`)
+			.join('');
+
+		expect(renderedPassage).toBe(
+			'Un vent frais m’a frappé pendant que j’attendais dehors. C’était l’été, alors l’air frais faisait du bien. Mon chauffeur de taxi est arrivé et m’a aidé avec mes bagages. « Je viens du Cameroun », m’a-t-il dit. « Et toi, tu viens d’où? » « Je viens des États-Unis », j’ai répondu. En route vers mon hôtel, il m’a raconté son arrivée au Québec. Au début, ça a été difficile. Il faisait trop froid et son pays lui manquait. Mais avec le temps, il est tombé amoureux des gens et des collines. On a parlé et il m’a montré quelques endroits en chemin. Tout à coup, il a freiné brusquement. Il y avait un écureuil dans la rue! Il s’est sauvé juste à temps. Chanceux, l’écureuil! « Achète-toi un bon manteau si tu veux rester ici! » m’a-t-il dit pendant que je sortais de la voiture.',
+		);
 	});
 
 	test('preserves the complete An Amber Approach passage', () => {
