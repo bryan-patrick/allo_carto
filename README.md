@@ -21,6 +21,9 @@ It's still very much a work in progress. Eventually I'd like to polish it up and
 - Unlockables and achievements
 - More ways to study a deck, including reverse and english-to-french multiple choice modes. Also prestiging a mastered word is on the list
 - I will be adding history focused content, especially history related stuff
+- Collections will also include grammar rules, unlocked by learning word sequences that have that apply that grammar rule
+- We need a toast system to alert users to collectables
+- A more technical issue, once a deck is started we need to lock that progress. Currently, exiting a deck will allow a reset of it.
 
 ## A note about AI
 
