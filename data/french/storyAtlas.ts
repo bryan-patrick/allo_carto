@@ -66,8 +66,8 @@ export const storyAtlas: StoryAtlas = {
 			],
 		},
 		{
-			id: 'stories-on-the-plains',
-			name: 'Stories on the Plains',
+			id: 'walking-the-plains',
+			name: 'Waling the Plains',
 			description:
 				'Born from walking les plaines d’Abraham, these decks follow the plaques and monuments that reveal Québec’s past.',
 			category: 'History',

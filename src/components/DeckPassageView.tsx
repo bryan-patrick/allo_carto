@@ -220,7 +220,7 @@ export default function DeckPassageView({
 							});
 						}}
 					>
-						{deck.passage?.map(({ text, wordId, after }, index) => {
+						{deck.passage.map(({ text, wordId, after }, index) => {
 							const key = `${index}-${wordId ?? text}`;
 							const trailingText = getPassageTrailingText(after);
 							const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';

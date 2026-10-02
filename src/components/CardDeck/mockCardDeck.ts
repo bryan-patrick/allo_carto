@@ -1,5 +1,6 @@
+import { createCardDeck } from '@/src/util/createCardDeck';
 import { type CardDeckStateProps } from './cardDeckContext';
-import { type CardDeck, type Word } from './cardDeckTypes';
+import { type CardDeck, type CardDeckDefinition, type Word } from './cardDeckTypes';
 
 /**
  * Mock words
@@ -74,13 +75,13 @@ export const mockWords: Word[] = [
 /**
  * Mock deck
  */
-export const mockCardDeck: CardDeck = {
+export const mockCardDeck: CardDeck = createCardDeck({
 	id: 'deck__testing',
 	title: 'Testing deck',
 	description: 'A deck for tests',
 	chapter: 'Testing Chapter',
 	CEFR: ['A1'],
-	wordIds: mockWords.map(word => word.id),
+	passage: mockWords.map(word => ({ text: word.frenchWord, wordId: word.id })),
 	words: mockWords,
 	colors: {
 		dark: {
@@ -96,26 +97,26 @@ export const mockCardDeck: CardDeck = {
 		englishWords: word.englishWords,
 		partOfSpeech: word.partOfSpeech,
 	})),
-};
+});
 
 /**
  * Make a mock deck with overrides.
  */
-export function makeMockCardDeck(overrides: Partial<CardDeck> = {}): CardDeck {
+export function makeMockCardDeck(overrides: Partial<CardDeckDefinition> = {}): CardDeck {
 	const words = overrides.words ?? mockCardDeck.words;
 
-	return {
+	return createCardDeck({
 		...mockCardDeck,
 		...overrides,
 		words,
-		wordIds: overrides.wordIds ?? words.map(word => word.id),
+		passage: overrides.passage ?? words.map(word => ({ text: word.frenchWord, wordId: word.id })),
 		wordChoices:
 			overrides.wordChoices ??
 			words.map(word => ({
 				englishWords: word.englishWords,
 				partOfSpeech: word.partOfSpeech,
 			})),
-	};
+	});
 }
 
 /**

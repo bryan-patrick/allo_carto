@@ -33,17 +33,21 @@ export interface PassageSegment {
 	after?: string;
 }
 
-export interface CardDeck extends Progression {
+export interface CardDeckDefinition extends Progression {
 	id: string;
 	title: string;
 	CEFR: CEFR[];
 	description: string;
-	wordIds: string[];
 	words: Word[];
 	wordChoices: DeckWordChoice[];
 	chapter: string;
 	colors: DeckColors;
-	passage?: PassageSegment[];
+	passage: PassageSegment[];
+}
+
+export interface CardDeck extends CardDeckDefinition {
+	/** Word IDs from the passage, with duplicates removed. */
+	wordIds: string[];
 }
 
 /**
