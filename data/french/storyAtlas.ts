@@ -1,4 +1,8 @@
-import { DeckAnAmberApproach, DeckDawnAtTheDropOff } from '@/data/french/decks';
+import {
+	DeckACabAndACloseCall,
+	DeckAnAmberApproach,
+	DeckDawnAtTheDropOff,
+} from '@/data/french/decks';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { Progression } from '@/src/util/progression';
 import type { ImageSourcePropType } from 'react-native';
@@ -13,7 +17,7 @@ const aVeryFrenchTravelDay = require('@/src/app/assets/images/stories/a-very-fre
 /**
  * Typing
  */
-export type StoryCategory = 'Mystery' | 'Travel';
+export type StoryCategory = 'History' | 'Mystery' | 'Travel';
 
 export interface StoryAtlas {
 	stories: DeckStory[];
@@ -58,9 +62,19 @@ export const storyAtlas: StoryAtlas = {
 					label: 'Chapter 1',
 					name: 'Aéroport Oiseau',
 					image: aeroportOiseau,
-					decks: [DeckDawnAtTheDropOff, DeckAnAmberApproach],
+					decks: [DeckDawnAtTheDropOff, DeckAnAmberApproach, DeckACabAndACloseCall],
 				},
 			],
+		},
+		{
+			id: 'stories-on-the-plains',
+			name: 'Stories on the Plains',
+			description:
+				'Born from walking les plaines d’Abraham, these decks follow the plaques and monuments that reveal Québec’s past.',
+			category: 'History',
+			color: '#693d26',
+			materialSymbolName: 'history_edu',
+			chapters: [],
 		},
 	],
 };
