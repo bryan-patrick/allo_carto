@@ -11,10 +11,23 @@ import ResultsList from '../ResultsList';
 
 const englishVowels = ['a', 'e', 'i', 'o', 'u', 'y'];
 
-function findDeckChapterId(cardDeck: CardDeck) {
+/**
+ * Typing
+ */
+interface DeckAtlasLocation {
+	chapterId: string;
+	storyId: string;
+}
+
+/**
+ * Find the story and chapter that contain a completed deck
+ */
+function findDeckAtlasLocation(cardDeck: CardDeck): DeckAtlasLocation | undefined {
 	for (const story of storyAtlas.stories) {
 		for (const chapter of story.chapters) {
 			const deck = chapter.decks.find(deck => {
+				if (deck.id === cardDeck.id) return true;
+
 				const isSameTitle = deck.title === cardDeck.title;
 				const hasSameWordCount = deck.wordIds.length === cardDeck.wordIds.length;
 				const hasSameWords = deck.wordIds.every(wordId => {
@@ -24,7 +37,7 @@ function findDeckChapterId(cardDeck: CardDeck) {
 				return isSameTitle && hasSameWordCount && hasSameWords;
 			});
 
-			if (deck) return chapter.id;
+			if (deck) return { chapterId: chapter.id, storyId: story.id };
 		}
 	}
 }
@@ -36,18 +49,27 @@ function findDeckChapterId(cardDeck: CardDeck) {
  * of components from this thing
  */
 export default function DeckResultsView() {
+	/**
+	 * Context and result metadata
+	 */
 	const { cardDeckState } = useCardDeck();
 	const { title } = cardDeckState.cardDeck;
 	const { correctWords, incorrectWords } = cardDeckState;
 	const isFirstLetterAVowel = englishVowels.includes(title.split('')[0].toLowerCase());
 	const resultsTitleArticle = isFirstLetterAVowel ? 'an' : 'a';
-	const chapterId = findDeckChapterId(cardDeckState.cardDeck);
+	const atlasLocation = findDeckAtlasLocation(cardDeckState.cardDeck);
 
+	/**
+	 * Return to the completed deck's chapter and reopen its deck picker
+	 */
 	function handleFinish() {
-		if (chapterId) {
+		if (atlasLocation) {
 			router.dismissTo({
-				pathname: '/CardDeckSelect',
-				params: { chapterId },
+				pathname: '/ChapterSelect',
+				params: {
+					...atlasLocation,
+					deckPickerRequest: String(Date.now()),
+				},
 			});
 			return;
 		}

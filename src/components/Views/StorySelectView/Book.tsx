@@ -1,6 +1,6 @@
+import colors from '@/src/app/colors';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Pages from './Pages';
 
 /**
  * Typing
@@ -19,7 +19,6 @@ export default function Book({ children }: BookProps) {
 	return (
 		<View style={styles.bookContainer}>
 			<View style={styles.book}>{children}</View>
-			<Pages />
 		</View>
 	);
 }
@@ -31,7 +30,11 @@ const styles = StyleSheet.create({
 	bookContainer: {
 		marginHorizontal: 16,
 		marginBottom: 8,
-		borderBottomRightRadius: 8,
+		borderColor: colors.dark.border,
+		borderRadius: 5,
+		borderTopRightRadius: 10,
+		borderBottomRightRadius: 10,
+		borderWidth: 2,
 		overflow: 'hidden',
 	},
 	book: {

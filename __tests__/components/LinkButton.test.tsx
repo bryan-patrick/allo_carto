@@ -43,4 +43,25 @@ describe('<LinkButton />', () => {
 			}),
 		);
 	});
+
+	test('can remove its shadow and inner border', async () => {
+		const { getByTestId, getByText } = await render(
+			<LinkButton
+				showInnerBorder={false}
+				showShadow={false}
+				testID="flat-link-button"
+			>
+				Flat link
+			</LinkButton>,
+		);
+
+		expect(getByTestId('flat-link-button')).toHaveStyle({
+			shadowColor: 'transparent',
+			shadowOpacity: 0,
+		});
+		expect(getByText('Flat link').parent).toHaveStyle({
+			borderColor: 'transparent',
+			borderWidth: 0,
+		});
+	});
 });
