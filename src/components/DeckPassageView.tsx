@@ -4,7 +4,7 @@ import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 /**
@@ -12,6 +12,7 @@ import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-n
  */
 interface DeckPassageViewProps {
 	deck: CardDeck;
+	onContentHeightChange?: (contentHeight: number) => void;
 	wordProgressCounts: DeckWordProgressCounts;
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
 }
@@ -19,6 +20,12 @@ interface DeckPassageViewProps {
 interface PassageLineMetric {
 	y: number;
 	height: number;
+}
+
+interface PassageHeightMeasurements {
+	footer: number;
+	header: number;
+	passage: number;
 }
 
 /**
@@ -46,11 +53,18 @@ function createWordProgressOpacityValues(): Record<WordProgressKey, Animated.Val
 	};
 }
 
+function getPassageTrailingText(after?: string): string {
+	const trailingText = after ?? ' ';
+
+	return trailingText.endsWith(' ') ? `${trailingText}\u2009` : trailingText;
+}
+
 /**
  * DeckPassageView component
  */
 export default function DeckPassageView({
 	deck,
+	onContentHeightChange,
 	wordProgressCounts,
 	wordProgressKeyByWordId,
 }: DeckPassageViewProps) {
@@ -63,6 +77,12 @@ export default function DeckPassageView({
 	);
 	const [wordProgressOpacityByKey] = useState(createWordProgressOpacityValues);
 	const [unseenQuestionOpacity] = useState(() => new Animated.Value(defaultUnseenQuestionOpacity));
+	const passageHeightMeasurements = useRef<PassageHeightMeasurements>({
+		footer: 0,
+		header: 0,
+		passage: 0,
+	});
+	const hasReportedContentHeight = useRef(false);
 
 	/**
 	 * Passage metadata
@@ -78,6 +98,23 @@ export default function DeckPassageView({
 		deckWordCount: totalWordCount,
 		wordProgressCounts,
 	});
+
+	/**
+	 * Report the passage's natural height to its modal
+	 */
+	function handleHeightMeasurement(section: keyof PassageHeightMeasurements, height: number) {
+		passageHeightMeasurements.current[section] = height;
+
+		const { footer, header, passage } = passageHeightMeasurements.current;
+		const contentHeight = footer + header + passage;
+
+		if (!footer || !header || !passage || hasReportedContentHeight.current) {
+			return;
+		}
+
+		hasReportedContentHeight.current = true;
+		onContentHeightChange?.(contentHeight);
+	}
 
 	/**
 	 * Highlight one word progress group at a time
@@ -113,7 +150,10 @@ export default function DeckPassageView({
 	 */
 	return (
 		<View style={styles.passageView}>
-			<View style={styles.header}>
+			<View
+				onLayout={({ nativeEvent }) => handleHeightMeasurement('header', nativeEvent.layout.height)}
+				style={styles.header}
+			>
 				<Text style={[styles.title, { color: deck.colors.dark.primary }]}>{deck.title}</Text>
 				<View
 					accessible
@@ -145,6 +185,7 @@ export default function DeckPassageView({
 
 			<ScrollView
 				indicatorStyle="black"
+				onContentSizeChange={(_width, height) => handleHeightMeasurement('passage', height)}
 				persistentScrollbar
 				showsVerticalScrollIndicator
 				style={styles.passageScrollView}
@@ -181,7 +222,7 @@ export default function DeckPassageView({
 					>
 						{deck.passage?.map(({ text, wordId, after }, index) => {
 							const key = `${index}-${wordId ?? text}`;
-							const trailingText = after ?? ' ';
+							const trailingText = getPassageTrailingText(after);
 							const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
 							const isUnseen = progress === 'unseen';
 							const progressColor = colors.wordProgress[progress];
@@ -225,7 +266,10 @@ export default function DeckPassageView({
 				</View>
 			</ScrollView>
 
-			<View style={styles.footer}>
+			<View
+				onLayout={({ nativeEvent }) => handleHeightMeasurement('footer', nativeEvent.layout.height)}
+				style={styles.footer}
+			>
 				<View style={styles.progressLegend}>
 					{wordProgressDefinitions.map(({ key, name, symbolName }) => {
 						const progressColor = colors.wordProgress[key];
@@ -275,10 +319,10 @@ const styles = StyleSheet.create({
 	header: {
 		borderBottomColor: colors.light.goldenBorder,
 		borderBottomWidth: 2,
-		gap: 8,
 		paddingBottom: 12,
 		paddingHorizontal: 16,
 		paddingTop: 12,
+		gap: 8,
 	},
 	title: {
 		fontFamily: 'lexend-600',
@@ -323,22 +367,24 @@ const styles = StyleSheet.create({
 		flex: 1,
 		minHeight: 0,
 		paddingHorizontal: 16,
+		paddingVertical: 4,
 	},
 	passageTextContainer: {
 		position: 'relative',
+		paddingVertical: 8,
 	},
 	passageTextRules: {
+		position: 'absolute',
 		bottom: 0,
 		left: 0,
-		position: 'absolute',
 		right: 0,
 		top: 0,
 	},
 	passageTextRule: {
+		position: 'absolute',
 		borderBottomColor: '#CFC1AD',
 		borderBottomWidth: 1,
 		left: 0,
-		position: 'absolute',
 		right: 0,
 	},
 	passageText: {
@@ -355,8 +401,8 @@ const styles = StyleSheet.create({
 		color: 'transparent',
 	},
 	unseenWordContainer: {
-		flexDirection: 'row',
 		position: 'relative',
+		flexDirection: 'row',
 	},
 	unseenWordQuestion: {
 		borderBottomWidth: 1,

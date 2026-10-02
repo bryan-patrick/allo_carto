@@ -92,6 +92,7 @@ export default function DeckPickerModal({
 	const { id: userId } = useUserContext() ?? {};
 	const { cardDeckDispatch } = useCardDeck();
 	const [loadingPassageDeckId, setLoadingPassageDeckId] = useState<string>();
+	const [passageContentHeight, setPassageContentHeight] = useState<number>();
 	const [passageState, setPassageState] = useState<DeckPickerPassageState>();
 	const [sheetProgress] = useState(() => new Animated.Value(0));
 
@@ -100,10 +101,14 @@ export default function DeckPickerModal({
 	 */
 	const storyColor = story.color ?? colors.dark.primary;
 	const collapsedSheetHeight = windowHeight * 0.6;
-	const expandedSheetHeight = Math.max(collapsedSheetHeight, windowHeight - top - 8);
+	const maximumPassageSheetHeight = Math.max(collapsedSheetHeight, windowHeight - top - 8);
+	const passageSheetHeight =
+		passageContentHeight === undefined ? collapsedSheetHeight : (
+			Math.min(passageContentHeight + 44 + Math.max(bottom, 16), maximumPassageSheetHeight)
+		);
 	const sheetHeight = sheetProgress.interpolate({
 		inputRange: [0, 1],
-		outputRange: [collapsedSheetHeight, expandedSheetHeight],
+		outputRange: [collapsedSheetHeight, passageSheetHeight],
 	});
 	const pickerOpacity = sheetProgress.interpolate({
 		inputRange: [0, 0.45, 1],
@@ -141,6 +146,7 @@ export default function DeckPickerModal({
 	function handleClose() {
 		sheetProgress.stopAnimation();
 		sheetProgress.setValue(0);
+		setPassageContentHeight(undefined);
 		setPassageState(undefined);
 		onRequestClose();
 	}
@@ -175,8 +181,8 @@ export default function DeckPickerModal({
 				getWordProgressById({ userId, passage: deck.passage }),
 			]);
 
+			setPassageContentHeight(undefined);
 			setPassageState({ deck, wordProgressCounts, wordProgressKeyByWordId });
-			requestAnimationFrame(() => animateSheet(1));
 		} catch (error) {
 			console.error('Could not retrieve passage progress:', error);
 		} finally {
@@ -185,10 +191,23 @@ export default function DeckPickerModal({
 	}
 
 	/**
+	 * Grow the sheet to fit the passage, up to its maximum height
+	 */
+	function handlePassageContentHeightChange(contentHeight: number) {
+		if (passageContentHeight !== undefined) return;
+
+		setPassageContentHeight(contentHeight);
+		requestAnimationFrame(() => animateSheet(1));
+	}
+
+	/**
 	 * Return to the deck list
 	 */
 	function handleBackToDecks() {
-		animateSheet(0, () => setPassageState(undefined));
+		animateSheet(0, () => {
+			setPassageContentHeight(undefined);
+			setPassageState(undefined);
+		});
 	}
 
 	/**
@@ -422,6 +441,7 @@ export default function DeckPickerModal({
 							>
 								<DeckPassageView
 									deck={passageState.deck}
+									onContentHeightChange={handlePassageContentHeightChange}
 									wordProgressCounts={passageState.wordProgressCounts}
 									wordProgressKeyByWordId={passageState.wordProgressKeyByWordId}
 								/>
