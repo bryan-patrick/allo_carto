@@ -50,6 +50,8 @@ interface LinkButtonProps extends Omit<PressableProps, 'style'> {
 	contentPaddingHorizontal?: number;
 	contentPaddingVertical?: number;
 	fullwidth?: boolean;
+	showInnerBorder?: boolean;
+	showShadow?: boolean;
 	style?: StyleProp<ViewStyle>;
 	type?: 'fill' | 'outline';
 }
@@ -76,6 +78,8 @@ export default function LinkButton({
 	contentPaddingVertical = 8,
 	deckColors,
 	fullwidth = false,
+	showInnerBorder = true,
+	showShadow = true,
 	type = 'fill',
 	...pressableProps
 }: LinkButtonProps) {
@@ -86,8 +90,9 @@ export default function LinkButton({
 		href,
 	});
 	const [isPressed, setIsPressed] = useState(false);
+	const buttonShadowHeight = showShadow ? linkButtonShadowHeight : 0;
 	const top = useSharedValue(0);
-	const shadowOffsetHeight = useSharedValue(linkButtonShadowHeight);
+	const shadowOffsetHeight = useSharedValue(buttonShadowHeight);
 	const animatedButtonStyle = useAnimatedStyle(() => ({
 		top: top.get(),
 		shadowOffset: {
@@ -158,7 +163,7 @@ export default function LinkButton({
 	useEffect(() => {
 		if (isPressed) {
 			top.set(
-				withTiming(2, {
+				withTiming(buttonShadowHeight, {
 					duration: 100,
 					easing: Easing.inOut(Easing.ease),
 				}),
@@ -172,9 +177,9 @@ export default function LinkButton({
 			);
 		} else {
 			top.set(0);
-			shadowOffsetHeight.set(linkButtonShadowHeight);
+			shadowOffsetHeight.set(buttonShadowHeight);
 		}
-	}, [isPressed, shadowOffsetHeight, top]);
+	}, [buttonShadowHeight, isPressed, shadowOffsetHeight, top]);
 
 	/**
 	 * Action handlers
@@ -213,6 +218,7 @@ export default function LinkButton({
 				animatedButtonStyle,
 				fullwidth && styles.fullwidth,
 				typeStyle,
+				!showShadow && styles.withoutShadow,
 				style,
 			]}
 			disabled={disabled}
@@ -220,6 +226,7 @@ export default function LinkButton({
 			<View
 				style={[
 					styles.innerRow,
+					!showInnerBorder && styles.innerRowWithoutBorder,
 					{
 						paddingHorizontal: contentPaddingHorizontal,
 						paddingVertical: contentPaddingVertical,
@@ -261,6 +268,10 @@ const styles = StyleSheet.create({
 	fullwidth: {
 		width: '100%',
 	},
+	withoutShadow: {
+		shadowColor: 'transparent',
+		shadowOpacity: 0,
+	},
 	innerRow: {
 		width: '100%',
 		padding: 2,
@@ -271,6 +282,10 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		flexDirection: 'row',
 		gap: 4,
+	},
+	innerRowWithoutBorder: {
+		borderColor: 'transparent',
+		borderWidth: 0,
 	},
 	linkText: {
 		color: colors.light.text,

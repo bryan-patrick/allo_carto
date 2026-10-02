@@ -10,19 +10,30 @@ import MaterialSymbol from './MaterialSymbol';
 interface ViewIndicatorProps {
 	views: string[];
 	currentViewIndex: number;
+	activeColor?: string;
+	inactiveColor?: string;
+	respectSafeArea?: boolean;
+	showTextShadow?: boolean;
 }
 
 /**
  * View Indicator component
  */
-export default function ViewIndicator({ views, currentViewIndex }: ViewIndicatorProps) {
+export default function ViewIndicator({
+	views,
+	currentViewIndex,
+	activeColor = colors.light.goldenBorder,
+	inactiveColor = colors.light.border,
+	respectSafeArea = true,
+	showTextShadow = true,
+}: ViewIndicatorProps) {
 	const paddingTop = useSafeAreaInsets().top;
 
 	/**
 	 * Render the thing
 	 */
 	return (
-		<View style={[styles.indicator, { paddingTop }]}>
+		<View style={[styles.indicator, { paddingTop: respectSafeArea ? paddingTop : 0 }]}>
 			{views.map((view, i) => {
 				const isLast: boolean = i === views.length - 1;
 				const isCurrent: boolean = currentViewIndex === i;
@@ -33,7 +44,8 @@ export default function ViewIndicator({ views, currentViewIndex }: ViewIndicator
 							<Text
 								style={[
 									styles.name,
-									{ color: isCurrent ? colors.light.goldenBorder : colors.light.border },
+									!showTextShadow && styles.nameWithoutShadow,
+									{ color: isCurrent ? activeColor : inactiveColor },
 								]}
 							>
 								{view}
@@ -42,7 +54,7 @@ export default function ViewIndicator({ views, currentViewIndex }: ViewIndicator
 						{!isLast && (
 							<MaterialSymbol
 								size={12}
-								color={colors.light.border}
+								color={inactiveColor}
 								name="arrow_right"
 							/>
 						)}
@@ -75,6 +87,10 @@ const styles = StyleSheet.create({
 			width: 0,
 			height: 0,
 		},
+	},
+	nameWithoutShadow: {
+		textShadowColor: 'transparent',
+		textShadowRadius: 0,
 	},
 	hasCurrent: {
 		fontFamily: 'lexend-700',
