@@ -2,7 +2,7 @@ import type { DeckChapter, DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
-import DeckBoxModal from '@/src/components/DeckBox/DeckBoxModal';
+import DeckPassageView from '@/src/components/DeckPassageView';
 import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
@@ -17,8 +17,23 @@ import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+	Animated,
+	ImageBackground,
+	Modal,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	useWindowDimensions,
+	View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+/**
+ * Images
+ */
+const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /**
  * Typing
@@ -72,21 +87,60 @@ export default function DeckPickerModal({
 	/**
 	 * Context and state
 	 */
-	const { bottom } = useSafeAreaInsets();
+	const { bottom, top } = useSafeAreaInsets();
+	const { height: windowHeight } = useWindowDimensions();
 	const { id: userId } = useUserContext() ?? {};
 	const { cardDeckDispatch } = useCardDeck();
 	const [loadingPassageDeckId, setLoadingPassageDeckId] = useState<string>();
 	const [passageState, setPassageState] = useState<DeckPickerPassageState>();
+	const [sheetProgress] = useState(() => new Animated.Value(0));
 
 	/**
 	 * Story display values
 	 */
 	const storyColor = story.color ?? colors.dark.primary;
+	const collapsedSheetHeight = windowHeight * 0.6;
+	const expandedSheetHeight = Math.max(collapsedSheetHeight, windowHeight - top - 8);
+	const sheetHeight = sheetProgress.interpolate({
+		inputRange: [0, 1],
+		outputRange: [collapsedSheetHeight, expandedSheetHeight],
+	});
+	const pickerOpacity = sheetProgress.interpolate({
+		inputRange: [0, 0.45, 1],
+		outputRange: [1, 0, 0],
+	});
+	const passageOpacity = sheetProgress.interpolate({
+		inputRange: [0, 0.55, 1],
+		outputRange: [0, 0, 1],
+	});
+	const pickerTranslateY = sheetProgress.interpolate({
+		inputRange: [0, 1],
+		outputRange: [0, -8],
+	});
+	const passageTranslateY = sheetProgress.interpolate({
+		inputRange: [0, 1],
+		outputRange: [8, 0],
+	});
+
+	/**
+	 * Animate between the deck list and passage
+	 */
+	function animateSheet(toValue: number, onComplete?: () => void) {
+		Animated.timing(sheetProgress, {
+			toValue,
+			duration: 280,
+			useNativeDriver: false,
+		}).start(({ finished }) => {
+			if (finished) onComplete?.();
+		});
+	}
 
 	/**
 	 * Close the picker and clear its passage state
 	 */
 	function handleClose() {
+		sheetProgress.stopAnimation();
+		sheetProgress.setValue(0);
 		setPassageState(undefined);
 		onRequestClose();
 	}
@@ -122,6 +176,7 @@ export default function DeckPickerModal({
 			]);
 
 			setPassageState({ deck, wordProgressCounts, wordProgressKeyByWordId });
+			requestAnimationFrame(() => animateSheet(1));
 		} catch (error) {
 			console.error('Could not retrieve passage progress:', error);
 		} finally {
@@ -130,11 +185,18 @@ export default function DeckPickerModal({
 	}
 
 	/**
+	 * Return to the deck list
+	 */
+	function handleBackToDecks() {
+		animateSheet(0, () => setPassageState(undefined));
+	}
+
+	/**
 	 * Back out of the passage before closing the deck picker
 	 */
 	function handleModalRequestClose() {
 		if (passageState) {
-			setPassageState(undefined);
+			handleBackToDecks();
 			return;
 		}
 
@@ -142,7 +204,7 @@ export default function DeckPickerModal({
 	}
 
 	/**
-	 * Render the deck picker or its passage view
+	 * Render the deck picker and passage view
 	 */
 	return (
 		<Modal
@@ -155,166 +217,218 @@ export default function DeckPickerModal({
 			visible={visible}
 		>
 			<View style={styles.backdrop}>
-				{passageState ?
-					<View style={styles.passageSurface}>
-						<DeckBoxModal
-							deck={passageState.deck}
-							dismissLabel="Back to decks"
-							embedded
-							modalVisible
-							setModalVisible={nextVisible => {
-								if (!nextVisible) setPassageState(undefined);
-							}}
-							wordProgressCounts={passageState.wordProgressCounts}
-							wordProgressKeyByWordId={passageState.wordProgressKeyByWordId}
-						/>
-					</View>
-				:	<View style={[styles.sheet, { paddingBottom: Math.max(bottom, 16) }]}>
-						<View style={styles.topBar}>
-							<View style={styles.indicatorContainer}>
-								<ViewIndicator
-									activeColor={storyColor}
-									currentViewIndex={2}
-									inactiveColor={colors.light.border}
-									respectSafeArea={false}
-									showTextShadow={false}
-									views={['Story', 'Chapter', 'Deck']}
-								/>
-							</View>
+				<Animated.View
+					style={[
+						styles.sheet,
+						{
+							height: sheetHeight,
+							paddingBottom: Math.max(bottom, 16),
+						},
+					]}
+				>
+					<ImageBackground
+						imageStyle={styles.backgroundImage}
+						resizeMode="cover"
+						source={postcardBackground}
+						style={StyleSheet.absoluteFill}
+					/>
+
+					<View style={styles.topBar}>
+						{passageState ?
 							<Pressable
-								accessibilityLabel="Close deck selection"
+								accessibilityLabel="Back to decks"
 								accessibilityRole="button"
 								hitSlop={12}
-								onPress={handleClose}
-								style={styles.closeButton}
+								onPress={handleBackToDecks}
+								style={styles.topBarButton}
 							>
 								<MaterialSymbol
 									color={colors.dark.text}
-									name="close"
+									name="arrow_back"
 									size={22}
 								/>
 							</Pressable>
+						:	<View style={styles.topBarButton} />}
+						<View style={styles.indicatorContainer}>
+							<ViewIndicator
+								activeColor={storyColor}
+								currentViewIndex={2}
+								inactiveColor={colors.light.border}
+								respectSafeArea={false}
+								showTextShadow={false}
+								views={['Story', 'Chapter', 'Deck']}
+							/>
 						</View>
-
-						<View style={styles.header}>
-							<Text style={[styles.chapterLabel, { color: storyColor }]}>{chapter.label}</Text>
-							<Text style={styles.chapterTitle}>{chapter.name}</Text>
-							<Text style={styles.modalDescription}>Choose a deck</Text>
-						</View>
-
-						<ScrollView
-							contentContainerStyle={styles.deckList}
-							showsVerticalScrollIndicator
+						<Pressable
+							accessibilityLabel="Close deck selection"
+							accessibilityRole="button"
+							hitSlop={12}
+							onPress={handleClose}
+							style={styles.topBarButton}
 						>
-							{
-								/**
-								 * Map the chapter's decks
-								 */
-								chapter.decks.map(deck => {
-									const isLocked = !isItemUnlocked({ id: deck.id, progressById });
-									const completionPercent = Math.floor(
-										progressById[deck.id]?.completionPercentage ?? 0,
-									);
-									const actionLabel = completionPercent > 0 ? 'Continue' : 'Review';
-									const isLoadingPassage = loadingPassageDeckId === deck.id;
-
-									return (
-										<View
-											key={deck.id}
-											style={[
-												styles.deckRow,
-												{
-													borderLeftColor: isLocked ? storyColor : deck.colors.dark.primary,
-												},
-											]}
-										>
-											{!isLocked && (
-												<View>
-													<Text style={styles.deckTitle}>{deck.title}</Text>
-													<Text style={styles.deckDescription}>{deck.description}</Text>
-													<View
-														accessible
-														accessibilityLabel={`${deck.CEFR.join(' to ')}, ${deck.wordIds.length} cards, ${completionPercent} percent known`}
-														style={styles.metadata}
-													>
-														<MetadataItem
-															color={storyColor}
-															icon="globe"
-															text={deck.CEFR.join('–')}
-														/>
-														<View style={styles.metadataDivider} />
-														<MetadataItem
-															color={storyColor}
-															icon="cards_star"
-															text={`${deck.wordIds.length} cards`}
-														/>
-														<View style={styles.metadataDivider} />
-														<MetadataItem
-															color={storyColor}
-															icon="cognition_2"
-															text={`${completionPercent}% known`}
-														/>
-													</View>
-												</View>
-											)}
-
-											{isLocked ?
-												<LockedSection
-													color={storyColor}
-													unlockCriteria={getUnlockCriteria(deck, progressById)}
-												/>
-											:	<View style={styles.actions}>
-													<LinkButton
-														accessibilityLabel={`Read passage: ${deck.title}`}
-														color={storyColor}
-														contentPaddingHorizontal={8}
-														contentPaddingVertical={7}
-														disabled={Boolean(loadingPassageDeckId)}
-														handler={() => handleShowPassage(deck)}
-														showInnerBorder={false}
-														showShadow={false}
-														style={[
-															styles.actionButton,
-															styles.secondaryActionButton,
-															isLoadingPassage && styles.loadingButton,
-														]}
-														type="outline"
-														useArrow={false}
-														SVGElement={
-															<MaterialSymbol
-																color={storyColor}
-																name="menu_book"
-																size={18}
-															/>
-														}
-													>
-														{isLoadingPassage ? 'Loading…' : 'Read passage'}
-													</LinkButton>
-													<LinkButton
-														accessibilityLabel={`${actionLabel} deck: ${deck.title}`}
-														arrowColor={colors.light.text}
-														color={storyColor}
-														contentPaddingHorizontal={8}
-														contentPaddingVertical={7}
-														handler={() => handleSelectDeck(deck)}
-														showInnerBorder={false}
-														style={[
-															styles.actionButton,
-															styles.primaryActionButton,
-															{ borderColor: storyColor },
-														]}
-													>
-														{actionLabel}
-													</LinkButton>
-												</View>
-											}
-										</View>
-									);
-								})
-							}
-						</ScrollView>
+							<MaterialSymbol
+								color={colors.dark.text}
+								name="close"
+								size={22}
+							/>
+						</Pressable>
 					</View>
-				}
+
+					<View style={styles.content}>
+						<Animated.View
+							accessibilityElementsHidden={Boolean(passageState)}
+							importantForAccessibility={passageState ? 'no-hide-descendants' : 'auto'}
+							pointerEvents={passageState ? 'none' : 'auto'}
+							style={[
+								styles.contentLayer,
+								styles.pickerContent,
+								{
+									opacity: pickerOpacity,
+									transform: [{ translateY: pickerTranslateY }],
+								},
+							]}
+						>
+							<View style={styles.header}>
+								<Text style={[styles.chapterLabel, { color: storyColor }]}>{chapter.label}</Text>
+								<Text style={styles.chapterTitle}>{chapter.name}</Text>
+								<Text style={styles.modalDescription}>Choose a deck</Text>
+							</View>
+
+							<ScrollView
+								contentContainerStyle={styles.deckList}
+								showsVerticalScrollIndicator
+							>
+								{
+									/**
+									 * Map the chapter's decks
+									 */
+									chapter.decks.map(deck => {
+										const isLocked = !isItemUnlocked({ id: deck.id, progressById });
+										const completionPercent = Math.floor(
+											progressById[deck.id]?.completionPercentage ?? 0,
+										);
+										const actionLabel = completionPercent > 0 ? 'Continue' : 'Review';
+										const isLoadingPassage = loadingPassageDeckId === deck.id;
+
+										return (
+											<View
+												key={deck.id}
+												style={[
+													styles.deckRow,
+													{
+														borderLeftColor: isLocked ? storyColor : deck.colors.dark.primary,
+													},
+												]}
+											>
+												{!isLocked && (
+													<View>
+														<Text style={styles.deckTitle}>{deck.title}</Text>
+														<Text style={styles.deckDescription}>{deck.description}</Text>
+														<View
+															accessible
+															accessibilityLabel={`${deck.CEFR.join(' to ')}, ${deck.wordIds.length} cards, ${completionPercent} percent known`}
+															style={styles.metadata}
+														>
+															<MetadataItem
+																color={storyColor}
+																icon="globe"
+																text={deck.CEFR.join('–')}
+															/>
+															<View style={styles.metadataDivider} />
+															<MetadataItem
+																color={storyColor}
+																icon="cards_star"
+																text={`${deck.wordIds.length} cards`}
+															/>
+															<View style={styles.metadataDivider} />
+															<MetadataItem
+																color={storyColor}
+																icon="cognition_2"
+																text={`${completionPercent}% known`}
+															/>
+														</View>
+													</View>
+												)}
+
+												{isLocked ?
+													<LockedSection
+														color={storyColor}
+														unlockCriteria={getUnlockCriteria(deck, progressById)}
+													/>
+												:	<View style={styles.actions}>
+														<LinkButton
+															accessibilityLabel={`Read passage: ${deck.title}`}
+															color={storyColor}
+															contentPaddingHorizontal={8}
+															contentPaddingVertical={7}
+															disabled={Boolean(loadingPassageDeckId)}
+															handler={() => handleShowPassage(deck)}
+															showInnerBorder={false}
+															showShadow={false}
+															style={[
+																styles.actionButton,
+																styles.secondaryActionButton,
+																isLoadingPassage && styles.loadingButton,
+															]}
+															type="outline"
+															useArrow={false}
+															SVGElement={
+																<MaterialSymbol
+																	color={storyColor}
+																	name="menu_book"
+																	size={18}
+																/>
+															}
+														>
+															{isLoadingPassage ? 'Loading…' : 'Read passage'}
+														</LinkButton>
+														<LinkButton
+															accessibilityLabel={`${actionLabel} deck: ${deck.title}`}
+															arrowColor={colors.light.text}
+															color={storyColor}
+															contentPaddingHorizontal={8}
+															contentPaddingVertical={7}
+															handler={() => handleSelectDeck(deck)}
+															showInnerBorder={false}
+															style={[
+																styles.actionButton,
+																styles.primaryActionButton,
+																{ borderColor: storyColor },
+															]}
+														>
+															{actionLabel}
+														</LinkButton>
+													</View>
+												}
+											</View>
+										);
+									})
+								}
+							</ScrollView>
+						</Animated.View>
+
+						{passageState && (
+							<Animated.View
+								accessibilityElementsHidden={!passageState}
+								importantForAccessibility={passageState ? 'auto' : 'no-hide-descendants'}
+								pointerEvents={passageState ? 'auto' : 'none'}
+								style={[
+									styles.contentLayer,
+									{
+										opacity: passageOpacity,
+										transform: [{ translateY: passageTranslateY }],
+									},
+								]}
+							>
+								<DeckPassageView
+									deck={passageState.deck}
+									wordProgressCounts={passageState.wordProgressCounts}
+									wordProgressKeyByWordId={passageState.wordProgressKeyByWordId}
+								/>
+							</Animated.View>
+						)}
+					</View>
+				</Animated.View>
 			</View>
 		</Modal>
 	);
@@ -325,13 +439,9 @@ export default function DeckPickerModal({
  */
 const styles = StyleSheet.create({
 	backdrop: {
-		backgroundColor: 'rgba(18, 18, 18, 0.72)',
 		flex: 1,
 		justifyContent: 'flex-end',
-	},
-	passageSurface: {
-		flex: 1,
-		width: '100%',
+		backgroundColor: 'rgba(18, 18, 18, 0.8)',
 	},
 	sheet: {
 		backgroundColor: colors.light.secondary,
@@ -339,32 +449,50 @@ const styles = StyleSheet.create({
 		borderTopLeftRadius: 24,
 		borderTopRightRadius: 24,
 		borderTopWidth: 1,
-		height: '60%',
-		overflow: 'hidden',
-		paddingHorizontal: 16,
 		paddingTop: 8,
+		overflow: 'hidden',
+	},
+	backgroundImage: {
+		borderTopLeftRadius: 24,
+		borderTopRightRadius: 24,
 	},
 	topBar: {
 		alignItems: 'center',
 		flexDirection: 'row',
-		minHeight: 32,
+		minHeight: 36,
+		paddingHorizontal: 16,
 	},
 	indicatorContainer: {
 		flex: 1,
-		paddingLeft: 36,
 	},
-	closeButton: {
-		height: 36,
-		width: 36,
+	topBarButton: {
 		alignItems: 'center',
+		height: 36,
 		justifyContent: 'center',
+		width: 36,
+	},
+	content: {
+		position: 'relative',
+		minHeight: 0,
+		flex: 1,
+	},
+	contentLayer: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
+		top: 0,
+	},
+	pickerContent: {
+		paddingHorizontal: 16,
 	},
 	header: {
-		borderBottomColor: colors.light.goldenBorder,
-		borderBottomWidth: 1,
-		paddingBottom: 14,
+		paddingBottom: 12,
 		paddingHorizontal: 4,
 		paddingTop: 8,
+		marginBottom: 8,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.light.goldenBorder,
 	},
 	chapterLabel: {
 		fontFamily: 'lexend-700',
@@ -374,9 +502,9 @@ const styles = StyleSheet.create({
 	},
 	chapterTitle: {
 		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 24,
-		lineHeight: 30,
+		fontFamily: 'lexend-700',
+		fontSize: 22,
+		lineHeight: 24,
 	},
 	modalDescription: {
 		color: colors.dark.primaryActive,
@@ -390,30 +518,33 @@ const styles = StyleSheet.create({
 	deckRow: {
 		borderBottomColor: colors.light.goldenBorder,
 		borderBottomWidth: 1,
-		borderLeftWidth: 3,
+		borderLeftWidth: 4,
+		borderBottomLeftRadius: 8,
 		paddingHorizontal: 12,
-		paddingVertical: 16,
+		paddingVertical: 12,
+		marginVertical: 4,
+
 		gap: 12,
 	},
 	deckTitle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
-		fontSize: 17,
+		fontSize: 16,
 		lineHeight: 22,
 	},
 	deckDescription: {
 		color: colors.dark.primaryActive,
 		fontFamily: 'lexend-400',
 		fontSize: 13,
-		lineHeight: 18,
-		marginTop: 2,
+		lineHeight: 13,
+		marginTop: 4,
 	},
 	metadata: {
 		alignItems: 'center',
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 7,
-		marginTop: 9,
+		gap: 8,
+		marginTop: 8,
 	},
 	metadataItem: {
 		alignItems: 'center',
