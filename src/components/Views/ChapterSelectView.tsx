@@ -14,7 +14,6 @@ import MaterialSymbol from '../MaterialSymbol';
 
 const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-postmark.png');
 const postmarkBackgroundImage = require('@/src/app/assets/images/postcard-parts/background.jpg');
-const chaptersBackgroundImage = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
 /**
  * ChapterSelectView component
@@ -89,7 +88,8 @@ export default function ChapterSelectView() {
 		);
 	}
 
-	const { name, chapters, category } = selectedStory;
+	const { name, chapters, category, image } = selectedStory;
+	const categoryColor = colors.category[category];
 
 	/**
 	 * Render the card grid
@@ -97,8 +97,13 @@ export default function ChapterSelectView() {
 	return (
 		<ImageBackground
 			style={styles.background}
-			source={chaptersBackgroundImage}
+			source={image}
 		>
+			{/* Keep the category tint subtle beneath the neutral readability overlay. */}
+			<View
+				pointerEvents="none"
+				style={[styles.categoryTint, { backgroundColor: categoryColor }]}
+			/>
 			<ScrollView
 				contentContainerStyle={styles.scrollContentContainer}
 				style={styles.scrollView}
@@ -164,7 +169,9 @@ export default function ChapterSelectView() {
 									<View style={styles.chapterPostcardBorder}>
 										<View style={styles.chapterPostcardHeader}>
 											<View style={styles.chapterHeadingContainer}>
-												<Text style={styles.chapterLabelText}>{label}</Text>
+												<Text style={[styles.chapterLabelText, { color: categoryColor }]}>
+													{label}
+												</Text>
 												<Text style={styles.chapterTitleText}>{name}</Text>
 											</View>
 											<ImageBackground
@@ -175,7 +182,7 @@ export default function ChapterSelectView() {
 										{isLocked && (
 											<View style={styles.lockedInner}>
 												<LockedSection
-													color={colors.dark.primary}
+													color={categoryColor}
 													unlockCriteria={unlockCriteria}
 												/>
 											</View>
@@ -196,7 +203,7 @@ export default function ChapterSelectView() {
 																styles.chapterProgressBar,
 																{
 																	width: `${progressPercent}%`,
-																	backgroundColor: colors.dark.primary,
+																	backgroundColor: categoryColor,
 																	zIndex: 1,
 																},
 															]}
@@ -213,6 +220,7 @@ export default function ChapterSelectView() {
 													</View>
 												</View>
 												<LinkButton
+													color={categoryColor}
 													hitSlop={5}
 													handler={() => setSelectedChapterId(chapterId)}
 													style={styles.chapterSelectButton}
@@ -250,6 +258,11 @@ export default function ChapterSelectView() {
 const styles = StyleSheet.create({
 	background: {
 		height: '100%',
+		backgroundColor: colors.dark.background,
+	},
+	categoryTint: {
+		...StyleSheet.absoluteFill,
+		opacity: 0.1,
 	},
 	scrollContentContainer: {
 		display: 'flex',
@@ -332,7 +345,6 @@ const styles = StyleSheet.create({
 		gap: 2,
 	},
 	chapterLabelText: {
-		color: colors.dark.primary,
 		fontFamily: 'lexend-700',
 		fontSize: 12,
 		textTransform: 'uppercase',
