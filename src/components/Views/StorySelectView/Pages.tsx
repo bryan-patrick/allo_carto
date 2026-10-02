@@ -10,11 +10,6 @@ export default function Pages() {
 				resizeMode="stretch"
 				style={styles.pages}
 			/>
-			<ImageBackground
-				source={pagesImg}
-				resizeMode="stretch"
-				style={styles.pagesOffset}
-			/>
 		</View>
 	);
 }
@@ -22,19 +17,12 @@ export default function Pages() {
 const styles = StyleSheet.create({
 	pagesContainer: {
 		position: 'relative',
-		backgroundColor: 'rgba(0, 0, 0, 0.15)',
+		backgroundColor: 'rgba(0, 0, 0, 0.2)',
 		marginBottom: 8,
 	},
 	pages: {
 		width: '100%',
-		height: 10,
+		height: 12,
 		zIndex: -1,
-	},
-	pagesOffset: {
-		position: 'absolute',
-		width: '100%',
-		height: 10,
-		top: -5,
-		zIndex: -2,
 	},
 });
