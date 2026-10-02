@@ -65,7 +65,7 @@ export default function DeckBox({ deck, isLocked, chapterId, unlockCriteria }: D
 	 * Destructure atlas location and story
 	 */
 	const { story } = findAtlasLocationByChapterId(chapterId) ?? {};
-	const { color: storyColor = colors.dark.primary } = story ?? {};
+	const storyColor = story ? colors.category[story.category] : colors.dark.primary;
 
 	/**
 	 * Deck metadata

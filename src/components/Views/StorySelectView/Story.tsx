@@ -28,7 +28,8 @@ export default function Story({ story, progressById, progressPercent, isLocked }
 	/**
 	 * Destructure story
 	 */
-	const { category, name, description, color, materialSymbolName } = story;
+	const { category, name, description, materialSymbolName } = story;
+	const color = colors.category[category];
 
 	/**
 	 * Get the unlock criteria
@@ -62,7 +63,7 @@ export default function Story({ story, progressById, progressPercent, isLocked }
 							<View style={styles.storyImageContainer} />
 							<StoryMeta
 								progressPercent={progressPercent}
-								progressColor={color ?? '#000000'}
+								progressColor={color}
 							/>
 							<StorySelectButton
 								story={story}
@@ -73,7 +74,7 @@ export default function Story({ story, progressById, progressPercent, isLocked }
 					)}
 					{isLocked && (
 						<LockedSection
-							color={color ?? '#000000'}
+							color={color}
 							unlockCriteria={unlockCriteria}
 						/>
 					)}

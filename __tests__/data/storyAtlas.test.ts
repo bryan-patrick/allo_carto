@@ -23,14 +23,14 @@ describe('story atlas content', () => {
 		expect(storyAtlas.stories[0].chapters).toHaveLength(1);
 	});
 
-	test('includes the empty History story with its yellow spine', () => {
+	test('includes the empty History story with its former deck-select background', () => {
 		expect(storyAtlas.stories[1]).toMatchObject({
 			id: 'stories-on-the-plains',
 			name: 'Stories on the Plains',
 			description:
-				'Born from a walk through les plaines d’Abraham, these decks follow the plaques, monuments, and stories that reveal Québec’s past.',
+				'Born from walking les plaines d’Abraham, these decks follow the plaques and monuments that reveal Québec’s past.',
 			category: 'History',
-			color: '#B58A1F',
+			image: require('@/src/app/assets/images/decks/deck-select-bg.jpg'),
 			materialSymbolName: 'history_edu',
 			chapters: [],
 		});

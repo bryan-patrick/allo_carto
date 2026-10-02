@@ -51,6 +51,11 @@ const colors = {
 		known: '#1A1A1A',
 		mastered: '#009699',
 	},
+	category: {
+		History: '#693d26',
+		Mystery: '#463952',
+		Travel: '#454A36',
+	},
 	rarity: {
 		Common: '#f0d2a1',
 		Rare: '#a2cec2',

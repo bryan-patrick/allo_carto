@@ -99,7 +99,7 @@ export default function DeckPickerModal({
 	/**
 	 * Story display values
 	 */
-	const storyColor = story.color ?? colors.dark.primary;
+	const storyColor = colors.category[story.category];
 	const collapsedSheetHeight = windowHeight * 0.6;
 	const maximumPassageSheetHeight = Math.max(collapsedSheetHeight, windowHeight - top - 8);
 	const passageSheetHeight =
@@ -310,7 +310,7 @@ export default function DeckPickerModal({
 							<View style={styles.header}>
 								<Text style={[styles.chapterLabel, { color: storyColor }]}>{chapter.label}</Text>
 								<Text style={styles.chapterTitle}>{chapter.name}</Text>
-								<Text style={styles.modalDescription}>Choose a deck</Text>
+								<Text style={[styles.modalDescription, { color: storyColor }]}>Choose a deck</Text>
 							</View>
 
 							<ScrollView
@@ -342,7 +342,9 @@ export default function DeckPickerModal({
 												{!isLocked && (
 													<View>
 														<Text style={styles.deckTitle}>{deck.title}</Text>
-														<Text style={styles.deckDescription}>{deck.description}</Text>
+														<Text style={[styles.deckDescription, { color: storyColor }]}>
+															{deck.description}
+														</Text>
 														<View
 															accessible
 															accessibilityLabel={`${deck.CEFR.join(' to ')}, ${deck.wordIds.length} cards, ${completionPercent} percent known`}
@@ -510,14 +512,14 @@ const styles = StyleSheet.create({
 		paddingBottom: 12,
 		paddingHorizontal: 4,
 		paddingTop: 8,
-		marginBottom: 8,
+		marginBottom: 4,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
 	},
 	chapterLabel: {
 		fontFamily: 'lexend-700',
 		fontSize: 11,
-		marginBottom: 2,
+		marginBottom: 4,
 		textTransform: 'uppercase',
 	},
 	chapterTitle: {
@@ -539,11 +541,9 @@ const styles = StyleSheet.create({
 		borderBottomColor: colors.light.goldenBorder,
 		borderBottomWidth: 1,
 		borderLeftWidth: 4,
-		borderBottomLeftRadius: 8,
 		paddingHorizontal: 12,
 		paddingVertical: 12,
 		marginVertical: 4,
-
 		gap: 12,
 	},
 	deckTitle: {
