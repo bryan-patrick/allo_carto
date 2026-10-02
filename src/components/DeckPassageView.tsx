@@ -237,25 +237,17 @@ export default function DeckPassageView({
 									style={styles.passageText}
 								>
 									{isUnseen ?
-										<View style={styles.unseenWordContainer}>
-											<Animated.Text
-												style={[styles.passageWord, progressStyle, styles.unseenPassageWord]}
-											>
-												{text}
-											</Animated.Text>
-											<Animated.Text
-												accessible={false}
-												style={[
-													styles.unseenWordQuestion,
-													{
-														color: progressColor,
-														opacity: unseenQuestionOpacity,
-													},
-												]}
-											>
-												?
-											</Animated.Text>
-										</View>
+										<Animated.Text
+											style={[
+												styles.passageWord,
+												{
+													color: progressColor,
+													opacity: unseenQuestionOpacity,
+												},
+											]}
+										>
+											?
+										</Animated.Text>
 									:	<Animated.Text style={[styles.passageWord, progressStyle]}>{text}</Animated.Text>
 									}
 									{trailingText}
@@ -390,7 +382,8 @@ const styles = StyleSheet.create({
 	passageText: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
-		fontSize: 14,
+		fontSize: 16,
+		lineHeight: 32,
 	},
 	passageWord: {
 		fontFamily: 'lexend-400',
@@ -401,21 +394,20 @@ const styles = StyleSheet.create({
 		color: 'transparent',
 	},
 	unseenWordContainer: {
-		position: 'relative',
 		flexDirection: 'row',
+		height: 16,
+		position: 'relative',
 	},
 	unseenWordQuestion: {
-		borderBottomWidth: 1,
-		borderColor: 'transparent',
 		fontFamily: 'lexend-600',
 		fontSize: 16,
 		left: 0,
-		lineHeight: 32,
-		marginTop: 3,
+		lineHeight: 16,
 		position: 'absolute',
 		right: 0,
 		textAlign: 'center',
 		top: 0,
+		transform: [{ translateY: 8 }],
 	},
 	footer: {
 		paddingHorizontal: 8,
