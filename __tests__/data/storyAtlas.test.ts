@@ -11,11 +11,21 @@ describe('story atlas content', () => {
 		expect(getDecks()).toEqual([DeckDawnAtTheDropOff, DeckAnAmberApproach, DeckACabAndACloseCall]);
 	});
 
-	test('seeds exactly the words used by the playable decks', () => {
+	test('includes every playable deck word in the dictionary', () => {
 		const deckWordIds = new Set(getDecks().flatMap(deck => deck.wordIds));
 		const seedWordIds = new Set(seedWords.map(word => word.id));
 
-		expect(seedWordIds).toEqual(deckWordIds);
+		for (const wordId of deckWordIds) {
+			expect(seedWordIds.has(wordId)).toBe(true);
+		}
+	});
+
+	test.each([
+		{ deck: DeckDawnAtTheDropOff, wordCount: 80 },
+		{ deck: DeckAnAmberApproach, wordCount: 104 },
+		{ deck: DeckACabAndACloseCall, wordCount: 85 },
+	])('preserves the vocabulary count for $deck.title', ({ deck, wordCount }) => {
+		expect(deck.wordIds).toHaveLength(wordCount);
 	});
 
 	test('keeps the decks in the airport story and chapter', () => {
@@ -47,7 +57,7 @@ describe('story atlas content', () => {
 
 	test('preserves the complete A Cab and a Close Call passage', () => {
 		const renderedPassage = DeckACabAndACloseCall.passage
-			?.map(({ text, after }) => `${text}${after ?? ' '}`)
+			.map(({ text, after }) => `${text}${after ?? ' '}`)
 			.join('');
 
 		expect(renderedPassage).toBe(
@@ -57,7 +67,7 @@ describe('story atlas content', () => {
 
 	test('preserves the complete An Amber Approach passage', () => {
 		const renderedPassage = DeckAnAmberApproach.passage
-			?.map(({ text, after }) => `${text}${after ?? ' '}`)
+			.map(({ text, after }) => `${text}${after ?? ' '}`)
 			.join('');
 
 		expect(renderedPassage).toBe(

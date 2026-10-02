@@ -25,11 +25,11 @@ function makeProgressById(percentages: Record<string, number>): ProgressById {
 function makeAtlas(): StoryAtlas {
 	const firstDeck = makeMockCardDeck({
 		id: 'deck_one',
-		wordIds: ['shared_word', 'first_word', 'shared_word'],
+		passage: ['shared_word', 'first_word', 'shared_word'].map(wordId => ({ text: wordId, wordId })),
 	});
 	const secondDeck = makeMockCardDeck({
 		id: 'deck_two',
-		wordIds: ['shared_word', 'second_word', 'third_word'],
+		passage: ['shared_word', 'second_word', 'third_word'].map(wordId => ({ text: wordId, wordId })),
 		unlockRequirements: [
 			{
 				id: 'deck_one',
@@ -73,7 +73,7 @@ function makeAtlas(): StoryAtlas {
 						decks: [
 							makeMockCardDeck({
 								id: 'deck_three',
-								wordIds: ['fourth_word'],
+								passage: [{ text: 'Fourth', wordId: 'fourth_word' }],
 							}),
 						],
 					},
