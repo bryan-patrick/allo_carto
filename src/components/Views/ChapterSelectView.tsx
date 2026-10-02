@@ -1,10 +1,12 @@
 import type { DeckChapter } from '@/data/french/storyAtlas';
+import DeckPickerModal from '@/src/components/DeckPickerModal';
 import Loader from '@/src/components/Loader';
 import LockedSection from '@/src/components/LockedSection';
 import ViewIndicator from '@/src/components/ViewIndicator';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../../app/colors';
 import LinkButton from '../LinkButton';
@@ -18,9 +20,40 @@ const chaptersBackgroundImage = require('@/src/app/assets/images/chapters/chapte
  * ChapterSelectView component
  */
 export default function ChapterSelectView() {
+	/**
+	 * Context, route params, and state
+	 */
 	const { progressById, status } = useUserProgress();
-	const { storyId } = useLocalSearchParams<{ storyId?: string }>();
+	const {
+		storyId,
+		chapterId: requestedChapterId,
+		deckPickerRequest,
+	} = useLocalSearchParams<{
+		storyId?: string;
+		chapterId?: string;
+		deckPickerRequest?: string;
+	}>();
+	const [selectedChapterId, setSelectedChapterId] = useState<string>();
+	const [dismissedDeckPickerRequest, setDismissedDeckPickerRequest] = useState<string>();
+
+	/**
+	 * Selected story and deck picker state
+	 */
 	const selectedStory = findStoryById(storyId);
+	const returnedChapterId =
+		deckPickerRequest && deckPickerRequest !== dismissedDeckPickerRequest ?
+			requestedChapterId
+		:	undefined;
+	const openChapterId = selectedChapterId ?? returnedChapterId;
+	const selectedChapter = selectedStory?.chapters.find(chapter => chapter.id === openChapterId);
+
+	/**
+	 * Close the deck picker and consume a results return request
+	 */
+	function handleCloseDeckPicker() {
+		setSelectedChapterId(undefined);
+		setDismissedDeckPickerRequest(deckPickerRequest);
+	}
 
 	/**
 	 * Wait for the user's stored percentages
@@ -181,9 +214,8 @@ export default function ChapterSelectView() {
 												</View>
 												<LinkButton
 													hitSlop={5}
+													handler={() => setSelectedChapterId(chapterId)}
 													style={styles.chapterSelectButton}
-													screen={'(routes)/CardDeckSelect'}
-													params={{ chapterId }}
 												>
 													<Text style={styles.chapterSelectButtonText}>{selectText}</Text>
 												</LinkButton>
@@ -196,6 +228,18 @@ export default function ChapterSelectView() {
 					})
 				}
 			</ScrollView>
+			{/**
+			 * Show the selected chapter's decks without leaving the chapter view
+			 */}
+			{selectedChapter && (
+				<DeckPickerModal
+					chapter={selectedChapter}
+					onRequestClose={handleCloseDeckPicker}
+					progressById={progressById}
+					story={selectedStory}
+					visible={Boolean(selectedChapter)}
+				/>
+			)}
 		</ImageBackground>
 	);
 }

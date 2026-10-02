@@ -89,13 +89,17 @@ describe('<DeckResultsView />', () => {
 		getByText('tea');
 	});
 
-	test('dismisses results back to the selected chapter deck list when pressing finish', async () => {
+	test('dismisses results back to the selected chapter and reopens its deck picker', async () => {
 		const { getByText } = await render(<DeckResultsView />);
 
 		await fireEvent.press(getByText('Finish'));
 		expect(mockRouterDismissTo).toHaveBeenCalledWith({
-			pathname: '/CardDeckSelect',
-			params: { chapterId: 'aeroport-oiseau' },
+			pathname: '/ChapterSelect',
+			params: {
+				chapterId: 'aeroport-oiseau',
+				deckPickerRequest: expect.any(String),
+				storyId: 'a-very-french-travel-day',
+			},
 		});
 	});
 });

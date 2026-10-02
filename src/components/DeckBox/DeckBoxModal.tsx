@@ -1,7 +1,6 @@
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useRef, useState } from 'react';
 import {
-	Alert,
 	Animated,
 	ImageBackground,
 	Modal,
@@ -27,6 +26,8 @@ const modalBackground = require('@/src/app/assets/images/decks/paragraph-backgro
  */
 interface DeckBoxModalProps {
 	deck: CardDeck;
+	dismissLabel?: string;
+	embedded?: boolean;
 	modalVisible: boolean;
 	setModalVisible: (modalVisible: boolean) => void;
 	wordProgressCounts: DeckWordProgressCounts;
@@ -65,6 +66,8 @@ function createWordProgressOpacityValues(): Record<WordProgressKey, Animated.Val
  */
 export default function DeckBoxModal({
 	deck,
+	dismissLabel = 'Hide passage',
+	embedded = false,
 	modalVisible,
 	setModalVisible,
 	wordProgressCounts,
@@ -138,6 +141,212 @@ export default function DeckBoxModal({
 	}
 
 	/**
+	 * Passage content shared by the standalone and embedded presentations
+	 */
+	const passageContent = (
+		<View style={styles.centeredView}>
+			<ImageBackground
+				style={styles.modalView}
+				source={modalBackground}
+				resizeMode="stretch"
+			>
+				<View style={styles.modalInner}>
+					{/**
+					 * Modal Header
+					 */}
+					<View style={styles.header}>
+						<View>
+							<Text style={[styles.title, { color: deck.colors.dark.primary }]}>{deck.title}</Text>
+						</View>
+						<View
+							style={styles.progressMeta}
+							accessible={true}
+							accessibilityRole="progressbar"
+							accessibilityLabel={`Word progress ${deckCompletionPercent} percent. ${wordsSeenCount} of ${totalWordCount} seen.`}
+							accessibilityValue={{ min: 0, max: 100, now: deckCompletionPercent }}
+						>
+							<Text style={styles.progressMetaLabel}>Words known</Text>
+							<Text style={[styles.progressPercent, { color: deck.colors.dark.primary }]}>
+								{deckCompletionPercent}%
+							</Text>
+							<View style={styles.progressBarContainer}>
+								<View
+									style={[
+										styles.progressBar,
+										{
+											backgroundColor: deck.colors.dark.primary,
+											width: `${deckCompletionPercent}%`,
+										},
+									]}
+								/>
+							</View>
+							<Text style={styles.wordsSeen}>
+								{wordsSeenCount} / {totalWordCount} seen
+							</Text>
+						</View>
+					</View>
+
+					{/**
+					 * Modal Content
+					 */}
+					<ScrollView
+						ref={passageScrollViewRef}
+						style={styles.modalScrollView}
+						showsVerticalScrollIndicator={true}
+						persistentScrollbar={true}
+						indicatorStyle={'black'}
+					>
+						<View style={styles.modalTextContainer}>
+							<View
+								accessible={false}
+								pointerEvents="none"
+								style={styles.modalTextRules}
+							>
+								{passageLineMetrics.map(({ y, height }, index) => (
+									<View
+										key={index}
+										style={[styles.modalTextRule, { top: y + height }]}
+									/>
+								))}
+							</View>
+							<Text
+								onTextLayout={({ nativeEvent }) => {
+									const nextMetrics = nativeEvent.lines.map(({ y, height }) => ({ y, height }));
+
+									setPassageLineMetrics(currentMetrics => {
+										const metricsAreUnchanged =
+											currentMetrics.length === nextMetrics.length &&
+											currentMetrics.every(
+												(metric, index) =>
+													metric.y === nextMetrics[index].y &&
+													metric.height === nextMetrics[index].height,
+											);
+
+										return metricsAreUnchanged ? currentMetrics : nextMetrics;
+									});
+								}}
+							>
+								{deck.passage &&
+									deck.passage.map(({ text, wordId, after }, index) => {
+										const key = `${index}-${wordId ?? text}`;
+										const spaceMaybeButNotAlways = after ?? ' ';
+										const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
+										const isUnseen = progress === 'unseen';
+										const progressColor = colors.wordProgress[progress];
+
+										const progressStyle = {
+											color: progressColor,
+											opacity: wordProgressOpacityByKey[progress],
+										};
+
+										return (
+											<Text
+												key={key}
+												style={styles.modalText}
+											>
+												{isUnseen ?
+													<View style={styles.unseenWordContainer}>
+														<Animated.Text
+															style={[styles.passageWord, progressStyle, styles.unseenPassageWord]}
+														>
+															{text}
+														</Animated.Text>
+														<Animated.Text
+															accessible={false}
+															style={[
+																styles.unseenWordQuestion,
+																{
+																	color: progressColor,
+																	opacity: unseenQuestionOpacity,
+																},
+															]}
+														>
+															?
+														</Animated.Text>
+													</View>
+												:	<Animated.Text style={[styles.passageWord, progressStyle]}>
+														{text}
+													</Animated.Text>
+												}
+												{spaceMaybeButNotAlways}
+											</Text>
+										);
+									})}
+							</Text>
+						</View>
+					</ScrollView>
+					<View style={styles.modalFooter}>
+						<View style={styles.progressLegend}>
+							{wordProgressDefinitions.map(({ key, name, symbolName }) => {
+								const progressColor = colors.wordProgress[key];
+								const isActive = activeWordProgressFilter === key;
+								const wordCount = wordProgressCounts[key];
+
+								return (
+									<Pressable
+										key={key}
+										accessibilityRole="radio"
+										accessibilityLabel={`${name}, ${wordCount} ${wordCount === 1 ? 'word' : 'words'}`}
+										accessibilityState={{ checked: isActive }}
+										onPress={() => handleWordProgressFilterPress(key)}
+										style={[
+											styles.progressLegendItem,
+											isActive && {
+												backgroundColor: `${progressColor}33`,
+												borderColor: `${progressColor}66`,
+											},
+										]}
+									>
+										<MaterialSymbol
+											name={symbolName}
+											size={16}
+											color={progressColor}
+											style={styles.progressLegendIcon}
+										/>
+										<Text style={styles.progressLegendText}>{name}</Text>
+										<Text style={styles.progressLegendText}>({wordCount})</Text>
+									</Pressable>
+								);
+							})}
+						</View>
+					</View>
+				</View>
+			</ImageBackground>
+			<Pressable
+				accessibilityRole="button"
+				accessibilityLabel={dismissLabel}
+				onPress={() => setModalVisible(false)}
+				onPressIn={handleHidePassageButtonPressIn}
+				onPressOut={handleHidePassageButtonPressOut}
+				style={styles.hidePassageButton}
+			>
+				<MaterialSymbol
+					name={embedded ? 'arrow_back' : 'menu_book'}
+					size={20}
+					color={deck.colors.dark.primary}
+				/>
+				<Text style={[styles.hidePassageButtonText, { color: deck.colors.dark.primary }]}>
+					{dismissLabel}
+				</Text>
+				{!embedded && (
+					<Animated.View style={{ transform: [{ translateY: hidePassageChevronTranslateY }] }}>
+						<MaterialSymbol
+							name="expand_more"
+							size={20}
+							color={deck.colors.dark.primary}
+						/>
+					</Animated.View>
+				)}
+			</Pressable>
+		</View>
+	);
+
+	/**
+	 * The chapter deck picker owns the surrounding modal when embedded
+	 */
+	if (embedded) return modalVisible ? passageContent : null;
+
+	/**
 	 * Render the modal
 	 */
 	return (
@@ -148,210 +357,9 @@ export default function DeckBoxModal({
 			transparent={false}
 			visible={modalVisible}
 			onShow={() => passageScrollViewRef.current?.flashScrollIndicators()}
-			onRequestClose={() => {
-				Alert.alert('Modal has been closed.');
-				setModalVisible(!modalVisible);
-			}}
+			onRequestClose={() => setModalVisible(false)}
 		>
-			<View style={styles.centeredView}>
-				<ImageBackground
-					style={styles.modalView}
-					source={modalBackground}
-					resizeMode="stretch"
-				>
-					<View style={styles.modalInner}>
-						{/**
-						 * Modal Header
-						 */}
-						<View style={styles.header}>
-							<View>
-								<Text style={[styles.title, { color: deck.colors.dark.primary }]}>
-									{deck.title}
-								</Text>
-							</View>
-							<View
-								style={styles.progressMeta}
-								accessible={true}
-								accessibilityRole="progressbar"
-								accessibilityLabel={`Word progress ${deckCompletionPercent} percent. ${wordsSeenCount} of ${totalWordCount} seen.`}
-								accessibilityValue={{ min: 0, max: 100, now: deckCompletionPercent }}
-							>
-								<Text style={styles.progressMetaLabel}>Words known</Text>
-								<Text style={[styles.progressPercent, { color: deck.colors.dark.primary }]}>
-									{deckCompletionPercent}%
-								</Text>
-								<View style={styles.progressBarContainer}>
-									<View
-										style={[
-											styles.progressBar,
-											{
-												backgroundColor: deck.colors.dark.primary,
-												width: `${deckCompletionPercent}%`,
-											},
-										]}
-									/>
-								</View>
-								<Text style={styles.wordsSeen}>
-									{wordsSeenCount} / {totalWordCount} seen
-								</Text>
-							</View>
-						</View>
-
-						{/**
-						 * Modal Content
-						 */}
-						<ScrollView
-							ref={passageScrollViewRef}
-							style={styles.modalScrollView}
-							showsVerticalScrollIndicator={true}
-							persistentScrollbar={true}
-							indicatorStyle={'black'}
-						>
-							<View style={styles.modalTextContainer}>
-								<View
-									accessible={false}
-									pointerEvents="none"
-									style={styles.modalTextRules}
-								>
-									{passageLineMetrics.map(({ y, height }, index) => (
-										<View
-											key={index}
-											style={[styles.modalTextRule, { top: y + height }]}
-										/>
-									))}
-								</View>
-								<Text
-									onTextLayout={({ nativeEvent }) => {
-										const nextMetrics = nativeEvent.lines.map(({ y, height }) => ({ y, height }));
-
-										setPassageLineMetrics(currentMetrics => {
-											const metricsAreUnchanged =
-												currentMetrics.length === nextMetrics.length &&
-												currentMetrics.every(
-													(metric, index) =>
-														metric.y === nextMetrics[index].y &&
-														metric.height === nextMetrics[index].height,
-												);
-
-											return metricsAreUnchanged ? currentMetrics : nextMetrics;
-										});
-									}}
-								>
-									{deck.passage &&
-										deck.passage.map(({ text, wordId, after }, index) => {
-											const key = `${index}-${wordId ?? text}`;
-											const spaceMaybeButNotAlways = after ?? ' ';
-											const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
-											const isUnseen = progress === 'unseen';
-											const progressColor = colors.wordProgress[progress];
-
-											const progressStyle = {
-												color: progressColor,
-												opacity: wordProgressOpacityByKey[progress],
-											};
-
-											return (
-												<Text
-													key={key}
-													style={styles.modalText}
-												>
-													{isUnseen ?
-														<View style={styles.unseenWordContainer}>
-															<Animated.Text
-																style={[
-																	styles.passageWord,
-																	progressStyle,
-																	styles.unseenPassageWord,
-																]}
-															>
-																{text}
-															</Animated.Text>
-															<Animated.Text
-																accessible={false}
-																style={[
-																	styles.unseenWordQuestion,
-																	{
-																		color: progressColor,
-																		opacity: unseenQuestionOpacity,
-																	},
-																]}
-															>
-																?
-															</Animated.Text>
-														</View>
-													:	<Animated.Text style={[styles.passageWord, progressStyle]}>
-															{text}
-														</Animated.Text>
-													}
-													{spaceMaybeButNotAlways}
-												</Text>
-											);
-										})}
-								</Text>
-							</View>
-						</ScrollView>
-						<View style={styles.modalFooter}>
-							<View style={styles.progressLegend}>
-								{wordProgressDefinitions.map(({ key, name, symbolName }) => {
-									const progressColor = colors.wordProgress[key];
-									const isActive = activeWordProgressFilter === key;
-									const wordCount = wordProgressCounts[key];
-
-									return (
-										<Pressable
-											key={key}
-											accessibilityRole="radio"
-											accessibilityLabel={`${name}, ${wordCount} ${wordCount === 1 ? 'word' : 'words'}`}
-											accessibilityState={{ checked: isActive }}
-											onPress={() => handleWordProgressFilterPress(key)}
-											style={[
-												styles.progressLegendItem,
-												isActive && {
-													backgroundColor: `${progressColor}33`,
-													borderColor: `${progressColor}66`,
-												},
-											]}
-										>
-											<MaterialSymbol
-												name={symbolName}
-												size={16}
-												color={progressColor}
-												style={styles.progressLegendIcon}
-											/>
-											<Text style={styles.progressLegendText}>{name}</Text>
-											<Text style={styles.progressLegendText}>({wordCount})</Text>
-										</Pressable>
-									);
-								})}
-							</View>
-						</View>
-					</View>
-				</ImageBackground>
-				<Pressable
-					accessibilityRole="button"
-					accessibilityLabel="Hide passage"
-					onPress={() => setModalVisible(false)}
-					onPressIn={handleHidePassageButtonPressIn}
-					onPressOut={handleHidePassageButtonPressOut}
-					style={styles.hidePassageButton}
-				>
-					<MaterialSymbol
-						name="menu_book"
-						size={20}
-						color={deck.colors.dark.primary}
-					/>
-					<Text style={[styles.hidePassageButtonText, { color: deck.colors.dark.primary }]}>
-						Hide passage
-					</Text>
-					<Animated.View style={{ transform: [{ translateY: hidePassageChevronTranslateY }] }}>
-						<MaterialSymbol
-							name="expand_more"
-							size={20}
-							color={deck.colors.dark.primary}
-						/>
-					</Animated.View>
-				</Pressable>
-			</View>
+			{passageContent}
 		</Modal>
 	);
 }
@@ -528,6 +536,9 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		flexShrink: 1,
 		gap: 4,
+	},
+	progressLegendIcon: {
+		width: 18,
 	},
 	progressLegendText: {
 		color: colors.wordProgress.known,
