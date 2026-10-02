@@ -72,7 +72,7 @@ export const storyAtlas: StoryAtlas = {
 			description:
 				'Born from walking les plaines d’Abraham, these decks follow the plaques and monuments that reveal Québec’s past.',
 			category: 'History',
-			color: '#715e20',
+			color: '#693d26',
 			materialSymbolName: 'history_edu',
 			chapters: [],
 		},
