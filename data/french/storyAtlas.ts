@@ -3,6 +3,7 @@ import {
 	DeckAnAmberApproach,
 	DeckDawnAtTheDropOff,
 } from '@/data/french/decks';
+import type colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { Progression } from '@/src/util/progression';
 import type { ImageSourcePropType } from 'react-native';
@@ -10,14 +11,14 @@ import type { ImageSourcePropType } from 'react-native';
 /**
  * Image paths
  */
-
 const aeroportOiseau = require('@/src/app/assets/images/chapters/aeroport-oiseau.png');
-const aVeryFrenchTravelDay = require('@/src/app/assets/images/stories/a-very-french-travel-day.png');
+const aVeryFrenchTravelDay = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
+const storiesOnThePlains = require('@/src/app/assets/images/decks/deck-select-bg.jpg');
 
 /**
  * Typing
  */
-export type StoryCategory = 'History' | 'Mystery' | 'Travel';
+export type StoryCategory = keyof typeof colors.category;
 
 export interface StoryAtlas {
 	stories: DeckStory[];
@@ -30,7 +31,6 @@ export interface DeckStory extends Progression {
 	category: StoryCategory;
 	chapters: DeckChapter[];
 	image?: ImageSourcePropType;
-	color?: string;
 	materialSymbolName?: string;
 }
 
@@ -54,7 +54,6 @@ export const storyAtlas: StoryAtlas = {
 			description: 'Flights, feathers, occasional bread delays. These decks focus on travelling.',
 			category: 'Travel',
 			image: aVeryFrenchTravelDay,
-			color: '#454A36',
 			materialSymbolName: 'flight',
 			chapters: [
 				{
@@ -72,7 +71,7 @@ export const storyAtlas: StoryAtlas = {
 			description:
 				'Born from walking les plaines d’Abraham, these decks follow the plaques and monuments that reveal Québec’s past.',
 			category: 'History',
-			color: '#693d26',
+			image: storiesOnThePlains,
 			materialSymbolName: 'history_edu',
 			chapters: [],
 		},

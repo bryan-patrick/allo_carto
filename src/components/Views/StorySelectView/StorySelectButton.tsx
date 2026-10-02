@@ -1,4 +1,5 @@
 import type { DeckStory } from '@/data/french/storyAtlas';
+import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
 import { StyleSheet, Text } from 'react-native';
 
@@ -19,7 +20,8 @@ export default function StorySelectButton({
 	disabled = false,
 	progressPercent = 0,
 }: StorySelectButtonProps) {
-	const { id: storyId, color } = story;
+	const { id: storyId, category } = story;
+	const color = colors.category[category];
 	const selectText = progressPercent > 0 ? 'Continue Story' : 'Start Story';
 
 	/**
