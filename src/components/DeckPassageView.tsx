@@ -12,6 +12,7 @@ import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 
  * Typing
  */
 interface DeckPassageViewProps {
+	currentWordId?: string;
 	deck: CardDeck;
 	onContentHeightChange?: (contentHeight: number) => void;
 	wordProgressCounts: DeckWordProgressCounts;
@@ -78,6 +79,7 @@ function getPassageTrailingText(after?: string): string {
  * DeckPassageView component
  */
 export default function DeckPassageView({
+	currentWordId,
 	deck,
 	onContentHeightChange,
 	wordProgressCounts,
@@ -140,15 +142,18 @@ export default function DeckPassageView({
 	 */
 	function handleWordProgressFilterPress(progress: WordProgressKey) {
 		let nextProgress: WordProgressKey | null = progress;
+		let nextExemptWordOpacity = 1;
 
 		/**
 		 * Toggle the filter
 		 */
-		if (activeWordProgressFilter === progress) nextProgress = null;
+		if (activeWordProgressFilter === progress) {
+			nextProgress = null;
+		}
 
-		// Exempt words belong to no learning level, so every active filter dims them.
-		let nextExemptWordOpacity = 1;
-		if (nextProgress) nextExemptWordOpacity = filteredOutWordOpacity;
+		if (nextProgress) {
+			nextExemptWordOpacity = filteredOutWordOpacity;
+		}
 
 		setActiveWordProgressFilter(nextProgress);
 		Animated.parallel(
@@ -267,11 +272,14 @@ export default function DeckPassageView({
 					>
 						{deck.passage.map(({ text, wordId, unlockExempt, after }, index) => {
 							const key = `${index}-${wordId ?? text}`;
+							const isCurrentWord = Boolean(
+								currentWordId && wordId === currentWordId && !unlockExempt,
+							);
 							const trailingText = getPassageTrailingText(after);
 							const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
 							let displayProgress = progress;
 							let displayText = text;
-							let opacity: number | Animated.Value = wordProgressOpacityByKey[progress];
+							let opacity = wordProgressOpacityByKey[progress];
 
 							if (unlockExempt) {
 								displayProgress = 'known';
@@ -281,9 +289,24 @@ export default function DeckPassageView({
 								opacity = unseenQuestionOpacity;
 							}
 
+							const wordColor = getLearningLevelColor(displayProgress, useLearningLevelColors);
+							let backgroundColor: string | undefined;
+							let displayColor: string | Animated.AnimatedInterpolation<string> = wordColor;
+							let displayOpacity: number | Animated.Value = opacity;
+
+							if (isCurrentWord) {
+								backgroundColor = '#FFFFAAFF';
+								displayColor = opacity.interpolate({
+									inputRange: [0, 1],
+									outputRange: [`${wordColor}00`, wordColor],
+								});
+								displayOpacity = 1;
+							}
+
 							const progressStyle = {
-								color: getLearningLevelColor(displayProgress, useLearningLevelColors),
-								opacity,
+								backgroundColor,
+								color: displayColor,
+								opacity: displayOpacity,
 							};
 
 							return (
@@ -291,7 +314,10 @@ export default function DeckPassageView({
 									key={key}
 									style={styles.passageText}
 								>
-									<Animated.Text style={[styles.passageWord, progressStyle]}>
+									<Animated.Text
+										testID={`passage-word-${index}`}
+										style={[styles.passageWord, progressStyle]}
+									>
 										{displayText}
 									</Animated.Text>
 									{trailingText}

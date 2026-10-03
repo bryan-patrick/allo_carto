@@ -4,7 +4,15 @@ import DeckPassageView from '@/src/components/DeckPassageView';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import type { WordProgressKey } from '@/src/util/wordProgress';
-import { ImageBackground, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import {
+	ImageBackground,
+	Modal,
+	Pressable,
+	StyleSheet,
+	useWindowDimensions,
+	View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**
@@ -16,6 +24,7 @@ const postcardBackground = require('@/src/app/assets/images/postcard-parts/backg
  * Typing
  */
 interface DeckBoxModalProps {
+	currentWordId?: string;
 	deck: CardDeck;
 	modalVisible: boolean;
 	setModalVisible: (modalVisible: boolean) => void;
@@ -24,9 +33,10 @@ interface DeckBoxModalProps {
 }
 
 /**
- * Standalone passage modal used by the fallback deck selection route
+ * Standalone passage modal with a close button
  */
 export default function DeckBoxModal({
+	currentWordId,
 	deck,
 	modalVisible,
 	setModalVisible,
@@ -34,12 +44,33 @@ export default function DeckBoxModal({
 	wordProgressKeyByWordId,
 }: DeckBoxModalProps) {
 	const { bottom, top } = useSafeAreaInsets();
+	const { height: windowHeight } = useWindowDimensions();
+	const [passageMeasurement, setPassageMeasurement] = useState<{
+		deckId: string;
+		height: number;
+	}>();
+	const contentHeight =
+		passageMeasurement?.deckId === deck.id ? passageMeasurement.height : undefined;
+
+	/*
+	 * Use 60% of the screen until we know how tall the passage is.
+	 * Then fit the passage and controls, leaving room for the safe areas.
+	 * Long passages scroll instead of making the modal taller.
+	 */
+	const bottomPadding = Math.max(bottom, 16);
+	const initialSheetHeight = windowHeight * 0.6;
+	const maximumSheetHeight = Math.max(initialSheetHeight, windowHeight - top - 8);
+	const sheetHeight =
+		contentHeight === undefined ? initialSheetHeight : (
+			Math.min(contentHeight + 44 + bottomPadding, maximumSheetHeight)
+		);
 
 	/**
 	 * Render the modal
 	 */
 	return (
 		<Modal
+			accessibilityViewIsModal
 			animationType="slide"
 			onRequestClose={() => setModalVisible(false)}
 			presentationStyle="overFullScreen"
@@ -49,14 +80,15 @@ export default function DeckBoxModal({
 		>
 			<View style={styles.backdrop}>
 				<ImageBackground
+					testID="passage-modal-sheet"
 					imageStyle={styles.backgroundImage}
 					resizeMode="cover"
 					source={postcardBackground}
 					style={[
 						styles.sheet,
 						{
-							marginTop: top + 8,
-							paddingBottom: Math.max(bottom, 16),
+							height: sheetHeight,
+							paddingBottom: bottomPadding,
 						},
 					]}
 				>
@@ -77,7 +109,10 @@ export default function DeckBoxModal({
 						</Pressable>
 					</View>
 					<DeckPassageView
+						key={deck.id}
+						currentWordId={currentWordId}
 						deck={deck}
+						onContentHeightChange={height => setPassageMeasurement({ deckId: deck.id, height })}
 						wordProgressCounts={wordProgressCounts}
 						wordProgressKeyByWordId={wordProgressKeyByWordId}
 					/>
@@ -94,13 +129,13 @@ const styles = StyleSheet.create({
 	backdrop: {
 		backgroundColor: 'rgba(18, 18, 18, 0.72)',
 		flex: 1,
+		justifyContent: 'flex-end',
 	},
 	sheet: {
 		borderColor: colors.light.goldenBorder,
 		borderTopLeftRadius: 24,
 		borderTopRightRadius: 24,
 		borderTopWidth: 1,
-		flex: 1,
 		overflow: 'hidden',
 	},
 	backgroundImage: {

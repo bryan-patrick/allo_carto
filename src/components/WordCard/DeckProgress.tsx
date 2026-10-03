@@ -1,5 +1,4 @@
 import colors from '@/src/app/colors';
-import sharedStyles from '@/src/app/sharedStyles';
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { type CardRarity, Word } from '../CardDeck/cardDeckTypes';
 import { useCardDeck } from '../CardDeck/useCardDeck';
@@ -86,7 +85,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		maxWidth: '100%',
-		paddingHorizontal: sharedStyles.containerMargin,
+		flexShrink: 1,
+		paddingHorizontal: 8,
 		paddingVertical: 2,
 		backgroundColor: colors.dark.text,
 		gap: 8,
