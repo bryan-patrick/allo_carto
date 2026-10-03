@@ -7,7 +7,7 @@ import type { ImageSourcePropType } from 'react-native';
 /**
  * Image paths
  */
-const visitorInTheNight = require('@/src/app/assets/images/dep/dawn-at-the-drop-off.jpg');
+const leoInTheWindow = require('@/src/app/assets/images/chapters/leo-in-the-window.png');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
 /**
@@ -44,18 +44,18 @@ export interface DeckChapter extends Progression {
 export const storyAtlas: StoryAtlas = {
 	stories: [
 		{
-			id: 'meet-leo',
-			name: 'Meet Leo',
+			id: 'meeting-leo',
+			name: 'Meeting Leo',
 			description: 'A rainy night, a mysterious visitor, and the beginning of Cat Files.',
 			category: 'Cat Files',
 			image: chapterSelectBackground,
 			materialSymbolName: 'pets',
 			chapters: [
 				{
-					id: 'a-visitor-in-the-night',
+					id: 'leo-in-the-window',
 					label: 'Chapter 1',
-					name: 'A visitor in the night',
-					image: visitorInTheNight,
+					name: 'Leo in the Window',
+					image: leoInTheWindow,
 					decks: [DeckRainyNight, DeckWindowWatcher],
 				},
 			],

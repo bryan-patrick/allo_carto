@@ -249,7 +249,6 @@ const styles = StyleSheet.create({
 		alignContent: 'center',
 		justifyContent: 'center',
 		flexGrow: 1,
-		flexShrink: 1,
 		borderRadius: 6,
 		maxWidth: '50%',
 		borderColor: colors.light.border,

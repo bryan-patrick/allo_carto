@@ -99,11 +99,6 @@ export default function ChapterSelectView() {
 			style={styles.background}
 			source={image ?? chapterSelectBackground}
 		>
-			{/* Keep the category tint subtle beneath the neutral readability overlay. */}
-			<View
-				pointerEvents="none"
-				style={[styles.categoryTint, { backgroundColor: categoryColor }]}
-			/>
 			<ScrollView
 				contentContainerStyle={styles.scrollContentContainer}
 				style={styles.scrollView}
@@ -259,10 +254,6 @@ const styles = StyleSheet.create({
 	background: {
 		height: '100%',
 		backgroundColor: colors.dark.background,
-	},
-	categoryTint: {
-		...StyleSheet.absoluteFill,
-		opacity: 0.1,
 	},
 	scrollContentContainer: {
 		display: 'flex',

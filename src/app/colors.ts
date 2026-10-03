@@ -53,14 +53,14 @@ const colors = {
 	},
 	category: {
 		Travel: '#454A36',
-		History: '#693D26',
+		History: '#694424',
 		Dining: '#7A352B',
 		Social: '#653C67',
 		Health: '#285D54',
 		Directions: '#315674',
 		Shopping: '#713E53',
 		Everyday: '#665321',
-		'Cat Files': '#463952',
+		'Cat Files': '#424536',
 	},
 	rarity: {
 		Common: '#f0d2a1',
