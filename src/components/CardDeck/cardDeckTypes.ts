@@ -18,11 +18,6 @@ export type WordForm =
 	| 'present participle'
 	| 'present';
 
-export interface DeckColors {
-	dark: Record<'primary' | 'secondary', string>;
-	light: Record<'primary' | 'secondary', string>;
-}
-
 export interface DeckWordChoice {
 	englishWords: string[];
 	partOfSpeech?: string;
@@ -44,7 +39,6 @@ export interface CardDeckDefinition extends Progression {
 	words: Word[];
 	wordChoices: DeckWordChoice[];
 	chapter: string;
-	colors: DeckColors;
 	passage: PassageSegment[];
 	/** Original English passage, when available. */
 	englishPassage?: string;

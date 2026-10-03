@@ -1,8 +1,8 @@
 import sharedStyles from '@/src/app/sharedStyles';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../../app/colors';
-import GradientText from '../GradientText';
 
 interface ViewCardsViewProps {
 	deck?: CardDeck;
@@ -14,18 +14,14 @@ interface ViewCardsViewProps {
 export default function ViewCardsView({ deck }: ViewCardsViewProps) {
 	const title = deck?.title ?? 'Some Deck';
 	const cardCount = deck?.wordIds.length ?? 0;
+	const storyColor = getDeckStoryColor(deck?.id);
 
 	return (
 		<ScrollView contentContainerStyle={styles.container}>
 			<View style={styles.card}>
 				{deck && (
 					<>
-						<GradientText
-							colors={[deck.colors.dark.primary, deck.colors.dark.secondary]}
-							fontSize={22}
-							fontWeight={700}
-							text={title}
-						/>
+						<Text style={[styles.title, { color: storyColor }]}>{title}</Text>
 						<Text style={styles.metaText}>{cardCount} cards</Text>
 					</>
 				)}

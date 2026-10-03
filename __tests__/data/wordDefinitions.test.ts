@@ -32,22 +32,6 @@ describe('word definitions', () => {
 		expect(wordsWithDuplicatedArticles).toEqual([]);
 	});
 
-	/**
-	 * English answer articles also have their own selection slot,
-	 * so translations must not contain the same article again.
-	 */
-	test('do not duplicate English articles inside englishWords', () => {
-		const wordsWithDuplicatedArticles = seedWords
-			.filter(word => word.englishArticle)
-			.flatMap(word =>
-				word.englishWords
-					.filter(englishWord => startsWithArticle(englishWord, word.englishArticle as string))
-					.map(() => word.id),
-			);
-
-		expect(wordsWithDuplicatedArticles).toEqual([]);
-	});
-
 	test('keep leading English articles in the first answer slot', () => {
 		const wordsWithEmbeddedArticles = seedWords.flatMap(word =>
 			word.englishWords

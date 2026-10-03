@@ -17,7 +17,6 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated';
 import colors from '../app/colors';
-import type { DeckColors } from './CardDeck/cardDeckTypes';
 import SVGRightArrow from './SVG/SVGRightArrow';
 
 /**
@@ -42,7 +41,6 @@ interface LinkButtonProps extends Omit<PressableProps, 'style'> {
 	screen?: string;
 	href?: string;
 	props?: any;
-	deckColors?: DeckColors;
 	arrowSize?: number;
 	useArrow?: boolean;
 	arrowColor?: string;
@@ -76,7 +74,6 @@ export default function LinkButton({
 	color,
 	contentPaddingHorizontal = 16,
 	contentPaddingVertical = 8,
-	deckColors,
 	fullwidth = false,
 	showInnerBorder = true,
 	showShadow = true,
@@ -102,19 +99,10 @@ export default function LinkButton({
 	}));
 
 	let allTheProps = { ...pressableProps, ...props };
-	let deckColorStyles: ViewStyle = {};
 	let typeStyle: ViewStyle = {};
 	let outlineTextStyle = {};
 	let iconElement = SVGElement;
 	let resolvedArrowColor = arrowColor;
-
-	if (deckColors) {
-		deckColorStyles = {
-			backgroundColor: deckColors.dark.secondary,
-			shadowColor: deckColors.dark.primary,
-			borderColor: deckColors.dark.primary,
-		};
-	}
 
 	if (type === 'outline') {
 		typeStyle = { backgroundColor: 'transparent' };
@@ -214,7 +202,6 @@ export default function LinkButton({
 			}}
 			style={[
 				styles.linkButton,
-				deckColorStyles,
 				animatedButtonStyle,
 				fullwidth && styles.fullwidth,
 				typeStyle,

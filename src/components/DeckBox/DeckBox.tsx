@@ -10,8 +10,9 @@ import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
-import { findAtlasLocationByChapterId, type UnlockCriteria } from '@/src/util/atlasCompletion';
+import type { UnlockCriteria } from '@/src/util/atlasCompletion';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
+import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -34,14 +35,13 @@ const deckBoxBg = require('@/src/app/assets/images/decks/deck-box-bg.jpg');
 interface DeckBoxProps {
 	deck: CardDeck;
 	isLocked: boolean;
-	chapterId?: string;
 	unlockCriteria: UnlockCriteria[];
 }
 
 /**
  * DeckBox component
  */
-export default function DeckBox({ deck, isLocked, chapterId, unlockCriteria }: DeckBoxProps) {
+export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps) {
 	/**
 	 * Destructure deck
 	 */
@@ -62,10 +62,9 @@ export default function DeckBox({ deck, isLocked, chapterId, unlockCriteria }: D
 	const [passageChevronTranslateY] = useState(() => new Animated.Value(0));
 
 	/**
-	 * Destructure atlas location and story
+	 * Story display values
 	 */
-	const { story } = findAtlasLocationByChapterId(chapterId) ?? {};
-	const storyColor = story ? colors.category[story.category] : colors.dark.primary;
+	const storyColor = getDeckStoryColor(deck.id);
 
 	/**
 	 * Deck metadata

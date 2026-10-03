@@ -8,10 +8,6 @@ export const DeckRainyNight = createCardDeck({
 	CEFR: ['A1', 'A2', 'B1', 'B2'],
 	words: [],
 	wordChoices: [],
-	colors: {
-		dark: { primary: '#303957', secondary: '#66506F' },
-		light: { primary: '#F0EDF7', secondary: '#FFF7E5' },
-	},
 	englishPassage:
 		'It was three o’clock in the morning on a Monday in Wallace’s apartment. Rain tapped rhythmically against the window beside his bed. The room was warm near the radiator and cold everywhere else. Outside, the street had lost its color. Dark pavement. Outlines of buildings. Orange light from the lamps. Occasionally, white headlights moved across the wall and ceiling, throwing strange shadows around the room.',
 	passage: [

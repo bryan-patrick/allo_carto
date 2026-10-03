@@ -3,6 +3,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
+import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -88,6 +89,7 @@ export default function DeckPassageView({
 	 * Passage metadata
 	 */
 	const totalWordCount = deck.wordIds.length;
+	const storyColor = getDeckStoryColor(deck.id);
 	const wordsSeenCount =
 		wordProgressCounts.new +
 		wordProgressCounts.learning +
@@ -154,7 +156,7 @@ export default function DeckPassageView({
 				onLayout={({ nativeEvent }) => handleHeightMeasurement('header', nativeEvent.layout.height)}
 				style={styles.header}
 			>
-				<Text style={[styles.title, { color: deck.colors.dark.primary }]}>{deck.title}</Text>
+				<Text style={[styles.title, { color: storyColor }]}>{deck.title}</Text>
 				<View
 					accessible
 					accessibilityLabel={`Word progress ${deckCompletionPercent} percent. ${wordsSeenCount} of ${totalWordCount} seen.`}
@@ -163,7 +165,7 @@ export default function DeckPassageView({
 					style={styles.progressMeta}
 				>
 					<Text style={styles.progressLabel}>Words known</Text>
-					<Text style={[styles.progressPercent, { color: deck.colors.dark.primary }]}>
+					<Text style={[styles.progressPercent, { color: storyColor }]}>
 						{deckCompletionPercent}%
 					</Text>
 					<View style={styles.progressBarContainer}>
@@ -171,7 +173,7 @@ export default function DeckPassageView({
 							style={[
 								styles.progressBar,
 								{
-									backgroundColor: deck.colors.dark.primary,
+									backgroundColor: storyColor,
 									width: `${deckCompletionPercent}%`,
 								},
 							]}

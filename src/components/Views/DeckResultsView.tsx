@@ -1,11 +1,11 @@
 import { storyAtlas } from '@/data/french/storyAtlas';
 import sharedStyles from '@/src/app/sharedStyles';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../../app/colors';
 import { useCardDeck } from '../CardDeck/useCardDeck';
-import GradientText from '../GradientText';
 import LinkButton from '../LinkButton';
 import ResultsList from '../ResultsList';
 
@@ -58,6 +58,7 @@ export default function DeckResultsView() {
 	const isFirstLetterAVowel = englishVowels.includes(title.split('')[0].toLowerCase());
 	const resultsTitleArticle = isFirstLetterAVowel ? 'an' : 'a';
 	const atlasLocation = findDeckAtlasLocation(cardDeckState.cardDeck);
+	const storyColor = getDeckStoryColor(cardDeckState.cardDeck.id);
 
 	/**
 	 * Return to the completed deck's chapter and reopen its deck picker
@@ -86,15 +87,7 @@ export default function DeckResultsView() {
 				<View>
 					<View style={styles.titleRow}>
 						<Text style={styles.title}>Good job! You completed {resultsTitleArticle} </Text>
-						<GradientText
-							text={title}
-							colors={[
-								cardDeckState.cardDeck.colors.dark.primary,
-								cardDeckState.cardDeck.colors.dark.secondary,
-							]}
-							fontSize={20}
-							fontWeight={600}
-						/>
+						<Text style={[styles.title, { color: storyColor }]}>{title}</Text>
 						<Text style={styles.title}> deck.</Text>
 					</View>
 				</View>

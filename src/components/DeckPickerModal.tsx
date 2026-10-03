@@ -335,7 +335,7 @@ export default function DeckPickerModal({
 												style={[
 													styles.deckRow,
 													{
-														borderLeftColor: isLocked ? storyColor : deck.colors.dark.primary,
+														borderLeftColor: storyColor,
 													},
 												]}
 											>

@@ -9,10 +9,6 @@ export const DeckWindowWatcher = createCardDeck({
 	unlockRequirements: [{ id: 'deck__rainy_night', requiredCompletionPercentage: 1 }],
 	words: [],
 	wordChoices: [],
-	colors: {
-		dark: { primary: '#303957', secondary: '#66506F' },
-		light: { primary: '#F0EDF7', secondary: '#FFF7E5' },
-	},
 	englishPassage:
 		'Wallace pulled his blanket higher and closed his eyes. A few seconds later, something tapped against the window. It was not rain. He threw off the blanket and opened his eyes again. Two big yellow eyes were staring back at him through the glass. The eyes blinked. Wallace blinked. The sound of a muffled meow came through the glass.',
 	passage: [
