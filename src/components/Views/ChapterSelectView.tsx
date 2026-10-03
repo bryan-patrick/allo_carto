@@ -1,4 +1,4 @@
-import type { DeckChapter } from '@/data/french/storyAtlas';
+import { chapterSelectBackground, type DeckChapter } from '@/data/french/storyAtlas';
 import DeckPickerModal from '@/src/components/DeckPickerModal';
 import Loader from '@/src/components/Loader';
 import LockedSection from '@/src/components/LockedSection';
@@ -97,7 +97,7 @@ export default function ChapterSelectView() {
 	return (
 		<ImageBackground
 			style={styles.background}
-			source={image}
+			source={image ?? chapterSelectBackground}
 		>
 			{/* Keep the category tint subtle beneath the neutral readability overlay. */}
 			<View

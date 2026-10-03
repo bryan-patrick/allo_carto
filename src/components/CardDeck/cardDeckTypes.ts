@@ -12,6 +12,7 @@ export type WordForm =
 	| 'infinitive'
 	| 'masculine'
 	| 'past participle'
+	| 'past historic'
 	| 'plural'
 	| 'possessive'
 	| 'present participle'
@@ -30,6 +31,8 @@ export interface DeckWordChoice {
 export interface PassageSegment {
 	text: string;
 	wordId?: string;
+	/** Always readable; excluded from practice cards and completion (e.g. names). */
+	unlockExempt?: boolean;
 	after?: string;
 }
 
@@ -43,10 +46,12 @@ export interface CardDeckDefinition extends Progression {
 	chapter: string;
 	colors: DeckColors;
 	passage: PassageSegment[];
+	/** Original English passage, when available. */
+	englishPassage?: string;
 }
 
 export interface CardDeck extends CardDeckDefinition {
-	/** Word IDs from the passage, with duplicates removed. */
+	/** Non-exempt word IDs from the passage, with duplicates removed. */
 	wordIds: string[];
 }
 

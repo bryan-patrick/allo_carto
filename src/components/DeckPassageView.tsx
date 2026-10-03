@@ -220,15 +220,15 @@ export default function DeckPassageView({
 							});
 						}}
 					>
-						{deck.passage.map(({ text, wordId, after }, index) => {
+						{deck.passage.map(({ text, wordId, unlockExempt, after }, index) => {
 							const key = `${index}-${wordId ?? text}`;
 							const trailingText = getPassageTrailingText(after);
 							const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
-							const isUnseen = progress === 'unseen';
-							const progressColor = colors.wordProgress[progress];
+							const isUnseen = !unlockExempt && progress === 'unseen';
+							const progressColor = colors.wordProgress[unlockExempt ? 'known' : progress];
 							const progressStyle = {
 								color: progressColor,
-								opacity: wordProgressOpacityByKey[progress],
+								opacity: unlockExempt ? 1 : wordProgressOpacityByKey[progress],
 							};
 
 							return (

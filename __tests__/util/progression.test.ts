@@ -58,7 +58,7 @@ function makeAtlas(): StoryAtlas {
 				id: 'story_two',
 				name: 'Story two',
 				description: 'The second story',
-				category: 'Mystery',
+				category: 'Cat Files',
 				unlockRequirements: [
 					{
 						id: 'story_one',

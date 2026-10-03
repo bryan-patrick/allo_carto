@@ -1,4 +1,4 @@
-import { DeckDawnAtTheDropOff } from '@/data/french/decks';
+import { DeckRainyNight } from '@/data/french/decks';
 import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { makeMockCardDeckState } from '@/src/components/CardDeck/mockCardDeck';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
@@ -58,7 +58,7 @@ describe('<DeckResultsView />', () => {
 			},
 		];
 		const cardDeck = {
-			...DeckDawnAtTheDropOff,
+			...DeckRainyNight,
 			words,
 		};
 
@@ -78,7 +78,7 @@ describe('<DeckResultsView />', () => {
 	test('renders the deck details and correct and incorrect words', async () => {
 		const { getByText, getAllByText } = await render(<DeckResultsView />);
 
-		getAllByText(DeckDawnAtTheDropOff.title);
+		getAllByText(DeckRainyNight.title);
 
 		getByText('Correct');
 		getByText('cafe');
@@ -96,9 +96,9 @@ describe('<DeckResultsView />', () => {
 		expect(mockRouterDismissTo).toHaveBeenCalledWith({
 			pathname: '/ChapterSelect',
 			params: {
-				chapterId: 'aeroport-oiseau',
+				chapterId: 'a-visitor-in-the-night',
 				deckPickerRequest: expect.any(String),
-				storyId: 'a-very-french-travel-day',
+				storyId: 'meet-leo',
 			},
 		});
 	});

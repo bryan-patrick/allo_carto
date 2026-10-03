@@ -17,6 +17,9 @@ function startsWithArticle(word: string, article: string) {
 }
 
 describe('word definitions', () => {
+	test('use unique dictionary IDs', () => {
+		expect(new Set(seedWords.map(word => word.id)).size).toBe(seedWords.length);
+	});
 	/**
 	 * French articles are rendered separately by the card UI.
 	 * Including one in frenchWord would display it twice.

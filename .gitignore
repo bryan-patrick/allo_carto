@@ -23,6 +23,8 @@ expo-env.d.ts
 *.swp
 .DS_Store
 *.pem
+canon.md
+cannon/
 
 # local env files
 .env*.local
