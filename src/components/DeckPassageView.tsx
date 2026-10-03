@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		minHeight: 0,
 		paddingHorizontal: 16,
-		paddingVertical: 4,
+		paddingVertical: 8,
 	},
 	passageTextContainer: {
 		position: 'relative',
