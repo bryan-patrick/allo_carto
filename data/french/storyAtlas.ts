@@ -51,7 +51,8 @@ export const storyAtlas: StoryAtlas = {
 		{
 			id: 'meeting-leo',
 			name: 'Meeting Leo',
-			description: 'A rainy night, a mysterious visitor, and the beginning of Cat Files.',
+			description:
+				'Wallace hopes that the strange eyes outside his window belong to a very large cat.',
 			category: 'Cat Files',
 			image: chapterSelectBackground,
 			materialSymbolName: 'pets',
@@ -68,8 +69,7 @@ export const storyAtlas: StoryAtlas = {
 		{
 			id: 'a-matter-of-leaves',
 			name: 'A Matter of Leaves',
-			description:
-				'Autumn leaves, friendly neighbors, and a misunderstanding that blows out of proportion.',
+			description: 'Leo the cat watches two humans feud over a pile of leaves.',
 			category: 'Social',
 			image: chapterSelectBackground,
 			materialSymbolName: 'eco',
