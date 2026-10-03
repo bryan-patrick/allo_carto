@@ -6,7 +6,7 @@ import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 /**
  * Typing
@@ -33,14 +33,24 @@ interface PassageHeightMeasurements {
  * Constants
  */
 const defaultUnseenQuestionOpacity = 0.25;
+const filteredOutWordOpacity = 0.05;
 
 /**
  * Helper functions
  */
 function getPassageWordOpacity(progress: WordProgressKey, filter: WordProgressKey | null): number {
-	if (!filter) return progress === 'unseen' ? 0.25 : 1;
+	if (filter) {
+		if (progress === filter) return 1;
+		return filteredOutWordOpacity;
+	}
 
-	return progress === filter ? 1 : 0.15;
+	if (progress === 'unseen') return defaultUnseenQuestionOpacity;
+	return 1;
+}
+
+function getLearningLevelColor(progress: WordProgressKey, useLearningLevelColors: boolean): string {
+	if (useLearningLevelColors) return colors.wordProgress[progress];
+	return colors.dark.text;
 }
 
 function createWordProgressOpacityValues(): Record<WordProgressKey, Animated.Value> {
@@ -57,7 +67,11 @@ function createWordProgressOpacityValues(): Record<WordProgressKey, Animated.Val
 function getPassageTrailingText(after?: string): string {
 	const trailingText = after ?? ' ';
 
-	return trailingText.endsWith(' ') ? `${trailingText}\u2009` : trailingText;
+	/**
+	 * Add a thin space after word gaps while leaving punctuation alone.
+	 */
+	if (trailingText.endsWith(' ')) return `${trailingText}\u2009`;
+	return trailingText;
 }
 
 /**
@@ -73,11 +87,13 @@ export default function DeckPassageView({
 	 * State
 	 */
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
+	const [useLearningLevelColors, setUseLearningLevelColors] = useState(true);
 	const [activeWordProgressFilter, setActiveWordProgressFilter] = useState<WordProgressKey | null>(
 		null,
 	);
 	const [wordProgressOpacityByKey] = useState(createWordProgressOpacityValues);
 	const [unseenQuestionOpacity] = useState(() => new Animated.Value(defaultUnseenQuestionOpacity));
+	const [exemptWordOpacity] = useState(() => new Animated.Value(1));
 	const passageHeightMeasurements = useRef<PassageHeightMeasurements>({
 		footer: 0,
 		header: 0,
@@ -90,6 +106,7 @@ export default function DeckPassageView({
 	 */
 	const totalWordCount = deck.wordIds.length;
 	const storyColor = getDeckStoryColor(deck.id);
+	const progressLegendTextColor = getLearningLevelColor('known', useLearningLevelColors);
 	const wordsSeenCount =
 		wordProgressCounts.new +
 		wordProgressCounts.learning +
@@ -102,7 +119,7 @@ export default function DeckPassageView({
 	});
 
 	/**
-	 * Report the passage's natural height to its modal
+	 * Get the rendered height for the modal
 	 */
 	function handleHeightMeasurement(section: keyof PassageHeightMeasurements, height: number) {
 		passageHeightMeasurements.current[section] = height;
@@ -122,7 +139,16 @@ export default function DeckPassageView({
 	 * Highlight one word progress group at a time
 	 */
 	function handleWordProgressFilterPress(progress: WordProgressKey) {
-		const nextProgress = activeWordProgressFilter === progress ? null : progress;
+		let nextProgress: WordProgressKey | null = progress;
+
+		/**
+		 * Toggle the filter
+		 */
+		if (activeWordProgressFilter === progress) nextProgress = null;
+
+		// Exempt words belong to no learning level, so every active filter dims them.
+		let nextExemptWordOpacity = 1;
+		if (nextProgress) nextExemptWordOpacity = filteredOutWordOpacity;
 
 		setActiveWordProgressFilter(nextProgress);
 		Animated.parallel(
@@ -135,10 +161,12 @@ export default function DeckPassageView({
 					}),
 				),
 				Animated.timing(unseenQuestionOpacity, {
-					toValue:
-						nextProgress === null ? defaultUnseenQuestionOpacity
-						: nextProgress === 'unseen' ? 1
-						: 0.15,
+					toValue: getPassageWordOpacity('unseen', nextProgress),
+					duration: 120,
+					useNativeDriver: true,
+				}),
+				Animated.timing(exemptWordOpacity, {
+					toValue: nextExemptWordOpacity,
 					duration: 120,
 					useNativeDriver: true,
 				}),
@@ -183,6 +211,20 @@ export default function DeckPassageView({
 						{wordsSeenCount} / {totalWordCount} seen
 					</Text>
 				</View>
+				<View style={styles.learningLevelColorsRow}>
+					<Text style={styles.learningLevelColorsLabel}>Use learning level colors</Text>
+					<View style={styles.learningLevelColorsSwitchContainer}>
+						<Switch
+							accessibilityLabel="Use learning level colors"
+							hitSlop={12}
+							ios_backgroundColor={colors.light.border}
+							onValueChange={setUseLearningLevelColors}
+							style={styles.learningLevelColorsSwitch}
+							trackColor={{ false: colors.light.border, true: storyColor }}
+							value={useLearningLevelColors}
+						/>
+					</View>
+				</View>
 			</View>
 
 			<ScrollView
@@ -218,7 +260,8 @@ export default function DeckPassageView({
 											metric.height === nextMetrics[index].height,
 									);
 
-								return metricsAreUnchanged ? currentMetrics : nextMetrics;
+								if (metricsAreUnchanged) return currentMetrics;
+								return nextMetrics;
 							});
 						}}
 					>
@@ -226,11 +269,21 @@ export default function DeckPassageView({
 							const key = `${index}-${wordId ?? text}`;
 							const trailingText = getPassageTrailingText(after);
 							const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
-							const isUnseen = !unlockExempt && progress === 'unseen';
-							const progressColor = colors.wordProgress[unlockExempt ? 'known' : progress];
+							let displayProgress = progress;
+							let displayText = text;
+							let opacity: number | Animated.Value = wordProgressOpacityByKey[progress];
+
+							if (unlockExempt) {
+								displayProgress = 'known';
+								opacity = exemptWordOpacity;
+							} else if (progress === 'unseen') {
+								displayText = '?';
+								opacity = unseenQuestionOpacity;
+							}
+
 							const progressStyle = {
-								color: progressColor,
-								opacity: unlockExempt ? 1 : wordProgressOpacityByKey[progress],
+								color: getLearningLevelColor(displayProgress, useLearningLevelColors),
+								opacity,
 							};
 
 							return (
@@ -238,20 +291,9 @@ export default function DeckPassageView({
 									key={key}
 									style={styles.passageText}
 								>
-									{isUnseen ?
-										<Animated.Text
-											style={[
-												styles.passageWord,
-												{
-													color: progressColor,
-													opacity: unseenQuestionOpacity,
-												},
-											]}
-										>
-											?
-										</Animated.Text>
-									:	<Animated.Text style={[styles.passageWord, progressStyle]}>{text}</Animated.Text>
-									}
+									<Animated.Text style={[styles.passageWord, progressStyle]}>
+										{displayText}
+									</Animated.Text>
 									{trailingText}
 								</Text>
 							);
@@ -266,14 +308,16 @@ export default function DeckPassageView({
 			>
 				<View style={styles.progressLegend}>
 					{wordProgressDefinitions.map(({ key, name, symbolName }) => {
-						const progressColor = colors.wordProgress[key];
+						const progressColor = getLearningLevelColor(key, useLearningLevelColors);
 						const isActive = activeWordProgressFilter === key;
 						const wordCount = wordProgressCounts[key];
+						let wordCountLabel = 'words';
+						if (wordCount === 1) wordCountLabel = 'word';
 
 						return (
 							<Pressable
 								key={key}
-								accessibilityLabel={`${name}, ${wordCount} ${wordCount === 1 ? 'word' : 'words'}`}
+								accessibilityLabel={`${name}, ${wordCount} ${wordCountLabel}`}
 								accessibilityRole="radio"
 								accessibilityState={{ checked: isActive }}
 								onPress={() => handleWordProgressFilterPress(key)}
@@ -291,8 +335,12 @@ export default function DeckPassageView({
 									size={16}
 									style={styles.progressLegendIcon}
 								/>
-								<Text style={styles.progressLegendText}>{name}</Text>
-								<Text style={styles.progressLegendText}>({wordCount})</Text>
+								<Text style={[styles.progressLegendText, { color: progressLegendTextColor }]}>
+									{name}
+								</Text>
+								<Text style={[styles.progressLegendText, { color: progressLegendTextColor }]}>
+									({wordCount})
+								</Text>
 							</Pressable>
 						);
 					})}
@@ -355,17 +403,37 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		fontSize: 12,
 	},
+	learningLevelColorsRow: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		gap: 8,
+	},
+	learningLevelColorsLabel: {
+		color: colors.dark.text,
+		flexShrink: 1,
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+	},
+	learningLevelColorsSwitchContainer: {
+		alignItems: 'center',
+		height: 22,
+		justifyContent: 'center',
+		width: 34,
+	},
+	learningLevelColorsSwitch: {
+		transform: [{ scale: 0.65 }, { translateX: '-35%' }],
+	},
 	passageScrollView: {
 		borderBottomColor: colors.light.goldenBorder,
 		borderBottomWidth: 2,
 		flex: 1,
-		minHeight: 0,
 		paddingHorizontal: 16,
 		paddingVertical: 8,
 	},
 	passageTextContainer: {
 		position: 'relative',
 		paddingVertical: 8,
+		minHeight: 300,
 	},
 	passageTextRules: {
 		position: 'absolute',
@@ -439,7 +507,6 @@ const styles = StyleSheet.create({
 		width: 18,
 	},
 	progressLegendText: {
-		color: colors.wordProgress.known,
 		fontFamily: 'lexend-400',
 		fontSize: 12,
 	},
