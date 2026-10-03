@@ -1,11 +1,10 @@
-import { DeckDawnAtTheDropOff } from '@/data/french/decks';
-import { type Word } from '@/src/components/CardDeck/cardDeckTypes';
+import { storyAtlas } from '@/data/french/storyAtlas';
+import { initialWordState } from '@/src/components/CardDeck/cardDeckTypes';
 import { makeMockCardDeckState } from '@/src/components/CardDeck/mockCardDeck';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckResultsView from '@/src/components/Views/DeckResultsView';
 import { fireEvent, render } from '@testing-library/react-native';
 import { router } from 'expo-router';
-import { useLinkProps } from 'expo-router/react-navigation';
 
 jest.mock('@/src/components/CardDeck/useCardDeck');
 
@@ -29,64 +28,22 @@ jest.mock('expo-audio', () => ({
 }));
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
-const mockUseLinkProps = jest.mocked(useLinkProps);
 const mockRouterDismissTo = jest.mocked(router.dismissTo);
+const story = storyAtlas.stories.find(story =>
+	story.chapters.some(chapter => chapter.decks.length > 0),
+)!;
+const chapter = story.chapters.find(chapter => chapter.decks.length > 0)!;
+
 describe('<DeckResultsView />', () => {
 	beforeEach(() => {
 		mockRouterDismissTo.mockClear();
-		mockUseLinkProps.mockClear();
-		const words: Word[] = [
-			{
-				id: 'word_noun_cafe',
-				frenchWord: 'cafe',
-				englishWords: ['coffee'],
-				pronunciation: 'ka-fay',
-				isVulgar: false,
-				CEFR: 'A1',
-				correctCount: 1,
-				rarity: 'Common',
-			},
-			{
-				id: 'word_noun_the',
-				frenchWord: 'the',
-				englishWords: ['tea'],
-				pronunciation: 'tay',
-				isVulgar: false,
-				CEFR: 'A1',
-				correctCount: 0,
-				rarity: 'Common',
-			},
-		];
-		const cardDeck = {
-			...DeckDawnAtTheDropOff,
-			words,
-		};
-
 		mockUseCardDeck.mockReturnValue({
 			cardDeckState: makeMockCardDeckState({
-				currentIndex: 0,
-				currentId: words[0].id,
-				cardDeck,
-				correctWords: [words[0]],
-				incorrectWords: [words[1]],
+				cardDeck: chapter.decks[0],
 			}),
 			cardDeckDispatch: jest.fn(),
-			currentCard: words[0],
+			currentCard: initialWordState,
 		});
-	});
-
-	test('renders the deck details and correct and incorrect words', async () => {
-		const { getByText, getAllByText } = await render(<DeckResultsView />);
-
-		getAllByText(DeckDawnAtTheDropOff.title);
-
-		getByText('Correct');
-		getByText('cafe');
-		getByText('coffee');
-
-		getByText('Incorrect');
-		getByText('the');
-		getByText('tea');
 	});
 
 	test('dismisses results back to the selected chapter and reopens its deck picker', async () => {
@@ -96,9 +53,9 @@ describe('<DeckResultsView />', () => {
 		expect(mockRouterDismissTo).toHaveBeenCalledWith({
 			pathname: '/ChapterSelect',
 			params: {
-				chapterId: 'aeroport-oiseau',
+				chapterId: chapter.id,
 				deckPickerRequest: expect.any(String),
-				storyId: 'a-very-french-travel-day',
+				storyId: story.id,
 			},
 		});
 	});

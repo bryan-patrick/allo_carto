@@ -1,4 +1,4 @@
-import type { DeckChapter } from '@/data/french/storyAtlas';
+import { chapterSelectBackground, type DeckChapter } from '@/data/french/storyAtlas';
 import DeckPickerModal from '@/src/components/DeckPickerModal';
 import Loader from '@/src/components/Loader';
 import LockedSection from '@/src/components/LockedSection';
@@ -97,13 +97,8 @@ export default function ChapterSelectView() {
 	return (
 		<ImageBackground
 			style={styles.background}
-			source={image}
+			source={image ?? chapterSelectBackground}
 		>
-			{/* Keep the category tint subtle beneath the neutral readability overlay. */}
-			<View
-				pointerEvents="none"
-				style={[styles.categoryTint, { backgroundColor: categoryColor }]}
-			/>
 			<ScrollView
 				contentContainerStyle={styles.scrollContentContainer}
 				style={styles.scrollView}
@@ -137,7 +132,11 @@ export default function ChapterSelectView() {
 							progressById,
 						});
 						const unlockCriteria = getUnlockCriteria(chapter, progressById);
-						const selectText = progressPercent > 0 ? 'Continue chapter' : 'Start chapter';
+						const hasDecks = chapter.decks.length > 0;
+						const selectText =
+							!hasDecks ? 'Coming soon'
+							: progressPercent > 0 ? 'Continue chapter'
+							: 'Start chapter';
 
 						/**
 						 * Render the chapter view/card
@@ -189,10 +188,12 @@ export default function ChapterSelectView() {
 										)}
 										{!isLocked && (
 											<>
-												<Image
-													source={image}
-													style={styles.chapterImage}
-												/>
+												{image && (
+													<Image
+														source={image}
+														style={styles.chapterImage}
+													/>
+												)}
 												<View style={styles.chapterProgressContainer}>
 													<Text style={styles.chapterProgressText}>
 														Words known: {progressPercent}%
@@ -221,8 +222,10 @@ export default function ChapterSelectView() {
 												</View>
 												<LinkButton
 													color={categoryColor}
+													disabled={!hasDecks}
 													hitSlop={5}
 													handler={() => setSelectedChapterId(chapterId)}
+													useArrow={hasDecks}
 													style={styles.chapterSelectButton}
 												>
 													<Text style={styles.chapterSelectButtonText}>{selectText}</Text>
@@ -239,7 +242,7 @@ export default function ChapterSelectView() {
 			{/**
 			 * Show the selected chapter's decks without leaving the chapter view
 			 */}
-			{selectedChapter && (
+			{selectedChapter && selectedChapter.decks.length > 0 && (
 				<DeckPickerModal
 					chapter={selectedChapter}
 					onRequestClose={handleCloseDeckPicker}
@@ -259,10 +262,6 @@ const styles = StyleSheet.create({
 	background: {
 		height: '100%',
 		backgroundColor: colors.dark.background,
-	},
-	categoryTint: {
-		...StyleSheet.absoluteFill,
-		opacity: 0.1,
 	},
 	scrollContentContainer: {
 		display: 'flex',

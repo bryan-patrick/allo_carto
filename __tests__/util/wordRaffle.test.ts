@@ -36,19 +36,11 @@ describe('wordRaffle', () => {
 		expect(result).toEqual([firstWord]);
 	});
 
-	test('does not draw the same word twice', () => {
+	test('draws each word once and stops when the pool is exhausted', () => {
 		jest.spyOn(Math, 'random').mockReturnValue(0);
 
-		const result = wordRaffle([firstWord, secondWord], 2);
+		const result = wordRaffle([firstWord, secondWord], 10);
 
 		expect(result).toEqual([firstWord, secondWord]);
-	});
-
-	test('stops drawing when the raffle is empty', () => {
-		jest.spyOn(Math, 'random').mockReturnValue(0);
-
-		const result = wordRaffle([firstWord], 10);
-
-		expect(result).toEqual([firstWord]);
 	});
 });

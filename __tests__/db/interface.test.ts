@@ -22,7 +22,7 @@ describe('getWordProgressById', () => {
 		mockGetAllAsync.mockResolvedValueOnce([
 			{ wordId: 'word_new', correctCount: 0, seenCount: 1 },
 			{ wordId: 'word_learning', correctCount: 3, seenCount: 0 },
-			{ wordId: 'word_familiar', correctCount: 7, seenCount: 1 },
+			{ wordId: 'word_known', correctCount: 7, seenCount: 1 },
 		]);
 
 		const progressByWordId = await getWordProgressById({
@@ -31,7 +31,7 @@ describe('getWordProgressById', () => {
 				{ text: 'New', wordId: 'word_new' },
 				{ text: 'Unseen', wordId: 'word_unseen' },
 				{ text: 'Learning', wordId: 'word_learning' },
-				{ text: 'Familiar', wordId: 'word_familiar' },
+				{ text: 'Known', wordId: 'word_known' },
 				{ text: 'Learning again', wordId: 'word_learning' },
 				{ text: '.' },
 			],
@@ -40,12 +40,12 @@ describe('getWordProgressById', () => {
 		const [, userId, ...wordIds] = mockGetAllAsync.mock.calls[0];
 
 		expect(userId).toBe('user_one');
-		expect(wordIds).toEqual(['word_new', 'word_unseen', 'word_learning', 'word_familiar']);
+		expect(wordIds).toEqual(['word_new', 'word_unseen', 'word_learning', 'word_known']);
 		expect(progressByWordId).toEqual({
 			word_new: 'new',
 			word_unseen: 'unseen',
 			word_learning: 'learning',
-			word_familiar: 'familiar',
+			word_known: 'known',
 		});
 	});
 });

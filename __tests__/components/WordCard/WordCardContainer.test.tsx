@@ -37,6 +37,16 @@ const mockUseUserProgress = jest.mocked(useUserProgress);
 const mockRecordWordSeen = jest.fn();
 const mockUseCardDeck = jest.mocked(useCardDeck);
 
+const coffeeCard: Word = {
+	...mockWords[0],
+	id: 'word_noun_cafe',
+	frenchWord: 'cafe',
+	frenchArticle: 'le',
+	englishArticle: 'The',
+	englishWords: ['coffee'],
+	partOfSpeech: 'noun',
+};
+
 describe('<WordCardContainer />', () => {
 	beforeEach(() => {
 		mockGetFillerWords.mockReset();
@@ -85,23 +95,9 @@ describe('<WordCardContainer />', () => {
 	test('does not reshuffle choices when progress changes', async () => {
 		mockGetFillerWords.mockResolvedValueOnce(['coffee', 'tea']).mockResolvedValueOnce(['The', 'A']);
 
-		const word: Word = {
-			id: 'word_noun_cafe',
-			frenchWord: 'cafe',
-			frenchArticle: 'le',
-			englishArticle: 'The',
-			englishWords: ['coffee'],
-			pronunciation: 'ka-fay',
-			isVulgar: false,
-			CEFR: 'A1',
-			partOfSpeech: 'noun',
-			correctCount: 14,
-			rarity: 'Common',
-		};
-
 		const { rerender } = await render(
 			<WordCardContainer
-				word={word}
+				word={coffeeCard}
 				isCurrent={true}
 			/>,
 		);
@@ -127,7 +123,7 @@ describe('<WordCardContainer />', () => {
 
 		await rerender(
 			<WordCardContainer
-				word={word}
+				word={coffeeCard}
 				isCurrent={true}
 			/>,
 		);
@@ -185,23 +181,9 @@ describe('<WordCardContainer />', () => {
 	test('increments the seen count when the card is current', async () => {
 		mockGetFillerWords.mockResolvedValueOnce(['coffee', 'tea']).mockResolvedValueOnce(['The', 'A']);
 
-		const word: Word = {
-			id: 'word_noun_cafe',
-			frenchWord: 'cafe',
-			frenchArticle: 'le',
-			englishArticle: 'The',
-			englishWords: ['coffee'],
-			pronunciation: 'ka-fay',
-			isVulgar: false,
-			CEFR: 'A1',
-			partOfSpeech: 'noun',
-			correctCount: 14,
-			rarity: 'Common',
-		};
-
 		await render(
 			<WordCardContainer
-				word={word}
+				word={coffeeCard}
 				isCurrent={true}
 			/>,
 		);

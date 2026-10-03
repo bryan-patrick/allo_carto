@@ -1,13 +1,13 @@
 import type { PassageSegment } from '@/src/components/CardDeck/cardDeckTypes';
 
 /**
- * Get the word IDs from a passage and remove duplicates.
+ * Get the learnable word IDs from a passage and remove duplicates.
  */
 export function getPassageWordIds(passage: PassageSegment[]): string[] {
 	let result: string[] = [];
 
-	const wordIds = passage.flatMap(({ wordId }) => {
-		if (!wordId) return [];
+	const wordIds = passage.flatMap(({ wordId, unlockExempt }) => {
+		if (!wordId || unlockExempt) return [];
 		else return [wordId];
 	});
 
