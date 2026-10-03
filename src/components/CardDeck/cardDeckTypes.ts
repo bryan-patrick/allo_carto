@@ -12,15 +12,11 @@ export type WordForm =
 	| 'infinitive'
 	| 'masculine'
 	| 'past participle'
+	| 'past historic'
 	| 'plural'
 	| 'possessive'
 	| 'present participle'
 	| 'present';
-
-export interface DeckColors {
-	dark: Record<'primary' | 'secondary', string>;
-	light: Record<'primary' | 'secondary', string>;
-}
 
 export interface DeckWordChoice {
 	englishWords: string[];
@@ -30,6 +26,8 @@ export interface DeckWordChoice {
 export interface PassageSegment {
 	text: string;
 	wordId?: string;
+	/** Always readable; excluded from practice cards and completion (e.g. names). */
+	unlockExempt?: boolean;
 	after?: string;
 }
 
@@ -41,12 +39,13 @@ export interface CardDeckDefinition extends Progression {
 	words: Word[];
 	wordChoices: DeckWordChoice[];
 	chapter: string;
-	colors: DeckColors;
 	passage: PassageSegment[];
+	/** Original English passage, when available. */
+	englishPassage?: string;
 }
 
 export interface CardDeck extends CardDeckDefinition {
-	/** Word IDs from the passage, with duplicates removed. */
+	/** Non-exempt word IDs from the passage, with duplicates removed. */
 	wordIds: string[];
 }
 

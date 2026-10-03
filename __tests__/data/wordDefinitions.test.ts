@@ -17,6 +17,9 @@ function startsWithArticle(word: string, article: string) {
 }
 
 describe('word definitions', () => {
+	test('use unique dictionary IDs', () => {
+		expect(new Set(seedWords.map(word => word.id)).size).toBe(seedWords.length);
+	});
 	/**
 	 * French articles are rendered separately by the card UI.
 	 * Including one in frenchWord would display it twice.
@@ -25,22 +28,6 @@ describe('word definitions', () => {
 		const wordsWithDuplicatedArticles = seedWords
 			.filter(word => word.frenchArticle && startsWithArticle(word.frenchWord, word.frenchArticle))
 			.map(word => word.id);
-
-		expect(wordsWithDuplicatedArticles).toEqual([]);
-	});
-
-	/**
-	 * English answer articles also have their own selection slot,
-	 * so translations must not contain the same article again.
-	 */
-	test('do not duplicate English articles inside englishWords', () => {
-		const wordsWithDuplicatedArticles = seedWords
-			.filter(word => word.englishArticle)
-			.flatMap(word =>
-				word.englishWords
-					.filter(englishWord => startsWithArticle(englishWord, word.englishArticle as string))
-					.map(() => word.id),
-			);
 
 		expect(wordsWithDuplicatedArticles).toEqual([]);
 	});

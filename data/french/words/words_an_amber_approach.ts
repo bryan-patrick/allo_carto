@@ -84,7 +84,7 @@ export const words_an_amber_approach: Word[] = [
 	defineWord({
 		id: 'word_determiner_sa',
 		frenchWord: 'sa',
-		englishWords: ['its'],
+		englishWords: ['his', 'her', 'its'],
 		pronunciation: 'sah',
 		CEFR: 'A1',
 		lemmaId: 'sa',
@@ -503,7 +503,7 @@ export const words_an_amber_approach: Word[] = [
 	defineWord({
 		id: 'word_adverb_pres',
 		frenchWord: 'près',
-		englishWords: ['nearby'],
+		englishWords: ['near', 'nearby'],
 		pronunciation: 'preh',
 		CEFR: 'A1',
 		lemmaId: 'pres',
@@ -826,7 +826,7 @@ export const words_an_amber_approach: Word[] = [
 	defineWord({
 		id: 'word_preposition_sur',
 		frenchWord: 'sur',
-		englishWords: ['about'],
+		englishWords: ['on', 'about'],
 		pronunciation: 'sewr',
 		CEFR: 'A1',
 		lemmaId: 'sur',

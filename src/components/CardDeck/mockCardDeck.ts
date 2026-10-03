@@ -83,16 +83,6 @@ export const mockCardDeck: CardDeck = createCardDeck({
 	CEFR: ['A1'],
 	passage: mockWords.map(word => ({ text: word.frenchWord, wordId: word.id })),
 	words: mockWords,
-	colors: {
-		dark: {
-			primary: '#111111',
-			secondary: '#333333',
-		},
-		light: {
-			primary: '#ffffff',
-			secondary: '#ffffff',
-		},
-	},
 	wordChoices: mockWords.map(word => ({
 		englishWords: word.englishWords,
 		partOfSpeech: word.partOfSpeech,

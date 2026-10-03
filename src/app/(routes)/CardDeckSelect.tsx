@@ -83,7 +83,6 @@ export default function CardDeckSelect() {
 								<DeckBox
 									deck={deck}
 									isLocked={getIsDeckLocked(deck)}
-									chapterId={chapterId}
 									unlockCriteria={getUnlockCriteria(deck, progressById)}
 								/>
 							</View>

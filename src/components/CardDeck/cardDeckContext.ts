@@ -40,16 +40,6 @@ export const initialCardDeckState: CardDeckStateProps = {
 		passage: [],
 		words: [initialWordState],
 		wordChoices: [],
-		colors: {
-			dark: {
-				primary: '#000000',
-				secondary: '#000000',
-			},
-			light: {
-				primary: '#ffffff',
-				secondary: '#ffffff',
-			},
-		},
 	}),
 };
 

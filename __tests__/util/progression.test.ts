@@ -58,7 +58,7 @@ function makeAtlas(): StoryAtlas {
 				id: 'story_two',
 				name: 'Story two',
 				description: 'The second story',
-				category: 'Mystery',
+				category: 'Cat Files',
 				unlockRequirements: [
 					{
 						id: 'story_one',
@@ -95,19 +95,19 @@ describe('progression', () => {
 		expect(findAtlasLocationByChapterId('missing_chapter', atlas)).toBeUndefined();
 	});
 
-	test('calculates full-precision familiarity without stacking New points', () => {
+	test('weights each progress stage without rounding stored completion', () => {
 		expect(
 			getCompletionPercentage({
 				wordCount: 3,
 				wordProgressCounts: {
-					new: 0,
+					new: 1,
 					learning: 1,
 					familiar: 1,
 					known: 0,
 					mastered: 0,
 				},
 			}),
-		).toBeCloseTo(25);
+		).toBeCloseTo(29.1666666667);
 	});
 
 	test('treats content with no words as 0%', () => {
