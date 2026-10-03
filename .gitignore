@@ -11,6 +11,8 @@ build
 macos
 .flutter-plugins-dependencies
 allo_carto.iml
+canon/
+canon.md
 
 .expo/
 app-example
