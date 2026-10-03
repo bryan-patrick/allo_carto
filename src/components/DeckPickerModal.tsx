@@ -363,11 +363,24 @@ export default function DeckPickerModal({
 																text={`${deck.wordIds.length} cards`}
 															/>
 															<View style={styles.metadataDivider} />
-															<MetadataItem
-																color={storyColor}
-																icon="cognition_2"
-																text={`${completionPercent}% known`}
-															/>
+															<View style={styles.completionMetadata}>
+																<MetadataItem
+																	color={storyColor}
+																	icon="cognition_2"
+																	text={`${completionPercent}% known`}
+																/>
+																<View style={styles.progressBarContainer}>
+																	<View
+																		style={[
+																			styles.progressBar,
+																			{
+																				backgroundColor: storyColor,
+																				width: `${completionPercent}%`,
+																			},
+																		]}
+																	/>
+																</View>
+															</View>
 														</View>
 													</View>
 												)}
@@ -561,7 +574,7 @@ const styles = StyleSheet.create({
 		marginTop: 4,
 	},
 	metadata: {
-		alignItems: 'center',
+		alignItems: 'flex-start',
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		gap: 8,
@@ -569,6 +582,7 @@ const styles = StyleSheet.create({
 	},
 	metadataItem: {
 		alignItems: 'center',
+		alignContent: 'center',
 		flexDirection: 'row',
 		gap: 4,
 	},
@@ -579,12 +593,28 @@ const styles = StyleSheet.create({
 	},
 	metadataDivider: {
 		backgroundColor: colors.light.border,
-		height: 12,
+		height: 22,
 		width: 1,
+	},
+	completionMetadata: {
+		flexGrow: 1,
+		gap: 2,
+	},
+	progressBarContainer: {
+		backgroundColor: '#00000012',
+		borderColor: colors.light.border,
+		borderRadius: 4,
+		borderWidth: 1,
+		height: 4,
+		overflow: 'hidden',
+	},
+	progressBar: {
+		borderRadius: 4,
+		height: '100%',
 	},
 	actions: {
 		flexDirection: 'row',
-		gap: 10,
+		gap: 8,
 	},
 	actionButton: {
 		flex: 1,
