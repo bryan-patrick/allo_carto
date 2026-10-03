@@ -132,7 +132,11 @@ export default function ChapterSelectView() {
 							progressById,
 						});
 						const unlockCriteria = getUnlockCriteria(chapter, progressById);
-						const selectText = progressPercent > 0 ? 'Continue chapter' : 'Start chapter';
+						const hasDecks = chapter.decks.length > 0;
+						const selectText =
+							!hasDecks ? 'Coming soon'
+							: progressPercent > 0 ? 'Continue chapter'
+							: 'Start chapter';
 
 						/**
 						 * Render the chapter view/card
@@ -184,10 +188,12 @@ export default function ChapterSelectView() {
 										)}
 										{!isLocked && (
 											<>
-												<Image
-													source={image}
-													style={styles.chapterImage}
-												/>
+												{image && (
+													<Image
+														source={image}
+														style={styles.chapterImage}
+													/>
+												)}
 												<View style={styles.chapterProgressContainer}>
 													<Text style={styles.chapterProgressText}>
 														Words known: {progressPercent}%
@@ -216,8 +222,10 @@ export default function ChapterSelectView() {
 												</View>
 												<LinkButton
 													color={categoryColor}
+													disabled={!hasDecks}
 													hitSlop={5}
 													handler={() => setSelectedChapterId(chapterId)}
+													useArrow={hasDecks}
 													style={styles.chapterSelectButton}
 												>
 													<Text style={styles.chapterSelectButtonText}>{selectText}</Text>
@@ -234,7 +242,7 @@ export default function ChapterSelectView() {
 			{/**
 			 * Show the selected chapter's decks without leaving the chapter view
 			 */}
-			{selectedChapter && (
+			{selectedChapter && selectedChapter.decks.length > 0 && (
 				<DeckPickerModal
 					chapter={selectedChapter}
 					onRequestClose={handleCloseDeckPicker}

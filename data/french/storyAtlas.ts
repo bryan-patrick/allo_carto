@@ -1,4 +1,8 @@
-import { DeckRainyNight, DeckWindowWatcher } from '@/data/french/decks';
+import {
+	DeckAutumnInTheNeighborhood,
+	DeckRainyNight,
+	DeckWindowWatcher,
+} from '@/data/french/decks';
 import type colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { Progression } from '@/src/util/progression';
@@ -8,6 +12,7 @@ import type { ImageSourcePropType } from 'react-native';
  * Image paths
  */
 const leoInTheWindow = require('@/src/app/assets/images/chapters/leo-in-the-window.png');
+const leavesInTheYard = require('@/src/app/assets/images/chapters/leaves-in-the-yard.png');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
 /**
@@ -57,6 +62,36 @@ export const storyAtlas: StoryAtlas = {
 					name: 'Leo in the Window',
 					image: leoInTheWindow,
 					decks: [DeckRainyNight, DeckWindowWatcher],
+				},
+			],
+		},
+		{
+			id: 'a-matter-of-leaves',
+			name: 'A Matter of Leaves',
+			description:
+				'Autumn leaves, friendly neighbors, and a misunderstanding that blows out of proportion.',
+			category: 'Social',
+			image: chapterSelectBackground,
+			materialSymbolName: 'eco',
+			chapters: [
+				{
+					id: 'leaves-all-over',
+					label: 'Chapter 1',
+					name: 'Leaves All Over',
+					image: leavesInTheYard,
+					decks: [DeckAutumnInTheNeighborhood],
+				},
+				{
+					id: 'the-other-side',
+					label: 'Chapter 2',
+					name: 'The Other Side',
+					decks: [],
+				},
+				{
+					id: 'it-was-the-wind',
+					label: 'Chapter 3',
+					name: 'It Was the Wind',
+					decks: [],
 				},
 			],
 		},

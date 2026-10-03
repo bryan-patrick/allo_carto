@@ -13,6 +13,7 @@ import getDeckWordProgressCounts, {
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { router } from 'expo-router';
@@ -347,13 +348,13 @@ export default function DeckPickerModal({
 														</Text>
 														<View
 															accessible
-															accessibilityLabel={`${deck.CEFR.join(' to ')}, ${deck.wordIds.length} cards, ${completionPercent} percent known`}
+															accessibilityLabel={`${formatCEFRRange(deck.CEFR, ' to ')}, ${deck.wordIds.length} cards, ${completionPercent} percent known`}
 															style={styles.metadata}
 														>
 															<MetadataItem
 																color={storyColor}
 																icon="globe"
-																text={deck.CEFR.join('–')}
+																text={formatCEFRRange(deck.CEFR)}
 															/>
 															<View style={styles.metadataDivider} />
 															<MetadataItem

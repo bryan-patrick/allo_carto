@@ -55,7 +55,7 @@ const colors = {
 		Travel: '#454A36',
 		History: '#694424',
 		Dining: '#7A352B',
-		Social: '#653C67',
+		Social: '#41363c',
 		Health: '#285D54',
 		Directions: '#315674',
 		Shopping: '#713E53',

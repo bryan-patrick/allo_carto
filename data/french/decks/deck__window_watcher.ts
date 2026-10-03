@@ -6,7 +6,7 @@ export const DeckWindowWatcher = createCardDeck({
 	description: 'A pair of yellow eyes at the window.',
 	chapter: 'A visitor in the night',
 	CEFR: ['A1', 'A2', 'B1', 'B2'],
-	unlockRequirements: [{ id: 'deck__rainy_night', requiredCompletionPercentage: 1 }],
+	unlockRequirements: [{ id: 'deck__rainy_night', requiredCompletionPercentage: 5 }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

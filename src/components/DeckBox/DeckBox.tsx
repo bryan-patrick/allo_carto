@@ -12,6 +12,7 @@ import getDeckWordProgressCounts, {
 import { useUserContext } from '@/src/db/useUserContext';
 import type { UnlockCriteria } from '@/src/util/atlasCompletion';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
+import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { router, useFocusEffect } from 'expo-router';
@@ -70,7 +71,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	 * Deck metadata
 	 */
 	const deckCardCount = wordIds.length;
-	const deckCEFRLabel = CEFR.join(' - ');
+	const deckCEFRLabel = formatCEFRRange(CEFR);
 	const deckCompletionPercent = getDeckCompletionPercent({
 		deckWordCount: deckCardCount,
 		wordProgressCounts,
