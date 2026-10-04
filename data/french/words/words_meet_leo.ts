@@ -231,7 +231,7 @@ export const words_meet_leo: Word[] = [
 	defineWord({
 		id: 'word_determiner_ses',
 		frenchWord: 'ses',
-		englishWords: ['its'],
+		englishWords: ['his', 'her', 'its'],
 		pronunciation: 'say',
 		CEFR: 'A1',
 		partOfSpeech: 'determiner',

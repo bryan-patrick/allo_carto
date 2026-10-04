@@ -1,12 +1,12 @@
 import { memo, type ReactNode } from 'react';
 import {
-	type ViewStyle,
 	ImageBackground,
 	ImageSourcePropType,
 	StyleSheet,
 	Text,
 	TextStyle,
 	View,
+	type ViewStyle,
 } from 'react-native';
 import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import formatFrenchWordWithArticle from '../../util/formatFrenchWordWithArticle';
@@ -80,6 +80,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 		.split(' ')
 		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(' ');
+	const shouldShowMetadataDivider = Boolean(partOfSpeech && form);
 
 	/**
 	 * Render the back of the WordCard
@@ -101,23 +102,18 @@ const WordCardBack = memo(function WordCardBackMemo({
 				<WordCardHeader />
 				<View style={sharedWordCardStyles.cardMain}>
 					<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
-					<Text style={sharedWordCardStyles.wordPronunciation}>({pronunciation})</Text>
+					<Text style={sharedWordCardStyles.wordDetailText}>({pronunciation})</Text>
 					<View style={sharedWordCardStyles.wordMetaContainer}>
 						{partOfSpeech && (
-							<Text
-								style={[
-									sharedWordCardStyles.wordForm,
-									{
-										borderRightWidth: formCapitalized ? 1 : 0,
-										marginRight: formCapitalized ? 8 : 0,
-										paddingRight: formCapitalized ? 8 : 0,
-									},
-								]}
-							>
-								{partOfSpeechCapitalized}
-							</Text>
+							<Text style={sharedWordCardStyles.wordDetailText}>{partOfSpeechCapitalized}</Text>
 						)}
-						{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
+						{shouldShowMetadataDivider && (
+							<View
+								accessible={false}
+								style={sharedWordCardStyles.wordDetailDivider}
+							/>
+						)}
+						{form && <Text style={sharedWordCardStyles.wordDetailText}>{formCapitalized}</Text>}
 					</View>
 					{wordActions}
 				</View>

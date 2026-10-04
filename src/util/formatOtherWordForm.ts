@@ -8,9 +8,13 @@ export default function formatOtherWordForm(candidate: OtherWordForm): string {
 	});
 	const details = [
 		...new Set(
-			[candidate.partOfSpeech, candidate.form, candidate.tense, candidate.gender].filter(Boolean),
+			[candidate.partOfSpeech, candidate.form, candidate.tense, candidate.gender]
+				.map(detail => detail?.trim().toLowerCase())
+				.filter(Boolean),
 		),
 	].join(', ');
 
-	return details ? `${word} (${details})` : word;
+	if (!details) return word;
+
+	return `${word} (${details})`;
 }
