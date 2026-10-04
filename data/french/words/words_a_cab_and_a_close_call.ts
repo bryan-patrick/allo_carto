@@ -208,7 +208,6 @@ export const words_a_cab_and_a_close_call: Word[] = [
 		englishWords: ['he ... to me'],
 		pronunciation: 'mah-teel',
 		CEFR: 'B1',
-		lemmaId: 'word_verb_avoir',
 		form: 'contraction',
 		partOfSpeech: 'expression',
 		rarity: 'Epic',

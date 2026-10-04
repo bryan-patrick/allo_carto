@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { Word } from '../CardDeck/cardDeckTypes';
@@ -8,12 +9,13 @@ import WordCardContainer from '../WordCard/WordCardContainer';
  */
 interface CardDeckViewProps {
 	currentCard: Word;
+	wordActions?: ReactNode;
 }
 
 /**
  * CardDeckView component
  */
-export default function CardDeckView({ currentCard }: CardDeckViewProps) {
+export default function CardDeckView({ currentCard, wordActions }: CardDeckViewProps) {
 	/**
 	 * Render the card deck
 	 */
@@ -28,6 +30,7 @@ export default function CardDeckView({ currentCard }: CardDeckViewProps) {
 				<WordCardContainer
 					word={currentCard}
 					isCurrent={true}
+					wordActions={wordActions}
 				/>
 			</Animated.View>
 		</>

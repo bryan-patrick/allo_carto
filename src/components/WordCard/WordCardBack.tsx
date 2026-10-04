@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import {
 	type ViewStyle,
 	ImageBackground,
@@ -22,6 +22,7 @@ const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground
  * Typing
  */
 interface WordCardBackProps {
+	wordActions?: ReactNode;
 	wordCardBackFlippedStyle: AnimatedStyle<ViewStyle>;
 	wordWidthStyle: AnimatedStyle<TextStyle>;
 	articleWidthStyle: AnimatedStyle<TextStyle>;
@@ -35,6 +36,7 @@ interface WordCardBackProps {
  * WordCardBack Component
  */
 const WordCardBack = memo(function WordCardBackMemo({
+	wordActions,
 	wordCardBackFlippedStyle,
 	wordWidthStyle,
 	articleWidthStyle,
@@ -84,7 +86,12 @@ const WordCardBack = memo(function WordCardBackMemo({
 	 */
 	return (
 		<AnimatedImageBackground
-			style={[sharedWordCardStyles.wordCardContainer, styles.cardBack, wordCardBackFlippedStyle]}
+			style={[
+				sharedWordCardStyles.wordCardContainer,
+				styles.cardBack,
+				wordCardBackFlippedStyle,
+				{ pointerEvents: cardState.progress === 'SUCCESS' ? 'auto' : 'none' },
+			]}
 			source={background}
 			imageStyle={{ transform: [{ scaleX: -1 }] }}
 
@@ -112,6 +119,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 						)}
 						{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
 					</View>
+					{wordActions}
 				</View>
 				<View style={sharedWordCardStyles.answerSlotContainer}>
 					{englishArticle && (
