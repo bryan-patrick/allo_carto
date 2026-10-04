@@ -7,13 +7,15 @@ import { getDB, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
 } from '@/src/db/queries/getDeckWordProgressCounts';
+import getOtherWordForms from '@/src/db/queries/getOtherWordForms';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
+import formatOtherWordForm from '@/src/util/formatOtherWordForm';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { Stack } from 'expo-router';
-import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text } from 'react-native';
+import { useRef, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface PassageProgress {
 	wordProgressCounts: DeckWordProgressCounts;
@@ -28,22 +30,22 @@ export default function CardDeck() {
 	const { cardDeck } = cardDeckState;
 	const { id: userId } = useUserContext() ?? {};
 	const { isUpdatingProgress, progressById, status } = useUserProgress();
-	const [isLoadingPassage, setIsLoadingPassage] = useState(false);
+	const isOpeningWordDetails = useRef(false);
 	const [isPassageVisible, setIsPassageVisible] = useState(false);
 	const [passageProgress, setPassageProgress] = useState<PassageProgress>();
 	const isLocked = !isItemUnlocked({
 		id: cardDeck.id,
 		progressById,
 	});
-	const isPassageDisabled = !userId || isLoadingPassage || isUpdatingProgress;
+	const isPassageDisabled = !userId || isUpdatingProgress;
 
 	/**
 	 * Refresh passage progress without changing the current flashcard.
 	 */
 	async function handleShowPassage() {
-		if (!userId || isPassageDisabled) return;
+		if (!userId || isPassageDisabled || isOpeningWordDetails.current) return;
 
-		setIsLoadingPassage(true);
+		isOpeningWordDetails.current = true;
 
 		try {
 			const database = await getDB();
@@ -58,7 +60,31 @@ export default function CardDeck() {
 			console.error('Could not retrieve passage progress:', error);
 			Alert.alert('Could not load passage', 'Please try again.');
 		} finally {
-			setIsLoadingPassage(false);
+			isOpeningWordDetails.current = false;
+		}
+	}
+
+	/**
+	 * Show the other forms already available in the word library.
+	 */
+	async function handleShowOtherForms() {
+		if (isOpeningWordDetails.current) return;
+
+		isOpeningWordDetails.current = true;
+
+		try {
+			const forms = await getOtherWordForms(currentCard);
+			const message = forms.map(formatOtherWordForm).join('\n');
+
+			Alert.alert(
+				`Other forms of ${currentCard.frenchWord}`,
+				message || 'No other forms are available for this word yet.',
+			);
+		} catch (error) {
+			console.error('Could not retrieve other forms:', error);
+			Alert.alert('Could not load other forms', 'Please try again.');
+		} finally {
+			isOpeningWordDetails.current = false;
 		}
 	}
 
@@ -80,28 +106,38 @@ export default function CardDeck() {
 	 */
 	return (
 		<>
-			<Stack.Screen
-				options={{
-					headerRight: () => (
+			<Stack.Screen options={{ headerRight: () => null }} />
+			<CardDeckView
+				currentCard={currentCard}
+				wordActions={
+					<View style={styles.wordLinksRow}>
 						<Pressable
-							accessibilityLabel="Read passage"
+							accessibilityLabel="View word in passage"
 							accessibilityRole="button"
-							accessibilityState={{ busy: isLoadingPassage, disabled: isPassageDisabled }}
+							accessibilityState={{ disabled: isPassageDisabled }}
 							disabled={isPassageDisabled}
+							hitSlop={8}
 							onPress={handleShowPassage}
-							style={({ pressed }) => [
-								styles.passageButton,
-								(pressed || isPassageDisabled) && styles.passageButtonDimmed,
-							]}
+							style={styles.wordLink}
 						>
-							<Text style={styles.passageButtonText}>
-								{isLoadingPassage ? 'Loading…' : 'Passage'}
-							</Text>
+							<Text style={styles.wordLinkText}>View passage</Text>
 						</Pressable>
-					),
-				}}
+						<View
+							accessible={false}
+							style={styles.wordLinksDivider}
+						/>
+						<Pressable
+							accessibilityLabel="Other forms of this word"
+							accessibilityRole="button"
+							hitSlop={8}
+							onPress={handleShowOtherForms}
+							style={styles.wordLink}
+						>
+							<Text style={styles.wordLinkText}>Other forms</Text>
+						</Pressable>
+					</View>
+				}
 			/>
-			<CardDeckView currentCard={currentCard} />
 			{passageProgress && (
 				<DeckBoxModal
 					currentWordId={currentCard.id}
@@ -117,18 +153,28 @@ export default function CardDeck() {
 }
 
 const styles = StyleSheet.create({
-	passageButton: {
+	wordLinksRow: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		gap: 12,
+	},
+	wordLinksDivider: {
+		borderLeftColor: colors.light.border,
+		borderLeftWidth: 1,
+		height: 14,
+	},
+	wordLink: {
 		alignItems: 'center',
 		justifyContent: 'center',
-		minHeight: 44,
-		paddingHorizontal: 8,
 	},
-	passageButtonDimmed: {
-		opacity: 0.5,
-	},
-	passageButtonText: {
-		color: colors.light.text,
-		fontFamily: 'lexend-600',
+	wordLinkText: {
+		color: colors.dark.primary,
+		fontFamily: 'lexend-400',
 		fontSize: 12,
+		textDecorationLine: 'underline',
+		textShadowColor: '#00000055',
+		textShadowRadius: 1,
+		textShadowOffset: { width: 0, height: 0 },
 	},
 });

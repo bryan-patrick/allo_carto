@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useContext, useEffect, useLayoutEffect, useMemo } from 'react';
+import { type ReactNode, useContext, useEffect, useLayoutEffect, useMemo } from 'react';
 import {
 	ImageSourcePropType,
 	type LayoutChangeEvent,
@@ -30,6 +30,7 @@ const cardBgs: Record<string, ImageSourcePropType> = {
  */
 interface WordCardProps {
 	isCurrent: boolean;
+	wordActions?: ReactNode;
 }
 
 /**
@@ -40,7 +41,7 @@ interface WordCardProps {
  * so these are done individually to create the
  * card flip effect.
  */
-export default function WordCard({ isCurrent }: WordCardProps) {
+export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 	/**
 	 * State
 	 */
@@ -163,6 +164,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 	return (
 		<View style={styles.wordCard}>
 			<WordCardFront
+				wordActions={wordActions}
 				handleWordWidth={handleWordWidth}
 				handleArticleWidth={handleArticleWidth}
 				articleWidthStyle={articleWidthStyle}
@@ -174,6 +176,7 @@ export default function WordCard({ isCurrent }: WordCardProps) {
 				background={cardBgs[currentCard.rarity]}
 			/>
 			<WordCardBack
+				wordActions={wordActions}
 				wordCardBackFlippedStyle={wordCardBackFlippedStyle}
 				articleWidthStyle={articleWidthStyle}
 				wordWidthStyle={wordWidthStyle}

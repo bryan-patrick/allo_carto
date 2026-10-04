@@ -49,7 +49,7 @@ const colors = {
 		learning: '#54192a',
 		familiar: '#652299',
 		known: '#1A1A1A',
-		mastered: '#009699',
+		mastered: '#0e6162',
 	},
 	category: {
 		Travel: '#454A36',

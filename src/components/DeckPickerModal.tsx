@@ -415,7 +415,7 @@ export default function DeckPickerModal({
 																/>
 															}
 														>
-															{isLoadingPassage ? 'Loading…' : 'Read passage'}
+															Read passage
 														</LinkButton>
 														<LinkButton
 															accessibilityLabel={`${actionLabel} deck: ${deck.title}`}
