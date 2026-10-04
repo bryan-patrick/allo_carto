@@ -570,7 +570,7 @@ const styles = StyleSheet.create({
 		color: colors.dark.primaryActive,
 		fontFamily: 'lexend-400',
 		fontSize: 13,
-		lineHeight: 13,
+		lineHeight: 16,
 		marginTop: 4,
 	},
 	metadata: {

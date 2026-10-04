@@ -94,6 +94,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 		.split(' ')
 		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(' ');
+	const shouldShowMetadataDivider = Boolean(partOfSpeech && form);
 
 	/**
 	 * Render the front of the WordCard
@@ -113,23 +114,18 @@ const WordCardFront = memo(function WordCardFrontMemo({
 				<WordCardHeader />
 				<View style={sharedWordCardStyles.cardMain}>
 					<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
-					<Text style={sharedWordCardStyles.wordPronunciation}>({pronunciation})</Text>
+					<Text style={sharedWordCardStyles.wordDetailText}>({pronunciation})</Text>
 					<View style={sharedWordCardStyles.wordMetaContainer}>
 						{partOfSpeech && (
-							<Text
-								style={[
-									sharedWordCardStyles.wordForm,
-									{
-										borderRightWidth: formCapitalized ? 1 : 0,
-										marginRight: formCapitalized ? 8 : 0,
-										paddingRight: formCapitalized ? 8 : 0,
-									},
-								]}
-							>
-								{partOfSpeechCapitalized}
-							</Text>
+							<Text style={sharedWordCardStyles.wordDetailText}>{partOfSpeechCapitalized}</Text>
 						)}
-						{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
+						{shouldShowMetadataDivider && (
+							<View
+								accessible={false}
+								style={sharedWordCardStyles.wordDetailDivider}
+							/>
+						)}
+						{form && <Text style={sharedWordCardStyles.wordDetailText}>{formCapitalized}</Text>}
 					</View>
 					{wordActions}
 				</View>

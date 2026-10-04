@@ -7,9 +7,9 @@ import { StyleSheet } from 'react-native';
 export const sharedWordCardStyles = StyleSheet.create({
 	wordCardContainer: {
 		borderRadius: 12,
-		overflow: 'hidden',
 		borderWidth: 3,
 		borderColor: colors.light.border,
+		overflow: 'hidden',
 	},
 	wordCardInner: {
 		display: 'flex',
@@ -26,8 +26,8 @@ export const sharedWordCardStyles = StyleSheet.create({
 		justifyContent: 'space-between',
 		paddingHorizontal: 8,
 		paddingVertical: 8,
+		gap: 4,
 		marginTop: 12,
-		gap: 8,
 	},
 	wordId: {
 		color: colors.dark.text,
@@ -37,18 +37,22 @@ export const sharedWordCardStyles = StyleSheet.create({
 		textAlign: 'center',
 	},
 	wordMetaContainer: {
-		display: 'flex',
+		alignItems: 'center',
 		flexDirection: 'row',
+		justifyContent: 'center',
+		gap: 8,
 	},
-	wordPronunciation: {
-		fontSize: 16,
-		color: colors.dark.text,
+	wordDetailText: {
 		fontFamily: 'lexend-400',
+		color: colors.dark.text,
+		fontSize: 14,
+		lineHeight: 16,
+		gap: 12,
 	},
-	wordForm: {
-		fontSize: 16,
-		color: colors.dark.text,
-		fontFamily: 'lexend-400',
+	wordDetailDivider: {
+		borderLeftColor: colors.dark.text,
+		borderLeftWidth: 1,
+		height: 22,
 	},
 	answerSlotContainer: {
 		flexDirection: 'row',
@@ -58,12 +62,12 @@ export const sharedWordCardStyles = StyleSheet.create({
 	},
 	answerSlot: {
 		color: 'transparent',
-		borderBottomWidth: 2,
 		fontFamily: 'lexend-600',
 		fontSize: 16,
 		paddingHorizontal: 12,
 		paddingVertical: 8,
 		marginVertical: 8,
+		borderBottomWidth: 2,
 	},
 	answerSlotSuccess: {
 		color: colors.dark.success,
