@@ -29,7 +29,7 @@ export default function LockedSection({
 						key={`${title}-${index}`}
 						style={[styles.criteriaText, isUnlocked && styles.criteriaMet]}
 					>
-						• Reach {requiredPercentage}% in{' '}
+						• Reach {requiredPercentage}% in&nbsp;
 						<Text style={isUnlocked && styles.criteriaMet}>{title}</Text>.
 					</Text>
 				))}

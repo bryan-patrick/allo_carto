@@ -94,7 +94,7 @@ export default function LockOverlay({
 										criterion.isUnlocked && styles.unlockCriteriaMet,
 									]}
 								>
-									Reach {criterion.requiredPercentage}% in{' '}
+									Reach {criterion.requiredPercentage}% in&nbsp;
 									<Text
 										style={[
 											styles.unlockCriteriaTitle,
@@ -102,8 +102,8 @@ export default function LockOverlay({
 										]}
 									>
 										{criterion.title}
-									</Text>{' '}
-									to unlock.
+									</Text>
+									&nbsp; to unlock.
 								</Text>
 							))}
 						</View>

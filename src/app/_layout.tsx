@@ -13,6 +13,7 @@ import { getTables, setDB } from '../db/interface';
 import getMonHomme, { UserRow } from '../db/queries/getMonHomme';
 import { UserContext } from '../db/userContext';
 import { UserProgressProvider } from '../db/userProgressContext';
+import { AppSettingsProvider } from '../settings/appSettingsContext';
 import alloTheme from './alloTheme';
 
 /**
@@ -104,85 +105,87 @@ export default function AppLayout() {
 						cardDeckDispatch,
 					}}
 				>
-					<Suspense fallback={<Loader />}>
-						<SQLiteProvider
-							databaseName="allo_carto.db"
-							onInit={initDB}
-							useSuspense
-						>
-							<UserProgressProvider userId={user?.id}>
-								<Stack>
-									<Stack.Screen
-										name="(tabs)"
-										options={{
-											headerShown: false,
-											headerTitle: 'Home',
-										}}
-									/>
-									<Stack.Screen
-										name="(routes)/CardDeck"
-										options={{
-											headerShown: true,
-											headerBackTitle: 'Back',
-											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: () => <DeckProgress />,
-										}}
-									/>
-									<Stack.Screen
-										name="(routes)/StorySelect"
-										options={{
-											headerShown: true,
-											headerTransparent: true,
-											headerBackTitle: 'Home',
-											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: '',
-										}}
-									/>
-									<Stack.Screen
-										name="(routes)/ChapterSelect"
-										options={{
-											headerShown: true,
-											headerTransparent: true,
-											headerBackTitle: 'Back',
-											headerTitle: '',
-											headerBackButtonDisplayMode: 'minimal',
-											scrollEdgeEffects: {
-												top: 'hidden',
-											},
-										}}
-									/>
-									<Stack.Screen
-										name="(routes)/CardDeckSelect"
-										options={{
-											headerShown: true,
-											headerTransparent: true,
-											headerBackTitle: 'Back',
-											headerTitle: '',
-											headerBackButtonDisplayMode: 'minimal',
-										}}
-									/>
-									<Stack.Screen
-										name="(routes)/ViewCards"
-										options={{
-											headerShown: true,
-											headerBackTitle: 'Back',
-											headerTransparent: true,
-											headerBackButtonDisplayMode: 'minimal',
-											headerTitle: 'View cards',
-										}}
-									/>
-									<Stack.Screen
-										name="(routes)/DeckResults"
-										options={{
-											headerShown: true,
-											headerTitle: 'Results',
-											headerBackVisible: false,
-										}}
-									/>
-								</Stack>
-							</UserProgressProvider>
-						</SQLiteProvider>
-					</Suspense>
+					<AppSettingsProvider>
+						<Suspense fallback={<Loader />}>
+							<SQLiteProvider
+								databaseName="allo_carto.db"
+								onInit={initDB}
+								useSuspense
+							>
+								<UserProgressProvider userId={user?.id}>
+									<Stack>
+										<Stack.Screen
+											name="(tabs)"
+											options={{
+												headerShown: false,
+												headerTitle: 'Home',
+											}}
+										/>
+										<Stack.Screen
+											name="(routes)/CardDeck"
+											options={{
+												headerShown: true,
+												headerBackTitle: 'Back',
+												headerBackButtonDisplayMode: 'minimal',
+												headerTitle: () => <DeckProgress />,
+											}}
+										/>
+										<Stack.Screen
+											name="(routes)/StorySelect"
+											options={{
+												headerShown: true,
+												headerTransparent: true,
+												headerBackTitle: 'Home',
+												headerBackButtonDisplayMode: 'minimal',
+												headerTitle: '',
+											}}
+										/>
+										<Stack.Screen
+											name="(routes)/ChapterSelect"
+											options={{
+												headerShown: true,
+												headerTransparent: true,
+												headerBackTitle: 'Back',
+												headerTitle: '',
+												headerBackButtonDisplayMode: 'minimal',
+												scrollEdgeEffects: {
+													top: 'hidden',
+												},
+											}}
+										/>
+										<Stack.Screen
+											name="(routes)/CardDeckSelect"
+											options={{
+												headerShown: true,
+												headerTransparent: true,
+												headerBackTitle: 'Back',
+												headerTitle: '',
+												headerBackButtonDisplayMode: 'minimal',
+											}}
+										/>
+										<Stack.Screen
+											name="(routes)/ViewCards"
+											options={{
+												headerShown: true,
+												headerBackTitle: 'Back',
+												headerTransparent: true,
+												headerBackButtonDisplayMode: 'minimal',
+												headerTitle: 'View cards',
+											}}
+										/>
+										<Stack.Screen
+											name="(routes)/DeckResults"
+											options={{
+												headerShown: true,
+												headerTitle: 'Results',
+												headerBackVisible: false,
+											}}
+										/>
+									</Stack>
+								</UserProgressProvider>
+							</SQLiteProvider>
+						</Suspense>
+					</AppSettingsProvider>
 				</CardDeckContext>
 			</ThemeProvider>
 		</UserContext>
