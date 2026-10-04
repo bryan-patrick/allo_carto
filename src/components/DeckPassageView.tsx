@@ -2,10 +2,11 @@ import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 /**
@@ -33,19 +34,30 @@ interface PassageHeightMeasurements {
 /**
  * Constants
  */
-const defaultUnseenQuestionOpacity = 0.25;
+const learningLevelOpacity: Record<WordProgressKey, number> = {
+	unseen: 0.2,
+	new: 0.4,
+	learning: 0.6,
+	familiar: 0.8,
+	known: 1,
+	mastered: 1,
+};
 const filteredOutWordOpacity = 0.05;
 
 /**
  * Helper functions
  */
-function getPassageWordOpacity(progress: WordProgressKey, filter: WordProgressKey | null): number {
+function getPassageWordOpacity(
+	progress: WordProgressKey,
+	filter: WordProgressKey | null,
+	useLevelOpacity: boolean,
+): number {
 	if (filter) {
 		if (progress === filter) return 1;
 		return filteredOutWordOpacity;
 	}
 
-	if (progress === 'unseen') return defaultUnseenQuestionOpacity;
+	if (useLevelOpacity) return learningLevelOpacity[progress];
 	return 1;
 }
 
@@ -54,14 +66,16 @@ function getLearningLevelColor(progress: WordProgressKey, useLearningLevelColors
 	return colors.dark.text;
 }
 
-function createWordProgressOpacityValues(): Record<WordProgressKey, Animated.Value> {
+function createWordProgressOpacityValues(
+	useLevelOpacity: boolean,
+): Record<WordProgressKey, Animated.Value> {
 	return {
-		unseen: new Animated.Value(getPassageWordOpacity('unseen', null)),
-		new: new Animated.Value(getPassageWordOpacity('new', null)),
-		learning: new Animated.Value(getPassageWordOpacity('learning', null)),
-		familiar: new Animated.Value(getPassageWordOpacity('familiar', null)),
-		known: new Animated.Value(getPassageWordOpacity('known', null)),
-		mastered: new Animated.Value(getPassageWordOpacity('mastered', null)),
+		unseen: new Animated.Value(getPassageWordOpacity('unseen', null, useLevelOpacity)),
+		new: new Animated.Value(getPassageWordOpacity('new', null, useLevelOpacity)),
+		learning: new Animated.Value(getPassageWordOpacity('learning', null, useLevelOpacity)),
+		familiar: new Animated.Value(getPassageWordOpacity('familiar', null, useLevelOpacity)),
+		known: new Animated.Value(getPassageWordOpacity('known', null, useLevelOpacity)),
+		mastered: new Animated.Value(getPassageWordOpacity('mastered', null, useLevelOpacity)),
 	};
 }
 
@@ -69,10 +83,13 @@ function getPassageTrailingText(after?: string): string {
 	const trailingText = after ?? ' ';
 
 	/**
-	 * Add a thin space after word gaps while leaving punctuation alone.
+	 * Add a thin space after word gaps but leave punctuation alone.
 	 */
-	if (trailingText.endsWith(' ')) return `${trailingText}\u2009`;
-	return trailingText;
+	if (trailingText.endsWith(' ')) {
+		return `${trailingText}\u2009`;
+	} else {
+		return trailingText;
+	}
 }
 
 /**
@@ -85,16 +102,20 @@ export default function DeckPassageView({
 	wordProgressCounts,
 	wordProgressKeyByWordId,
 }: DeckPassageViewProps) {
+	const {
+		settings: { useLearningLevelColors, useLevelOpacity },
+		setSetting,
+	} = useAppSettings();
 	/**
 	 * State
 	 */
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
-	const [useLearningLevelColors, setUseLearningLevelColors] = useState(true);
 	const [activeWordProgressFilter, setActiveWordProgressFilter] = useState<WordProgressKey | null>(
 		null,
 	);
-	const [wordProgressOpacityByKey] = useState(createWordProgressOpacityValues);
-	const [unseenQuestionOpacity] = useState(() => new Animated.Value(defaultUnseenQuestionOpacity));
+	const [wordProgressOpacityByKey] = useState(() =>
+		createWordProgressOpacityValues(useLevelOpacity),
+	);
 	const [exemptWordOpacity] = useState(() => new Animated.Value(1));
 	const passageHeightMeasurements = useRef<PassageHeightMeasurements>({
 		footer: 0,
@@ -142,7 +163,6 @@ export default function DeckPassageView({
 	 */
 	function handleWordProgressFilterPress(progress: WordProgressKey) {
 		let nextProgress: WordProgressKey | null = progress;
-		let nextExemptWordOpacity = 1;
 
 		/**
 		 * Toggle the filter
@@ -151,34 +171,33 @@ export default function DeckPassageView({
 			nextProgress = null;
 		}
 
-		if (nextProgress) {
-			nextExemptWordOpacity = filteredOutWordOpacity;
-		}
-
 		setActiveWordProgressFilter(nextProgress);
-		Animated.parallel(
+	}
+
+	/**
+	 * Respond to changes from either the passage toggles or Settings.
+	 */
+	useEffect(() => {
+		const animation = Animated.parallel(
 			[
 				...wordProgressDefinitions.map(({ key }) =>
 					Animated.timing(wordProgressOpacityByKey[key], {
-						toValue: getPassageWordOpacity(key, nextProgress),
+						toValue: getPassageWordOpacity(key, activeWordProgressFilter, useLevelOpacity),
 						duration: 120,
 						useNativeDriver: true,
 					}),
 				),
-				Animated.timing(unseenQuestionOpacity, {
-					toValue: getPassageWordOpacity('unseen', nextProgress),
-					duration: 120,
-					useNativeDriver: true,
-				}),
 				Animated.timing(exemptWordOpacity, {
-					toValue: nextExemptWordOpacity,
+					toValue: activeWordProgressFilter ? filteredOutWordOpacity : 1,
 					duration: 120,
 					useNativeDriver: true,
 				}),
 			],
 			{ stopTogether: false },
-		).start();
-	}
+		);
+		animation.start();
+		return () => animation.stop();
+	}, [activeWordProgressFilter, useLevelOpacity, wordProgressOpacityByKey, exemptWordOpacity]);
 
 	/**
 	 * Render the passage
@@ -216,28 +235,44 @@ export default function DeckPassageView({
 						{wordsSeenCount} / {totalWordCount} seen
 					</Text>
 				</View>
-				<View style={styles.learningLevelColorsRow}>
-					<Text style={styles.learningLevelColorsLabel}>
-						Use learning level{' '}
-						<Text style={styles.learningLevelColorsWord}>
-							<Text style={{ color: colors.dark.text }}>c</Text>
-							<Text style={{ color: colors.wordProgress.new }}>o</Text>
-							<Text style={{ color: colors.wordProgress.learning }}>l</Text>
-							<Text style={{ color: colors.wordProgress.familiar }}>o</Text>
-							<Text style={{ color: colors.wordProgress.known }}>r</Text>
-							<Text style={{ color: colors.wordProgress.mastered }}>s</Text>
+				<View style={styles.passageToggles}>
+					<View style={styles.learningLevelToggle}>
+						<Text style={styles.learningLevelColorsLabel}>
+							Use level&nbsp;
+							<Text style={styles.learningLevelColorsWord}>
+								<Text style={{ color: colors.dark.text }}>c</Text>
+								<Text style={{ color: colors.wordProgress.new }}>o</Text>
+								<Text style={{ color: colors.wordProgress.learning }}>l</Text>
+								<Text style={{ color: colors.wordProgress.familiar }}>o</Text>
+								<Text style={{ color: colors.wordProgress.known }}>r</Text>
+								<Text style={{ color: colors.wordProgress.mastered }}>s</Text>
+							</Text>
 						</Text>
-					</Text>
-					<View style={styles.learningLevelColorsSwitchContainer}>
-						<Switch
-							accessibilityLabel="Use learning level colors"
-							hitSlop={12}
-							ios_backgroundColor={colors.light.border}
-							onValueChange={setUseLearningLevelColors}
-							style={styles.learningLevelColorsSwitch}
-							trackColor={{ false: colors.light.border, true: storyColor }}
-							value={useLearningLevelColors}
-						/>
+						<View style={styles.learningLevelColorsSwitchContainer}>
+							<Switch
+								accessibilityLabel="Use learning level colors"
+								hitSlop={12}
+								ios_backgroundColor={colors.light.border}
+								onValueChange={enabled => setSetting('useLearningLevelColors', enabled)}
+								style={styles.learningLevelColorsSwitch}
+								trackColor={{ false: colors.light.border, true: storyColor }}
+								value={useLearningLevelColors}
+							/>
+						</View>
+					</View>
+					<View style={styles.learningLevelToggle}>
+						<Text style={styles.learningLevelColorsLabel}>Use level opacity</Text>
+						<View style={styles.learningLevelColorsSwitchContainer}>
+							<Switch
+								accessibilityLabel="Use level opacity"
+								hitSlop={12}
+								ios_backgroundColor={colors.light.border}
+								onValueChange={enabled => setSetting('useLevelOpacity', enabled)}
+								style={styles.learningLevelColorsSwitch}
+								trackColor={{ false: colors.light.border, true: storyColor }}
+								value={useLevelOpacity}
+							/>
+						</View>
 					</View>
 				</View>
 			</View>
@@ -296,29 +331,27 @@ export default function DeckPassageView({
 								opacity = exemptWordOpacity;
 							} else if (progress === 'unseen') {
 								displayText = '?';
-								opacity = unseenQuestionOpacity;
+								opacity = new Animated.Value(0.2);
 							}
 
 							const wordColor = getLearningLevelColor(displayProgress, useLearningLevelColors);
 							let backgroundColor: string | undefined;
-							let displayColor: string | Animated.AnimatedInterpolation<string> = wordColor;
 							let displayOpacity: number | Animated.Value = opacity;
 
 							if (isCurrentWord) {
 								backgroundColor = '#FFFFAAFF';
-								displayColor = opacity.interpolate({
-									inputRange: [0, 1],
-									outputRange: [`${wordColor}00`, wordColor],
-								});
 								displayOpacity = 1;
 							}
 
 							const progressStyle = {
 								backgroundColor,
-								color: displayColor,
+								color: wordColor,
 								opacity: displayOpacity,
 							};
 
+							/**
+							 * Render the individual word
+							 */
 							return (
 								<Text
 									key={key}
@@ -348,8 +381,14 @@ export default function DeckPassageView({
 						const isActive = activeWordProgressFilter === key;
 						const wordCount = wordProgressCounts[key];
 						let wordCountLabel = 'words';
-						if (wordCount === 1) wordCountLabel = 'word';
 
+						if (wordCount === 1) {
+							wordCountLabel = 'word';
+						}
+
+						/**
+						 * Render the filter
+						 */
 						return (
 							<Pressable
 								key={key}
@@ -439,14 +478,19 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		fontSize: 12,
 	},
-	learningLevelColorsRow: {
-		alignItems: 'center',
+	passageToggles: {
 		flexDirection: 'row',
+		gap: 16,
+		width: '100%',
+	},
+	learningLevelToggle: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
 		gap: 8,
 	},
 	learningLevelColorsLabel: {
 		color: colors.dark.text,
-		flexShrink: 1,
 		fontFamily: 'lexend-400',
 		fontSize: 12,
 	},
@@ -455,17 +499,15 @@ const styles = StyleSheet.create({
 	},
 	learningLevelColorsSwitchContainer: {
 		alignItems: 'center',
-		height: 22,
 		justifyContent: 'center',
-		width: 34,
 	},
 	learningLevelColorsSwitch: {
 		transform: [{ scale: 0.65 }, { translateX: '-35%' }],
 	},
 	passageScrollView: {
+		flex: 1,
 		borderBottomColor: colors.light.goldenBorder,
 		borderBottomWidth: 2,
-		flex: 1,
 		paddingHorizontal: 16,
 		paddingVertical: 8,
 	},
