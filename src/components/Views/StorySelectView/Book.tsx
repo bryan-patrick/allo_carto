@@ -31,7 +31,6 @@ export default function Book({ children }: BookProps) {
 const styles = StyleSheet.create({
 	bookContainer: {
 		marginHorizontal: 16,
-		marginBottom: 8,
 		borderColor: colors.dark.border,
 		borderRadius: 5,
 		borderTopRightRadius: 10,

@@ -368,7 +368,6 @@ export const words_an_amber_approach: Word[] = [
 		englishWords: ['I have'],
 		pronunciation: 'zhay',
 		CEFR: 'A1',
-		lemmaId: 'word_verb_avoir',
 		form: 'present',
 		partOfSpeech: 'expression',
 		rarity: 'Common',

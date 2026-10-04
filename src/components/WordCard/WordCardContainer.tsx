@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
 import sharedStyles from '@/src/app/sharedStyles';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { englishArticles } from '../../util/filterFillerWords';
@@ -21,6 +21,7 @@ import { wordCardUIReducer } from './wordCardUIReducer';
 interface CardContainerProps {
 	word: Word;
 	isCurrent: boolean;
+	wordActions?: ReactNode;
 }
 
 const MIN_SAME_PART_OF_SPEECH_WRONG_ANSWERS = 3;
@@ -45,7 +46,7 @@ function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
 /**
  * WordCardContainer Component
  */
-export default function WordCardContainer({ word, isCurrent }: CardContainerProps) {
+export default function WordCardContainer({ word, isCurrent, wordActions }: CardContainerProps) {
 	/**
 	 * State
 	 */
@@ -185,7 +186,10 @@ export default function WordCardContainer({ word, isCurrent }: CardContainerProp
 	return (
 		<WordCardUIContext.Provider value={{ cardState, wordCardUIDispatch }}>
 			<Animated.View style={[styles.container, positionStyle]}>
-				<WordCard isCurrent={isCurrent} />
+				<WordCard
+					isCurrent={isCurrent}
+					wordActions={wordActions}
+				/>
 				<WordCardSelection
 					articleWords={articleWords}
 					fillerWords={fillerWords}

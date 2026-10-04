@@ -217,7 +217,17 @@ export default function DeckPassageView({
 					</Text>
 				</View>
 				<View style={styles.learningLevelColorsRow}>
-					<Text style={styles.learningLevelColorsLabel}>Use learning level colors</Text>
+					<Text style={styles.learningLevelColorsLabel}>
+						Use learning level{' '}
+						<Text style={styles.learningLevelColorsWord}>
+							<Text style={{ color: colors.dark.text }}>c</Text>
+							<Text style={{ color: colors.wordProgress.new }}>o</Text>
+							<Text style={{ color: colors.wordProgress.learning }}>l</Text>
+							<Text style={{ color: colors.wordProgress.familiar }}>o</Text>
+							<Text style={{ color: colors.wordProgress.known }}>r</Text>
+							<Text style={{ color: colors.wordProgress.mastered }}>s</Text>
+						</Text>
+					</Text>
 					<View style={styles.learningLevelColorsSwitchContainer}>
 						<Switch
 							accessibilityLabel="Use learning level colors"
@@ -439,6 +449,9 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		fontFamily: 'lexend-400',
 		fontSize: 12,
+	},
+	learningLevelColorsWord: {
+		fontFamily: 'lexend-700',
 	},
 	learningLevelColorsSwitchContainer: {
 		alignItems: 'center',

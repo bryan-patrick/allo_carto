@@ -1,5 +1,5 @@
 import colors from '@/src/app/colors';
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import {
 	ImageBackground,
 	ImageSourcePropType,
@@ -25,6 +25,7 @@ const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground
  * Typing
  */
 interface WordCardFrontProps {
+	wordActions?: ReactNode;
 	wordWidthStyle: AnimatedStyle<TextStyle>;
 	articleWidthStyle: AnimatedStyle<TextStyle>;
 	wordCardFrontFlippedStyle: AnimatedStyle<ViewStyle>;
@@ -40,6 +41,7 @@ interface WordCardFrontProps {
  * WordCardFront component
  */
 const WordCardFront = memo(function WordCardFrontMemo({
+	wordActions,
 	handleWordWidth,
 	handleArticleWidth,
 	articleWidthStyle,
@@ -98,7 +100,12 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	 */
 	return (
 		<AnimatedImageBackground
-			style={[sharedWordCardStyles.wordCardContainer, styles.cardFront, wordCardFrontFlippedStyle]}
+			style={[
+				sharedWordCardStyles.wordCardContainer,
+				styles.cardFront,
+				wordCardFrontFlippedStyle,
+				{ pointerEvents: cardState.progress === 'SUCCESS' ? 'none' : 'auto' },
+			]}
 			source={background}
 			resizeMode="cover"
 		>
@@ -124,6 +131,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 						)}
 						{form && <Text style={sharedWordCardStyles.wordForm}>{formCapitalized}</Text>}
 					</View>
+					{wordActions}
 				</View>
 				<View style={sharedWordCardStyles.answerSlotContainer}>
 					{englishArticle && (

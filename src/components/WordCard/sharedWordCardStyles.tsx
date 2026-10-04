@@ -26,13 +26,15 @@ export const sharedWordCardStyles = StyleSheet.create({
 		justifyContent: 'space-between',
 		paddingHorizontal: 8,
 		paddingVertical: 8,
-		marginTop: 16,
+		marginTop: 12,
 		gap: 8,
 	},
 	wordId: {
 		color: colors.dark.text,
+		flexShrink: 1,
 		fontSize: 22,
 		fontFamily: 'lexend-600',
+		textAlign: 'center',
 	},
 	wordMetaContainer: {
 		display: 'flex',
