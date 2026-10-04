@@ -24,12 +24,13 @@ export const appSettingsStorageKey = 'allo_carto.settings';
  */
 export function readAppSettings(value: string | null): AppSettings {
 	const settingsCopy = { ...defaultAppSettings };
+	let saved: AppSettings | null = null;
 
 	if (value === null) {
 		return settingsCopy;
 	}
 
-	const saved: AppSettings = JSON.parse(value);
+	saved = JSON.parse(value);
 
 	if (typeof saved !== 'object' || saved === null || Array.isArray(saved)) {
 		return settingsCopy;

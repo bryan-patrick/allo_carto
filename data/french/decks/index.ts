@@ -1,3 +1,9 @@
 export { DeckRainyNight } from './deck__rainy_night';
 export { DeckWindowWatcher } from './deck__window_watcher';
 export { DeckAutumnInTheNeighborhood } from './deck__autumn_in_the_neighborhood';
+export { DeckGettingReady } from './deck__getting_ready';
+export { DeckTheWalkToTheRestaurant } from './deck__the_walk_to_the_restaurant';
+export { DeckATableForOne } from './deck__a_table_for_one';
+export { DeckChoosingDinner } from './deck__choosing_dinner';
+export { DeckAForkInstead } from './deck__a_fork_instead';
+export { DeckUntilNextTime } from './deck__until_next_time';

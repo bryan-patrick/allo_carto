@@ -1,6 +1,12 @@
 import {
+	DeckAForkInstead,
+	DeckATableForOne,
 	DeckAutumnInTheNeighborhood,
+	DeckChoosingDinner,
+	DeckGettingReady,
 	DeckRainyNight,
+	DeckTheWalkToTheRestaurant,
+	DeckUntilNextTime,
 	DeckWindowWatcher,
 } from '@/data/french/decks';
 import type colors from '@/src/app/colors';
@@ -13,6 +19,8 @@ import type { ImageSourcePropType } from 'react-native';
  */
 const leoInTheWindow = require('@/src/app/assets/images/chapters/leo-in-the-window.png');
 const leavesInTheYard = require('@/src/app/assets/images/chapters/leaves-in-the-yard.png');
+const gettingReady = require('@/src/app/assets/images/chapters/getting-ready.png');
+const aTableForOne = require('@/src/app/assets/images/chapters/a-table-for-one.png');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
 /**
@@ -48,6 +56,33 @@ export interface DeckChapter extends Progression {
  */
 export const storyAtlas: StoryAtlas = {
 	stories: [
+		{
+			id: 'a-new-restaurant',
+			name: 'A New Restaurant',
+			description: 'Wallace heads out to try a small restaurant recommended by Mathieu.',
+			category: 'Dining',
+			image: chapterSelectBackground,
+			materialSymbolName: 'restaurant',
+			chapters: [
+				{
+					id: 'a-new-restaurant-chapter-1',
+					label: 'Chapter 1',
+					name: 'Getting Ready',
+					image: gettingReady,
+					decks: [DeckGettingReady, DeckTheWalkToTheRestaurant],
+				},
+				{
+					id: 'a-table-for-one',
+					label: 'Chapter 2',
+					name: 'A Table for One',
+					image: aTableForOne,
+					unlockRequirements: [
+						{ id: 'a-new-restaurant-chapter-1', requiredCompletionPercentage: 20 },
+					],
+					decks: [DeckATableForOne, DeckChoosingDinner, DeckAForkInstead, DeckUntilNextTime],
+				},
+			],
+		},
 		{
 			id: 'meeting-leo',
 			name: 'Meeting Leo',

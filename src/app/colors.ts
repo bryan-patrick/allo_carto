@@ -54,7 +54,7 @@ const colors = {
 	category: {
 		Travel: '#454A36',
 		History: '#694424',
-		Dining: '#7A352B',
+		Dining: '#5c2f29',
 		Social: '#41363c',
 		Health: '#285D54',
 		Directions: '#315674',
