@@ -1,4 +1,3 @@
-import LevelBadge from '@/src/components/LevelBadge';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { Tabs } from 'expo-router';
 import colors from '../colors';
@@ -11,8 +10,7 @@ export default function TabsLayout({ size = 28 }) {
 	return (
 		<Tabs
 			screenOptions={{
-				headerRight: () => <LevelBadge />,
-				headerRightContainerStyle: { paddingRight: 20 },
+				headerShown: false,
 				tabBarActiveTintColor: colors.light.secondary,
 				tabBarInactiveTintColor: colors.light.border,
 				tabBarIconStyle: {
@@ -24,8 +22,6 @@ export default function TabsLayout({ size = 28 }) {
 				name="index"
 				options={{
 					title: 'Stories',
-					headerTitle: '',
-					headerTransparent: true,
 					tabBarIcon: ({ color }) => (
 						<MaterialSymbol
 							color={color}

@@ -59,17 +59,14 @@ export default function LevelBadge() {
 const styles = StyleSheet.create({
 	badge: {
 		alignItems: 'center',
-		borderRadius: 16,
 		justifyContent: 'center',
-		paddingHorizontal: 14,
-		paddingVertical: 10,
+		paddingHorizontal: 12,
+		paddingVertical: 6,
 		gap: 4,
-		borderWidth: 1,
-		borderColor: 'rgba(40, 40, 38, 0.8)',
-		backgroundColor: 'rgba(40, 40, 38, 0.8)',
+		minWidth: 72,
 	},
 	pressedBadge: {
-		backgroundColor: 'rgba(40, 40, 38, 0.8)',
+		opacity: 0.65,
 	},
 	levelText: {
 		color: colors.light.text,

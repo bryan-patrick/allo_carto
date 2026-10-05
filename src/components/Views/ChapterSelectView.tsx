@@ -2,10 +2,10 @@ import { chapterSelectBackground, type DeckChapter } from '@/data/french/storyAt
 import DeckPickerModal from '@/src/components/DeckPickerModal';
 import Loader from '@/src/components/Loader';
 import LockedSection from '@/src/components/LockedSection';
-import ViewIndicator from '@/src/components/ViewIndicator';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import { useState } from 'react';
 import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../../app/colors';
@@ -23,6 +23,9 @@ export default function ChapterSelectView() {
 	 * Context, route params, and state
 	 */
 	const { progressById, status } = useUserProgress();
+	const headerHeight = useHeaderHeight();
+	const scrollContentStyle = { paddingTop: headerHeight + 16 };
+	const scrollIndicatorInsets = { top: headerHeight };
 	const {
 		storyId,
 		chapterId: requestedChapterId,
@@ -100,13 +103,10 @@ export default function ChapterSelectView() {
 			source={image ?? chapterSelectBackground}
 		>
 			<ScrollView
-				contentContainerStyle={styles.scrollContentContainer}
+				contentContainerStyle={[styles.scrollContentContainer, scrollContentStyle]}
+				scrollIndicatorInsets={scrollIndicatorInsets}
 				style={styles.scrollView}
 			>
-				<ViewIndicator
-					views={['Story', 'Chapter', 'Deck']}
-					currentViewIndex={1}
-				/>
 				<View style={styles.header}>
 					<MaterialSymbol
 						name="raven"

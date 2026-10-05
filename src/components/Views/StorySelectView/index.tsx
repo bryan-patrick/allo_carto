@@ -2,9 +2,9 @@ import type { DeckStory } from '@/data/french/storyAtlas';
 import { storyAtlas } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import Loader from '@/src/components/Loader';
-import ViewIndicator from '@/src/components/ViewIndicator';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from '../../MaterialSymbol';
 import Story from './Story';
@@ -17,6 +17,9 @@ const rueStVallierO = require('@/src/app/assets/images/stories/rue-st-vallier-o.
 export default function StorySelectView() {
 	const { stories } = storyAtlas;
 	const { progressById, status } = useUserProgress();
+	const headerHeight = useHeaderHeight();
+	const scrollContentStyle = { paddingTop: headerHeight + 16 };
+	const scrollIndicatorInsets = { top: headerHeight };
 
 	/**
 	 * Wait for the user's stored percentages
@@ -33,13 +36,10 @@ export default function StorySelectView() {
 			source={rueStVallierO}
 		>
 			<ScrollView
-				contentContainerStyle={styles.scrollContentContainer}
+				contentContainerStyle={[styles.scrollContentContainer, scrollContentStyle]}
+				scrollIndicatorInsets={scrollIndicatorInsets}
 				style={styles.scrollView}
 			>
-				<ViewIndicator
-					views={['Story', 'Chapter', 'Deck']}
-					currentViewIndex={0}
-				/>
 				<View style={styles.header}>
 					<MaterialSymbol
 						name="auto_stories"
