@@ -65,11 +65,11 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 		gap: 4,
 		borderWidth: 1,
-		borderColor: 'rgba(255, 255, 255, 0.08)',
-		backgroundColor: 'rgba(255, 255, 255, 0.05)',
+		borderColor: 'rgba(40, 40, 38, 0.8)',
+		backgroundColor: 'rgba(40, 40, 38, 0.8)',
 	},
 	pressedBadge: {
-		backgroundColor: 'rgba(255, 255, 255, 0.1)',
+		backgroundColor: 'rgba(40, 40, 38, 0.8)',
 	},
 	levelText: {
 		color: colors.light.text,
