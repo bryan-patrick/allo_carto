@@ -7,6 +7,7 @@ import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
 import { Suspense, useCallback, useEffect, useReducer, useState } from 'react';
 import { CardDeckContext, initialCardDeckState } from '../components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '../components/CardDeck/cardDeckReducer';
+import LevelBadge from '../components/LevelBadge';
 import Loader from '../components/Loader';
 import DeckProgress from '../components/WordCard/DeckProgress';
 import { getTables, setDB } from '../db/interface';
@@ -113,7 +114,18 @@ export default function AppLayout() {
 								useSuspense
 							>
 								<UserProgressProvider userId={user?.id}>
-									<Stack>
+									<Stack
+										screenOptions={{
+											headerRight: () => <LevelBadge />,
+											unstable_headerRightItems: () => [
+												{
+													type: 'custom',
+													element: <LevelBadge />,
+													hidesSharedBackground: true,
+												},
+											],
+										}}
+									>
 										<Stack.Screen
 											name="(tabs)"
 											options={{
