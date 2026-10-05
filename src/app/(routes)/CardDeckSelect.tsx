@@ -2,10 +2,10 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import ViewIndicator from '@/src/components/ViewIndicator';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../colors';
 
@@ -17,6 +17,9 @@ const deckSelectBackgroundImage = require('@/src/app/assets/images/decks/deck-se
 export default function CardDeckSelect() {
 	const { chapterId } = useLocalSearchParams<{ chapterId?: string }>();
 	const { progressById, status } = useUserProgress();
+	const headerHeight = useHeaderHeight();
+	const scrollContentStyle = { paddingTop: headerHeight + 16 };
+	const scrollIndicatorInsets = { top: headerHeight };
 	const chapter = findChapterById(chapterId);
 	const decks =
 		chapter?.decks.map(deck => ({
@@ -57,13 +60,10 @@ export default function CardDeckSelect() {
 			source={deckSelectBackgroundImage}
 		>
 			<ScrollView
-				contentContainerStyle={styles.scrollContentContainer}
+				contentContainerStyle={[styles.scrollContentContainer, scrollContentStyle]}
+				scrollIndicatorInsets={scrollIndicatorInsets}
 				style={styles.scrollView}
 			>
-				<ViewIndicator
-					views={['Story', 'Chapter', 'Deck']}
-					currentViewIndex={2}
-				/>
 				<View style={styles.header}>
 					<MaterialSymbol
 						name="owl"

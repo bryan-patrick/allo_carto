@@ -14,7 +14,6 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import formatOtherWordForm from '@/src/util/formatOtherWordForm';
 import type { WordProgressKey } from '@/src/util/wordProgress';
-import { Stack } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -151,7 +150,6 @@ export default function CardDeck() {
 	 */
 	return (
 		<>
-			<Stack.Screen options={{ headerRight: () => null }} />
 			<CardDeckView
 				currentCard={currentCard}
 				wordActions={

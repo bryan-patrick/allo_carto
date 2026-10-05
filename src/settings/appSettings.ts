@@ -12,7 +12,7 @@ export interface AppSettings {
  * Default settings
  */
 export const defaultAppSettings: AppSettings = {
-	useLearningLevelColors: true,
+	useLearningLevelColors: false,
 	useLevelOpacity: false,
 	showDebugOptions: false,
 };

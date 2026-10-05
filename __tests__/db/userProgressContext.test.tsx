@@ -11,6 +11,7 @@ jest.mock('@/src/db/queries/getUserExperience');
 jest.mock('@/src/db/queries/getUserProgress');
 jest.mock('@/src/db/queries/writeUserProgress', () => ({
 	writeCorrectAnswer: jest.fn(),
+	writeDeckCompletion: jest.fn(),
 	writeWordSeen: jest.fn(),
 }));
 jest.mock('expo-sqlite', () => {

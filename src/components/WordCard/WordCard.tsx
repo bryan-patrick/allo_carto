@@ -1,6 +1,8 @@
+import { useUserProgress } from '@/src/db/useUserProgress';
 import { router } from 'expo-router';
-import { type ReactNode, useContext, useEffect, useLayoutEffect, useMemo } from 'react';
+import { type ReactNode, useContext, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import {
+	Alert,
 	ImageSourcePropType,
 	type LayoutChangeEvent,
 	StyleSheet,
@@ -48,6 +50,8 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 	const { cardState } = useWordCardUI();
 	const { currentCard } = useCardDeck();
 	const { cardDeckState, cardDeckDispatch } = useContext(CardDeckContext);
+	const { isUpdatingProgress, writeDeckCompletion } = useUserProgress();
+	const isCompletingCard = useRef(false);
 	const hasArticleMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
 	const hasWordMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
 
@@ -149,14 +153,42 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 	 * and the user hits the 'Next Card ->' button.
 	 */
 	useEffect(() => {
-		if (isCurrent && cardState.stage === 'COMPLETED') {
+		if (!isCurrent || cardState.stage !== 'COMPLETED' || isUpdatingProgress) return;
+
+		async function completeCard() {
+			if (isCompletingCard.current) return;
+			isCompletingCard.current = true;
+
 			if (cardDeckState.currentIndex === cardDeckState.cardDeck.words.length - 1) {
+				if (!cardDeckState.isComplete) {
+					const didWrite = await writeDeckCompletion();
+
+					if (!didWrite) {
+						isCompletingCard.current = false;
+						Alert.alert('Could not finish deck', 'Please try again.', [
+							{ text: 'Retry', onPress: completeCard },
+						]);
+						return;
+					}
+
+					cardDeckDispatch({ type: 'COMPLETE_DECK' });
+				}
+
 				router.push('/DeckResults');
 			} else {
 				cardDeckDispatch({ type: 'NEXT_CARD' });
 			}
 		}
-	}, [cardDeckState, isCurrent, cardState.stage, cardDeckDispatch]);
+
+		completeCard();
+	}, [
+		cardDeckState,
+		isCurrent,
+		cardState.stage,
+		cardDeckDispatch,
+		isUpdatingProgress,
+		writeDeckCompletion,
+	]);
 
 	/**
 	 * Render the card

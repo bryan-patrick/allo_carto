@@ -6,6 +6,7 @@ const [firstWord, secondWord, thirdWord] = mockWords;
 
 function mockState(words = [firstWord, secondWord]): CardDeckStateProps {
 	return {
+		isComplete: false,
 		currentIndex: 0,
 		currentId: words[0]?.id ?? '',
 		cardDeck: makeMockCardDeck({ words }),
