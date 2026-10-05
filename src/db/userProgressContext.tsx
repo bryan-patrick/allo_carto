@@ -12,7 +12,11 @@ import {
 } from 'react';
 import loadUserXP from './queries/getUserExperience';
 import getUserProgress from './queries/getUserProgress';
-import { writeCorrectAnswer, writeWordSeen } from './queries/writeUserProgress';
+import {
+	writeCorrectAnswer,
+	writeDeckCompletion,
+	writeWordSeen,
+} from './queries/writeUserProgress';
 
 /**
  * Typing
@@ -25,6 +29,7 @@ interface UserProgressContextValue {
 	progressById: ProgressById;
 	status: ProgressStatus;
 	writeCorrectAnswer: (wordId: string) => Promise<boolean>;
+	writeDeckCompletion: () => Promise<boolean>;
 	writeWordSeen: (wordId: string) => Promise<boolean>;
 	reloadProgress: () => Promise<void>;
 }
@@ -38,6 +43,7 @@ const initialValue: UserProgressContextValue = {
 	progressById: {},
 	status: 'loading',
 	writeCorrectAnswer: async () => true,
+	writeDeckCompletion: async () => true,
 	writeWordSeen: async () => true,
 	reloadProgress: async () => {},
 };
@@ -137,6 +143,15 @@ export function UserProgressProvider({
 	);
 
 	/**
+	 * Save the deck completion bonus and refresh the player's level.
+	 */
+	const recordDeckCompletion = useCallback(async (): Promise<boolean> => {
+		return runProgressWrite(async () => {
+			await writeDeckCompletion({ database, userId: userId! });
+		});
+	}, [database, runProgressWrite, userId]);
+
+	/**
 	 * Save that a word was seen
 	 */
 	const recordWordSeen = useCallback(
@@ -157,6 +172,7 @@ export function UserProgressProvider({
 			isUpdatingProgress,
 			progressById,
 			writeCorrectAnswer: recordCorrectAnswer,
+			writeDeckCompletion: recordDeckCompletion,
 			writeWordSeen: recordWordSeen,
 			reloadProgress: refreshProgress,
 			status,
@@ -166,6 +182,7 @@ export function UserProgressProvider({
 			isUpdatingProgress,
 			progressById,
 			recordCorrectAnswer,
+			recordDeckCompletion,
 			recordWordSeen,
 			refreshProgress,
 			status,

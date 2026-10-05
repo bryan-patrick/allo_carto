@@ -9,6 +9,7 @@ export type CardDeckAction =
 	| { type: 'INCREMENT_WORD_SCORE' }
 	| { type: 'ADD_CORRECT_WORD' }
 	| { type: 'ADD_INCORRECT_WORD' }
+	| { type: 'COMPLETE_DECK' }
 	| { type: 'SET_DECK'; payload: CardDeck };
 
 /**
@@ -60,12 +61,19 @@ export function cardDeckReducer(
 				incorrectWords: [...state.incorrectWords, currentWord],
 			};
 		}
+		case 'COMPLETE_DECK': {
+			return {
+				...state,
+				isComplete: true,
+			};
+		}
 		case 'SET_DECK': {
 			const nextCurrentId = action.payload.words[0]?.id ?? '';
 
 			return {
 				...state,
 				cardDeck: action.payload,
+				isComplete: false,
 				currentIndex: 0,
 				currentId: nextCurrentId,
 				correctWords: [],

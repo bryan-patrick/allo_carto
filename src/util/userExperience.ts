@@ -1,5 +1,6 @@
 export const userExperienceConfig = {
 	correctAnswerXP: 10,
+	deckCompletionBonusCards: 5,
 };
 
 interface UserLevelDefinition {
@@ -59,7 +60,6 @@ export function getUserExperience(totalXP: number): UserExperience {
 	let levelIndex = 0;
 	let currentLevel = userLevels[levelIndex];
 	let xpIntoLevel = totalXP;
-	const xpForNextLevel = currentLevel.toNext ?? 0;
 
 	while (currentLevel.toNext !== null && xpIntoLevel >= currentLevel.toNext) {
 		xpIntoLevel -= currentLevel.toNext;
@@ -77,6 +77,8 @@ export function getUserExperience(totalXP: number): UserExperience {
 			progressPercentage: 100,
 		};
 	}
+
+	const xpForNextLevel = currentLevel.toNext;
 
 	return {
 		totalXP,
