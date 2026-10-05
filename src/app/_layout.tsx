@@ -2,12 +2,18 @@ import { MaterialSymbols_400Regular } from '@expo-google-fonts/material-symbols/
 import { setAudioModeAsync } from 'expo-audio';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import { ThemeProvider } from 'expo-router/react-navigation';
+import {
+	getFocusedRouteNameFromRoute,
+	ThemeProvider,
+	type Route,
+} from 'expo-router/react-navigation';
 import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
 import { Suspense, useCallback, useEffect, useReducer, useState } from 'react';
 import { CardDeckContext, initialCardDeckState } from '../components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '../components/CardDeck/cardDeckReducer';
+import LevelBadge from '../components/LevelBadge';
 import Loader from '../components/Loader';
+import SelectionBreadcrumbs from '../components/SelectionBreadcrumbs';
 import DeckProgress from '../components/WordCard/DeckProgress';
 import { getTables, setDB } from '../db/interface';
 import getMonHomme, { UserRow } from '../db/queries/getMonHomme';
@@ -21,6 +27,33 @@ import alloTheme from './alloTheme';
  * Remember to put it back!
  */
 const resetDB = false;
+
+/**
+ * The native header follows the current tab
+ */
+function getTabHeaderOptions(route: Route<string>) {
+	const tabName = getFocusedRouteNameFromRoute(route) ?? 'index';
+
+	if (tabName === 'index') {
+		return {
+			headerShown: true,
+			headerTransparent: true,
+			headerTitle: () => <SelectionBreadcrumbs currentViewIndex={0} />,
+		};
+	}
+
+	let headerTitle = 'Collections';
+
+	if (tabName === 'settings') {
+		headerTitle = 'Settings';
+	}
+
+	return {
+		headerShown: true,
+		headerTransparent: false,
+		headerTitle,
+	};
+}
 
 /**
  * AppLayout Component
@@ -113,13 +146,14 @@ export default function AppLayout() {
 								useSuspense
 							>
 								<UserProgressProvider userId={user?.id}>
-									<Stack>
+									<Stack
+										screenOptions={{
+											headerRight: () => <LevelBadge />,
+										}}
+									>
 										<Stack.Screen
 											name="(tabs)"
-											options={{
-												headerShown: false,
-												headerTitle: 'Home',
-											}}
+											options={({ route }) => getTabHeaderOptions(route)}
 										/>
 										<Stack.Screen
 											name="(routes)/CardDeck"
@@ -146,7 +180,7 @@ export default function AppLayout() {
 												headerShown: true,
 												headerTransparent: true,
 												headerBackTitle: 'Back',
-												headerTitle: '',
+												headerTitle: () => <SelectionBreadcrumbs currentViewIndex={1} />,
 												headerBackButtonDisplayMode: 'minimal',
 												scrollEdgeEffects: {
 													top: 'hidden',
@@ -159,7 +193,7 @@ export default function AppLayout() {
 												headerShown: true,
 												headerTransparent: true,
 												headerBackTitle: 'Back',
-												headerTitle: '',
+												headerTitle: () => <SelectionBreadcrumbs currentViewIndex={2} />,
 												headerBackButtonDisplayMode: 'minimal',
 											}}
 										/>

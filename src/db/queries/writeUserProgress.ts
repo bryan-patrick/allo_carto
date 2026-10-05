@@ -9,6 +9,21 @@ import { incrementSeenCount } from './incrementSeenCount';
 import updateUserProgress from './updateUserProgress';
 
 /**
+ * Award XP using the current write's database connection.
+ */
+async function incrementUserXP(database: SQLiteDatabase, userId: string, amount: number) {
+	const result = await database.runAsync(
+		'UPDATE users SET totalXP = totalXP + ? WHERE id = ?;',
+		amount,
+		userId,
+	);
+
+	if (result.changes !== 1) {
+		throw new Error(`Could not award experience to user ${userId}.`);
+	}
+}
+
+/**
  * Update the userProgress table rows affected by new word progress
  */
 async function updateUserProgressTableItems({
@@ -101,15 +116,7 @@ export async function writeCorrectAnswer({
 		/**
 		 * Save XP with word progress so a failed write rolls back both
 		 */
-		const experienceWrite = await database.runAsync(
-			'UPDATE users SET totalXP = totalXP + ? WHERE id = ?;',
-			userExperienceConfig.correctAnswerXP,
-			userId,
-		);
-
-		if (experienceWrite.changes !== 1) {
-			throw new Error(`Could not award experience to user ${userId}.`);
-		}
+		await incrementUserXP(database, userId, userExperienceConfig.correctAnswerXP);
 
 		const nextWordProgress = getWordProgressKeyFromCounts({
 			correctCount: previousCorrectCount + 1,
@@ -124,6 +131,22 @@ export async function writeCorrectAnswer({
 			});
 		}
 	});
+}
+
+/**
+ * Award the equivalent of five correct cards for finishing a deck
+ */
+export async function writeDeckCompletion({
+	database,
+	userId,
+}: {
+	database: SQLiteDatabase;
+	userId: string;
+}): Promise<void> {
+	const bonusXP =
+		userExperienceConfig.correctAnswerXP * userExperienceConfig.deckCompletionBonusCards;
+
+	await incrementUserXP(database, userId, bonusXP);
 }
 
 /**

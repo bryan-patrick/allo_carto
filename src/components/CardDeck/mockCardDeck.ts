@@ -118,6 +118,7 @@ export function makeMockCardDeckState(
 	const cardDeck = overrides.cardDeck ?? mockCardDeck;
 
 	return {
+		isComplete: false,
 		currentIndex: 0,
 		currentId: cardDeck.words[0]?.id ?? '',
 		cardDeck,

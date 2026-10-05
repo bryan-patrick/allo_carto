@@ -16,6 +16,7 @@ export interface CardDeckContextType {
 }
 
 export interface CardDeckStateProps {
+	isComplete: boolean;
 	currentIndex: number;
 	currentId: string;
 	cardDeck: CardDeck;
@@ -27,6 +28,7 @@ export interface CardDeckStateProps {
  * Init Deck state
  */
 export const initialCardDeckState: CardDeckStateProps = {
+	isComplete: false,
 	currentIndex: 0,
 	currentId: '',
 	correctWords: [],
