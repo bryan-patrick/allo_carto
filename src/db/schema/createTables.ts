@@ -54,7 +54,8 @@ async function createUsersTable(): Promise<void> {
 				CREATE TABLE IF NOT EXISTS users (
 					id TEXT PRIMARY KEY,
 					name TEXT,
-					isMonHomme INTEGER NOT NULL DEFAULT 1
+					isMonHomme INTEGER NOT NULL DEFAULT 1,
+					totalXP INTEGER NOT NULL DEFAULT 0 CHECK (totalXP >= 0)
 				);
 			`);
 	});

@@ -1,4 +1,5 @@
 import type { ProgressById } from '@/src/util/progression';
+import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import { useSQLiteContext } from 'expo-sqlite';
 import {
 	createContext,
@@ -9,6 +10,7 @@ import {
 	useRef,
 	useState,
 } from 'react';
+import loadUserXP from './queries/getUserExperience';
 import getUserProgress from './queries/getUserProgress';
 import { writeCorrectAnswer, writeWordSeen } from './queries/writeUserProgress';
 
@@ -18,6 +20,7 @@ import { writeCorrectAnswer, writeWordSeen } from './queries/writeUserProgress';
 type ProgressStatus = 'loading' | 'ready' | 'error';
 
 interface UserProgressContextValue {
+	experience: UserExperience;
 	isUpdatingProgress: boolean;
 	progressById: ProgressById;
 	status: ProgressStatus;
@@ -30,6 +33,7 @@ interface UserProgressContextValue {
  * Initial progress state
  */
 const initialValue: UserProgressContextValue = {
+	experience: getUserExperience(0),
 	isUpdatingProgress: false,
 	progressById: {},
 	status: 'loading',
@@ -57,19 +61,27 @@ export function UserProgressProvider({
 	 */
 	const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 	const [progressById, setProgressById] = useState<ProgressById>({});
+	const [experience, setExperience] = useState<UserExperience>(() => getUserExperience(0));
 	const [status, setStatus] = useState<ProgressStatus>('loading');
 	const isSavingProgress = useRef(false);
 
 	/**
-	 * Reload userProgress rows from the database
+	 * Reload content progress and player experience from the database
 	 */
 	const refreshProgress = useCallback(async () => {
 		if (!userId) {
 			setProgressById({});
+			setExperience(getUserExperience(0));
 			setStatus('loading');
 		} else {
 			try {
-				setProgressById(await getUserProgress({ database, userId }));
+				const [nextProgress, nextExperience] = await Promise.all([
+					getUserProgress({ database, userId }),
+					loadUserXP({ database, userId }),
+				]);
+
+				setProgressById(nextProgress);
+				setExperience(nextExperience);
 				setStatus('ready');
 			} catch (error) {
 				console.error('Could not retrieve user progress:', error);
@@ -141,6 +153,7 @@ export function UserProgressProvider({
 	 */
 	const value = useMemo<UserProgressContextValue>(
 		() => ({
+			experience,
 			isUpdatingProgress,
 			progressById,
 			writeCorrectAnswer: recordCorrectAnswer,
@@ -149,6 +162,7 @@ export function UserProgressProvider({
 			status,
 		}),
 		[
+			experience,
 			isUpdatingProgress,
 			progressById,
 			recordCorrectAnswer,

@@ -8,6 +8,7 @@ import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import WordCardContainer from '@/src/components/WordCard/WordCardContainer';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import getFillerWords from '@/src/util/getFillerWords';
+import { getUserExperience } from '@/src/util/userExperience';
 import { render, waitFor } from '@testing-library/react-native';
 
 jest.mock('@/src/util/getFillerWords');
@@ -53,6 +54,7 @@ describe('<WordCardContainer />', () => {
 		mockRecordWordSeen.mockReset();
 		mockRecordWordSeen.mockResolvedValue(true);
 		mockUseUserProgress.mockReturnValue({
+			experience: getUserExperience(0),
 			isUpdatingProgress: false,
 			progressById: {},
 			writeCorrectAnswer: jest.fn(),

@@ -5,6 +5,7 @@ import WordCardButton from '@/src/components/WordCard/WordCardButton';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { getUserExperience } from '@/src/util/userExperience';
 import { render, userEvent, waitFor } from '@testing-library/react-native';
 
 jest.mock('expo-haptics', () => ({
@@ -60,6 +61,7 @@ describe('<WordCardButton />', () => {
 		mockRecordCorrectAnswer.mockReset();
 		mockRecordCorrectAnswer.mockResolvedValue(true);
 		mockUseUserProgress.mockReturnValue({
+			experience: getUserExperience(0),
 			isUpdatingProgress: false,
 			progressById: {},
 			writeCorrectAnswer: mockRecordCorrectAnswer,
@@ -112,6 +114,7 @@ describe('<WordCardButton />', () => {
 	test('cannot check an answer while another progress write is running', async () => {
 		mockDeckState();
 		mockUseUserProgress.mockReturnValue({
+			experience: getUserExperience(0),
 			isUpdatingProgress: true,
 			progressById: {},
 			writeCorrectAnswer: mockRecordCorrectAnswer,
