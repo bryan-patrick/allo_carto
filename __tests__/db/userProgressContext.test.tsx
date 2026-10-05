@@ -1,10 +1,13 @@
+import loadUserXP from '@/src/db/queries/getUserExperience';
 import getUserProgress from '@/src/db/queries/getUserProgress';
 import { writeCorrectAnswer } from '@/src/db/queries/writeUserProgress';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { UserProgressProvider } from '@/src/db/userProgressContext';
+import { getUserExperience } from '@/src/util/userExperience';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 
+jest.mock('@/src/db/queries/getUserExperience');
 jest.mock('@/src/db/queries/getUserProgress');
 jest.mock('@/src/db/queries/writeUserProgress', () => ({
 	writeCorrectAnswer: jest.fn(),
@@ -16,6 +19,7 @@ jest.mock('expo-sqlite', () => {
 });
 
 const mockGetUserProgress = jest.mocked(getUserProgress);
+const mockLoadUserExperience = jest.mocked(loadUserXP);
 const mockWriteCorrectAnswer = jest.mocked(writeCorrectAnswer);
 
 function deferred<T>() {
@@ -36,6 +40,7 @@ function Wrapper({ children }: { children: ReactNode }) {
 describe('<UserProgressProvider />', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		mockLoadUserExperience.mockResolvedValue(getUserExperience(0));
 		mockGetUserProgress.mockResolvedValue({});
 	});
 

@@ -1,5 +1,6 @@
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { getCompletionPercentage } from '@/src/util/progression';
+import { userExperienceConfig } from '@/src/util/userExperience';
 import { getWordProgressKeyFromCounts } from '@/src/util/wordProgress';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getDeckWordProgressCounts from './getDeckWordProgressCounts';
@@ -9,7 +10,6 @@ import updateUserProgress from './updateUserProgress';
 
 /**
  * Update the userProgress table rows affected by new word progress
- * These rows belong to decks, chapters, and stories
  */
 async function updateUserProgressTableItems({
 	database,
@@ -57,7 +57,7 @@ async function updateUserProgressTableItems({
 }
 
 /**
- * Increment a word's correctCount and save any
+ * Increment a word's correctCount, award XP, and save any
  * changed deck, chapter, and story percentages
  */
 export async function writeCorrectAnswer({
@@ -98,15 +98,24 @@ export async function writeCorrectAnswer({
 		 */
 		await incrementCorrectCount(userId, wordId, database);
 
+		/**
+		 * Save XP with word progress so a failed write rolls back both
+		 */
+		const experienceWrite = await database.runAsync(
+			'UPDATE users SET totalXP = totalXP + ? WHERE id = ?;',
+			userExperienceConfig.correctAnswerXP,
+			userId,
+		);
+
+		if (experienceWrite.changes !== 1) {
+			throw new Error(`Could not award experience to user ${userId}.`);
+		}
+
 		const nextWordProgress = getWordProgressKeyFromCounts({
 			correctCount: previousCorrectCount + 1,
 			seenCount: previousSeenCount,
 		});
 
-		/**
-		 * A changed progress stage changes the percentages
-		 * stored in the userProgress table
-		 */
 		if (previousWordProgress !== nextWordProgress) {
 			await updateUserProgressTableItems({
 				database,
@@ -159,10 +168,6 @@ export async function writeWordSeen({
 			seenCount: previousSeenCount + 1,
 		});
 
-		/**
-		 * A changed progress stage changes the percentages
-		 * stored in the userProgress table
-		 */
 		if (previousWordProgress !== nextWordProgress) {
 			await updateUserProgressTableItems({
 				database,
