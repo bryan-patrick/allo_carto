@@ -24,8 +24,19 @@ It's still very much a work in progress. Eventually I'd like to polish it up and
 - Collections will also include grammar rules, unlocked by learning word sequences that have that apply that grammar rule
 - We need a toast system to alert users to collectables
 - A more technical issue, once a deck is started we need to lock that progress. Currently, exiting a deck will allow a reset of it.
-- Daily replenishing "life". Getting a word wrong depletes life. We'll need levels implemented for this also on the backend.
 - We probably need two progress bars per deck or chapter, words known and words unique to this deck. Sometimes that'll be 0 and that's OK, but it would be cool for a user to be able to say, "oh snap this deck has 13 words I've never seen!"
+
+### Leveling refactor
+- Add user levels and XP
+- Lock stories/decks behind level requirements and group them into level ranges
+- Make early decks much shorter
+- Add small circular level/XP indicator across major screens
+- Award XP per correct card, then tally and animate it on the results screen
+- Add deck completion XP bonuses
+- Add collections for discovered words, including learning level and completion bonuses
+- Show new collection discoveries during results
+- Add collection detail/word views
+- Add `fr CA` TTS with a speaker button
 
 ## A note about AI
 
