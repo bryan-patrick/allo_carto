@@ -19,22 +19,32 @@ interface StoryProps {
 	isLocked: boolean;
 	progressById: ProgressById;
 	progressPercent: number;
+	userLevel: number;
 }
 
 /**
  * Story component
  */
-export default function Story({ story, progressById, progressPercent, isLocked }: StoryProps) {
+export default function Story({
+	story,
+	progressById,
+	progressPercent,
+	isLocked,
+	userLevel,
+}: StoryProps) {
 	/**
 	 * Destructure story
 	 */
-	const { category, name, description, materialSymbolName } = story;
+	const { category, name, description, materialSymbolName, requiredLevel } = story;
 	const color = colors.category[category];
 
 	/**
 	 * Get the unlock criteria
 	 */
-	const unlockCriteria = getUnlockCriteria(story, progressById);
+	const unlockCriteria = getUnlockCriteria(story, progressById, userLevel);
+	let padding = 12;
+
+	if (isLocked) padding = 6;
 
 	/**
 	 * Render the component
@@ -48,18 +58,21 @@ export default function Story({ story, progressById, progressPercent, isLocked }
 			/>
 			<Crease />
 			<Cover>
-				<View style={[styles.storyContainerInner, { padding: isLocked ? 6 : 12 }]}>
+				<View style={[styles.storyContainerInner, { padding }]}>
+					<View style={styles.storyTitleContainer}>
+						<View style={styles.storyLabelRow}>
+							<Text style={[styles.category, { color }]}>{category}</Text>
+							<Text style={[styles.category, { color }]}>Lvl. {requiredLevel}</Text>
+						</View>
+						<Text style={styles.storyTitle}>{name}</Text>
+						<View style={styles.separatorContainer}>
+							<View style={[styles.separatorBox, { backgroundColor: color }]} />
+							<View style={styles.separatorLine} />
+						</View>
+						<Text style={styles.storyDescription}>{description}</Text>
+					</View>
 					{!isLocked && (
 						<>
-							<View style={styles.storyTitleContainer}>
-								<Text style={[styles.category, { color }]}>{category}</Text>
-								<Text style={styles.storyTitle}>{name}</Text>
-								<View style={styles.separatorContainer}>
-									<View style={[styles.separatorBox, { backgroundColor: color }]} />
-									<View style={styles.separatorLine} />
-								</View>
-								<Text style={styles.storyDescription}>{description}</Text>
-							</View>
 							<View style={styles.storyImageContainer} />
 							<StoryMeta
 								progressPercent={progressPercent}
@@ -102,6 +115,12 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-600',
 		textTransform: 'uppercase',
 		fontSize: 12,
+	},
+	storyLabelRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: 12,
 	},
 	storyTitle: {
 		color: colors.dark.text,

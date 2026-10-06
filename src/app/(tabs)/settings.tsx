@@ -80,6 +80,16 @@ export default function Settings() {
 				))}
 			</View>
 			<View style={styles.settingRow}>
+				<Text style={styles.settingLabel}>Show skip word link</Text>
+				<Switch
+					accessibilityLabel="Show skip word link"
+					ios_backgroundColor={colors.dark.border}
+					onValueChange={enabled => setSetting('showSkipWordLink', enabled)}
+					trackColor={{ false: colors.dark.border, true: colors.dark.primaryActive }}
+					value={settings.showSkipWordLink}
+				/>
+			</View>
+			<View style={styles.settingRow}>
 				<Text style={styles.settingLabel}>Show debug options</Text>
 				<Switch
 					accessibilityLabel="Show debug options"

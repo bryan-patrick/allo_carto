@@ -1,4 +1,4 @@
-import type { UnlockCriteria } from '@/src/util/atlasCompletion';
+import { formatUnlockCriterion, type UnlockCriteria } from '@/src/util/atlasCompletion';
 import { ReactNode } from 'react';
 import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import colors from '../app/colors';
@@ -42,6 +42,10 @@ export default function LockOverlay({
 	const showLockOverlay = isLocked;
 	const showCompleteOverlay = !isLocked && isComplete;
 	const showOverlay = showLockOverlay || showCompleteOverlay;
+	const criteria = (unlockCriteria ?? []).map(criterion => ({
+		isUnlocked: criterion.isUnlocked,
+		label: formatUnlockCriterion(criterion),
+	}));
 
 	/**
 	 * Ternaries
@@ -84,26 +88,17 @@ export default function LockOverlay({
 							width="32"
 						/>
 					)}
-					{unlockCriteria && unlockCriteria.length > 0 && (
+					{criteria.length > 0 && (
 						<View style={styles.unlockCriteriaContainer}>
-							{unlockCriteria.map((criterion, index) => (
+							{criteria.map((criterion, index) => (
 								<Text
-									key={`${criterion.title}-${index}`}
+									key={`${criterion.label}-${index}`}
 									style={[
 										styles.unlockCriteriaText,
 										criterion.isUnlocked && styles.unlockCriteriaMet,
 									]}
 								>
-									Reach {criterion.requiredPercentage}% in&nbsp;
-									<Text
-										style={[
-											styles.unlockCriteriaTitle,
-											criterion.isUnlocked && styles.unlockCriteriaMet,
-										]}
-									>
-										{criterion.title}
-									</Text>
-									&nbsp; to unlock.
+									{criterion.label}
 								</Text>
 							))}
 						</View>
@@ -148,8 +143,5 @@ const styles = StyleSheet.create({
 	},
 	unlockCriteriaMet: {
 		textDecorationLine: 'line-through',
-	},
-	unlockCriteriaTitle: {
-		fontFamily: 'lexend-600',
 	},
 });

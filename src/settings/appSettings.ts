@@ -6,6 +6,7 @@ export interface AppSettings {
 	useLearningLevelColors: boolean;
 	useLevelOpacity: boolean;
 	showDebugOptions: boolean;
+	showSkipWordLink: boolean;
 }
 
 /**
@@ -15,6 +16,7 @@ export const defaultAppSettings: AppSettings = {
 	useLearningLevelColors: false,
 	useLevelOpacity: false,
 	showDebugOptions: false,
+	showSkipWordLink: true,
 };
 
 export const appSettingsStorageKey = 'allo_carto.settings';

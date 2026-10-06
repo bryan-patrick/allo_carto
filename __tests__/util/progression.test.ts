@@ -1,4 +1,5 @@
 import type { StoryAtlas } from '@/data/french/storyAtlas';
+import { storyAreas } from '@/data/french/storyAreas';
 import { makeMockCardDeck } from '@/src/components/CardDeck/mockCardDeck';
 import {
 	findAtlasLocationByChapterId,
@@ -39,9 +40,11 @@ function makeAtlas(): StoryAtlas {
 	});
 
 	return {
+		areas: storyAreas,
 		stories: [
 			{
 				id: 'story_one',
+				requiredLevel: 1,
 				name: 'Story one',
 				description: 'The first story',
 				category: 'Travel',
@@ -56,6 +59,7 @@ function makeAtlas(): StoryAtlas {
 			},
 			{
 				id: 'story_two',
+				requiredLevel: 1,
 				name: 'Story two',
 				description: 'The second story',
 				category: 'Cat Files',
@@ -154,6 +158,7 @@ describe('progression', () => {
 				atlas,
 				id: 'deck_three',
 				progressById: {},
+				userLevel: 1,
 			}),
 		).toBe(false);
 		expect(
@@ -161,6 +166,7 @@ describe('progression', () => {
 				atlas,
 				id: 'deck_three',
 				progressById: makeProgressById({ story_one: 50 }),
+				userLevel: 1,
 			}),
 		).toBe(true);
 	});

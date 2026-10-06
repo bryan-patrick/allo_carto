@@ -12,6 +12,7 @@ export interface UnlockRequirement {
 
 export interface Progression {
 	id: string;
+	requiredLevel?: number;
 	unlockRequirements?: UnlockRequirement[];
 }
 

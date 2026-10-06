@@ -54,7 +54,7 @@ function findDeckByRouteParams({
  * Route wrapper for viewing all cards in a deck.
  */
 export default function ViewCards() {
-	const { progressById, status } = useUserProgress();
+	const { experience, progressById, status } = useUserProgress();
 	const routeParams = useLocalSearchParams();
 	const deckTitle = getRouteParam(routeParams.deckTitle);
 	const chapterId = getRouteParam(routeParams.chapterId);
@@ -72,7 +72,7 @@ export default function ViewCards() {
 	/**
 	 * Block locked decks
 	 */
-	if (deck && !isItemUnlocked({ id: deck.id, progressById })) {
+	if (deck && !isItemUnlocked({ id: deck.id, progressById, userLevel: experience.level })) {
 		return <Text>This deck is locked.</Text>;
 	}
 
