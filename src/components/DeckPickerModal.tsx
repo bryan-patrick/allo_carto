@@ -12,6 +12,7 @@ import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
+import { useUserProgress } from '@/src/db/useUserProgress';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import type { ProgressById } from '@/src/util/progression';
@@ -91,6 +92,8 @@ export default function DeckPickerModal({
 	const { bottom, top } = useSafeAreaInsets();
 	const { height: windowHeight } = useWindowDimensions();
 	const { id: userId } = useUserContext() ?? {};
+	const { experience } = useUserProgress();
+	const userLevel = experience.level;
 	const { cardDeckDispatch } = useCardDeck();
 	const [loadingPassageDeckId, setLoadingPassageDeckId] = useState<string>();
 	const [passageContentHeight, setPassageContentHeight] = useState<number>();
@@ -157,6 +160,7 @@ export default function DeckPickerModal({
 	 */
 	async function handleSelectDeck(deck: CardDeck) {
 		if (!userId) return;
+		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) return;
 
 		const selectedDeck = await getDeck({ deck, userId });
 
@@ -172,6 +176,7 @@ export default function DeckPickerModal({
 	 */
 	async function handleShowPassage(deck: CardDeck) {
 		if (!userId || loadingPassageDeckId) return;
+		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) return;
 
 		setLoadingPassageDeckId(deck.id);
 
@@ -323,7 +328,7 @@ export default function DeckPickerModal({
 									 * Map the chapter's decks
 									 */
 									chapter.decks.map(deck => {
-										const isLocked = !isItemUnlocked({ id: deck.id, progressById });
+										const isLocked = !isItemUnlocked({ id: deck.id, progressById, userLevel });
 										const completionPercent = Math.floor(
 											progressById[deck.id]?.completionPercentage ?? 0,
 										);
@@ -388,7 +393,7 @@ export default function DeckPickerModal({
 												{isLocked ?
 													<LockedSection
 														color={storyColor}
-														unlockCriteria={getUnlockCriteria(deck, progressById)}
+														unlockCriteria={getUnlockCriteria(deck, progressById, userLevel)}
 													/>
 												:	<View style={styles.actions}>
 														<LinkButton

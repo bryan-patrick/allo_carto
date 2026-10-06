@@ -13,6 +13,7 @@ import type colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { Progression } from '@/src/util/progression';
 import type { ImageSourcePropType } from 'react-native';
+import { storyAreas, type StoryArea } from './storyAreas';
 
 /**
  * Image paths
@@ -29,11 +30,13 @@ export const chapterSelectBackground = require('@/src/app/assets/images/chapters
 export type StoryCategory = keyof typeof colors.category;
 
 export interface StoryAtlas {
+	areas: StoryArea[];
 	stories: DeckStory[];
 }
 
 export interface DeckStory extends Progression {
 	id: string;
+	requiredLevel: number;
 	name: string;
 	description: string;
 	category: StoryCategory;
@@ -55,9 +58,11 @@ export interface DeckChapter extends Progression {
  * Story -> Chapter -> Deck
  */
 export const storyAtlas: StoryAtlas = {
+	areas: storyAreas,
 	stories: [
 		{
 			id: 'a-new-restaurant',
+			requiredLevel: 1,
 			name: 'A New Restaurant',
 			description: 'Wallace heads out to try a small restaurant recommended by Mathieu.',
 			category: 'Dining',
@@ -85,6 +90,7 @@ export const storyAtlas: StoryAtlas = {
 		},
 		{
 			id: 'meeting-leo',
+			requiredLevel: 1,
 			name: 'Meeting Leo',
 			description:
 				'Wallace hopes that the strange eyes outside his window belong to a very large cat.',
@@ -103,6 +109,7 @@ export const storyAtlas: StoryAtlas = {
 		},
 		{
 			id: 'a-matter-of-leaves',
+			requiredLevel: 1,
 			name: 'A Matter of Leaves',
 			description: 'Leo the cat watches two humans feud over a pile of leaves.',
 			category: 'Social',
@@ -132,6 +139,7 @@ export const storyAtlas: StoryAtlas = {
 		},
 		{
 			id: 'walking-the-plains',
+			requiredLevel: 1,
 			name: 'Walking the Plains',
 			description:
 				'Born from walking les plaines d’Abraham, these decks follow the plaques and monuments that reveal Québec’s past.',
