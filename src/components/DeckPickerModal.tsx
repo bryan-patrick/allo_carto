@@ -13,7 +13,9 @@ import getDeckWordProgressCounts, {
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
@@ -93,7 +95,9 @@ export default function DeckPickerModal({
 	const { height: windowHeight } = useWindowDimensions();
 	const { id: userId } = useUserContext() ?? {};
 	const { experience } = useUserProgress();
+	const { settings } = useAppSettings();
 	const userLevel = experience.level;
+	const cardsPerDeck = getCardsPerDeck(userLevel, settings.cardsPerDeck);
 	const { cardDeckDispatch } = useCardDeck();
 	const [loadingPassageDeckId, setLoadingPassageDeckId] = useState<string>();
 	const [passageContentHeight, setPassageContentHeight] = useState<number>();
@@ -162,7 +166,7 @@ export default function DeckPickerModal({
 		if (!userId) return;
 		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) return;
 
-		const selectedDeck = await getDeck({ deck, userId });
+		const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
 
 		if (!selectedDeck) return;
 

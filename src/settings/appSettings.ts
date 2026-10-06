@@ -1,13 +1,24 @@
+import { isValidCardsPerDeck } from '@/src/util/cardsPerDeck';
+
 /**
  * Typing
  */
 export interface AppSettings {
-	[key: string]: boolean;
 	useLearningLevelColors: boolean;
 	useLevelOpacity: boolean;
 	showDebugOptions: boolean;
 	showSkipWordLink: boolean;
+	cardsPerDeck: number | null;
 }
+
+export type BooleanSettingKey = Exclude<keyof AppSettings, 'cardsPerDeck'>;
+
+const booleanSettingKeys: BooleanSettingKey[] = [
+	'useLearningLevelColors',
+	'useLevelOpacity',
+	'showDebugOptions',
+	'showSkipWordLink',
+];
 
 /**
  * Default settings
@@ -17,6 +28,7 @@ export const defaultAppSettings: AppSettings = {
 	useLevelOpacity: false,
 	showDebugOptions: false,
 	showSkipWordLink: true,
+	cardsPerDeck: null,
 };
 
 export const appSettingsStorageKey = 'allo_carto.settings';
@@ -26,7 +38,7 @@ export const appSettingsStorageKey = 'allo_carto.settings';
  */
 export function readAppSettings(value: string | null): AppSettings {
 	const settingsCopy = { ...defaultAppSettings };
-	let saved: AppSettings | null = null;
+	let saved: Partial<AppSettings> | null = null;
 
 	if (value === null) {
 		return settingsCopy;
@@ -38,12 +50,16 @@ export function readAppSettings(value: string | null): AppSettings {
 		return settingsCopy;
 	}
 
-	for (const key of Object.keys(settingsCopy)) {
+	for (const key of booleanSettingKeys) {
 		const setting = saved[key];
 
 		if (typeof setting === 'boolean') {
 			settingsCopy[key] = setting;
 		}
+	}
+
+	if (isValidCardsPerDeck(saved.cardsPerDeck)) {
+		settingsCopy.cardsPerDeck = saved.cardsPerDeck;
 	}
 
 	return settingsCopy;

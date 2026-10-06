@@ -3,18 +3,27 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { resetDB } from '../../db/interface';
 import { useUserProgress } from '../../db/useUserProgress';
-import type { AppSettings } from '../../settings/appSettings';
+import type { BooleanSettingKey } from '../../settings/appSettings';
 import { useAppSettings } from '../../settings/useAppSettings';
+import { getCardsPerDeck, maxCardsPerDeck, minCardsPerDeck } from '../../util/cardsPerDeck';
 import colors from '../colors';
 
-const passageSettings: { key: keyof AppSettings; label: string }[] = [
+const passageSettings: { key: BooleanSettingKey; label: string }[] = [
 	{ key: 'useLearningLevelColors', label: 'Use learning level colors' },
 	{ key: 'useLevelOpacity', label: 'Use level opacity' },
 ];
 
+const cardCountOptions = Array.from(
+	{ length: maxCardsPerDeck - minCardsPerDeck + 1 },
+	(_, index) => minCardsPerDeck + index,
+);
+
 export default function Settings() {
-	const { reloadProgress } = useUserProgress();
+	const { experience, reloadProgress } = useUserProgress();
 	const { settings, setSetting } = useAppSettings();
+	const useAutomaticCardCount = settings.cardsPerDeck === null;
+	const automaticCardCount = getCardsPerDeck(experience.level);
+	const automaticCardCountLabel = `Automatic (${automaticCardCount})`;
 
 	/**
 	 * State
@@ -61,6 +70,40 @@ export default function Settings() {
 			style={styles.container}
 			contentContainerStyle={styles.content}
 		>
+			<View style={styles.section}>
+				<Text style={styles.heading}>Cards per deck</Text>
+				<Text style={styles.text}>Choose 5–12 cards, or let the amount grow with your level.</Text>
+				<View style={styles.cardCountOptions}>
+					<Pressable
+						accessibilityRole="radio"
+						accessibilityState={{ checked: useAutomaticCardCount }}
+						onPress={() => setSetting('cardsPerDeck', null)}
+						style={[
+							styles.cardCountOption,
+							useAutomaticCardCount && styles.selectedCardCountOption,
+						]}
+					>
+						<Text style={styles.text}>{automaticCardCountLabel}</Text>
+					</Pressable>
+					{cardCountOptions.map(amount => {
+						const isSelected = settings.cardsPerDeck === amount;
+						const accessibilityLabel = `${amount} cards per deck`;
+
+						return (
+							<Pressable
+								key={amount}
+								accessibilityLabel={accessibilityLabel}
+								accessibilityRole="radio"
+								accessibilityState={{ checked: isSelected }}
+								onPress={() => setSetting('cardsPerDeck', amount)}
+								style={[styles.cardCountOption, isSelected && styles.selectedCardCountOption]}
+							>
+								<Text style={styles.text}>{amount}</Text>
+							</Pressable>
+						);
+					})}
+				</View>
+			</View>
 			<View style={styles.section}>
 				<Text style={styles.heading}>Passage display</Text>
 				{passageSettings.map(({ key, label }) => (
@@ -132,6 +175,25 @@ const styles = StyleSheet.create({
 	},
 	section: {
 		gap: 12,
+	},
+	cardCountOptions: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 8,
+	},
+	cardCountOption: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		minWidth: 44,
+		minHeight: 44,
+		paddingHorizontal: 12,
+		borderColor: colors.light.border,
+		borderWidth: 1,
+		borderRadius: 8,
+	},
+	selectedCardCountOption: {
+		backgroundColor: colors.dark.primaryActive,
+		borderColor: colors.dark.primaryActive,
 	},
 	settingRow: {
 		alignItems: 'center',

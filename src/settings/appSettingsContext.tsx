@@ -11,9 +11,11 @@ import {
 /**
  * Types
  */
+type SetSetting = (key: keyof AppSettings, value: boolean | number | null) => void;
+
 interface AppSettingsContextValue {
 	settings: AppSettings;
-	setSetting: (key: keyof AppSettings, value: boolean) => void;
+	setSetting: SetSetting;
 }
 
 /**
@@ -39,12 +41,12 @@ function getAppSettings(): AppSettings {
 export function AppSettingsProvider({ children }: { children: ReactNode }) {
 	const [settings, setSettings] = useState(getAppSettings);
 
-	const setSetting = (key: keyof AppSettings, isTurnedOn: boolean) => {
-		if (settings[key] === isTurnedOn) return;
+	const setSetting: SetSetting = (key, value) => {
+		if (settings[key] === value) return;
 
 		const nextSettings = {
 			...settings,
-			[key]: isTurnedOn,
+			[key]: value,
 		};
 
 		try {
