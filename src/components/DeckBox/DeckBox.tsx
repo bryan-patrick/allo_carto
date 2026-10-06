@@ -76,7 +76,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		deckWordCount: deckCardCount,
 		wordProgressCounts,
 	});
-	const selectAction = deckCompletionPercent > 0 ? 'Continue' : 'Review';
+	const selectAction = deckCompletionPercent > 0 ? 'Continue' : 'Start';
 	const selectText = `${selectAction} deck`;
 	const deckMetadata = {
 		cardCount: deckCardCount,

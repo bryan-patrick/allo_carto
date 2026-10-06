@@ -332,7 +332,7 @@ export default function DeckPickerModal({
 										const completionPercent = Math.floor(
 											progressById[deck.id]?.completionPercentage ?? 0,
 										);
-										const actionLabel = completionPercent > 0 ? 'Continue' : 'Review';
+										const actionLabel = completionPercent > 0 ? 'Continue' : 'Flash Cards';
 										const isLoadingPassage = loadingPassageDeckId === deck.id;
 
 										return (

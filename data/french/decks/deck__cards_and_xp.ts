@@ -1,0 +1,31 @@
+import { createCardDeck } from '@/src/util/createCardDeck';
+
+export const DeckCardsAndXp = createCardDeck({
+	id: 'deck__cards_and_xp',
+	title: 'Cards and XP',
+	description: 'Learn how correct answers level up your cards and earn XP.',
+	chapter: 'How it works',
+	CEFR: ['A1', 'A2', 'B1'],
+	unlockRequirements: [{ id: 'deck__study_and_read_again', requiredCompletionPercentage: 20 }],
+	words: [],
+	wordChoices: [],
+	englishPassage: 'When you get a flashcard right, the card levels up. You also earn XP.',
+	passage: [
+		{ text: 'Quand', wordId: 'word_conjunction_quand' },
+		{ text: 'tu', wordId: 'word_pronoun_tu' },
+		{ text: 'réponds', wordId: 'word_verb_reponds' },
+		{ text: 'correctement', wordId: 'word_adverb_correctement' },
+		{ text: 'à', wordId: 'word_preposition_a' },
+		{ text: 'une', wordId: 'word_article_une' },
+		{ text: 'carte-éclair', wordId: 'word_noun_carte_eclair', after: ', ' },
+		{ text: 'elle', wordId: 'word_pronoun_elle' },
+		{ text: 'monte', wordId: 'word_verb_monte' },
+		{ text: 'de', wordId: 'word_preposition_de' },
+		{ text: 'niveau', wordId: 'word_noun_niveau', after: '. ' },
+		{ text: 'Tu', wordId: 'word_pronoun_tu' },
+		{ text: 'gagnes', wordId: 'word_verb_gagnes' },
+		{ text: 'aussi', wordId: 'word_adverb_aussi' },
+		{ text: 'des', wordId: 'word_article_des' },
+		{ text: 'XP', unlockExempt: true, after: '.' },
+	],
+});

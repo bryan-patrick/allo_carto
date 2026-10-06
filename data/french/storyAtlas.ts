@@ -2,12 +2,20 @@ import {
 	DeckAForkInstead,
 	DeckATableForOne,
 	DeckAutumnInTheNeighborhood,
+	DeckCardsAndXp,
 	DeckChoosingDinner,
 	DeckGettingReady,
+	DeckHaveFun,
+	DeckKnowTheWord,
 	DeckRainyNight,
+	DeckStoriesAndFlashcards,
+	DeckStoriesChaptersAndDecks,
+	DeckStudyAndReadAgain,
 	DeckTheWalkToTheRestaurant,
 	DeckUntilNextTime,
+	DeckWelcomeToAlloCarto,
 	DeckWindowWatcher,
+	DeckWordCollections,
 } from '@/data/french/decks';
 import type colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
@@ -61,8 +69,44 @@ export const storyAtlas: StoryAtlas = {
 	areas: storyAreas,
 	stories: [
 		{
-			id: 'a-new-restaurant',
+			id: 'welcome-to-allo-carto',
 			requiredLevel: 1,
+			name: 'Welcome to Allo Carto',
+			description:
+				'Learn how to read stories, study decks, and grow your vocabulary in Allo Carto.',
+			category: 'Everyday',
+			image: chapterSelectBackground,
+			materialSymbolName: 'waving_hand',
+			chapters: [
+				{
+					id: 'welcome-to-allo-carto-chapter-1',
+					label: 'Chapter 1',
+					name: 'What is this?',
+					decks: [DeckWelcomeToAlloCarto, DeckStoriesAndFlashcards],
+				},
+				{
+					id: 'welcome-to-allo-carto-chapter-2',
+					label: 'Chapter 2',
+					name: 'How it works',
+					unlockRequirements: [
+						{ id: 'welcome-to-allo-carto-chapter-1', requiredCompletionPercentage: 20 },
+					],
+					decks: [DeckStoriesChaptersAndDecks, DeckStudyAndReadAgain, DeckCardsAndXp],
+				},
+				{
+					id: 'welcome-to-allo-carto-chapter-3',
+					label: 'Chapter 3',
+					name: 'Additional information',
+					unlockRequirements: [
+						{ id: 'welcome-to-allo-carto-chapter-2', requiredCompletionPercentage: 20 },
+					],
+					decks: [DeckKnowTheWord, DeckWordCollections, DeckHaveFun],
+				},
+			],
+		},
+		{
+			id: 'a-new-restaurant',
+			requiredLevel: 10,
 			name: 'A New Restaurant',
 			description: 'Wallace heads out to try a small restaurant recommended by Mathieu.',
 			category: 'Dining',
@@ -90,7 +134,7 @@ export const storyAtlas: StoryAtlas = {
 		},
 		{
 			id: 'meeting-leo',
-			requiredLevel: 1,
+			requiredLevel: 10,
 			name: 'Meeting Leo',
 			description:
 				'Wallace hopes that the strange eyes outside his window belong to a very large cat.',
@@ -109,7 +153,7 @@ export const storyAtlas: StoryAtlas = {
 		},
 		{
 			id: 'a-matter-of-leaves',
-			requiredLevel: 1,
+			requiredLevel: 10,
 			name: 'A Matter of Leaves',
 			description: 'Leo the cat watches two humans feud over a pile of leaves.',
 			category: 'Social',
@@ -139,7 +183,7 @@ export const storyAtlas: StoryAtlas = {
 		},
 		{
 			id: 'walking-the-plains',
-			requiredLevel: 1,
+			requiredLevel: 10,
 			name: 'Walking the Plains',
 			description:
 				'Born from walking les plaines d’Abraham, these decks follow the plaques and monuments that reveal Québec’s past.',
