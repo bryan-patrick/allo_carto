@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import {
 	impactAsync,
 	ImpactFeedbackStyle,
@@ -43,6 +44,7 @@ export default function WordCardButton({
 	const { cardState, wordCardUIDispatch } = useWordCardUI();
 	const { cardDeckDispatch, currentCard } = useCardDeck();
 	const { isUpdatingProgress, writeCorrectAnswer: recordCorrectAnswer } = useUserProgress();
+	const { settings } = useAppSettings();
 
 	/**
 	 * Style vars
@@ -61,6 +63,7 @@ export default function WordCardButton({
 	 */
 	const pressInFlight = useRef(false);
 	const persistedCorrectAnswer = useRef<string | null>(null);
+	const isRevealDisabled = cardState.stage !== 'READY' || isAnswerPending || isUpdatingProgress;
 
 	const isDisabled = useMemo(() => {
 		if (
@@ -123,12 +126,17 @@ export default function WordCardButton({
 					persistedCorrectAnswer.current = answerId;
 
 					async function persistCorrectAnswer() {
-						const didWrite = await recordCorrectAnswer(currentCard.id);
-
-						if (didWrite) {
-							cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
-							cardDeckDispatch({ type: 'ADD_CORRECT_WORD' });
+						if (cardState.isAnswerRevealed) {
+							cardDeckDispatch({ type: 'ADD_INCORRECT_WORD' });
 							impactAsync(ImpactFeedbackStyle.Light);
+						} else {
+							const didWrite = await recordCorrectAnswer(currentCard.id);
+
+							if (didWrite) {
+								cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
+								cardDeckDispatch({ type: 'ADD_CORRECT_WORD' });
+								impactAsync(ImpactFeedbackStyle.Light);
+							}
 						}
 
 						pressInFlight.current = false;
@@ -161,6 +169,7 @@ export default function WordCardButton({
 		cardState.attempts,
 		cardState.progress,
 		cardState.stage,
+		cardState.isAnswerRevealed,
 		cardDeckDispatch,
 		recordCorrectAnswer,
 	]);
@@ -180,6 +189,14 @@ export default function WordCardButton({
 	const handlePressOut = useCallback(() => {
 		setIsPressed(false);
 	}, []);
+
+	const handleRevealAnswer = useCallback(() => {
+		if (pressInFlight.current || isUpdatingProgress || cardState.stage !== 'READY') return;
+
+		pressInFlight.current = true;
+		setIsAnswerPending(true);
+		wordCardUIDispatch({ type: 'REVEAL_ANSWER', currentCard });
+	}, [cardState.stage, currentCard, isUpdatingProgress, wordCardUIDispatch]);
 
 	/**
 	 * Side effect that sets the styles
@@ -210,31 +227,43 @@ export default function WordCardButton({
 	 * Render the WordCard
 	 */
 	return (
-		<Animated.View style={animatedContainerStyle}>
-			<AnimatedPressable
-				{...props}
-				disabled={isDisabled}
-				onPressIn={handlePressIn}
-				onPressOut={handlePressOut}
-				hitSlop={10}
-				style={[
-					styles.pressable,
-					pressableStateStyle,
-					animatedShadowStyle,
-					isDisabled && styles.disabledPressable,
-				]}
-			>
-				<View
-					style={styles.textRow}
-					testID="word-card-button-content"
+		<View style={styles.actions}>
+			{settings.showSkipWordLink && (
+				<Pressable
+					accessibilityRole="link"
+					disabled={isRevealDisabled}
+					onPress={handleRevealAnswer}
+					style={[styles.revealLink, isRevealDisabled && styles.disabledRevealLink]}
 				>
-					<Text style={[styles.text, textStateStyle, isDisabled && styles.disabledText]}>
-						{children}
-					</Text>
-					{SVGElement}
-				</View>
-			</AnimatedPressable>
-		</Animated.View>
+					<Text style={styles.revealText}>I don&apos;t know (skips XP)</Text>
+				</Pressable>
+			)}
+			<Animated.View style={animatedContainerStyle}>
+				<AnimatedPressable
+					{...props}
+					disabled={isDisabled}
+					onPressIn={handlePressIn}
+					onPressOut={handlePressOut}
+					hitSlop={10}
+					style={[
+						styles.pressable,
+						pressableStateStyle,
+						animatedShadowStyle,
+						isDisabled && styles.disabledPressable,
+					]}
+				>
+					<View
+						style={styles.textRow}
+						testID="word-card-button-content"
+					>
+						<Text style={[styles.text, textStateStyle, isDisabled && styles.disabledText]}>
+							{children}
+						</Text>
+						{SVGElement}
+					</View>
+				</AnimatedPressable>
+			</Animated.View>
+		</View>
 	);
 }
 
@@ -242,6 +271,23 @@ export default function WordCardButton({
  * Styles
  */
 const styles = StyleSheet.create({
+	actions: {
+		gap: 8,
+	},
+	revealLink: {
+		alignSelf: 'center',
+		paddingVertical: 6,
+		paddingHorizontal: 12,
+	},
+	disabledRevealLink: {
+		opacity: 0.5,
+	},
+	revealText: {
+		color: colors.light.primary,
+		fontFamily: 'lexend-400',
+		fontSize: 14,
+		textDecorationLine: 'underline',
+	},
 	pressable: {
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -249,7 +295,8 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.dark.primary,
 		borderRadius: 12,
 		borderWidth: 2,
-		padding: 12,
+		paddingHorizontal: 12,
+		paddingVertical: 12,
 		gap: 16,
 		shadowColor: colors.dark.border,
 		shadowOffset: { width: 0, height: 8 },

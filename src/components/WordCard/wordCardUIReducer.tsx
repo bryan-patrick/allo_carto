@@ -14,7 +14,7 @@ export type WordCardUIAction =
 			word: string;
 	  }
 	| {
-			type: 'CHECK_ANSWER';
+			type: 'CHECK_ANSWER' | 'REVEAL_ANSWER';
 			currentCard: Word | undefined;
 	  };
 
@@ -43,6 +43,19 @@ export function wordCardUIReducer(
 	action: WordCardUIAction,
 ): WordCardStateProps {
 	switch (action.type) {
+		case 'REVEAL_ANSWER': {
+			if (state.stage !== 'READY' || !action.currentCard) return state;
+
+			return wordCardUIReducer(
+				{
+					...state,
+					selectedArticle: action.currentCard.englishArticle ?? null,
+					selectedWord: action.currentCard.englishWords[0],
+					isAnswerRevealed: true,
+				},
+				{ type: 'CHECK_ANSWER', currentCard: action.currentCard },
+			);
+		}
 		case 'CHECK_ANSWER': {
 			const nextAttempts = state.attempts + 1;
 

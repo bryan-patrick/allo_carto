@@ -35,7 +35,7 @@ export default function CardDeck() {
 	const { cardDeckState, currentCard } = useCardDeck();
 	const { cardDeck } = cardDeckState;
 	const { id: userId } = useUserContext() ?? {};
-	const { isUpdatingProgress, progressById, status } = useUserProgress();
+	const { experience, isUpdatingProgress, progressById, status } = useUserProgress();
 	const isOpeningWordDetails = useRef(false);
 	const [isPassageVisible, setIsPassageVisible] = useState(false);
 	const [passageProgress, setPassageProgress] = useState<PassageProgress>();
@@ -44,6 +44,7 @@ export default function CardDeck() {
 	const isLocked = !isItemUnlocked({
 		id: cardDeck.id,
 		progressById,
+		userLevel: experience.level,
 	});
 	const isPassageDisabled = !userId || isUpdatingProgress;
 	const shouldShowOtherForms =

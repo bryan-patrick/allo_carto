@@ -22,7 +22,8 @@ export default function ChapterSelectView() {
 	/**
 	 * Context, route params, and state
 	 */
-	const { progressById, status } = useUserProgress();
+	const { experience, progressById, status } = useUserProgress();
+	const userLevel = experience.level;
 	const headerHeight = useHeaderHeight();
 	const scrollContentStyle = { paddingTop: headerHeight + 16 };
 	const scrollIndicatorInsets = { top: headerHeight };
@@ -80,12 +81,19 @@ export default function ChapterSelectView() {
 	/**
 	 * Block locked stories
 	 */
-	if (!isItemUnlocked({ id: selectedStory.id, progressById })) {
+	const storyUnlockCriteria = getUnlockCriteria(selectedStory, progressById, userLevel);
+
+	if (!isItemUnlocked({ id: selectedStory.id, progressById, userLevel })) {
 		return (
 			<View style={styles.background}>
 				<View style={styles.header}>
 					<Text style={styles.storyCategoryText}>Story locked</Text>
 					<Text style={styles.storyTitleText}>Complete its requirements before continuing.</Text>
+					<LockedSection
+						color={colors.light.secondary}
+						textColor={colors.light.secondary}
+						unlockCriteria={storyUnlockCriteria}
+					/>
 				</View>
 			</View>
 		);
@@ -130,8 +138,9 @@ export default function ChapterSelectView() {
 						const isLocked = !isItemUnlocked({
 							id: chapterId,
 							progressById,
+							userLevel,
 						});
-						const unlockCriteria = getUnlockCriteria(chapter, progressById);
+						const unlockCriteria = getUnlockCriteria(chapter, progressById, userLevel);
 						const hasDecks = chapter.decks.length > 0;
 						const selectText =
 							!hasDecks ? 'Coming soon'

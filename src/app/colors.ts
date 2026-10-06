@@ -59,7 +59,7 @@ const colors = {
 		Health: '#285D54',
 		Directions: '#315674',
 		Shopping: '#713E53',
-		Everyday: '#665321',
+		Beginner: '#433e45',
 		'Cat Files': '#424536',
 	},
 	rarity: {

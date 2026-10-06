@@ -24,13 +24,12 @@ interface FindCompletionPathProps {
 
 interface IsItemUnlockedProps extends FindCompletionPathProps {
 	progressById: ProgressById;
+	userLevel: number;
 }
 
-export interface UnlockCriteria {
-	isUnlocked: boolean;
-	requiredPercentage: number;
-	title: string;
-}
+export type UnlockCriteria =
+	| { isUnlocked: boolean; requiredPercentage: number; title: string }
+	| { isUnlocked: boolean; requiredLevel: number };
 
 export interface AtlasChapterLocation {
 	story: DeckStory;
@@ -144,12 +143,17 @@ export function isItemUnlocked({
 	atlas = storyAtlas,
 	id,
 	progressById,
+	userLevel,
 }: IsItemUnlockedProps): boolean {
 	const path = findCompletionPath({ atlas, id });
 
 	if (path.length === 0) return false;
 
 	for (const item of path) {
+		if (item.requiredLevel !== undefined && userLevel < item.requiredLevel) {
+			return false;
+		}
+
 		for (const requirement of item.unlockRequirements ?? []) {
 			const completionPercentage = progressById[requirement.id]?.completionPercentage ?? 0;
 
@@ -230,25 +234,43 @@ function getItemName(id: string, atlas: StoryAtlas = storyAtlas): string {
 export function getUnlockCriteria(
 	item: Progression,
 	progressById: ProgressById,
+	userLevel: number,
 	atlas: StoryAtlas = storyAtlas,
 ): UnlockCriteria[] {
-	const requirements = item.unlockRequirements ?? [];
+	const criteria: UnlockCriteria[] = [];
+	const path = findCompletionPath({ atlas, id: item.id });
 
-	return requirements.map(requirement => ({
-		isUnlocked:
-			(progressById[requirement.id]?.completionPercentage ?? 0) >=
-			requirement.requiredCompletionPercentage,
-		requiredPercentage: requirement.requiredCompletionPercentage,
-		title: getItemName(requirement.id, atlas),
-	}));
+	if (path.length === 0) path.push(item);
+
+	for (const ancestor of path) {
+		if (ancestor.requiredLevel !== undefined && ancestor.requiredLevel > 1) {
+			criteria.push({
+				isUnlocked: userLevel >= ancestor.requiredLevel,
+				requiredLevel: ancestor.requiredLevel,
+			});
+		}
+
+		for (const requirement of ancestor.unlockRequirements ?? []) {
+			criteria.push({
+				isUnlocked:
+					(progressById[requirement.id]?.completionPercentage ?? 0) >=
+					requirement.requiredCompletionPercentage,
+				requiredPercentage: requirement.requiredCompletionPercentage,
+				title: getItemName(requirement.id, atlas),
+			});
+		}
+	}
+
+	return criteria;
 }
 
 /**
  * Build a plain-text explanation for an unlock criterion.
  */
-export function formatUnlockCriterion({
-	requiredPercentage: requiredCompletionPercentage,
-	title: requiredTitle,
-}: UnlockCriteria): string {
-	return `Reach ${requiredCompletionPercentage}% in ${requiredTitle} to unlock.`;
+export function formatUnlockCriterion(criterion: UnlockCriteria): string {
+	if ('requiredLevel' in criterion) {
+		return `Reach Lvl. ${criterion.requiredLevel} to unlock.`;
+	}
+
+	return `Reach ${criterion.requiredPercentage}% in ${criterion.title} to unlock.`;
 }

@@ -5,6 +5,8 @@ import WordCardButton from '@/src/components/WordCard/WordCardButton';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { defaultAppSettings } from '@/src/settings/appSettings';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getUserExperience } from '@/src/util/userExperience';
 import { render, userEvent, waitFor } from '@testing-library/react-native';
 
@@ -22,12 +24,14 @@ jest.mock('expo-haptics', () => ({
 }));
 
 jest.mock('@/src/db/useUserProgress');
+jest.mock('@/src/settings/useAppSettings');
 jest.mock('@/src/components/CardDeck/useCardDeck');
 jest.mock('@/src/components/WordCard/useWordCardUI');
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const mockUseWordCardUI = jest.mocked(useWordCardUI);
 const mockUseUserProgress = jest.mocked(useUserProgress);
+const mockUseAppSettings = jest.mocked(useAppSettings);
 const mockRecordCorrectAnswer = jest.fn();
 
 function mockDeckState(cardDeckDispatch = jest.fn()) {
@@ -58,6 +62,10 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
 
 describe('<WordCardButton />', () => {
 	beforeEach(() => {
+		mockUseAppSettings.mockReturnValue({
+			settings: defaultAppSettings,
+			setSetting: jest.fn(),
+		});
 		mockRecordCorrectAnswer.mockReset();
 		mockRecordCorrectAnswer.mockResolvedValue(true);
 		mockUseUserProgress.mockReturnValue({

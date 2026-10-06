@@ -1,10 +1,11 @@
 import colors from '@/src/app/colors';
-import type { UnlockCriteria } from '@/src/util/atlasCompletion';
+import { formatUnlockCriterion, type UnlockCriteria } from '@/src/util/atlasCompletion';
 import { StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
 interface LockedSectionProps {
 	color?: string;
+	textColor?: string;
 	unlockCriteria: UnlockCriteria[];
 }
 
@@ -13,8 +14,15 @@ interface LockedSectionProps {
  */
 export default function LockedSection({
 	color = colors.utility.cardBorder,
+	textColor = colors.dark.text,
 	unlockCriteria,
 }: LockedSectionProps) {
+	const textStyle = { color: textColor };
+	const criteria = unlockCriteria.map(criterion => ({
+		isUnlocked: criterion.isUnlocked,
+		label: formatUnlockCriterion(criterion),
+	}));
+
 	return (
 		<View style={[styles.section, { borderColor: color }]}>
 			<MaterialSymbol
@@ -23,14 +31,13 @@ export default function LockedSection({
 				name="lock"
 			/>
 			<View style={styles.criteria}>
-				<Text style={styles.criteriaTitle}>Complete the following to unlock:</Text>
-				{unlockCriteria.map(({ title, isUnlocked, requiredPercentage }, index) => (
+				<Text style={[styles.criteriaTitle, textStyle]}>Complete the following to unlock:</Text>
+				{criteria.map(({ label, isUnlocked }, index) => (
 					<Text
-						key={`${title}-${index}`}
-						style={[styles.criteriaText, isUnlocked && styles.criteriaMet]}
+						key={`${label}-${index}`}
+						style={[styles.criteriaText, textStyle, isUnlocked && styles.criteriaMet]}
 					>
-						• Reach {requiredPercentage}% in&nbsp;
-						<Text style={isUnlocked && styles.criteriaMet}>{title}</Text>.
+						• {label}
 					</Text>
 				))}
 			</View>

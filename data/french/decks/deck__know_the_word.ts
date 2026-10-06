@@ -1,0 +1,35 @@
+import { createCardDeck } from '@/src/util/createCardDeck';
+
+export const DeckKnowTheWord = createCardDeck({
+	id: 'deck__know_the_word',
+	title: 'Know the Word',
+	description: 'See your vocabulary progress and find words in their passages.',
+	chapter: 'Additional information',
+	CEFR: ['A1', 'A2', 'B1'],
+	words: [],
+	wordChoices: [],
+	englishPassage:
+		'Higher card levels mean you know the word better. Select “View passage” to see the word highlighted.',
+	passage: [
+		{ text: 'Plus', wordId: 'word_adverb_plus' },
+		{ text: 'le', wordId: 'word_article_le' },
+		{ text: 'niveau', wordId: 'word_noun_niveau' },
+		{ text: 'd’', wordId: 'word_preposition_de', after: '' },
+		{ text: 'une', wordId: 'word_article_une' },
+		{ text: 'carte', wordId: 'word_noun_carte' },
+		{ text: 'est', wordId: 'word_auxiliary_est' },
+		{ text: 'élevé', wordId: 'word_adjective_eleve', after: ', ' },
+		{ text: 'mieux', wordId: 'word_adverb_mieux' },
+		{ text: 'tu', wordId: 'word_pronoun_tu' },
+		{ text: 'connais', wordId: 'word_verb_connais' },
+		{ text: 'le', wordId: 'word_article_le' },
+		{ text: 'mot', wordId: 'word_noun_mot', after: '. ' },
+		{ text: 'Sélectionne', wordId: 'word_verb_selectionne', after: ' « ' },
+		{ text: 'View passage', unlockExempt: true, after: ' » ' },
+		{ text: 'pour', wordId: 'word_preposition_pour' },
+		{ text: 'voir', wordId: 'word_verb_voir' },
+		{ text: 'le', wordId: 'word_article_le' },
+		{ text: 'mot', wordId: 'word_noun_mot' },
+		{ text: 'en évidence', wordId: 'word_expression_en_evidence', after: '.' },
+	],
+});

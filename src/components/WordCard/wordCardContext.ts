@@ -59,6 +59,7 @@ export interface WordCardStateProps {
 	feedbackKey: FeedbackKey;
 	attempts: number;
 	maxAttempts: number;
+	isAnswerRevealed: boolean;
 }
 
 export const initialWordCardState: WordCardStateProps = {
@@ -71,6 +72,7 @@ export const initialWordCardState: WordCardStateProps = {
 	feedbackKey: 'READY_PENDING_NONE',
 	attempts: 0,
 	maxAttempts: 1,
+	isAnswerRevealed: false,
 };
 
 interface WordCardContextType {
