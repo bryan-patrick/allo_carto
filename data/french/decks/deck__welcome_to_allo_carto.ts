@@ -11,7 +11,7 @@ export const DeckWelcomeToAlloCarto = createCardDeck({
 	englishPassage: 'Welcome to Allo Carto!\n\nThis is an app for learning French through stories.',
 	passage: [
 		{ text: 'Bienvenue', wordId: 'word_interjection_bienvenue' },
-		{ text: 'dans', wordId: 'word_preposition_dans' },
+		{ text: 'à', wordId: 'word_preposition_a' },
 		{ text: 'Allo Carto', unlockExempt: true, after: '!\n\n' },
 		{ text: 'C’', wordId: 'word_pronoun_ce', after: '' },
 		{ text: 'est', wordId: 'word_auxiliary_est' },

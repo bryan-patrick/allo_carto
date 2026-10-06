@@ -74,7 +74,7 @@ export const storyAtlas: StoryAtlas = {
 			name: 'Welcome to Allo Carto',
 			description:
 				'Learn how to read stories, study decks, and grow your vocabulary in Allo Carto.',
-			category: 'Everyday',
+			category: 'Beginner',
 			image: chapterSelectBackground,
 			materialSymbolName: 'waving_hand',
 			chapters: [
