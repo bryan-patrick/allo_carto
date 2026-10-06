@@ -235,7 +235,7 @@ export default function WordCardButton({
 					onPress={handleRevealAnswer}
 					style={[styles.revealLink, isRevealDisabled && styles.disabledRevealLink]}
 				>
-					<Text style={styles.revealText}>I don&apos;t know (skips XP)</Text>
+					<Text style={styles.revealText}>I don&apos;t know (will not award XP)</Text>
 				</Pressable>
 			)}
 			<Animated.View style={animatedContainerStyle}>
