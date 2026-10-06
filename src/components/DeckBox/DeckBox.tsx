@@ -10,7 +10,10 @@ import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
+import { useUserProgress } from '@/src/db/useUserProgress';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { UnlockCriteria } from '@/src/util/atlasCompletion';
+import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
@@ -52,6 +55,9 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	 * Context and state
 	 */
 	const { id: userId } = useUserContext() ?? {};
+	const { experience } = useUserProgress();
+	const { settings } = useAppSettings();
+	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
 	const { cardDeckDispatch } = useCardDeck();
 	const [wordProgressCounts, setWordProgressCounts] = useState<DeckWordProgressCounts>(
 		emptyDeckWordProgressCounts,
@@ -143,13 +149,13 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	const handleSelectDeck = useCallback(async () => {
 		if (!userId) return;
 
-		const selectedDeck = await getDeck({ deck, userId });
+		const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
 
 		if (!selectedDeck) return;
 
 		cardDeckDispatch({ type: 'SET_DECK', payload: selectedDeck });
 		router.push('/CardDeck');
-	}, [userId, deck, cardDeckDispatch]);
+	}, [userId, deck, cardsPerDeck, cardDeckDispatch]);
 
 	/**
 	 * Refresh passage data and show modal

@@ -7,7 +7,7 @@ import getDeckWordChoices from './getDeckWordChoices';
 
 interface GetDeckProps {
 	deck: CardDeck;
-	amount?: number;
+	amount: number;
 	userId: string;
 }
 
@@ -53,7 +53,7 @@ function dedupeByLemma(words: Word[]): Word[] {
 
 export default async function getDeck({
 	deck,
-	amount = 12,
+	amount,
 	userId,
 }: GetDeckProps): Promise<CardDeck | undefined> {
 	/**

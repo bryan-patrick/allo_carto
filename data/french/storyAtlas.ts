@@ -30,7 +30,7 @@ const leoInTheWindow = require('@/src/app/assets/images/chapters/leo-in-the-wind
 const leavesInTheYard = require('@/src/app/assets/images/chapters/leaves-in-the-yard.png');
 const gettingReady = require('@/src/app/assets/images/chapters/getting-ready.png');
 const aTableForOne = require('@/src/app/assets/images/chapters/a-table-for-one.png');
-const whatIsThis = require('@/src/app/assets/images/chapters/what-is-this.png');
+const whatIsAlloCarto = require('@/src/app/assets/images/chapters/what-is-allo-carto.png');
 const howItWorks = require('@/src/app/assets/images/chapters/how-it-works.png');
 const additionalInformation = require('@/src/app/assets/images/chapters/additional-information.png');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
@@ -74,9 +74,9 @@ export const storyAtlas: StoryAtlas = {
 		{
 			id: 'welcome-to-allo-carto',
 			requiredLevel: 1,
-			name: 'Welcome to Allo Carto',
+			name: 'Welcome to Allô Carto',
 			description:
-				'Learn how to read stories, study decks, and grow your vocabulary in Allo Carto.',
+				'Learn how to read stories, study decks, and grow your vocabulary in Allô Carto.',
 			category: 'Beginner',
 			image: chapterSelectBackground,
 			materialSymbolName: 'waving_hand',
@@ -84,8 +84,8 @@ export const storyAtlas: StoryAtlas = {
 				{
 					id: 'welcome-to-allo-carto-chapter-1',
 					label: 'Chapter 1',
-					name: 'What is this?',
-					image: whatIsThis,
+					name: 'What is Allô Carto?',
+					image: whatIsAlloCarto,
 					decks: [DeckWelcomeToAlloCarto, DeckStoriesAndFlashcards],
 				},
 				{

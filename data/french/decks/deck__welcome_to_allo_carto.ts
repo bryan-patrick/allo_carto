@@ -2,17 +2,17 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckWelcomeToAlloCarto = createCardDeck({
 	id: 'deck__welcome_to_allo_carto',
-	title: 'Welcome to Allo Carto',
-	description: 'Meet Allo Carto and learn French through stories.',
+	title: 'Welcome to Allô Carto',
+	description: 'Meet Allô Carto and learn French through stories.',
 	chapter: 'What is this?',
 	CEFR: ['A1', 'A2'],
 	words: [],
 	wordChoices: [],
-	englishPassage: 'Welcome to Allo Carto!\n\nThis is an app for learning French through stories.',
+	englishPassage: 'Welcome to Allô Carto!\n\nThis is an app for learning French through stories.',
 	passage: [
 		{ text: 'Bienvenue', wordId: 'word_interjection_bienvenue' },
 		{ text: 'à', wordId: 'word_preposition_a' },
-		{ text: 'Allo Carto', unlockExempt: true, after: '!\n\n' },
+		{ text: 'Allô Carto', unlockExempt: true, after: '!\n\n' },
 		{ text: 'C’', wordId: 'word_pronoun_ce', after: '' },
 		{ text: 'est', wordId: 'word_auxiliary_est' },
 		{ text: 'une', wordId: 'word_article_une' },
