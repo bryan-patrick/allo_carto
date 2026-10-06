@@ -27,13 +27,15 @@ It's still very much a work in progress. Eventually I'd like to polish it up and
 - We probably need two progress bars per deck or chapter, words known and words unique to this deck. Sometimes that'll be 0 and that's OK, but it would be cool for a user to be able to say, "oh snap this deck has 13 words I've never seen!"
 
 ### Leveling refactor
-- Add user levels and XP
-- Lock stories/decks behind level requirements and group them into level ranges
-- Make early decks much shorter
-- Add small circular level/XP indicator across major screens
-- Award XP per correct card, then tally and animate it on the results screen
-- Add deck completion XP bonuses
+- ~~Add user levels and XP~~
+- ~~Lock stories/decks behind level requirements and group them into level ranges~~
+- ~~Make early decks much shorter~~
+- ~~Add small circular level/XP indicator across major screens~~
+- ~~Award XP per correct card,~~ then tally and animate it on the results screen
+- ~~Add deck completion XP bonuses~~
 - Add collections for discovered words, including learning level and completion bonuses
+
+### I made a new design for the results view, these need to be done to implement it
 - Show new collection discoveries during results
 - Add collection detail/word views
 - Add `fr CA` TTS with a speaker button
