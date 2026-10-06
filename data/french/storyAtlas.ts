@@ -30,6 +30,9 @@ const leoInTheWindow = require('@/src/app/assets/images/chapters/leo-in-the-wind
 const leavesInTheYard = require('@/src/app/assets/images/chapters/leaves-in-the-yard.png');
 const gettingReady = require('@/src/app/assets/images/chapters/getting-ready.png');
 const aTableForOne = require('@/src/app/assets/images/chapters/a-table-for-one.png');
+const whatIsThis = require('@/src/app/assets/images/chapters/what-is-this.png');
+const howItWorks = require('@/src/app/assets/images/chapters/how-it-works.png');
+const additionalInformation = require('@/src/app/assets/images/chapters/additional-information.png');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
 /**
@@ -82,12 +85,14 @@ export const storyAtlas: StoryAtlas = {
 					id: 'welcome-to-allo-carto-chapter-1',
 					label: 'Chapter 1',
 					name: 'What is this?',
+					image: whatIsThis,
 					decks: [DeckWelcomeToAlloCarto, DeckStoriesAndFlashcards],
 				},
 				{
 					id: 'welcome-to-allo-carto-chapter-2',
 					label: 'Chapter 2',
 					name: 'How it works',
+					image: howItWorks,
 					unlockRequirements: [
 						{ id: 'welcome-to-allo-carto-chapter-1', requiredCompletionPercentage: 20 },
 					],
@@ -97,6 +102,7 @@ export const storyAtlas: StoryAtlas = {
 					id: 'welcome-to-allo-carto-chapter-3',
 					label: 'Chapter 3',
 					name: 'Additional information',
+					image: additionalInformation,
 					unlockRequirements: [
 						{ id: 'welcome-to-allo-carto-chapter-2', requiredCompletionPercentage: 20 },
 					],
