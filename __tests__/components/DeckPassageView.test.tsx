@@ -1,5 +1,5 @@
-import DeckPassageView from '@/src/components/DeckPassageView';
 import { makeMockCardDeck } from '@/src/components/CardDeck/mockCardDeck';
+import DeckPassageView from '@/src/components/DeckPassageView';
 import { emptyDeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { defaultAppSettings } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
@@ -15,7 +15,10 @@ describe('<DeckPassageView />', () => {
 			settings: defaultAppSettings,
 			setSetting: jest.fn(),
 		});
-		// Complete animations immediately so assertions see their final opacity.
+
+		/**
+		 * Don't wait for animations (Copilot actually got this wrong)
+		 */
 		const animatedMock = jest.requireActual('react-native/Libraries/Animated/AnimatedMock').default;
 		jest.spyOn(Animated, 'timing').mockImplementation(animatedMock.timing);
 		jest.spyOn(Animated, 'parallel').mockImplementation(animatedMock.parallel);
