@@ -4,6 +4,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import CompletionPassage from '@/src/components/DeckCompletion/CompletionPassage';
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
 import CompletionStepIndicator from '@/src/components/DeckCompletion/CompletionStepIndicator';
+import CompletionUnlocks from '@/src/components/DeckCompletion/CompletionUnlocks';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
 import { getCompletionEntry } from '@/src/components/DeckCompletion/completionAnimations';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
@@ -11,11 +12,13 @@ import { getDeck } from '@/src/db/interface';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
+import { getUnlockedAtlasItems } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
+import { getUserExperience } from '@/src/util/userExperience';
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
 	Alert,
 	BackHandler,
@@ -37,12 +40,17 @@ import LinkButton from '../LinkButton';
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 const headerEntry = getCompletionEntry(0);
 /**
- * Names, icons, and messages for the three review steps, in order.
+ * Names, icons, and messages for the review steps, in order.
  */
 const completionSteps = [
 	{ title: 'Deck complete!', icon: 'task_alt', description: '' },
 	{ title: 'Word results', icon: 'cards_star', description: 'Here’s how you did on each word.' },
 	{ title: 'XP & rewards', icon: 'trophy', description: 'Great work! Here’s what you earned.' },
+	{
+		title: 'New unlocks!',
+		icon: 'lock_open',
+		description: 'Here’s what you unlocked this session.',
+	},
 ];
 
 /**
@@ -89,20 +97,20 @@ function findDeckAtlasLocation(cardDeck: CardDeck): DeckAtlasLocation | undefine
 }
 
 /**
- * Show the passage, word results, and rewards as three review steps
+ * Show the passage, word results, rewards, and any new unlocks.
  */
 export default function DeckResultsView() {
 	/**
 	 * Get the deck, saved results, user, XP, and settings from the app.
 	 */
-	const { experience, isUpdatingProgress } = useUserProgress();
+	const { experience, isUpdatingProgress, progressById } = useUserProgress();
 	const { cardDeckState, cardDeckDispatch } = useCardDeck();
 	const { id: userId } = useUserContext() ?? {};
 	const { settings } = useAppSettings();
 	const { cardDeck, session } = cardDeckState;
 
 	/**
-	 * step picks the review page: 0 is the passage, 1 is words, and 2 is rewards.
+	 * step picks the review page: passage, words, rewards, then optional unlocks.
 	 * isRepeating shows that we are loading the deck again.
 	 */
 	const [step, setStep] = useState(0);
@@ -117,6 +125,30 @@ export default function DeckResultsView() {
 	 * Leave room for the phone's controls at the bottom of the screen.
 	 */
 	const { bottom } = useSafeAreaInsets();
+
+	/**
+	 * Compare access at the start of the session with saved progress after all XP bonuses.
+	 * A missing starting snapshot cannot reliably identify new unlocks.
+	 */
+	const unlockedItems = useMemo(() => {
+		if (!cardDeckState.isComplete || !session?.completion || !session.unlockedIdsBefore) {
+			return [];
+		}
+
+		const previouslyUnlocked = new Set(session.unlockedIdsBefore);
+		const userLevel = getUserExperience(session.completion.totalXP).level;
+
+		return getUnlockedAtlasItems({ progressById, userLevel }).filter(
+			item => !previouslyUnlocked.has(item.id),
+		);
+	}, [cardDeckState.isComplete, progressById, session]);
+	let totalSteps = completionSteps.length - 1;
+
+	if (unlockedItems.length > 0) {
+		totalSteps = completionSteps.length;
+	}
+
+	const isLastStep = step === totalSteps - 1;
 
 	/**
 	 * Find the chapter to return to when the user finishes the review.
@@ -137,7 +169,7 @@ export default function DeckResultsView() {
 	/**
 	 * Offer Repeat deck only on the last review step.
 	 */
-	const showRepeat = hasReview && step === completionSteps.length - 1;
+	const showRepeat = hasReview && isLastStep;
 
 	/**
 	 * Choose how many cards to repeat using the user's level and settings.
@@ -160,6 +192,10 @@ export default function DeckResultsView() {
 	let title = metadata.title;
 	let icon = metadata.icon;
 
+	if (isLastStep) {
+		nextLabel = 'Finish';
+	}
+
 	/**
 	 * Repeat shows Starting while the deck loads.
 	 */
@@ -168,7 +204,7 @@ export default function DeckResultsView() {
 	}
 
 	/**
-	 * Choose the content for this step: passage first, words next, and rewards last.
+	 * Show the passage, words, rewards, and optional unlock list in order.
 	 * If there are no saved results, show a message and let the user leave.
 	 */
 	if (hasReview && session) {
@@ -208,11 +244,9 @@ export default function DeckResultsView() {
 				break;
 			case 2:
 				/**
-				 * Show rewards and use Finish on the last step.
+				 * Show rewards before any unlocks.
 				 * Encourage another review attempt if the deck did not count as complete.
 				 */
-				nextLabel = 'Finish';
-
 				if (!cardDeckState.isComplete) {
 					description = 'Keep practicing, you can repeat this deck.';
 				}
@@ -224,6 +258,14 @@ export default function DeckResultsView() {
 					/>
 				);
 
+				break;
+			case 3:
+				content = (
+					<CompletionUnlocks
+						items={unlockedItems}
+						color={storyColor}
+					/>
+				);
 				break;
 		}
 	} else {
@@ -291,7 +333,7 @@ export default function DeckResultsView() {
 			cardDeckDispatch({
 				type: 'SET_DECK',
 				payload: selectedDeck,
-				session: createDeckSession(experience.totalXP),
+				session: createDeckSession(experience.totalXP, progressById),
 			});
 
 			router.replace('/CardDeck');
@@ -312,7 +354,7 @@ export default function DeckResultsView() {
 	 * Also finish if there are no results to review.
 	 */
 	function handleNext() {
-		if (!hasReview || step === completionSteps.length - 1) {
+		if (!hasReview || isLastStep) {
 			handleFinish();
 			return;
 		}
@@ -457,7 +499,7 @@ export default function DeckResultsView() {
 						{hasReview && (
 							<CompletionStepIndicator
 								step={step}
-								total={completionSteps.length}
+								total={totalSteps}
 							/>
 						)}
 					</Animated.View>

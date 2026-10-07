@@ -6,7 +6,7 @@ export const DeckWordCollections = createCardDeck({
 	description: 'Discover collections and their rewards.',
 	chapter: 'Additional information',
 	CEFR: ['A1', 'A2', 'B1'],
-	unlockRequirements: [{ id: 'deck__know_the_word', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__know_the_word', requiredCompletionPercentage: 15 }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

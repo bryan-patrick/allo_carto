@@ -200,7 +200,7 @@ export default function DeckPickerModal({
 			cardDeckDispatch({
 				type: 'SET_DECK',
 				payload: selectedDeck,
-				session: createDeckSession(experience.totalXP),
+				session: createDeckSession(experience.totalXP, progressById),
 			});
 			handleClose();
 			router.push('/CardDeck');

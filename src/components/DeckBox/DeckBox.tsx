@@ -56,7 +56,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	 * Context and state
 	 */
 	const { id: userId } = useUserContext() ?? {};
-	const { experience, isUpdatingProgress } = useUserProgress();
+	const { experience, isUpdatingProgress, progressById } = useUserProgress();
 	const { settings } = useAppSettings();
 	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
 	const { cardDeckDispatch } = useCardDeck();
@@ -164,7 +164,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 			cardDeckDispatch({
 				type: 'SET_DECK',
 				payload: selectedDeck,
-				session: createDeckSession(experience.totalXP),
+				session: createDeckSession(experience.totalXP, progressById),
 			});
 			router.push('/CardDeck');
 		} catch (error) {
@@ -173,7 +173,15 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		} finally {
 			isStartingDeck.current = false;
 		}
-	}, [userId, isUpdatingProgress, deck, cardsPerDeck, cardDeckDispatch, experience.totalXP]);
+	}, [
+		userId,
+		isUpdatingProgress,
+		deck,
+		cardsPerDeck,
+		cardDeckDispatch,
+		experience.totalXP,
+		progressById,
+	]);
 
 	/**
 	 * Refresh passage data and show modal

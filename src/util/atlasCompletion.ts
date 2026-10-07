@@ -36,6 +36,13 @@ export interface AtlasChapterLocation {
 	chapter: DeckChapter;
 }
 
+export interface UnlockedAtlasItem {
+	id: string;
+	type: ProgressType;
+	title: string;
+	context?: string;
+}
+
 /**
  * Get the unique word ids from a group of decks.
  */
@@ -164,6 +171,41 @@ export function isItemUnlocked({
 	}
 
 	return true;
+}
+
+/**
+ * List accessible content in story order, including each item's parent requirements.
+ */
+export function getUnlockedAtlasItems({
+	atlas = storyAtlas,
+	progressById,
+	userLevel,
+}: Omit<IsItemUnlockedProps, 'id'>): UnlockedAtlasItem[] {
+	const items: UnlockedAtlasItem[] = [];
+
+	for (const story of atlas.stories) {
+		items.push({ id: story.id, type: 'story', title: story.name });
+
+		for (const chapter of story.chapters) {
+			items.push({
+				id: chapter.id,
+				type: 'chapter',
+				title: chapter.name,
+				context: `${story.name} · ${chapter.label}`,
+			});
+
+			for (const deck of chapter.decks) {
+				items.push({
+					id: deck.id,
+					type: 'deck',
+					title: deck.title,
+					context: `${story.name} · ${chapter.name}`,
+				});
+			}
+		}
+	}
+
+	return items.filter(item => isItemUnlocked({ atlas, id: item.id, progressById, userLevel }));
 }
 
 /**
