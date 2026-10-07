@@ -16,7 +16,6 @@ export const words_a_new_restaurant: Word[] = [
 		partOfSpeech: 'noun',
 		rarity: 'Common',
 		frenchArticle: 'le',
-		englishArticle: 'the',
 		gender: 'Masculine',
 		lemmaId: 'samedi',
 		form: 'masculine',

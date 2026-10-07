@@ -19,7 +19,7 @@ export const words_welcome_to_allo_carto: Word[] = [
 	defineWord({
 		id: 'word_noun_application',
 		frenchWord: 'application',
-		englishWords: ['application', 'app'],
+		englishWords: ['application'],
 		pronunciation: 'ah-plee-kah-syohn',
 		CEFR: 'A2',
 		partOfSpeech: 'noun',
