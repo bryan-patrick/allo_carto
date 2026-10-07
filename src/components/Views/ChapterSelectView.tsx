@@ -172,8 +172,8 @@ export default function ChapterSelectView() {
 						const wordCount =
 							progressById[chapterId]?.wordCount ??
 							new Set(chapter.decks.flatMap(deck => deck.wordIds)).size;
-						const knownText = `${progressPercent}% Learned`;
-						const seenText = `${seenWordCount}/${wordCount} Seen`;
+						const knownText = `${progressPercent}% learned`;
+						const seenText = `${seenWordCount}/${wordCount} seen`;
 						const isLocked = !isItemUnlocked({
 							id: chapterId,
 							progressById,
@@ -248,6 +248,7 @@ export default function ChapterSelectView() {
 														text={knownText}
 														percent={progressPercent}
 													/>
+													<View style={styles.chapterProgressDivider} />
 													<ChapterProgress
 														color={categoryColor}
 														text={seenText}
@@ -401,14 +402,20 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		gap: 12,
 	},
+	chapterProgressDivider: {
+		backgroundColor: colors.light.border,
+		width: 1,
+		marginTop: 2,
+		marginBottom: 6,
+	},
 	chapterProgressContainer: {
 		flex: 1,
 		minWidth: 0,
 		marginTop: 2,
-		gap: 2,
+		gap: 4,
 	},
 	chapterProgressText: {
-		fontSize: 13,
+		fontSize: 12,
 		fontFamily: 'lexend-400',
 	},
 	chapterProgressBarTrack: {
@@ -417,9 +424,10 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.border,
 		borderRadius: 8,
 		marginBottom: 6,
+		height: 6,
 	},
 	chapterProgressBar: {
-		height: 6,
+		height: '100%',
 		borderColor: colors.light.border,
 	},
 	chapterSelectButton: {

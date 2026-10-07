@@ -358,7 +358,7 @@ export default function DeckPickerModal({
 										const seenWordCount = progressById[deck.id]?.seenWordCount ?? 0;
 										const wordCount =
 											progressById[deck.id]?.wordCount ?? new Set(deck.wordIds).size;
-										const seenText = `${seenWordCount}/${wordCount} Seen`;
+										const seenText = `${seenWordCount}/${wordCount} seen`;
 										const metadataAccessibilityLabel = `${formatCEFRRange(deck.CEFR, ' to ')}, ${deck.wordIds.length} cards, ${completionPercent} percent known, ${seenWordCount} of ${wordCount} words seen`;
 										const actionLabel = completionPercent > 0 ? 'Continue' : 'Flash Cards';
 										const isLoadingPassage = loadingPassageDeckId === deck.id;
@@ -399,7 +399,7 @@ export default function DeckPickerModal({
 															<ProgressMetadata
 																color={storyColor}
 																icon="cognition_2"
-																text={`${completionPercent}% Known`}
+																text={`${completionPercent}% learned`}
 																percent={completionPercent}
 															/>
 															<View style={styles.metadataDivider} />
