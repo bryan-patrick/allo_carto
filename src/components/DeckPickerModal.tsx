@@ -31,6 +31,7 @@ import {
 	Text,
 	useWindowDimensions,
 	View,
+	type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -74,6 +75,23 @@ function MetadataItem({ color, icon, text }: MetadataItemProps) {
 				size={16}
 			/>
 			<Text style={styles.metadataText}>{text}</Text>
+		</View>
+	);
+}
+
+function ProgressMetadata({ color, icon, text, percent }: MetadataItemProps & { percent: number }) {
+	const progressStyle: ViewStyle = { backgroundColor: color, width: `${percent}%` };
+
+	return (
+		<View style={styles.completionMetadata}>
+			<MetadataItem
+				color={color}
+				icon={icon}
+				text={text}
+			/>
+			<View style={styles.progressBarContainer}>
+				<View style={[styles.progressBar, progressStyle]} />
+			</View>
 		</View>
 	);
 }
@@ -336,6 +354,12 @@ export default function DeckPickerModal({
 										const completionPercent = Math.floor(
 											progressById[deck.id]?.completionPercentage ?? 0,
 										);
+										const seenPercent = Math.floor(progressById[deck.id]?.seenPercentage ?? 0);
+										const seenWordCount = progressById[deck.id]?.seenWordCount ?? 0;
+										const wordCount =
+											progressById[deck.id]?.wordCount ?? new Set(deck.wordIds).size;
+										const seenText = `${seenWordCount}/${wordCount} seen`;
+										const metadataAccessibilityLabel = `${formatCEFRRange(deck.CEFR, ' to ')}, ${deck.wordIds.length} cards, ${completionPercent} percent known, ${seenWordCount} of ${wordCount} words seen`;
 										const actionLabel = completionPercent > 0 ? 'Continue' : 'Flash Cards';
 										const isLoadingPassage = loadingPassageDeckId === deck.id;
 
@@ -357,7 +381,7 @@ export default function DeckPickerModal({
 														</Text>
 														<View
 															accessible
-															accessibilityLabel={`${formatCEFRRange(deck.CEFR, ' to ')}, ${deck.wordIds.length} cards, ${completionPercent} percent known`}
+															accessibilityLabel={metadataAccessibilityLabel}
 															style={styles.metadata}
 														>
 															<MetadataItem
@@ -372,24 +396,19 @@ export default function DeckPickerModal({
 																text={`${deck.wordIds.length} cards`}
 															/>
 															<View style={styles.metadataDivider} />
-															<View style={styles.completionMetadata}>
-																<MetadataItem
-																	color={storyColor}
-																	icon="cognition_2"
-																	text={`${completionPercent}% known`}
-																/>
-																<View style={styles.progressBarContainer}>
-																	<View
-																		style={[
-																			styles.progressBar,
-																			{
-																				backgroundColor: storyColor,
-																				width: `${completionPercent}%`,
-																			},
-																		]}
-																	/>
-																</View>
-															</View>
+															<ProgressMetadata
+																color={storyColor}
+																icon="cognition_2"
+																text={`${completionPercent}% known`}
+																percent={completionPercent}
+															/>
+															<View style={styles.metadataDivider} />
+															<ProgressMetadata
+																color={storyColor}
+																icon="visibility"
+																text={seenText}
+																percent={seenPercent}
+															/>
 														</View>
 													</View>
 												)}
@@ -606,7 +625,6 @@ const styles = StyleSheet.create({
 		width: 1,
 	},
 	completionMetadata: {
-		flexGrow: 1,
 		gap: 2,
 	},
 	progressBarContainer: {

@@ -7,13 +7,45 @@ import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atl
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { useState } from 'react';
-import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+	Image,
+	ImageBackground,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+	type ViewStyle,
+} from 'react-native';
 import colors from '../../app/colors';
 import LinkButton from '../LinkButton';
 import MaterialSymbol from '../MaterialSymbol';
 
 const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-postmark.png');
 const postmarkBackgroundImage = require('@/src/app/assets/images/postcard-parts/background.jpg');
+
+/**
+ * Show equally sized chapter progress columns.
+ */
+function ChapterProgress({
+	color,
+	text,
+	percent,
+}: {
+	color: string;
+	text: string;
+	percent: number;
+}) {
+	const progressStyle: ViewStyle = { width: `${percent}%`, backgroundColor: color };
+
+	return (
+		<View style={styles.chapterProgressContainer}>
+			<Text style={styles.chapterProgressText}>{text}</Text>
+			<View style={styles.chapterProgressBarTrack}>
+				<View style={[styles.chapterProgressBar, progressStyle]} />
+			</View>
+		</View>
+	);
+}
 
 /**
  * ChapterSelectView component
@@ -135,6 +167,13 @@ export default function ChapterSelectView() {
 						const rotate = isEven ? '-3deg' : '3deg';
 						const { id: chapterId, image, label, name } = chapter;
 						const progressPercent = Math.floor(progressById[chapterId]?.completionPercentage ?? 0);
+						const seenPercent = Math.floor(progressById[chapterId]?.seenPercentage ?? 0);
+						const seenWordCount = progressById[chapterId]?.seenWordCount ?? 0;
+						const wordCount =
+							progressById[chapterId]?.wordCount ??
+							new Set(chapter.decks.flatMap(deck => deck.wordIds)).size;
+						const knownText = `${progressPercent}% Learned`;
+						const seenText = `${seenWordCount}/${wordCount} Seen`;
 						const isLocked = !isItemUnlocked({
 							id: chapterId,
 							progressById,
@@ -203,31 +242,17 @@ export default function ChapterSelectView() {
 														style={styles.chapterImage}
 													/>
 												)}
-												<View style={styles.chapterProgressContainer}>
-													<Text style={styles.chapterProgressText}>
-														Words known: {progressPercent}%
-													</Text>
-													<View style={styles.chapterProgressBarTrack}>
-														<View
-															style={[
-																styles.chapterProgressBar,
-																{
-																	width: `${progressPercent}%`,
-																	backgroundColor: categoryColor,
-																	zIndex: 1,
-																},
-															]}
-														/>
-														<View
-															style={[
-																styles.chapterProgressBar,
-																{
-																	position: 'absolute',
-																	width: '100%',
-																},
-															]}
-														/>
-													</View>
+												<View style={styles.chapterProgressRow}>
+													<ChapterProgress
+														color={categoryColor}
+														text={knownText}
+														percent={progressPercent}
+													/>
+													<ChapterProgress
+														color={categoryColor}
+														text={seenText}
+														percent={seenPercent}
+													/>
 												</View>
 												<LinkButton
 													color={categoryColor}
@@ -372,11 +397,18 @@ const styles = StyleSheet.create({
 		width: '100%',
 		height: 'auto',
 	},
+	chapterProgressRow: {
+		flexDirection: 'row',
+		gap: 12,
+	},
 	chapterProgressContainer: {
-		gap: 4,
+		flex: 1,
+		minWidth: 0,
+		marginTop: 2,
+		gap: 2,
 	},
 	chapterProgressText: {
-		fontSize: 12,
+		fontSize: 13,
 		fontFamily: 'lexend-400',
 	},
 	chapterProgressBarTrack: {
@@ -384,11 +416,10 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: colors.light.border,
 		borderRadius: 8,
-		marginBottom: 8,
+		marginBottom: 6,
 	},
 	chapterProgressBar: {
-		width: '10%',
-		height: 8,
+		height: 6,
 		borderColor: colors.light.border,
 	},
 	chapterSelectButton: {
