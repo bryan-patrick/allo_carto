@@ -21,6 +21,12 @@ export interface UserProgressRow {
 	id: string;
 	type: ProgressType;
 	completionPercentage: number;
+	/**
+	 * Calculated from distinct encountered words when loading progress.
+	 */
+	seenPercentage?: number;
+	seenWordCount?: number;
+	wordCount?: number;
 }
 
 export type ProgressById = Record<string, UserProgressRow>;

@@ -37,6 +37,10 @@ export default function Story({
 	 */
 	const { category, name, description, materialSymbolName, requiredLevel } = story;
 	const color = colors.category[category];
+	const seenWordCount = progressById[story.id]?.seenWordCount ?? 0;
+	const wordCount =
+		progressById[story.id]?.wordCount ??
+		new Set(story.chapters.flatMap(chapter => chapter.decks.flatMap(deck => deck.wordIds))).size;
 
 	/**
 	 * Get the unlock criteria
@@ -77,6 +81,8 @@ export default function Story({
 							<StoryMeta
 								progressPercent={progressPercent}
 								progressColor={color}
+								seenWordCount={seenWordCount}
+								wordCount={wordCount}
 							/>
 							<StorySelectButton
 								story={story}

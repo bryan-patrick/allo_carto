@@ -1,5 +1,5 @@
 import colors from '@/src/app/colors';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 
 /**
  * Typing
@@ -7,47 +7,74 @@ import { StyleSheet, Text, View } from 'react-native';
 interface StoryMetaProps {
 	progressPercent: number;
 	progressColor: string;
+	seenWordCount: number;
+	wordCount: number;
+}
+
+interface StoryProgressProps {
+	color: string;
+	label: string;
+	percent: number;
+	value: string;
 }
 
 /**
- * Story meta component, currently only renders progress.
+ * A progress label and its progress bar
  */
-export default function StoryMeta({ progressPercent, progressColor = '#08433f' }: StoryMetaProps) {
-	const displayProgressPercent = Math.floor(progressPercent);
+function StoryProgress({ color, label, percent, value }: StoryProgressProps) {
+	const trackStyle = { backgroundColor: `${color}20` };
+	const progressStyle: ViewStyle = { backgroundColor: color, width: `${percent}%` };
 
-	/**
-	 * Render the component
-	 */
 	return (
-		<View>
-			<View style={styles.metaRow}>
-				<Text style={styles.metaText}>Words Known</Text>
-				<View style={styles.progressBarContainer}>
-					<View
-						style={[
-							styles.progressBar,
-							{
-								backgroundColor: progressColor,
-								width: `${displayProgressPercent}%`,
-							},
-						]}
-					/>
-					<View
-						style={[
-							styles.progressBar,
-							{
-								backgroundColor: `${progressColor}20`,
-								width: '100%',
-								borderWidth: 1,
-								borderColor: colors.dark.border,
-								position: 'absolute',
-								opacity: 0.4,
-							},
-						]}
-					/>
-				</View>
-				<Text style={styles.metaData}>{displayProgressPercent}%</Text>
+		<View style={styles.progressColumn}>
+			<Text style={styles.metaText}>
+				{value} {label}
+			</Text>
+			<View style={[styles.progressBarContainer, trackStyle]}>
+				<View style={[styles.progressBar, progressStyle]} />
 			</View>
+		</View>
+	);
+}
+
+/**
+ * Story knowledge and distinct words encountered.
+ */
+export default function StoryMeta({
+	progressPercent,
+	progressColor = '#08433f',
+	seenWordCount,
+	wordCount,
+}: StoryMetaProps) {
+	const displayProgressPercent = Math.floor(progressPercent);
+	const knownValue = `${displayProgressPercent}%`;
+	const seenValue = `${seenWordCount}/${wordCount}`;
+	const accessibilityLabel = `${displayProgressPercent} percent known, ${seenWordCount} of ${wordCount} words seen`;
+	let seenPercent = 0;
+
+	if (wordCount > 0) {
+		seenPercent = (seenWordCount / wordCount) * 100;
+	}
+
+	return (
+		<View
+			accessible
+			accessibilityLabel={accessibilityLabel}
+			style={styles.metaRow}
+		>
+			<StoryProgress
+				color={progressColor}
+				label="Learned"
+				percent={displayProgressPercent}
+				value={knownValue}
+			/>
+			<View style={styles.metaDivider} />
+			<StoryProgress
+				color={progressColor}
+				label="Seen"
+				percent={seenPercent}
+				value={seenValue}
+			/>
 		</View>
 	);
 }
@@ -57,31 +84,31 @@ export default function StoryMeta({ progressPercent, progressColor = '#08433f' }
  */
 const styles = StyleSheet.create({
 	metaRow: {
-		width: '100%',
-		display: 'flex',
 		flexDirection: 'row',
-		gap: 8,
+		gap: 12,
+	},
+	progressColumn: {
+		flex: 1,
+		minWidth: 0,
+		gap: 4,
 	},
 	metaText: {
 		color: colors.dark.text,
 		fontSize: 14,
 		fontFamily: 'lexend-400',
 	},
+	metaDivider: {
+		backgroundColor: colors.light.border,
+		width: 1,
+	},
 	progressBarContainer: {
-		display: 'flex',
-		flexDirection: 'row',
 		overflow: 'hidden',
-		alignContent: 'center',
-		alignItems: 'center',
-		flex: 1,
+		borderWidth: 1,
+		borderColor: colors.light.border,
+		borderRadius: 4,
+		height: 6,
 	},
 	progressBar: {
-		height: 8,
-		borderRadius: 4,
-	},
-	metaData: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 14,
+		height: '100%',
 	},
 });
