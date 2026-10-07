@@ -2,20 +2,13 @@ import { chapterSelectBackground, type DeckChapter } from '@/data/french/storyAt
 import DeckPickerModal from '@/src/components/DeckPickerModal';
 import Loader from '@/src/components/Loader';
 import LockedSection from '@/src/components/LockedSection';
+import ProgressBar from '@/src/components/ProgressBar';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { useState } from 'react';
-import {
-	Image,
-	ImageBackground,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View,
-	type ViewStyle,
-} from 'react-native';
+import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../../app/colors';
 import LinkButton from '../LinkButton';
 import MaterialSymbol from '../MaterialSymbol';
@@ -35,14 +28,14 @@ function ChapterProgress({
 	text: string;
 	percent: number;
 }) {
-	const progressStyle: ViewStyle = { width: `${percent}%`, backgroundColor: color };
-
 	return (
 		<View style={styles.chapterProgressContainer}>
 			<Text style={styles.chapterProgressText}>{text}</Text>
-			<View style={styles.chapterProgressBarTrack}>
-				<View style={[styles.chapterProgressBar, progressStyle]} />
-			</View>
+			<ProgressBar
+				color={color}
+				percent={percent}
+				style={styles.chapterProgressBarTrack}
+			/>
 		</View>
 	);
 }
@@ -419,16 +412,11 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 	},
 	chapterProgressBarTrack: {
-		overflow: 'hidden',
 		borderWidth: 1,
 		borderColor: colors.light.border,
 		borderRadius: 8,
 		marginBottom: 6,
 		height: 6,
-	},
-	chapterProgressBar: {
-		height: '100%',
-		borderColor: colors.light.border,
 	},
 	chapterSelectButton: {
 		marginBottom: 4,

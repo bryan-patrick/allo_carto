@@ -1,7 +1,8 @@
 import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import ProgressBar from './ProgressBar';
 import UserProgressModal from './UserProgressModal';
 
 /**
@@ -12,7 +13,6 @@ export default function LevelBadge() {
 	const [isProgressVisible, setIsProgressVisible] = useState(false);
 	const { level, isMaxLevel, xpIntoLevel, xpForNextLevel, progressPercentage } = experience;
 	const levelLabel = `Lvl. ${level}`;
-	const progressBarStyle: ViewStyle = { width: `${progressPercentage}%` };
 	let progressDescription = `${xpIntoLevel} of ${xpForNextLevel} XP toward level ${level + 1}`;
 
 	if (isMaxLevel) {
@@ -41,9 +41,11 @@ export default function LevelBadge() {
 				>
 					{levelLabel}
 				</Text>
-				<View style={styles.progressBarContainer}>
-					<View style={[styles.progressBar, progressBarStyle]} />
-				</View>
+				<ProgressBar
+					color={colors.light.goldenBorder}
+					percent={progressPercentage}
+					style={styles.progressBarContainer}
+				/>
 			</Pressable>
 			<UserProgressModal
 				onRequestClose={() => setIsProgressVisible(false)}
@@ -79,12 +81,7 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		borderWidth: 1,
 		height: 6,
-		overflow: 'hidden',
 		width: '100%',
 		minWidth: 40,
-	},
-	progressBar: {
-		backgroundColor: colors.light.goldenBorder,
-		height: '100%',
 	},
 });

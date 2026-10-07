@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
-import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import ProgressBar from '@/src/components/ProgressBar';
+import { StyleSheet, Text, View } from 'react-native';
 
 /**
  * Typing
@@ -23,16 +24,17 @@ interface StoryProgressProps {
  */
 function StoryProgress({ color, label, percent, value }: StoryProgressProps) {
 	const trackStyle = { backgroundColor: `${color}20` };
-	const progressStyle: ViewStyle = { backgroundColor: color, width: `${percent}%` };
 
 	return (
 		<View style={styles.progressColumn}>
 			<Text style={styles.metaText}>
 				{value} {label}
 			</Text>
-			<View style={[styles.progressBarContainer, trackStyle]}>
-				<View style={[styles.progressBar, progressStyle]} />
-			</View>
+			<ProgressBar
+				color={color}
+				percent={percent}
+				style={[styles.progressBarContainer, trackStyle]}
+			/>
 		</View>
 	);
 }
@@ -102,13 +104,9 @@ const styles = StyleSheet.create({
 		width: 1,
 	},
 	progressBarContainer: {
-		overflow: 'hidden',
 		borderWidth: 1,
 		borderColor: colors.light.border,
 		borderRadius: 4,
 		height: 6,
-	},
-	progressBar: {
-		height: '100%',
 	},
 });

@@ -1,22 +1,14 @@
 import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import ProgressBar from '@/src/components/ProgressBar';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useEffect, useRef, useState } from 'react';
-import {
-	Animated,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Switch,
-	Text,
-	View,
-	type ViewStyle,
-} from 'react-native';
+import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 /**
  * Typing
@@ -161,15 +153,6 @@ export default function DeckPassageView({
 		seenPercent = (wordsSeenCount / totalWordCount) * 100;
 	}
 
-	const completionBarStyle: ViewStyle = {
-		backgroundColor: storyColor,
-		width: `${deckCompletionPercent}%`,
-	};
-	const seenBarStyle: ViewStyle = {
-		backgroundColor: storyColor,
-		width: `${seenPercent}%`,
-	};
-
 	/**
 	 * Get the rendered height for the modal
 	 */
@@ -247,9 +230,11 @@ export default function DeckPassageView({
 						style={styles.progressColumn}
 					>
 						<Text style={styles.progressLabel}>{seenText}</Text>
-						<View style={styles.progressBarContainer}>
-							<View style={[styles.progressBar, seenBarStyle]} />
-						</View>
+						<ProgressBar
+							color={storyColor}
+							percent={seenPercent}
+							style={styles.progressBarContainer}
+						/>
 					</View>
 					<View style={styles.progressDivider} />
 					<View
@@ -260,9 +245,11 @@ export default function DeckPassageView({
 						style={styles.progressColumn}
 					>
 						<Text style={styles.progressLabel}>{completionText}</Text>
-						<View style={styles.progressBarContainer}>
-							<View style={[styles.progressBar, completionBarStyle]} />
-						</View>
+						<ProgressBar
+							color={storyColor}
+							percent={deckCompletionPercent}
+							style={styles.progressBarContainer}
+						/>
 					</View>
 				</View>
 				<View style={styles.passageToggles}>
@@ -500,11 +487,6 @@ const styles = StyleSheet.create({
 		borderRadius: 4,
 		borderWidth: 1,
 		height: 6,
-		overflow: 'hidden',
-	},
-	progressBar: {
-		borderRadius: 4,
-		height: '100%',
 	},
 	passageToggles: {
 		flexDirection: 'row',
