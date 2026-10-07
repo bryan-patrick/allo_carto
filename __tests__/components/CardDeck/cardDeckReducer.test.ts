@@ -46,7 +46,10 @@ describe('cardDeckReducer', () => {
 			incorrectWords: [thirdWord],
 		};
 
-		const nextState = cardDeckReducer(state, { type: 'ADD_CORRECT_WORD' });
+		const nextState = cardDeckReducer(state, {
+			type: 'ADD_CORRECT_WORD',
+			award: { xp: 10, learningBonusXP: 0, previousProgress: 'mastered', nextProgress: 'mastered' },
+		});
 
 		expect(nextState.correctWords).toEqual([secondWord, firstWord]);
 		expect(nextState.incorrectWords).toEqual([thirdWord]);
@@ -78,6 +81,7 @@ describe('cardDeckReducer', () => {
 		const nextState = cardDeckReducer(state, {
 			type: 'SET_DECK',
 			payload: newDeck,
+			session: { id: 'new-session', xpBefore: 0, results: [] },
 		});
 
 		expect(nextState.cardDeck).toBe(newDeck);

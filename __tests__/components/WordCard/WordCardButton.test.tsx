@@ -67,7 +67,12 @@ describe('<WordCardButton />', () => {
 			setSetting: jest.fn(),
 		});
 		mockRecordCorrectAnswer.mockReset();
-		mockRecordCorrectAnswer.mockResolvedValue(true);
+		mockRecordCorrectAnswer.mockResolvedValue({
+			xp: 10,
+			learningBonusXP: 0,
+			previousProgress: 'mastered',
+			nextProgress: 'mastered',
+		});
 		mockUseUserProgress.mockReturnValue({
 			experience: getUserExperience(0),
 			isUpdatingProgress: false,
