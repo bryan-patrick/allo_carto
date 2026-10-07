@@ -6,6 +6,7 @@ import DeckPassageView from '@/src/components/DeckPassageView';
 import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import ProgressBar from '@/src/components/ProgressBar';
 import ViewIndicator from '@/src/components/ViewIndicator';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
@@ -31,7 +32,6 @@ import {
 	Text,
 	useWindowDimensions,
 	View,
-	type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -80,8 +80,6 @@ function MetadataItem({ color, icon, text }: MetadataItemProps) {
 }
 
 function ProgressMetadata({ color, icon, text, percent }: MetadataItemProps & { percent: number }) {
-	const progressStyle: ViewStyle = { backgroundColor: color, width: `${percent}%` };
-
 	return (
 		<View style={styles.completionMetadata}>
 			<MetadataItem
@@ -89,9 +87,11 @@ function ProgressMetadata({ color, icon, text, percent }: MetadataItemProps & { 
 				icon={icon}
 				text={text}
 			/>
-			<View style={styles.progressBarContainer}>
-				<View style={[styles.progressBar, progressStyle]} />
-			</View>
+			<ProgressBar
+				color={color}
+				percent={percent}
+				style={styles.progressBarContainer}
+			/>
 		</View>
 	);
 }
@@ -359,7 +359,7 @@ export default function DeckPickerModal({
 										const wordCount =
 											progressById[deck.id]?.wordCount ?? new Set(deck.wordIds).size;
 										const seenText = `${seenWordCount}/${wordCount} seen`;
-										const metadataAccessibilityLabel = `${formatCEFRRange(deck.CEFR, ' to ')}, ${deck.wordIds.length} cards, ${seenWordCount} of ${wordCount} words seen, ${completionPercent} percent learned`;
+										const metadataAccessibilityLabel = `${formatCEFRRange(deck.CEFR, ' to ')}, ${seenWordCount} of ${wordCount} words seen, ${completionPercent} percent learned`;
 										const actionLabel = completionPercent > 0 ? 'Continue' : 'Flash Cards';
 										const isLoadingPassage = loadingPassageDeckId === deck.id;
 
@@ -390,15 +390,9 @@ export default function DeckPickerModal({
 																text={formatCEFRRange(deck.CEFR)}
 															/>
 															<View style={styles.metadataDivider} />
-															<MetadataItem
-																color={storyColor}
-																icon="cards_star"
-																text={`${deck.wordIds.length} cards`}
-															/>
-															<View style={styles.metadataDivider} />
 															<ProgressMetadata
 																color={storyColor}
-																icon="visibility"
+																icon="cards_star"
 																text={seenText}
 																percent={seenPercent}
 															/>
@@ -633,11 +627,6 @@ const styles = StyleSheet.create({
 		borderRadius: 4,
 		borderWidth: 1,
 		height: 4,
-		overflow: 'hidden',
-	},
-	progressBar: {
-		borderRadius: 4,
-		height: '100%',
 	},
 	actions: {
 		flexDirection: 'row',
