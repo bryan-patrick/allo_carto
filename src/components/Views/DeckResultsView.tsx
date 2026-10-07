@@ -466,6 +466,22 @@ export default function DeckResultsView() {
 	}
 
 	/**
+	 * The shared passage view owns its scroll area. Other review pages scroll as a whole.
+	 */
+	let pageContent = content;
+
+	if (!hasReview || step !== 0) {
+		pageContent = (
+			<ScrollView
+				contentContainerStyle={styles.scrollContent}
+				showsVerticalScrollIndicator
+			>
+				{content}
+			</ScrollView>
+		);
+	}
+
+	/**
 	 * Render it
 	 */
 	return (
@@ -507,12 +523,7 @@ export default function DeckResultsView() {
 						key={step}
 						style={styles.content}
 					>
-						<ScrollView
-							contentContainerStyle={styles.scrollContent}
-							showsVerticalScrollIndicator
-						>
-							{content}
-						</ScrollView>
+						{pageContent}
 					</View>
 					<View style={styles.footer}>{footerContent}</View>
 				</View>

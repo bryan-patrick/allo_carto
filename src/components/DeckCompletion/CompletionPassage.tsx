@@ -1,165 +1,139 @@
 import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { DeckWordResultProps } from '@/src/components/CardDeck/deckSessionTypes';
-import MaterialSymbol from '@/src/components/MaterialSymbol';
-import { Fragment } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import DeckPassageView from '@/src/components/DeckPassageView';
+import { getDB, getWordProgressById } from '@/src/db/interface';
+import getDeckWordProgressCounts, {
+	type DeckWordProgressCounts,
+} from '@/src/db/queries/getDeckWordProgressCounts';
+import { useUserContext } from '@/src/db/useUserContext';
+import type { WordProgressKey } from '@/src/util/wordProgress';
+import { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { getCompletionEntry } from './completionAnimations';
 
-/**
- * Typing
- */
+const titleEntry = getCompletionEntry(1);
+
 interface CompletionPassageProps {
 	deck: CardDeck;
 	results: DeckWordResultProps[];
 }
 
-const titleEntry = getCompletionEntry(1);
-const passageEntry = getCompletionEntry(2);
-const descriptionEntry = getCompletionEntry(3);
-const legendEntry = getCompletionEntry(4);
+interface PassageProgress {
+	deck: CardDeck;
+	userId: string;
+	counts: DeckWordProgressCounts;
+	byWordId: Record<string, WordProgressKey>;
+}
 
 /**
- * Show the complete passage with only this deck review's words highlighted
+ * Use the modal's passage renderer with saved progress for the entire passage,
+ * including vocabulary outside the cards selected for this session.
  */
 export default function CompletionPassage({ deck, results }: CompletionPassageProps) {
-	const resultsByWordId = new Map(results.map(result => [result.wordId, result]));
+	const { id: userId } = useUserContext() ?? {};
+	const [progress, setProgress] = useState<PassageProgress>();
+	const [hasLoadError, setHasLoadError] = useState(false);
+	const [loadAttempt, setLoadAttempt] = useState(0);
+	const hasCurrentProgress = progress?.deck === deck && progress.userId === userId;
+	let message = 'Loading passage…';
 
-	const segments = deck.passage.map(({ text, wordId, unlockExempt, after }, index) => {
-		const wordResults = resultsByWordId.get(wordId ?? '');
-		let backgroundColor: string | undefined;
-		let accessibilityLabel = text;
+	if (hasLoadError || !userId) {
+		message = 'Could not load passage progress.';
+	}
 
-		if (wordResults && !unlockExempt) {
-			if (wordResults.outcome === 'correct') {
-				backgroundColor = colors.light.success;
-				accessibilityLabel = `${text}, correct`;
-			} else {
-				backgroundColor = `${colors.light.danger}33`;
-				accessibilityLabel = `${text}, ${wordResults.outcome}`;
+	useEffect(() => {
+		if (!userId) return;
+		let isActive = true;
+
+		async function loadProgress() {
+			try {
+				const database = await getDB();
+				const [counts, byWordId] = await Promise.all([
+					getDeckWordProgressCounts({ database, userId: userId!, wordIds: deck.wordIds }),
+					getWordProgressById({ userId: userId!, passage: deck.passage }),
+				]);
+
+				if (isActive) {
+					setProgress({ deck, userId: userId!, counts, byWordId });
+					setHasLoadError(false);
+				}
+			} catch (error) {
+				console.error('Could not load completion passage progress:', error);
+
+				if (isActive) setHasLoadError(true);
 			}
 		}
 
-		return {
-			key: `${index}-${wordId ?? text}`,
-			text,
-			after: after ?? ' ',
-			style: { backgroundColor },
-			accessibilityLabel,
+		loadProgress();
+		return () => {
+			isActive = false;
 		};
-	});
+	}, [deck, loadAttempt, userId]);
+
+	function handleRetry() {
+		setHasLoadError(false);
+		setLoadAttempt(loadAttempt + 1);
+	}
+
+	if (hasCurrentProgress && progress) {
+		return (
+			<View style={styles.container}>
+				<Animated.Text
+					accessibilityRole="header"
+					entering={titleEntry}
+					style={styles.title}
+				>
+					Read the passage again
+				</Animated.Text>
+				<DeckPassageView
+					deck={deck}
+					minimumPassageHeight={0}
+					results={results}
+					showLearningControls={false}
+					showProgress={false}
+					wordProgressCounts={progress.counts}
+					wordProgressKeyByWordId={progress.byWordId}
+				/>
+			</View>
+		);
+	}
 
 	return (
-		<View style={styles.container}>
-			<Animated.Text
-				entering={titleEntry}
-				style={styles.title}
-			>
-				Read the passage again
-			</Animated.Text>
-			<Animated.View
-				entering={passageEntry}
-				style={styles.passage}
-			>
-				<Text style={styles.passageText}>
-					{segments.map(segment => (
-						<Fragment key={segment.key}>
-							<Text
-								accessibilityLabel={segment.accessibilityLabel}
-								style={segment.style}
-							>
-								{segment.text}
-							</Text>
-							{segment.after}
-						</Fragment>
-					))}
-				</Text>
-			</Animated.View>
-			<Animated.Text
-				entering={descriptionEntry}
-				style={styles.description}
-			>
-				The words you studied in this run are highlighted.
-			</Animated.Text>
-			<Animated.View
-				entering={legendEntry}
-				style={styles.legend}
-			>
-				<View style={[styles.legendItem, styles.correct]}>
-					<MaterialSymbol
-						name="check"
-						size={14}
-						color={colors.dark.success}
-					/>
-					<Text style={styles.legendText}>Correct</Text>
-				</View>
-				<View style={[styles.legendItem, styles.incorrect]}>
-					<MaterialSymbol
-						name="close"
-						size={14}
-						color={colors.dark.danger}
-					/>
-					<Text style={styles.legendText}>Incorrect / skipped</Text>
-				</View>
-			</Animated.View>
+		<View style={styles.message}>
+			<Text style={styles.text}>{message}</Text>
+			{hasLoadError && userId && (
+				<Pressable
+					accessibilityRole="button"
+					onPress={handleRetry}
+					style={styles.retry}
+				>
+					<Text style={styles.text}>Retry</Text>
+				</Pressable>
+			)}
 		</View>
 	);
 }
 
-/**
- * Styles
- */
 const styles = StyleSheet.create({
-	container: {
-		gap: 12,
-	},
+	container: { flex: 1 },
 	title: {
 		fontFamily: 'lexend-600',
 		fontSize: 16,
 		color: colors.dark.text,
+		paddingHorizontal: 16,
+		paddingTop: 12,
 	},
-	description: {
-		fontFamily: 'lexend-400',
-		fontSize: 14,
-		lineHeight: 16,
-		color: colors.dark.text,
-	},
-	legend: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: 8,
-	},
-	legendItem: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 4,
-		paddingHorizontal: 4,
-		paddingVertical: 4,
-	},
-	legendText: {
-		fontFamily: 'lexend-400',
-		fontSize: 12,
-		color: colors.dark.text,
-	},
-	correct: {
-		backgroundColor: colors.light.success,
-	},
-	incorrect: {
-		backgroundColor: `${colors.light.danger}33`,
-	},
-	passage: {
-		backgroundColor: `${colors.light.primary}55`,
-		borderColor: colors.light.goldenBorder,
+	message: { padding: 16, gap: 12 },
+	text: { fontFamily: 'lexend-400', fontSize: 14, color: colors.dark.text },
+	retry: {
+		alignSelf: 'flex-start',
+		minHeight: 44,
+		justifyContent: 'center',
+		paddingHorizontal: 16,
 		borderWidth: 1,
+		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
-		paddingVertical: 16,
-		paddingHorizontal: 12,
-	},
-	passageText: {
-		fontFamily: 'lexend-400',
-		fontSize: 16,
-		lineHeight: 28,
-		color: colors.dark.text,
 	},
 });
