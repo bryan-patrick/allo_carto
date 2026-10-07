@@ -100,6 +100,7 @@ export default function AppLayout() {
 
 		if (resetDB) {
 			await database.execAsync(`
+        DROP TABLE IF EXISTS deckCompletions;
         DROP TABLE IF EXISTS userProgress;
         DROP TABLE IF EXISTS userWords;
         DROP TABLE IF EXISTS users;
@@ -211,8 +212,9 @@ export default function AppLayout() {
 											name="(routes)/DeckResults"
 											options={{
 												headerShown: true,
-												headerTitle: 'Results',
+												headerTitle: () => <SelectionBreadcrumbs currentViewIndex={2} />,
 												headerBackVisible: false,
+												gestureEnabled: false,
 											}}
 										/>
 									</Stack>

@@ -1,6 +1,17 @@
+import type { CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
+
+export const correctAnswerXPByRarity: Record<CardRarity, number> = {
+	Common: 10,
+	Rare: 15,
+	Epic: 20,
+	Legendary: 30,
+};
+
 export const userExperienceConfig = {
-	correctAnswerXP: 10,
-	deckCompletionBonusCards: 5,
+	learningLevelBonusMultiplier: 3,
+	deckCompletionXP: 50,
+	firstDeckCompletionXP: 15,
+	perfectDeckXP: 50,
 };
 
 interface UserLevelDefinition {

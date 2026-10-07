@@ -1,14 +1,18 @@
+import type {
+	DeckCompletionReceipt,
+	WordAnswerAward,
+} from '@/src/components/CardDeck/deckSessionTypes';
 import type { ProgressById } from '@/src/util/progression';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import { useSQLiteContext } from 'expo-sqlite';
 import {
 	createContext,
-	type ReactNode,
 	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
 	useState,
+	type ReactNode,
 } from 'react';
 import loadUserXP from './queries/getUserExperience';
 import getUserProgress from './queries/getUserProgress';
@@ -16,6 +20,7 @@ import {
 	writeCorrectAnswer,
 	writeDeckCompletion,
 	writeWordSeen,
+	type DeckCompletionRequest,
 } from './queries/writeUserProgress';
 
 /**
@@ -23,13 +28,18 @@ import {
  */
 type ProgressStatus = 'loading' | 'ready' | 'error';
 
-interface UserProgressContextValue {
+interface UserProgressProviderProps {
+	children: ReactNode;
+	userId?: string;
+}
+
+interface UserProgressContextProps {
 	experience: UserExperience;
 	isUpdatingProgress: boolean;
 	progressById: ProgressById;
 	status: ProgressStatus;
-	writeCorrectAnswer: (wordId: string) => Promise<boolean>;
-	writeDeckCompletion: () => Promise<boolean>;
+	writeCorrectAnswer: (wordId: string) => Promise<WordAnswerAward | false>;
+	writeDeckCompletion: (request: DeckCompletionRequest) => Promise<DeckCompletionReceipt | false>;
 	writeWordSeen: (wordId: string) => Promise<boolean>;
 	reloadProgress: () => Promise<void>;
 }
@@ -37,29 +47,37 @@ interface UserProgressContextValue {
 /**
  * Initial progress state
  */
-const initialValue: UserProgressContextValue = {
+const initialValue: UserProgressContextProps = {
 	experience: getUserExperience(0),
 	isUpdatingProgress: false,
 	progressById: {},
 	status: 'loading',
-	writeCorrectAnswer: async () => true,
-	writeDeckCompletion: async () => true,
-	writeWordSeen: async () => true,
+	writeCorrectAnswer: async () => false,
+	writeDeckCompletion: async () => false,
+	writeWordSeen: async () => false,
 	reloadProgress: async () => {},
 };
 
-export const UserProgressContext = createContext<UserProgressContextValue>(initialValue);
+export const UserProgressContext = createContext<UserProgressContextProps>(initialValue);
 
 /**
- * User progress provider
+ * Provide the current user's saved progress and XP to the app.
  */
-export function UserProgressProvider({
-	children,
-	userId,
-}: {
-	children: ReactNode;
-	userId?: string;
-}) {
+export function UserProgressProvider({ children, userId }: UserProgressProviderProps) {
+	return (
+		<UserProgressState
+			key={userId}
+			userId={userId}
+		>
+			{children}
+		</UserProgressState>
+	);
+}
+
+/**
+ * Load and save progress for the current user.
+ */
+function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const database = useSQLiteContext();
 
 	/**
@@ -72,52 +90,45 @@ export function UserProgressProvider({
 	const isSavingProgress = useRef(false);
 
 	/**
-	 * Reload content progress and player experience from the database
+	 * Reload content progress and player experience from the database. State
+	 * changes only in the database promise's completion callbacks.
 	 */
 	const refreshProgress = useCallback(async () => {
-		if (!userId) {
-			setProgressById({});
-			setExperience(getUserExperience(0));
-			setStatus('loading');
-		} else {
-			try {
-				const [nextProgress, nextExperience] = await Promise.all([
-					getUserProgress({ database, userId }),
-					loadUserXP({ database, userId }),
-				]);
+		if (!userId) return;
 
+		return Promise.all([getUserProgress({ database, userId }), loadUserXP({ database, userId })])
+			.then(([nextProgress, nextExperience]) => {
 				setProgressById(nextProgress);
 				setExperience(nextExperience);
 				setStatus('ready');
-			} catch (error) {
+			})
+			.catch(error => {
 				console.error('Could not retrieve user progress:', error);
 				setStatus('error');
-			}
-		}
+			});
 	}, [database, userId]);
 
 	/**
 	 * Load userProgress rows when the database is ready
 	 */
 	useEffect(() => {
-		// eslint-disable-next-line react-hooks/set-state-in-effect
 		refreshProgress();
 	}, [refreshProgress]);
 
 	/**
-	 * Block another word or userProgress write until the database write finishes
+	 * Block another word or userProgress write until the current database progress saves
 	 */
 	const runProgressWrite = useCallback(
-		async (write: () => Promise<void>): Promise<boolean> => {
+		async function saveProgress<T>(write: () => Promise<T>): Promise<T | false> {
 			if (!userId || isSavingProgress.current) return false;
 
 			isSavingProgress.current = true;
 			setIsUpdatingProgress(true);
 
 			try {
-				await write();
+				const result = await write();
 				await refreshProgress();
-				return true;
+				return result;
 			} catch (error) {
 				console.error('Could not update user progress:', error);
 				setStatus('error');
@@ -134,22 +145,25 @@ export function UserProgressProvider({
 	 * Save a correct answer
 	 */
 	const recordCorrectAnswer = useCallback(
-		async (wordId: string): Promise<boolean> => {
+		async (wordId: string): Promise<WordAnswerAward | false> => {
 			return runProgressWrite(async () => {
-				await writeCorrectAnswer({ database, userId: userId!, wordId });
+				return writeCorrectAnswer({ database, userId: userId!, wordId });
 			});
 		},
 		[database, runProgressWrite, userId],
 	);
 
 	/**
-	 * Save the deck completion bonus and refresh the player's level.
+	 * Save the deck completion bonus and update the player's level
 	 */
-	const recordDeckCompletion = useCallback(async (): Promise<boolean> => {
-		return runProgressWrite(async () => {
-			await writeDeckCompletion({ database, userId: userId! });
-		});
-	}, [database, runProgressWrite, userId]);
+	const recordDeckCompletion = useCallback(
+		async (request: DeckCompletionRequest): Promise<DeckCompletionReceipt | false> => {
+			return runProgressWrite(async () => {
+				return writeDeckCompletion({ database, userId: userId!, ...request });
+			});
+		},
+		[database, runProgressWrite, userId],
+	);
 
 	/**
 	 * Save that a word was seen
@@ -158,6 +172,7 @@ export function UserProgressProvider({
 		async (wordId: string): Promise<boolean> => {
 			return runProgressWrite(async () => {
 				await writeWordSeen({ database, userId: userId!, wordId });
+				return true;
 			});
 		},
 		[database, runProgressWrite, userId],
@@ -166,7 +181,7 @@ export function UserProgressProvider({
 	/**
 	 * Context value
 	 */
-	const value = useMemo<UserProgressContextValue>(
+	const value = useMemo<UserProgressContextProps>(
 		() => ({
 			experience,
 			isUpdatingProgress,
