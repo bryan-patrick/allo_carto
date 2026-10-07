@@ -1,8 +1,8 @@
 import type { CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
 import type {
-	DeckCompletionReceipt,
-	WordAnswerAward,
-	XPBonus,
+	DeckCompletionReceiptProps,
+	WordAnswerAwardProps,
+	XPBonusProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { getCompletionPercentage } from '@/src/util/progression';
@@ -95,8 +95,8 @@ export async function writeCorrectAnswer({
 	database: SQLiteDatabase;
 	userId: string;
 	wordId: string;
-}): Promise<WordAnswerAward> {
-	let award: WordAnswerAward | undefined;
+}): Promise<WordAnswerAwardProps> {
+	let award: WordAnswerAwardProps | undefined;
 
 	/**
 	 * Keep the whole write together
@@ -189,8 +189,8 @@ export async function writeDeckCompletion({
 }: DeckCompletionRequest & {
 	database: SQLiteDatabase;
 	userId: string;
-}): Promise<DeckCompletionReceipt> {
-	let receipt: DeckCompletionReceipt | undefined;
+}): Promise<DeckCompletionReceiptProps> {
+	let receipt: DeckCompletionReceiptProps | undefined;
 
 	/**
 	 * Save these changes together. If any step fails, none of the changes are saved.
@@ -259,7 +259,9 @@ export async function writeDeckCompletion({
 		/**
 		 * Start with the bonus given for each deck completion.
 		 */
-		const bonuses: XPBonus[] = [{ kind: 'completion', xp: userExperienceConfig.deckCompletionXP }];
+		const bonuses: XPBonusProps[] = [
+			{ kind: 'completion', xp: userExperienceConfig.deckCompletionXP },
+		];
 
 		/**
 		 * Add another bonus if this is the user's first time completing this deck.

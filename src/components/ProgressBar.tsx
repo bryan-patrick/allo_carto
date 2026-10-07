@@ -23,64 +23,56 @@ interface ProgressBarProps {
 /**
  * Animation consts
  */
-const glowDuration = 140;
-const fillDelay = 460;
-const fillDuration = 650;
+const glowDuration = 168;
+const fillDelay = 168;
+const fillDuration = 1320;
+export const progressBarAnimationDuration = fillDelay + fillDuration;
 
 /**
  * Progress bar with glow/fill animation
  */
 export default function ProgressBar({ color, percent, style }: ProgressBarProps) {
-	const previousPercent = useRef(percent);
-	const fill = useSharedValue(percent);
+	const targetPercent = Math.max(0, Math.min(percent, 100));
+	const previousPercent = useRef(targetPercent);
+	const fill = useSharedValue(targetPercent);
 	const glow = useSharedValue(0);
-	const previewOpacity = useSharedValue(0);
 
 	const glowStyle = useAnimatedStyle(() => ({
 		opacity: glow.value,
 	}));
 	const fillStyle = useAnimatedStyle(() => ({
 		backgroundColor: color,
-		width: `${fill.value}%`,
-	}));
-	const previewStyle = useAnimatedStyle(() => ({
-		left: `${fill.value}%`,
-		width: `${Math.max(0, percent - fill.value)}%`,
-		opacity: previewOpacity.value,
+		transform: [{ scaleX: fill.value / 100 }],
 	}));
 
 	/**
-	 * Do the animation
+	 * Animate the visible fill on the UI thread. Scaling from the left avoids
+	 * percentage-width layout updates while keeping one continuous fill.
 	 */
 	useEffect(() => {
-		if (percent === previousPercent.current) return;
+		if (targetPercent === previousPercent.current) return;
 
-		previousPercent.current = percent;
-
-		previewOpacity.set(0);
+		previousPercent.current = targetPercent;
 
 		glow.set(
 			withSequence(
 				withTiming(0.7, { duration: glowDuration }),
-				withDelay(fillDelay + fillDuration - glowDuration, withTiming(0, { duration: 240 })),
+				withDelay(fillDelay + fillDuration - glowDuration, withTiming(0, { duration: 288 })),
 			),
 		);
-
-		previewOpacity.set(withDelay(glowDuration, withTiming(1, { duration: 140 })));
 
 		fill.set(
 			withDelay(
 				fillDelay,
-				withTiming(percent, { duration: fillDuration, easing: Easing.inOut(Easing.cubic) }),
+				withTiming(targetPercent, { duration: fillDuration, easing: Easing.inOut(Easing.cubic) }),
 			),
 		);
 
 		return () => {
 			cancelAnimation(fill);
 			cancelAnimation(glow);
-			cancelAnimation(previewOpacity);
 		};
-	}, [percent, fill, glow, previewOpacity]);
+	}, [targetPercent, fill, glow]);
 
 	/**
 	 * Render the bar
@@ -89,7 +81,6 @@ export default function ProgressBar({ color, percent, style }: ProgressBarProps)
 		<View style={style}>
 			<Animated.View style={[styles.glow, glowStyle]} />
 			<View style={styles.clip}>
-				<Animated.View style={[styles.segment, styles.preview, previewStyle]} />
 				<Animated.View style={[styles.segment, fillStyle]} />
 			</View>
 		</View>
@@ -110,10 +101,9 @@ const styles = StyleSheet.create({
 		borderRadius: 4,
 		overflow: 'hidden',
 	},
-	preview: {
-		backgroundColor: colors.dark.border,
-	},
 	segment: {
+		width: '100%',
+		transformOrigin: 'left center',
 		position: 'absolute',
 		left: 0,
 		top: 0,

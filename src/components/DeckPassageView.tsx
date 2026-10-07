@@ -142,7 +142,7 @@ export default function DeckPassageView({
 		wordProgressCounts,
 	});
 	const completionText = `${deckCompletionPercent}% learned`;
-	const seenText = `${wordsSeenCount}/${totalWordCount} seen`;
+	const seenText = `${wordsSeenCount}/${totalWordCount} words seen`;
 	const completionAccessibilityLabel = `${deckCompletionPercent} percent learned`;
 	const seenAccessibilityLabel = `${wordsSeenCount} of ${totalWordCount} words seen`;
 	const completionAccessibilityValue = { min: 0, max: 100, now: deckCompletionPercent };

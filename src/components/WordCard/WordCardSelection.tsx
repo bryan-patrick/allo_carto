@@ -31,14 +31,19 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
 		[wordCardUIDispatch],
 	);
 
+	/**
+	 * Render the mapped words
+	 */
 	return (
 		<View style={styles.container}>
 			<MappedWords
+				selectionType="article"
 				words={articleWords}
 				activeWord={cardState.selectedArticle}
 				handler={handleArticlePressToggle}
 			/>
 			<MappedWords
+				selectionType="word"
 				words={fillerWords}
 				activeWord={cardState.selectedWord}
 				handler={handleWordPressToggle}

@@ -17,12 +17,14 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
+import { createDeckSession } from '@/src/util/createDeckSession';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
+	Alert,
 	Animated,
 	ImageBackground,
 	Modal,
@@ -112,11 +114,12 @@ export default function DeckPickerModal({
 	const { bottom, top } = useSafeAreaInsets();
 	const { height: windowHeight } = useWindowDimensions();
 	const { id: userId } = useUserContext() ?? {};
-	const { experience } = useUserProgress();
+	const { experience, isUpdatingProgress } = useUserProgress();
 	const { settings } = useAppSettings();
 	const userLevel = experience.level;
 	const cardsPerDeck = getCardsPerDeck(userLevel, settings.cardsPerDeck);
 	const { cardDeckDispatch } = useCardDeck();
+	const isStartingDeck = useRef(false);
 	const [loadingPassageDeckId, setLoadingPassageDeckId] = useState<string>();
 	const [passageContentHeight, setPassageContentHeight] = useState<number>();
 	const [passageState, setPassageState] = useState<DeckPickerPassageState>();
@@ -181,16 +184,32 @@ export default function DeckPickerModal({
 	 * Load and begin the selected deck
 	 */
 	async function handleSelectDeck(deck: CardDeck) {
-		if (!userId) return;
+		if (!userId || isUpdatingProgress || isStartingDeck.current) return;
 		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) return;
 
-		const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
+		isStartingDeck.current = true;
 
-		if (!selectedDeck) return;
+		try {
+			const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
 
-		cardDeckDispatch({ type: 'SET_DECK', payload: selectedDeck });
-		handleClose();
-		router.push('/CardDeck');
+			if (!selectedDeck || selectedDeck.words.length === 0) {
+				Alert.alert('Could not start deck', 'Please try again.');
+				return;
+			}
+
+			cardDeckDispatch({
+				type: 'SET_DECK',
+				payload: selectedDeck,
+				session: createDeckSession(experience.totalXP),
+			});
+			handleClose();
+			router.push('/CardDeck');
+		} catch (error) {
+			console.error('Could not start deck:', error);
+			Alert.alert('Could not start deck', 'Please try again.');
+		} finally {
+			isStartingDeck.current = false;
+		}
 	}
 
 	/**
@@ -358,7 +377,7 @@ export default function DeckPickerModal({
 										const seenWordCount = progressById[deck.id]?.seenWordCount ?? 0;
 										const wordCount =
 											progressById[deck.id]?.wordCount ?? new Set(deck.wordIds).size;
-										const seenText = `${seenWordCount}/${wordCount} seen`;
+										const seenText = `${seenWordCount}/${wordCount} words seen`;
 										const metadataAccessibilityLabel = `${formatCEFRRange(deck.CEFR, ' to ')}, ${seenWordCount} of ${wordCount} words seen, ${completionPercent} percent learned`;
 										const actionLabel = completionPercent > 0 ? 'Continue' : 'Flash Cards';
 										const isLoadingPassage = loadingPassageDeckId === deck.id;
@@ -446,6 +465,7 @@ export default function DeckPickerModal({
 															contentPaddingHorizontal={8}
 															contentPaddingVertical={7}
 															handler={() => handleSelectDeck(deck)}
+															disabled={isUpdatingProgress}
 															showInnerBorder={false}
 															style={[
 																styles.actionButton,

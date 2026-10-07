@@ -154,16 +154,38 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 	 */
 	useEffect(() => {
 		if (!isCurrent || cardState.stage !== 'COMPLETED' || isUpdatingProgress) return;
+		const { cardDeck, session } = cardDeckState;
+
+		if (!session || !session.results.some(result => result.wordId === currentCard.id)) return;
 
 		async function completeCard() {
+			if (!session) return;
 			if (isCompletingCard.current) return;
 			isCompletingCard.current = true;
 
 			if (cardDeckState.currentIndex === cardDeckState.cardDeck.words.length - 1) {
-				if (!cardDeckState.isComplete) {
-					const didWrite = await writeDeckCompletion();
+				if (!session.completion) {
+					const hasEveryResult = cardDeck.words.every(word =>
+						session.results.some(result => result.wordId === word.id),
+					);
 
-					if (!didWrite) {
+					if (!hasEveryResult) {
+						isCompletingCard.current = false;
+						return;
+					}
+
+					const correctCount = session.results.filter(
+						result => result.outcome === 'correct',
+					).length;
+					const isPerfect = correctCount > 0 && correctCount === session.results.length;
+					const receipt = await writeDeckCompletion({
+						deckId: cardDeck.id,
+						sessionId: session.id,
+						correctCount,
+						isPerfect,
+					});
+
+					if (!receipt) {
 						isCompletingCard.current = false;
 						Alert.alert('Could not finish deck', 'Please try again.', [
 							{ text: 'Retry', onPress: completeCard },
@@ -171,10 +193,10 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 						return;
 					}
 
-					cardDeckDispatch({ type: 'COMPLETE_DECK' });
+					cardDeckDispatch({ type: 'COMPLETE_DECK', receipt });
 				}
 
-				router.push('/DeckResults');
+				router.replace('/DeckResults');
 			} else {
 				cardDeckDispatch({ type: 'NEXT_CARD' });
 			}
@@ -183,6 +205,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 		completeCard();
 	}, [
 		cardDeckState,
+		currentCard.id,
 		isCurrent,
 		cardState.stage,
 		cardDeckDispatch,

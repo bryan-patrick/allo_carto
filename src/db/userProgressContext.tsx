@@ -1,6 +1,6 @@
 import type {
-	DeckCompletionReceipt,
-	WordAnswerAward,
+	DeckCompletionReceiptProps,
+	WordAnswerAwardProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
 import type { ProgressById } from '@/src/util/progression';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
@@ -38,8 +38,10 @@ interface UserProgressContextProps {
 	isUpdatingProgress: boolean;
 	progressById: ProgressById;
 	status: ProgressStatus;
-	writeCorrectAnswer: (wordId: string) => Promise<WordAnswerAward | false>;
-	writeDeckCompletion: (request: DeckCompletionRequest) => Promise<DeckCompletionReceipt | false>;
+	writeCorrectAnswer: (wordId: string) => Promise<WordAnswerAwardProps | false>;
+	writeDeckCompletion: (
+		request: DeckCompletionRequest,
+	) => Promise<DeckCompletionReceiptProps | false>;
 	writeWordSeen: (wordId: string) => Promise<boolean>;
 	reloadProgress: () => Promise<void>;
 }
@@ -145,7 +147,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 * Save a correct answer
 	 */
 	const recordCorrectAnswer = useCallback(
-		async (wordId: string): Promise<WordAnswerAward | false> => {
+		async (wordId: string): Promise<WordAnswerAwardProps | false> => {
 			return runProgressWrite(async () => {
 				return writeCorrectAnswer({ database, userId: userId!, wordId });
 			});
@@ -157,7 +159,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 * Save the deck completion bonus and update the player's level
 	 */
 	const recordDeckCompletion = useCallback(
-		async (request: DeckCompletionRequest): Promise<DeckCompletionReceipt | false> => {
+		async (request: DeckCompletionRequest): Promise<DeckCompletionReceiptProps | false> => {
 			return runProgressWrite(async () => {
 				return writeDeckCompletion({ database, userId: userId!, ...request });
 			});

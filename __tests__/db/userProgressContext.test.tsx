@@ -1,9 +1,9 @@
+import type { WordAnswerAwardProps } from '@/src/components/CardDeck/deckSessionTypes';
 import loadUserXP from '@/src/db/queries/getUserExperience';
 import getUserProgress from '@/src/db/queries/getUserProgress';
 import { writeCorrectAnswer } from '@/src/db/queries/writeUserProgress';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { UserProgressProvider } from '@/src/db/userProgressContext';
-import type { WordAnswerAward } from '@/src/components/CardDeck/deckSessionTypes';
 import { getUserExperience } from '@/src/util/userExperience';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
@@ -23,7 +23,7 @@ jest.mock('expo-sqlite', () => {
 const mockGetUserProgress = jest.mocked(getUserProgress);
 const mockLoadUserExperience = jest.mocked(loadUserXP);
 const mockWriteCorrectAnswer = jest.mocked(writeCorrectAnswer);
-const savedAward: WordAnswerAward = {
+const savedAward: WordAnswerAwardProps = {
 	xp: 10,
 	learningBonusXP: 0,
 	previousProgress: 'learning',
@@ -57,7 +57,7 @@ describe('<UserProgressProvider />', () => {
 		 * Keep the first write pending so a second press reaches the
 		 * synchronous in-flight guard before React can rerender.
 		 */
-		const pendingWrite = deferred<WordAnswerAward>();
+		const pendingWrite = deferred<WordAnswerAwardProps>();
 		mockWriteCorrectAnswer.mockReturnValue(pendingWrite.promise);
 		const { result } = await renderHook(() => useUserProgress(), {
 			wrapper: Wrapper,
@@ -65,8 +65,8 @@ describe('<UserProgressProvider />', () => {
 
 		await waitFor(() => expect(result.current.status).toBe('ready'));
 
-		let firstWrite!: Promise<WordAnswerAward | false>;
-		let secondWrite!: Promise<WordAnswerAward | false>;
+		let firstWrite!: Promise<WordAnswerAwardProps | false>;
+		let secondWrite!: Promise<WordAnswerAwardProps | false>;
 		await act(() => {
 			firstWrite = result.current.writeCorrectAnswer('word_one');
 			secondWrite = result.current.writeCorrectAnswer('word_one');
@@ -98,7 +98,7 @@ describe('<UserProgressProvider />', () => {
 
 		await waitFor(() => expect(result.current.status).toBe('ready'));
 
-		let firstWrite!: Promise<WordAnswerAward | false>;
+		let firstWrite!: Promise<WordAnswerAwardProps | false>;
 		await act(() => {
 			firstWrite = result.current.writeCorrectAnswer('word_one');
 		});

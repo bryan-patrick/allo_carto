@@ -79,6 +79,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 
 	/**
 	 * Side effects
+	 *
 	 * Load the new card and its state.
 	 * Note that we use the id to check for a new card.
 	 */
@@ -94,15 +95,49 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 			if (loadedWordId.current === word.id) return;
 			loadedWordId.current = word.id;
 
-			const deckWordChoices = cardDeckState.cardDeck.wordChoices.flatMap(
-				choice => choice.englishWords,
-			);
+			/**
+			 * Keep a list of the choices shown in the article buttons.
+			 * A Set stores each choice only once.
+			 */
+			const uniqueArticleChoices = new Set<string>();
+
+			if (word.englishArticle) {
+				/**
+				 * Include the usual articles and this word's correct article, such as "to".
+				 * Use lowercase so "The" and "the" are treated as the same choice.
+				 */
+				for (const article of [...englishArticles, word.englishArticle]) {
+					uniqueArticleChoices.add(article.toLowerCase());
+				}
+			}
+
+			/**
+			 * Keep a word choice only if it is not already an article choice.
+			 * This stops a choice like "to" from showing up in both groups of buttons.
+			 */
+			function isAvailableWordChoice(choice: string) {
+				return !uniqueArticleChoices.has(choice.toLowerCase());
+			}
+
+			/**
+			 * Put all the deck's English meanings into one list.
+			 * Then remove the choices already used by the article buttons.
+			 */
+			const deckWordChoices = cardDeckState.cardDeck.wordChoices
+				.flatMap(choice => choice.englishWords)
+				.filter(isAvailableWordChoice);
+
+			/**
+			 * Start with all word choices. Below, we try to use words of the same kind,
+			 * such as other verbs when the current word is a verb.
+			 */
 			let matchingWordChoices = deckWordChoices;
 
 			if (word.partOfSpeech) {
 				matchingWordChoices = cardDeckState.cardDeck.wordChoices
 					.filter(choice => choice.partOfSpeech === word.partOfSpeech)
-					.flatMap(choice => choice.englishWords);
+					.flatMap(choice => choice.englishWords)
+					.filter(isAvailableWordChoice);
 
 				if (
 					countWrongAnswerChoices(matchingWordChoices, word.englishWords) <
