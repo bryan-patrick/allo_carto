@@ -49,7 +49,7 @@ export default function StoryMeta({
 	const displayProgressPercent = Math.floor(progressPercent);
 	const knownValue = `${displayProgressPercent}%`;
 	const seenValue = `${seenWordCount}/${wordCount}`;
-	const accessibilityLabel = `${displayProgressPercent} percent known, ${seenWordCount} of ${wordCount} words seen`;
+	const accessibilityLabel = `${seenWordCount} of ${wordCount} words seen, ${displayProgressPercent} percent learned`;
 	let seenPercent = 0;
 
 	if (wordCount > 0) {
@@ -64,16 +64,16 @@ export default function StoryMeta({
 		>
 			<StoryProgress
 				color={progressColor}
-				label="learned"
-				percent={displayProgressPercent}
-				value={knownValue}
+				label="seen"
+				percent={seenPercent}
+				value={seenValue}
 			/>
 			<View style={styles.metaDivider} />
 			<StoryProgress
 				color={progressColor}
-				label="seen"
-				percent={seenPercent}
-				value={seenValue}
+				label="learned"
+				percent={displayProgressPercent}
+				value={knownValue}
 			/>
 		</View>
 	);
