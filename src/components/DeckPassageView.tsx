@@ -7,7 +7,16 @@ import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import {
+	Animated,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Switch,
+	Text,
+	View,
+	type ViewStyle,
+} from 'react-native';
 
 /**
  * Typing
@@ -127,7 +136,7 @@ export default function DeckPassageView({
 	/**
 	 * Passage metadata
 	 */
-	const totalWordCount = deck.wordIds.length;
+	const totalWordCount = new Set(deck.wordIds).size;
 	const storyColor = getDeckStoryColor(deck.id);
 	const progressLegendTextColor = getLearningLevelColor('known', useLearningLevelColors);
 	const wordsSeenCount =
@@ -140,6 +149,26 @@ export default function DeckPassageView({
 		deckWordCount: totalWordCount,
 		wordProgressCounts,
 	});
+	const completionText = `${deckCompletionPercent}% learned`;
+	const seenText = `${wordsSeenCount}/${totalWordCount} seen`;
+	const completionAccessibilityLabel = `${deckCompletionPercent} percent learned`;
+	const seenAccessibilityLabel = `${wordsSeenCount} of ${totalWordCount} words seen`;
+	const completionAccessibilityValue = { min: 0, max: 100, now: deckCompletionPercent };
+	const seenAccessibilityValue = { min: 0, max: totalWordCount, now: wordsSeenCount };
+	let seenPercent = 0;
+
+	if (totalWordCount > 0) {
+		seenPercent = (wordsSeenCount / totalWordCount) * 100;
+	}
+
+	const completionBarStyle: ViewStyle = {
+		backgroundColor: storyColor,
+		width: `${deckCompletionPercent}%`,
+	};
+	const seenBarStyle: ViewStyle = {
+		backgroundColor: storyColor,
+		width: `${seenPercent}%`,
+	};
 
 	/**
 	 * Get the rendered height for the modal
@@ -209,31 +238,32 @@ export default function DeckPassageView({
 				style={styles.header}
 			>
 				<Text style={[styles.title, { color: storyColor }]}>{deck.title}</Text>
-				<View
-					accessible
-					accessibilityLabel={`Word progress ${deckCompletionPercent} percent. ${wordsSeenCount} of ${totalWordCount} seen.`}
-					accessibilityRole="progressbar"
-					accessibilityValue={{ min: 0, max: 100, now: deckCompletionPercent }}
-					style={styles.progressMeta}
-				>
-					<Text style={styles.progressLabel}>Words known</Text>
-					<Text style={[styles.progressPercent, { color: storyColor }]}>
-						{deckCompletionPercent}%
-					</Text>
-					<View style={styles.progressBarContainer}>
-						<View
-							style={[
-								styles.progressBar,
-								{
-									backgroundColor: storyColor,
-									width: `${deckCompletionPercent}%`,
-								},
-							]}
-						/>
+				<View style={styles.progressMeta}>
+					<View
+						accessible
+						accessibilityLabel={completionAccessibilityLabel}
+						accessibilityRole="progressbar"
+						accessibilityValue={completionAccessibilityValue}
+						style={styles.progressColumn}
+					>
+						<Text style={styles.progressLabel}>{completionText}</Text>
+						<View style={styles.progressBarContainer}>
+							<View style={[styles.progressBar, completionBarStyle]} />
+						</View>
 					</View>
-					<Text style={styles.wordsSeen}>
-						{wordsSeenCount} / {totalWordCount} seen
-					</Text>
+					<View style={styles.progressDivider} />
+					<View
+						accessible
+						accessibilityLabel={seenAccessibilityLabel}
+						accessibilityRole="progressbar"
+						accessibilityValue={seenAccessibilityValue}
+						style={styles.progressColumn}
+					>
+						<Text style={styles.progressLabel}>{seenText}</Text>
+						<View style={styles.progressBarContainer}>
+							<View style={[styles.progressBar, seenBarStyle]} />
+						</View>
+					</View>
 				</View>
 				<View style={styles.passageToggles}>
 					<View style={styles.learningLevelToggle}>
@@ -447,17 +477,21 @@ const styles = StyleSheet.create({
 		lineHeight: 20,
 	},
 	progressMeta: {
-		alignItems: 'center',
 		flexDirection: 'row',
-		gap: 8,
+		gap: 12,
+	},
+	progressColumn: {
+		flex: 1,
+		minWidth: 0,
+		gap: 4,
+	},
+	progressDivider: {
+		backgroundColor: colors.light.border,
+		width: 1,
 	},
 	progressLabel: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
-		fontSize: 12,
-	},
-	progressPercent: {
-		fontFamily: 'lexend-600',
 		fontSize: 12,
 	},
 	progressBarContainer: {
@@ -465,18 +499,12 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.border,
 		borderRadius: 4,
 		borderWidth: 1,
-		flex: 1,
 		height: 6,
 		overflow: 'hidden',
 	},
 	progressBar: {
 		borderRadius: 4,
 		height: '100%',
-	},
-	wordsSeen: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-400',
-		fontSize: 12,
 	},
 	passageToggles: {
 		flexDirection: 'row',
@@ -552,12 +580,12 @@ const styles = StyleSheet.create({
 	unseenWordQuestion: {
 		fontFamily: 'lexend-600',
 		fontSize: 16,
-		left: 0,
 		lineHeight: 16,
 		position: 'absolute',
+		top: 0,
+		left: 0,
 		right: 0,
 		textAlign: 'center',
-		top: 0,
 		transform: [{ translateY: 8 }],
 	},
 	footer: {

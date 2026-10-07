@@ -64,14 +64,14 @@ export default function StoryMeta({
 		>
 			<StoryProgress
 				color={progressColor}
-				label="Learned"
+				label="learned"
 				percent={displayProgressPercent}
 				value={knownValue}
 			/>
 			<View style={styles.metaDivider} />
 			<StoryProgress
 				color={progressColor}
-				label="Seen"
+				label="seen"
 				percent={seenPercent}
 				value={seenValue}
 			/>
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 	},
 	metaText: {
 		color: colors.dark.text,
-		fontSize: 14,
+		fontSize: 12,
 		fontFamily: 'lexend-400',
 	},
 	metaDivider: {
