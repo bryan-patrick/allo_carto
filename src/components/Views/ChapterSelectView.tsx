@@ -245,14 +245,14 @@ export default function ChapterSelectView() {
 												<View style={styles.chapterProgressRow}>
 													<ChapterProgress
 														color={categoryColor}
-														text={knownText}
-														percent={progressPercent}
+														text={seenText}
+														percent={seenPercent}
 													/>
 													<View style={styles.chapterProgressDivider} />
 													<ChapterProgress
 														color={categoryColor}
-														text={seenText}
-														percent={seenPercent}
+														text={knownText}
+														percent={progressPercent}
 													/>
 												</View>
 												<LinkButton

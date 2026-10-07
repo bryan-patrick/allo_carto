@@ -241,19 +241,6 @@ export default function DeckPassageView({
 				<View style={styles.progressMeta}>
 					<View
 						accessible
-						accessibilityLabel={completionAccessibilityLabel}
-						accessibilityRole="progressbar"
-						accessibilityValue={completionAccessibilityValue}
-						style={styles.progressColumn}
-					>
-						<Text style={styles.progressLabel}>{completionText}</Text>
-						<View style={styles.progressBarContainer}>
-							<View style={[styles.progressBar, completionBarStyle]} />
-						</View>
-					</View>
-					<View style={styles.progressDivider} />
-					<View
-						accessible
 						accessibilityLabel={seenAccessibilityLabel}
 						accessibilityRole="progressbar"
 						accessibilityValue={seenAccessibilityValue}
@@ -262,6 +249,19 @@ export default function DeckPassageView({
 						<Text style={styles.progressLabel}>{seenText}</Text>
 						<View style={styles.progressBarContainer}>
 							<View style={[styles.progressBar, seenBarStyle]} />
+						</View>
+					</View>
+					<View style={styles.progressDivider} />
+					<View
+						accessible
+						accessibilityLabel={completionAccessibilityLabel}
+						accessibilityRole="progressbar"
+						accessibilityValue={completionAccessibilityValue}
+						style={styles.progressColumn}
+					>
+						<Text style={styles.progressLabel}>{completionText}</Text>
+						<View style={styles.progressBarContainer}>
+							<View style={[styles.progressBar, completionBarStyle]} />
 						</View>
 					</View>
 				</View>
