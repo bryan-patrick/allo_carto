@@ -24,7 +24,7 @@ const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-pos
 const postmarkBackgroundImage = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /**
- * Show equally sized chapter progress columns.
+ * Show chapter progress cols
  */
 function ChapterProgress({
 	color,

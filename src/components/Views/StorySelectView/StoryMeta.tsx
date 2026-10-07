@@ -19,7 +19,7 @@ interface StoryProgressProps {
 }
 
 /**
- * One progress label and its matching bar.
+ * A progress label and its progress bar
  */
 function StoryProgress({ color, label, percent, value }: StoryProgressProps) {
 	const trackStyle = { backgroundColor: `${color}20` };
