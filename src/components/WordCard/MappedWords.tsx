@@ -17,6 +17,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
  * Typing
  */
 interface MappedWordsProps {
+	selectionType: 'article' | 'word';
 	words: string[];
 	activeWord: string | null;
 	handler: Dispatch<string>;
@@ -157,6 +158,7 @@ const MappedButton = memo(function MappedButtonMemo({
  * Map the word buttons
  */
 const MappedWords = memo(function MappedWordsMemo({
+	selectionType,
 	words,
 	activeWord,
 	handler,
@@ -168,69 +170,58 @@ const MappedWords = memo(function MappedWordsMemo({
 	const { cardState } = useWordCardUI();
 
 	/**
-	 * Current card data
+	 * Validate and highlight choices only against the slot they fill.
 	 */
-	const { highlightArticle, highlightWord, highlightStyle, highlightTextStyle } = useMemo(() => {
-		const hasArticleMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
+	let correctWords = currentCard.englishWords;
+	let hasMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
+	if (selectionType === 'article') {
+		correctWords = [];
+		if (currentCard.englishArticle) correctWords = [currentCard.englishArticle];
+		hasMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
+	}
 
-		const hasWordMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
+	let highlightedWord: string | null = null;
+	let highlightStyle: ViewStyle | undefined;
+	let highlightTextStyle: TextStyle | undefined;
+	switch (cardState.progress) {
+		case 'SUCCESS':
+			highlightedWord = activeWord;
+			highlightStyle = styles.highlightSuccess;
+			highlightTextStyle = styles.highlightTextSuccess;
+			break;
+		case 'WARNING':
+			if (hasMistake) highlightedWord = activeWord;
+			highlightStyle = styles.highlightWarning;
+			highlightTextStyle = styles.highlightTextWarning;
+			break;
+		case 'DANGER':
+			if (hasMistake) highlightedWord = correctWords[0] ?? null;
+			highlightStyle = styles.highlightDanger;
+			highlightTextStyle = styles.highlightTextDanger;
+			break;
+	}
 
-		switch (cardState.progress) {
-			case 'SUCCESS':
-				return {
-					highlightArticle: cardState.selectedArticle,
-					highlightWord: cardState.selectedWord,
-					highlightStyle: styles.highlightSuccess,
-					highlightTextStyle: styles.highlightTextSuccess,
-				};
-			case 'WARNING':
-				return {
-					highlightArticle: hasArticleMistake ? cardState.selectedArticle : null,
-					highlightWord: hasWordMistake ? cardState.selectedWord : null,
-					highlightStyle: styles.highlightWarning,
-					highlightTextStyle: styles.highlightTextWarning,
-				};
-			case 'DANGER':
-				return {
-					highlightArticle: hasArticleMistake ? (currentCard.englishArticle ?? '') : null,
-					highlightWord: hasWordMistake ? currentCard.englishWords[0] : null,
-					highlightStyle: styles.highlightDanger,
-					highlightTextStyle: styles.highlightTextDanger,
-				};
-			default:
-				return {
-					highlightArticle: null,
-					highlightWord: null,
-					highlightStyle: undefined,
-					highlightTextStyle: undefined,
-				};
-		}
-	}, [
-		currentCard.englishWords,
-		cardState.mistake,
-		cardState.progress,
-		cardState.selectedWord,
-		cardState.selectedArticle,
-		currentCard.englishArticle,
-	]);
+	return words.map((word: string) => {
+		const isActive = word === activeWord;
+		const isCorrectWord = correctWords.includes(word);
+		const isSelectedWrong = isActive && !isCorrectWord;
+		const isHighlighted = word === highlightedWord;
 
-	return words.map((word: string) => (
-		<MappedButton
-			key={word}
-			word={word}
-			isActive={word === activeWord}
-			isCorrectWord={currentCard.englishWords.includes(word) || word === currentCard.englishArticle}
-			isSelectedWrong={
-				(cardState.selectedArticle === word && word !== currentCard.englishArticle) ||
-				(cardState.selectedWord === word && !currentCard.englishWords.includes(word))
-			}
-			isHighlighted={word === highlightArticle || word === highlightWord}
-			progress={cardState.progress}
-			highlightStyle={highlightStyle}
-			highlightTextStyle={highlightTextStyle}
-			handler={handler}
-		/>
-	));
+		return (
+			<MappedButton
+				key={word}
+				word={word}
+				isActive={isActive}
+				isCorrectWord={isCorrectWord}
+				isSelectedWrong={isSelectedWrong}
+				isHighlighted={isHighlighted}
+				progress={cardState.progress}
+				highlightStyle={highlightStyle}
+				highlightTextStyle={highlightTextStyle}
+				handler={handler}
+			/>
+		);
+	});
 });
 
 export default MappedWords;

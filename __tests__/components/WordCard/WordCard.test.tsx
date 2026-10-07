@@ -30,7 +30,7 @@ jest.mock('@/src/components/WordCard/WordCardBack', () => {
 });
 
 const mockUseWordCardUI = jest.mocked(useWordCardUI);
-const mockRouterPush = jest.mocked(router.push);
+const mockRouterReplace = jest.mocked(router.replace);
 
 async function renderWithAFakeDispatchSoWeCanDoActions(
 	children: ReactNode,
@@ -39,7 +39,16 @@ async function renderWithAFakeDispatchSoWeCanDoActions(
 	const renderResult = await render(
 		<CardDeckContext.Provider
 			value={{
-				cardDeckState: initialCardDeckState,
+				cardDeckState: {
+					...initialCardDeckState,
+					isComplete: true,
+					session: {
+						id: 'completed-session',
+						xpBefore: 0,
+						results: [{ wordId: initialCardDeckState.currentId, outcome: 'correct', xp: 10 }],
+						completion: { bonuses: [], totalXP: 10 },
+					},
+				},
 				cardDeckDispatch,
 			}}
 		>
@@ -55,7 +64,7 @@ async function renderWithAFakeDispatchSoWeCanDoActions(
 
 describe('<WordCard />', () => {
 	beforeEach(() => {
-		mockRouterPush.mockClear();
+		mockRouterReplace.mockClear();
 		mockUseWordCardUI.mockReset();
 	});
 
@@ -71,7 +80,7 @@ describe('<WordCard />', () => {
 		await renderWithAFakeDispatchSoWeCanDoActions(<WordCard isCurrent={true} />);
 
 		await waitFor(() => {
-			expect(mockRouterPush).toHaveBeenCalledWith('/DeckResults');
+			expect(mockRouterReplace).toHaveBeenCalledWith('/DeckResults');
 		});
 	});
 });

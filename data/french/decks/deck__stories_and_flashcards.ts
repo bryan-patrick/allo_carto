@@ -6,7 +6,7 @@ export const DeckStoriesAndFlashcards = createCardDeck({
 	description: 'Discover how stories and flashcards help you learn French.',
 	chapter: 'What is this?',
 	CEFR: ['A1', 'A2', 'B1'],
-	unlockRequirements: [{ id: 'deck__welcome_to_allo_carto', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__welcome_to_allo_carto', requiredCompletionPercentage: 12 }],
 	words: [],
 	wordChoices: [],
 	englishPassage: 'The application uses stories and flash cards to make learning French easy.',

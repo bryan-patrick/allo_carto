@@ -8,15 +8,26 @@ import { router } from 'expo-router';
 
 jest.mock('@/src/components/CardDeck/useCardDeck');
 
+jest.mock('@/src/db/interface', () => ({ getDeck: jest.fn() }));
+
+jest.mock('@/src/settings/useAppSettings', () => ({
+	useAppSettings: () => ({ settings: { cardsPerDeck: null } }),
+}));
+
 jest.mock('expo-router/react-navigation', () => ({
 	useLinkProps: jest.fn(() => ({})),
 }));
 
 jest.mock('expo-router', () => ({
+	useFocusEffect: jest.fn(),
 	router: {
 		dismissTo: jest.fn(),
 		replace: jest.fn(),
 	},
+}));
+
+jest.mock('react-native-safe-area-context', () => ({
+	useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
 jest.mock('expo-audio', () => ({
@@ -40,6 +51,13 @@ describe('<DeckResultsView />', () => {
 		mockUseCardDeck.mockReturnValue({
 			cardDeckState: makeMockCardDeckState({
 				cardDeck: chapter.decks[0],
+				isComplete: true,
+				session: {
+					id: 'completed-session',
+					xpBefore: 0,
+					results: [],
+					completion: { bonuses: [{ kind: 'completion', xp: 50 }], totalXP: 50 },
+				},
 			}),
 			cardDeckDispatch: jest.fn(),
 			currentCard: initialWordState,
@@ -49,6 +67,8 @@ describe('<DeckResultsView />', () => {
 	test('dismisses results back to the selected chapter and reopens its deck picker', async () => {
 		const { getByText } = await render(<DeckResultsView />);
 
+		await fireEvent.press(getByText('Next'));
+		await fireEvent.press(getByText('Next'));
 		await fireEvent.press(getByText('Finish'));
 		expect(mockRouterDismissTo).toHaveBeenCalledWith({
 			pathname: '/ChapterSelect',

@@ -75,8 +75,7 @@ export const storyAtlas: StoryAtlas = {
 			id: 'welcome-to-allo-carto',
 			requiredLevel: 1,
 			name: 'Welcome to Allô Carto',
-			description:
-				'Learn how to read stories, study decks, and grow your vocabulary in Allô Carto.',
+			description: 'Learn how to read stories, study decks, and grow your vocabulary.',
 			category: 'Beginner',
 			image: chapterSelectBackground,
 			materialSymbolName: 'waving_hand',
@@ -94,7 +93,7 @@ export const storyAtlas: StoryAtlas = {
 					name: 'How it works',
 					image: howItWorks,
 					unlockRequirements: [
-						{ id: 'welcome-to-allo-carto-chapter-1', requiredCompletionPercentage: 20 },
+						{ id: 'welcome-to-allo-carto-chapter-1', requiredCompletionPercentage: 12 },
 					],
 					decks: [DeckStoriesChaptersAndDecks, DeckStudyAndReadAgain, DeckCardsAndXp],
 				},
@@ -104,7 +103,7 @@ export const storyAtlas: StoryAtlas = {
 					name: 'Additional information',
 					image: additionalInformation,
 					unlockRequirements: [
-						{ id: 'welcome-to-allo-carto-chapter-2', requiredCompletionPercentage: 20 },
+						{ id: 'welcome-to-allo-carto-chapter-2', requiredCompletionPercentage: 12 },
 					],
 					decks: [DeckKnowTheWord, DeckWordCollections, DeckHaveFun],
 				},
@@ -132,7 +131,7 @@ export const storyAtlas: StoryAtlas = {
 					name: 'A Table for One',
 					image: aTableForOne,
 					unlockRequirements: [
-						{ id: 'a-new-restaurant-chapter-1', requiredCompletionPercentage: 20 },
+						{ id: 'a-new-restaurant-chapter-1', requiredCompletionPercentage: 12 },
 					],
 					decks: [DeckATableForOne, DeckChoosingDinner, DeckAForkInstead, DeckUntilNextTime],
 				},
@@ -159,7 +158,7 @@ export const storyAtlas: StoryAtlas = {
 		},
 		{
 			id: 'a-matter-of-leaves',
-			requiredLevel: 10,
+			requiredLevel: 3,
 			name: 'A Matter of Leaves',
 			description: 'Leo the cat watches two humans feud over a pile of leaves.',
 			category: 'Social',
@@ -189,7 +188,7 @@ export const storyAtlas: StoryAtlas = {
 		},
 		{
 			id: 'walking-the-plains',
-			requiredLevel: 10,
+			requiredLevel: 3,
 			name: 'Walking the Plains',
 			description:
 				'Born from walking les plaines d’Abraham, these decks follow the plaques and monuments that reveal Québec’s past.',

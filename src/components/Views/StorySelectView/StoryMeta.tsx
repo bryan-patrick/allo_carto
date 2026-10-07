@@ -66,7 +66,7 @@ export default function StoryMeta({
 		>
 			<StoryProgress
 				color={progressColor}
-				label="seen"
+				label="words seen"
 				percent={seenPercent}
 				value={seenValue}
 			/>

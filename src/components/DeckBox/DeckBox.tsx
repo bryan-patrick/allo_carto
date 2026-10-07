@@ -14,13 +14,14 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { UnlockCriteria } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
+import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import { Alert, Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeckBoxModal from './DeckBoxModal';
 
 /**
@@ -55,10 +56,11 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	 * Context and state
 	 */
 	const { id: userId } = useUserContext() ?? {};
-	const { experience } = useUserProgress();
+	const { experience, isUpdatingProgress, progressById } = useUserProgress();
 	const { settings } = useAppSettings();
 	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
 	const { cardDeckDispatch } = useCardDeck();
+	const isStartingDeck = useRef(false);
 	const [wordProgressCounts, setWordProgressCounts] = useState<DeckWordProgressCounts>(
 		emptyDeckWordProgressCounts,
 	);
@@ -147,15 +149,39 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	 * Select deck handler
 	 */
 	const handleSelectDeck = useCallback(async () => {
-		if (!userId) return;
+		if (!userId || isUpdatingProgress || isStartingDeck.current) return;
 
-		const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
+		isStartingDeck.current = true;
 
-		if (!selectedDeck) return;
+		try {
+			const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
 
-		cardDeckDispatch({ type: 'SET_DECK', payload: selectedDeck });
-		router.push('/CardDeck');
-	}, [userId, deck, cardsPerDeck, cardDeckDispatch]);
+			if (!selectedDeck || selectedDeck.words.length === 0) {
+				Alert.alert('Could not start deck', 'Please try again.');
+				return;
+			}
+
+			cardDeckDispatch({
+				type: 'SET_DECK',
+				payload: selectedDeck,
+				session: createDeckSession(experience.totalXP, progressById),
+			});
+			router.push('/CardDeck');
+		} catch (error) {
+			console.error('Could not start deck:', error);
+			Alert.alert('Could not start deck', 'Please try again.');
+		} finally {
+			isStartingDeck.current = false;
+		}
+	}, [
+		userId,
+		isUpdatingProgress,
+		deck,
+		cardsPerDeck,
+		cardDeckDispatch,
+		experience.totalXP,
+		progressById,
+	]);
 
 	/**
 	 * Refresh passage data and show modal
@@ -281,11 +307,6 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 										onPressOut={handlePassageButtonPressOut}
 										style={[styles.passageButton, { borderColor: storyColor }]}
 									>
-										{/* <MaterialSymbol
-											name="menu_book"
-											size={20}
-											color={storyColor}
-										/> */}
 										<Text style={[styles.passageButtonText, { color: storyColor }]}>
 											Read passage
 										</Text>
@@ -305,6 +326,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 										arrowColor={colors.light.background}
 										color={storyColor}
 										handler={handleSelectDeck}
+										disabled={isUpdatingProgress}
 										fullwidth
 									>
 										<Text style={styles.selectDeckButtonText}>{selectText}</Text>

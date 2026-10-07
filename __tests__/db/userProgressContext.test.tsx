@@ -1,3 +1,4 @@
+import type { WordAnswerAwardProps } from '@/src/components/CardDeck/deckSessionTypes';
 import loadUserXP from '@/src/db/queries/getUserExperience';
 import getUserProgress from '@/src/db/queries/getUserProgress';
 import { writeCorrectAnswer } from '@/src/db/queries/writeUserProgress';
@@ -22,6 +23,12 @@ jest.mock('expo-sqlite', () => {
 const mockGetUserProgress = jest.mocked(getUserProgress);
 const mockLoadUserExperience = jest.mocked(loadUserXP);
 const mockWriteCorrectAnswer = jest.mocked(writeCorrectAnswer);
+const savedAward: WordAnswerAwardProps = {
+	xp: 10,
+	learningBonusXP: 0,
+	previousProgress: 'learning',
+	nextProgress: 'learning',
+};
 
 function deferred<T>() {
 	let resolve!: (value: T) => void;
@@ -50,7 +57,7 @@ describe('<UserProgressProvider />', () => {
 		 * Keep the first write pending so a second press reaches the
 		 * synchronous in-flight guard before React can rerender.
 		 */
-		const pendingWrite = deferred<void>();
+		const pendingWrite = deferred<WordAnswerAwardProps>();
 		mockWriteCorrectAnswer.mockReturnValue(pendingWrite.promise);
 		const { result } = await renderHook(() => useUserProgress(), {
 			wrapper: Wrapper,
@@ -58,8 +65,8 @@ describe('<UserProgressProvider />', () => {
 
 		await waitFor(() => expect(result.current.status).toBe('ready'));
 
-		let firstWrite!: Promise<boolean>;
-		let secondWrite!: Promise<boolean>;
+		let firstWrite!: Promise<WordAnswerAwardProps | false>;
+		let secondWrite!: Promise<WordAnswerAwardProps | false>;
 		await act(() => {
 			firstWrite = result.current.writeCorrectAnswer('word_one');
 			secondWrite = result.current.writeCorrectAnswer('word_one');
@@ -69,9 +76,9 @@ describe('<UserProgressProvider />', () => {
 		expect(mockWriteCorrectAnswer).toHaveBeenCalledTimes(1);
 		expect(result.current.isUpdatingProgress).toBe(true);
 
-		pendingWrite.resolve();
+		pendingWrite.resolve(savedAward);
 		await act(async () => {
-			await expect(firstWrite).resolves.toBe(true);
+			await expect(firstWrite).resolves.toEqual(savedAward);
 		});
 
 		expect(result.current.isUpdatingProgress).toBe(false);
@@ -83,7 +90,7 @@ describe('<UserProgressProvider />', () => {
 		 * Let the write finish immediately, then pause the refresh that follows it.
 		 */
 		const pendingRefresh = deferred<any>();
-		mockWriteCorrectAnswer.mockResolvedValue(undefined);
+		mockWriteCorrectAnswer.mockResolvedValue(savedAward);
 		mockGetUserProgress.mockResolvedValueOnce({}).mockReturnValueOnce(pendingRefresh.promise);
 		const { result } = await renderHook(() => useUserProgress(), {
 			wrapper: Wrapper,
@@ -91,7 +98,7 @@ describe('<UserProgressProvider />', () => {
 
 		await waitFor(() => expect(result.current.status).toBe('ready'));
 
-		let firstWrite!: Promise<boolean>;
+		let firstWrite!: Promise<WordAnswerAwardProps | false>;
 		await act(() => {
 			firstWrite = result.current.writeCorrectAnswer('word_one');
 		});
@@ -102,7 +109,7 @@ describe('<UserProgressProvider />', () => {
 
 		pendingRefresh.resolve({});
 		await act(async () => {
-			await expect(firstWrite).resolves.toBe(true);
+			await expect(firstWrite).resolves.toEqual(savedAward);
 		});
 		expect(result.current.isUpdatingProgress).toBe(false);
 	});
@@ -114,7 +121,7 @@ describe('<UserProgressProvider />', () => {
 		const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 		mockWriteCorrectAnswer
 			.mockRejectedValueOnce(new Error('write failed'))
-			.mockResolvedValueOnce(undefined);
+			.mockResolvedValueOnce(savedAward);
 		const { result } = await renderHook(() => useUserProgress(), {
 			wrapper: Wrapper,
 		});
@@ -127,7 +134,7 @@ describe('<UserProgressProvider />', () => {
 		expect(result.current.isUpdatingProgress).toBe(false);
 
 		await act(async () => {
-			await expect(result.current.writeCorrectAnswer('word_two')).resolves.toBe(true);
+			await expect(result.current.writeCorrectAnswer('word_two')).resolves.toEqual(savedAward);
 		});
 		expect(mockWriteCorrectAnswer).toHaveBeenCalledTimes(2);
 		consoleError.mockRestore();

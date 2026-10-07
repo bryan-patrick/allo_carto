@@ -1,6 +1,29 @@
+import type { CardRarity, CEFR } from '@/src/components/CardDeck/cardDeckTypes';
+
+export const correctAnswerXPByRarity: Record<CardRarity, number> = {
+	Common: 10,
+	Rare: 15,
+	Epic: 20,
+	Legendary: 50,
+};
+
+/**
+ * Each higher language level doubles the XP
+ */
+export const correctAnswerXPMultiplierByCEFR: Record<CEFR, number> = {
+	A1: 1,
+	A2: 2,
+	B1: 4,
+	B2: 8,
+	C1: 16,
+	C2: 32,
+};
+
 export const userExperienceConfig = {
-	correctAnswerXP: 10,
-	deckCompletionBonusCards: 5,
+	learningLevelBonusMultiplier: 3,
+	deckCompletionXP: 50,
+	firstDeckCompletionXP: 15,
+	perfectDeckXP: 50,
 };
 
 interface UserLevelDefinition {
@@ -44,6 +67,9 @@ export const userLevels: readonly UserLevelDefinition[] = [
 	{ level: 30, toNext: null },
 ];
 
+/**
+ * I think the only exception to types not going at the top
+ */
 export interface UserExperience {
 	totalXP: number;
 	level: number;

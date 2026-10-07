@@ -113,4 +113,27 @@ export default async function createTables(): Promise<void> {
 	await createUsersTable();
 	await createUserWordsTable();
 	await createUserProgressTable();
+	await createDeckCompletionsTable();
+}
+
+/**
+ * Saves a record with a unique session ID when a deck is completed.
+ * The session key is to prevent duplicate rewards or XP
+ */
+async function createDeckCompletionsTable(): Promise<void> {
+	const database = await getDB();
+
+	await database.execAsync(`
+		CREATE TABLE IF NOT EXISTS deckCompletions (
+			userId TEXT NOT NULL,
+			sessionId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			bonuses TEXT NOT NULL,
+			totalXP INTEGER NOT NULL CHECK (totalXP >= 0),
+			PRIMARY KEY (userId, sessionId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+		CREATE INDEX IF NOT EXISTS deckCompletionsByDeck
+			ON deckCompletions (userId, deckId);
+	`);
 }

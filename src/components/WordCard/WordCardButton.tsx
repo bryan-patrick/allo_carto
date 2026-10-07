@@ -49,20 +49,26 @@ export default function WordCardButton({
 	/**
 	 * Style vars
 	 */
-	const pressableStateStyle = cardState.progress === 'SUCCESS' ? styles.successPressable : null;
-	const textStateStyle = cardState.progress === 'SUCCESS' ? styles.successText : null;
+	let pressableStateStyle;
+	let textStateStyle;
+	if (cardState.progress === 'SUCCESS') {
+		pressableStateStyle = styles.successPressable;
+		textStateStyle = styles.successText;
+	}
 
 	/**
 	 * State/prop vars
 	 */
 	const [isPressed, setIsPressed] = useState(false);
 	const [isAnswerPending, setIsAnswerPending] = useState(false);
+	const [hasSaveError, setHasSaveError] = useState(false);
 
 	/**
 	 * Block very fast double presses
 	 */
 	const pressInFlight = useRef(false);
 	const persistedCorrectAnswer = useRef<string | null>(null);
+	const isSavingAnswer = useRef(false);
 	const isRevealDisabled = cardState.stage !== 'READY' || isAnswerPending || isUpdatingProgress;
 
 	const isDisabled = useMemo(() => {
@@ -84,6 +90,11 @@ export default function WordCardButton({
 		isAnswerPending,
 		isUpdatingProgress,
 	]);
+	let buttonContent = children;
+
+	if (hasSaveError) {
+		buttonContent = 'Retry saving';
+	}
 
 	/**
 	 * Animation vars
@@ -111,39 +122,61 @@ export default function WordCardButton({
 	}, [currentCard, wordCardUIDispatch]);
 
 	/**
+	 * Save this correct answer once and add its earned XP to the review results.
+	 * Update the button only after the save finishes.
+	 */
+	const persistCorrectAnswer = useCallback(() => {
+		const answerId = `${currentCard.id}:${cardState.attempts}`;
+
+		if (persistedCorrectAnswer.current === answerId || isSavingAnswer.current) {
+			return;
+		}
+
+		persistedCorrectAnswer.current = answerId;
+		isSavingAnswer.current = true;
+
+		return recordCorrectAnswer(currentCard.id)
+			.then(
+				award => {
+					if (award) {
+						cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
+						cardDeckDispatch({ type: 'ADD_CORRECT_WORD', award });
+						impactAsync(ImpactFeedbackStyle.Light);
+					} else {
+						setHasSaveError(true);
+					}
+				},
+				() => {
+					setHasSaveError(true);
+				},
+			)
+			.finally(() => {
+				isSavingAnswer.current = false;
+				pressInFlight.current = false;
+				setIsAnswerPending(false);
+			});
+	}, [currentCard.id, cardState.attempts, cardDeckDispatch, recordCorrectAnswer]);
+
+	/**
 	 * Side effects (and haptics) for dispatching check answer
 	 */
 	useEffect(() => {
 		if (cardState.attempts !== 0) {
 			switch (`${cardState.stage}_${cardState.progress}`) {
 				case 'CORRECT_SUCCESS': {
-					const answerId = `${currentCard.id}:${cardState.attempts}`;
+					if (cardState.isAnswerRevealed) {
+						cardDeckDispatch({ type: 'ADD_INCORRECT_WORD', skipped: true });
 
-					/**
-					 * Save this answer once
-					 */
-					if (persistedCorrectAnswer.current === answerId) break;
-					persistedCorrectAnswer.current = answerId;
+						void Promise.resolve(impactAsync(ImpactFeedbackStyle.Light)).finally(() => {
+							pressInFlight.current = false;
+							setIsAnswerPending(false);
+						});
 
-					async function persistCorrectAnswer() {
-						if (cardState.isAnswerRevealed) {
-							cardDeckDispatch({ type: 'ADD_INCORRECT_WORD' });
-							impactAsync(ImpactFeedbackStyle.Light);
-						} else {
-							const didWrite = await recordCorrectAnswer(currentCard.id);
-
-							if (didWrite) {
-								cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
-								cardDeckDispatch({ type: 'ADD_CORRECT_WORD' });
-								impactAsync(ImpactFeedbackStyle.Light);
-							}
-						}
-
-						pressInFlight.current = false;
-						setIsAnswerPending(false);
+						break;
 					}
 
 					persistCorrectAnswer();
+
 					break;
 				}
 				case 'READY_WARNING':
@@ -151,47 +184,62 @@ export default function WordCardButton({
 						pressInFlight.current = false;
 						setIsAnswerPending(false);
 					});
+
 					break;
 				case 'INCORRECT_DANGER':
 					void Promise.resolve(notificationAsync(NotificationFeedbackType.Warning)).finally(() => {
 						pressInFlight.current = false;
 						setIsAnswerPending(false);
 					});
+
 					cardDeckDispatch({ type: 'ADD_INCORRECT_WORD' });
+
 					break;
 				case 'COMPLETED_DANGER':
 					notificationAsync(NotificationFeedbackType.Error);
+
 					break;
 			}
 		}
 	}, [
-		currentCard.id,
 		cardState.attempts,
 		cardState.progress,
 		cardState.stage,
 		cardState.isAnswerRevealed,
 		cardDeckDispatch,
-		recordCorrectAnswer,
+		persistCorrectAnswer,
 	]);
 
 	/**
 	 * Action handlers
 	 */
 	const handlePressIn = useCallback(() => {
-		if (pressInFlight.current || isUpdatingProgress) return;
+		if (pressInFlight.current || isUpdatingProgress) {
+			return;
+		}
 
 		pressInFlight.current = true;
 		setIsPressed(true);
 		setIsAnswerPending(true);
+
+		if (hasSaveError) {
+			persistedCorrectAnswer.current = null;
+			setHasSaveError(false);
+			persistCorrectAnswer();
+			return;
+		}
+
 		checkAnswer();
-	}, [checkAnswer, isUpdatingProgress]);
+	}, [checkAnswer, isUpdatingProgress, hasSaveError, persistCorrectAnswer]);
 
 	const handlePressOut = useCallback(() => {
 		setIsPressed(false);
 	}, []);
 
 	const handleRevealAnswer = useCallback(() => {
-		if (pressInFlight.current || isUpdatingProgress || cardState.stage !== 'READY') return;
+		if (pressInFlight.current || isUpdatingProgress || cardState.stage !== 'READY') {
+			return;
+		}
 
 		pressInFlight.current = true;
 		setIsAnswerPending(true);
@@ -228,6 +276,7 @@ export default function WordCardButton({
 	 */
 	return (
 		<View style={styles.actions}>
+			{hasSaveError && <Text style={styles.saveError}>Could not save your XP. Tap to retry.</Text>}
 			{settings.showSkipWordLink && (
 				<Pressable
 					accessibilityRole="link"
@@ -257,7 +306,7 @@ export default function WordCardButton({
 						testID="word-card-button-content"
 					>
 						<Text style={[styles.text, textStateStyle, isDisabled && styles.disabledText]}>
-							{children}
+							{buttonContent}
 						</Text>
 						{SVGElement}
 					</View>
@@ -273,6 +322,12 @@ export default function WordCardButton({
 const styles = StyleSheet.create({
 	actions: {
 		gap: 8,
+	},
+	saveError: {
+		color: colors.light.danger,
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		textAlign: 'center',
 	},
 	revealLink: {
 		alignSelf: 'center',

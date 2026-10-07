@@ -7,7 +7,7 @@ export const DeckStudyAndReadAgain = createCardDeck({
 	chapter: 'How it works',
 	CEFR: ['A1', 'A2', 'B1'],
 	unlockRequirements: [
-		{ id: 'deck__stories_chapters_and_decks', requiredCompletionPercentage: 20 },
+		{ id: 'deck__stories_chapters_and_decks', requiredCompletionPercentage: 12 },
 	],
 	words: [],
 	wordChoices: [],

@@ -1,11 +1,12 @@
 /**
  * The context for handling canonical card data and state
  */
-import { createContext, type Dispatch } from 'react';
 import { createCardDeck } from '@/src/util/createCardDeck';
+import { createContext, type Dispatch } from 'react';
 import { CardDeckAction } from './cardDeckReducer';
 import type { CardDeck, Word } from './cardDeckTypes';
 import { initialWordState } from './cardDeckTypes';
+import type { DeckSessionProps } from './deckSessionTypes';
 
 /**
  * Typing
@@ -22,6 +23,7 @@ export interface CardDeckStateProps {
 	cardDeck: CardDeck;
 	correctWords: Word[];
 	incorrectWords: Word[];
+	session?: DeckSessionProps;
 }
 
 /**

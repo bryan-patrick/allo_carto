@@ -166,7 +166,7 @@ export default function ChapterSelectView() {
 							progressById[chapterId]?.wordCount ??
 							new Set(chapter.decks.flatMap(deck => deck.wordIds)).size;
 						const knownText = `${progressPercent}% learned`;
-						const seenText = `${seenWordCount}/${wordCount} seen`;
+						const seenText = `${seenWordCount}/${wordCount} words seen`;
 						const isLocked = !isItemUnlocked({
 							id: chapterId,
 							progressById,
