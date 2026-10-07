@@ -1,4 +1,4 @@
-import type { CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
+import type { CardRarity, CEFR } from '@/src/components/CardDeck/cardDeckTypes';
 import type {
 	DeckCompletionReceiptProps,
 	WordAnswerAwardProps,
@@ -6,7 +6,11 @@ import type {
 } from '@/src/components/CardDeck/deckSessionTypes';
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { getCompletionPercentage } from '@/src/util/progression';
-import { correctAnswerXPByRarity, userExperienceConfig } from '@/src/util/userExperience';
+import {
+	correctAnswerXPByRarity,
+	correctAnswerXPMultiplierByCEFR,
+	userExperienceConfig,
+} from '@/src/util/userExperience';
 import { getWordProgressKeyFromCounts } from '@/src/util/wordProgress';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getDeckWordProgressCounts from './getDeckWordProgressCounts';
@@ -109,8 +113,9 @@ export async function writeCorrectAnswer({
 			correctCount: number;
 			seenCount: number;
 			rarity: CardRarity;
+			CEFR: CEFR;
 		}>(
-			`SELECT w.rarity,
+			`SELECT w.rarity, w.CEFR,
 				COALESCE(uw.correctCount, 0) AS correctCount,
 				COALESCE(uw.seenCount, 0) AS seenCount
 			FROM words AS w
@@ -120,9 +125,17 @@ export async function writeCorrectAnswer({
 			wordId,
 		);
 
-		if (!previousProgress) throw new Error(`Could not load word ${wordId}.`);
+		if (!previousProgress) {
+			throw new Error(`Could not load word ${wordId}.`);
+		}
 
-		const wordXP = correctAnswerXPByRarity[previousProgress.rarity];
+		/**
+		 * Start with XP for the word's rarity, then multiply it by its language level.
+		 * For example, a Common A2 word earns 10 times 2, which is 20 XP.
+		 */
+		const rarityXP = correctAnswerXPByRarity[previousProgress.rarity];
+		const cefrMultiplier = correctAnswerXPMultiplierByCEFR[previousProgress.CEFR];
+		const wordXP = rarityXP * cefrMultiplier;
 		const previousCorrectCount = previousProgress.correctCount;
 		const previousSeenCount = previousProgress.seenCount;
 		const previousWordProgress = getWordProgressKeyFromCounts({
@@ -137,7 +150,8 @@ export async function writeCorrectAnswer({
 		let learningBonusXP = 0;
 
 		/**
-		 * Leveling up a word gives 3× its rarity XP
+		 * Raising the word's learning level gives an extra 300% of its word XP.
+		 * This uses the XP after the rarity and language level have been counted.
 		 */
 		if (hasLeveledUp) {
 			learningBonusXP = wordXP * userExperienceConfig.learningLevelBonusMultiplier;
@@ -171,7 +185,9 @@ export async function writeCorrectAnswer({
 		};
 	});
 
-	if (!award) throw new Error('Could not save the word award.');
+	if (!award) {
+		throw new Error('Could not save the word award.');
+	}
 	return award;
 }
 

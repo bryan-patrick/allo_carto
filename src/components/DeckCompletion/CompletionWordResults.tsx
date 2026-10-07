@@ -123,9 +123,9 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 
 	/**
 	 * Build the text a screen reader says for this word.
-	 * Include the answer result, XP, language level, and any learning bonus or level change.
+	 * Include the answer result, XP, language level, rarity, and any learning bonus or level change.
 	 */
-	let accessibilityLabel = `${word.frenchWord}. ${word.englishWords.join(', ')}. ${result.outcome}. ${xpLabel}. ${word.CEFR}.`;
+	let accessibilityLabel = `${word.frenchWord}. ${word.englishWords.join(', ')}. ${result.outcome}. ${xpLabel}. ${word.CEFR}. ${word.rarity}.`;
 
 	if (learningChange) {
 		accessibilityLabel += ` ${learningChange.previous.name} to ${learningChange.next.name}.`;
@@ -136,10 +136,11 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 
 	/**
 	 * Give the answer icon its background color.
-	 * Use the word's language level to choose the color behind its level label.
+	 * Use the word's language level and rarity to choose their label colors.
 	 */
 	const iconStyle = { backgroundColor: iconBackground };
 	const cefrStyle = { backgroundColor: colors.light.CEFR[word.CEFR] };
+	const rarityStyle = { backgroundColor: colors.rarity[word.rarity] };
 
 	/**
 	 * Render the thing
@@ -154,7 +155,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 			<View style={[styles.icon, iconStyle]}>
 				<MaterialSymbol
 					name={symbolName}
-					size={18}
+					size={16}
 					color={iconColor}
 				/>
 			</View>
@@ -166,7 +167,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 						<View style={styles.learningLevel}>
 							<WordProgressIcon
 								progress={learningChange.previous.key}
-								size={14}
+								size={12}
 							/>
 							<Text style={styles.learningChangeText}>{learningChange.previous.name}</Text>
 						</View>
@@ -174,7 +175,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 						<View style={styles.learningLevel}>
 							<WordProgressIcon
 								progress={learningChange.next.key}
-								size={14}
+								size={12}
 							/>
 							<Text style={styles.learningChangeText}>{learningChange.next.name}</Text>
 						</View>
@@ -201,7 +202,10 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 					suffix=" XP"
 					style={[styles.xp, { color: xpColor }]}
 				/>
-				<Text style={[styles.cefr, cefrStyle]}>{word.CEFR}</Text>
+				<View style={styles.badges}>
+					<Text style={[styles.badge, cefrStyle]}>{word.CEFR}</Text>
+					<Text style={[styles.badge, rarityStyle]}>{word.rarity}</Text>
+				</View>
 			</View>
 		</Animated.View>
 	);
@@ -209,7 +213,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 
 /**
  * List the words in the order they were reviewed.
- * Show each word's saved XP above its language level.
+ * Show each word's saved XP above its language level and rarity.
  */
 export default function CompletionWordResults({
 	words,
@@ -258,19 +262,22 @@ const styles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
-		gap: 8,
 		paddingVertical: 8,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
+		gap: 8,
 	},
 	icon: {
-		width: 28,
-		height: 28,
-		borderRadius: 14,
+		width: 24,
+		height: 24,
+		borderRadius: 12,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	word: { flex: 1, minWidth: 0, gap: 2 },
+	word: {
+		flex: 1,
+		gap: 2,
+	},
 	french: {
 		fontFamily: 'lexend-600',
 		fontSize: 14,
@@ -278,14 +285,25 @@ const styles = StyleSheet.create({
 	},
 	translation: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
-		lineHeight: 17,
+		fontSize: 13,
+		lineHeight: 13,
 		color: colors.dark.text,
 	},
-	metadata: { alignItems: 'flex-end', gap: 3 },
-	xp: { fontFamily: 'lexend-600', fontSize: 13 },
-	cefr: {
-		fontFamily: 'azeret-mono-600',
+	metadata: {
+		alignItems: 'flex-end',
+		gap: 4,
+	},
+	badges: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
+	xp: {
+		fontFamily: 'lexend-600',
+		fontSize: 13,
+	},
+	badge: {
+		fontFamily: 'azeret-mono-400',
 		fontSize: 10,
 		color: colors.dark.text,
 		borderRadius: 3,
@@ -297,14 +315,18 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		alignItems: 'center',
-		gap: 4,
 		backgroundColor: `${colors.light.success}88`,
 		borderRadius: 4,
-		paddingHorizontal: 5,
-		paddingVertical: 3,
-		marginTop: 2,
+		paddingVertical: 2,
+		marginVertical: 4,
+		gap: 4,
 	},
-	learningLevel: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+	learningLevel: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		paddingHorizontal: 4,
+	},
 	learningBonus: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
@@ -312,11 +334,15 @@ const styles = StyleSheet.create({
 		gap: 4,
 		marginTop: 2,
 	},
-	learningBonusText: { fontFamily: 'lexend-600', fontSize: 10, color: colors.dark.success },
+	learningBonusText: {
+		fontFamily: 'lexend-600',
+		fontSize: 11,
+		color: colors.dark.success,
+	},
 	learningChangeText: {
 		flexShrink: 1,
-		fontFamily: 'lexend-400',
-		fontSize: 10,
+		fontFamily: 'lexend-600',
+		fontSize: 12,
 		color: colors.dark.success,
 	},
 });

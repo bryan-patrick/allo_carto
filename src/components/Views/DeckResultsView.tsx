@@ -457,7 +457,7 @@ export default function DeckResultsView() {
 						{hasReview && (
 							<CompletionStepIndicator
 								step={step}
-								color={storyColor}
+								total={completionSteps.length}
 							/>
 						)}
 					</Animated.View>

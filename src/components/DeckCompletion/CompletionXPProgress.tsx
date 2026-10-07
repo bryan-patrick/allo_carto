@@ -131,16 +131,28 @@ export default function CompletionXPProgress({
  * Styles
  */
 const styles = StyleSheet.create({
-	container: { gap: 10 },
+	container: {
+		gap: 4,
+	},
 	levelUp: {
 		fontFamily: 'lexend-600',
 		fontSize: 12,
 		color: colors.dark.success,
 		textAlign: 'center',
 	},
-	progress: { gap: 6 },
-	progressRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-	level: { fontFamily: 'lexend-400', fontSize: 11, color: colors.dark.text },
+	progress: {
+		gap: 8,
+	},
+	progressRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	level: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		color: colors.dark.text,
+	},
 	bar: {
 		flex: 1,
 		height: 10,
@@ -151,8 +163,8 @@ const styles = StyleSheet.create({
 	},
 	progressLabel: {
 		fontFamily: 'azeret-mono-400',
-		fontSize: 11,
-		color: colors.dark.text,
+		fontSize: 12,
 		textAlign: 'center',
+		color: colors.dark.text,
 	},
 });

@@ -23,9 +23,9 @@ interface ProgressBarProps {
 /**
  * Animation consts
  */
-const glowDuration = 168;
-const fillDelay = 168;
-const fillDuration = 1320;
+const glowDuration = 200;
+const fillDelay = 120;
+const fillDuration = 3800;
 export const progressBarAnimationDuration = fillDelay + fillDuration;
 
 /**

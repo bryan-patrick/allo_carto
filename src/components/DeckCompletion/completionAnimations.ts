@@ -1,6 +1,6 @@
 import { Easing, FadeInLeft, ReduceMotion } from 'react-native-reanimated';
 
-export const completionEntryDuration = 384;
+export const completionEntryDuration = 360;
 export const completionStagger = 180;
 
 /**

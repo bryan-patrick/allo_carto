@@ -111,16 +111,18 @@ export default function CompletionPassage({ deck, results }: CompletionPassagePr
  * Styles
  */
 const styles = StyleSheet.create({
-	container: { gap: 8 },
+	container: {
+		gap: 12,
+	},
 	title: {
 		fontFamily: 'lexend-600',
-		fontSize: 15,
+		fontSize: 16,
 		color: colors.dark.text,
 	},
 	description: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
-		lineHeight: 18,
+		fontSize: 14,
+		lineHeight: 16,
 		color: colors.dark.text,
 	},
 	legend: {
@@ -132,28 +134,32 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 4,
-		borderRadius: 4,
-		paddingHorizontal: 6,
-		paddingVertical: 3,
+		paddingHorizontal: 4,
+		paddingVertical: 4,
 	},
 	legendText: {
 		fontFamily: 'lexend-400',
-		fontSize: 11,
+		fontSize: 12,
 		color: colors.dark.text,
 	},
-	correct: { backgroundColor: colors.light.success },
-	incorrect: { backgroundColor: `${colors.light.danger}33` },
+	correct: {
+		backgroundColor: colors.light.success,
+	},
+	incorrect: {
+		backgroundColor: `${colors.light.danger}33`,
+	},
 	passage: {
 		backgroundColor: `${colors.light.primary}55`,
 		borderColor: colors.light.goldenBorder,
 		borderWidth: 1,
 		borderRadius: 8,
-		padding: 12,
+		paddingVertical: 16,
+		paddingHorizontal: 12,
 	},
 	passageText: {
 		fontFamily: 'lexend-400',
-		fontSize: 15,
-		lineHeight: 25,
+		fontSize: 16,
+		lineHeight: 28,
 		color: colors.dark.text,
 	},
 });

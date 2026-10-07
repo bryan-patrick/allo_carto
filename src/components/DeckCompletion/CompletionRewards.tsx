@@ -271,9 +271,11 @@ export default function CompletionRewards({ session, color }: CompletionRewardsP
  * Styles
  */
 const styles = StyleSheet.create({
-	container: { gap: 12 },
-	section: {
+	container: {
 		gap: 8,
+	},
+	section: {
+		gap: 4,
 		paddingBottom: 12,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
@@ -282,15 +284,20 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		flexWrap: 'wrap',
-		gap: 10,
+		gap: 8,
 	},
 	title: {
 		fontFamily: 'lexend-600',
 		fontSize: 14,
 		color: colors.dark.text,
 	},
-	headingTitle: { flex: 1 },
-	xp: { fontFamily: 'lexend-600', fontSize: 14 },
+	headingTitle: {
+		flex: 1,
+	},
+	xp: {
+		fontFamily: 'lexend-600',
+		fontSize: 14,
+	},
 	description: {
 		fontFamily: 'lexend-400',
 		fontSize: 12,
@@ -299,31 +306,49 @@ const styles = StyleSheet.create({
 	bonuses: {
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
-		borderRadius: 6,
-		padding: 10,
-		gap: 8,
 		backgroundColor: `${colors.light.secondary}55`,
+		borderRadius: 6,
+		padding: 8,
+		gap: 4,
 	},
-	bonusRow: { flexDirection: 'row', alignItems: 'baseline', gap: 12 },
+	bonusRow: {
+		flexDirection: 'row',
+		alignItems: 'baseline',
+		gap: 8,
+	},
 	bonusLabel: {
 		flex: 1,
 		fontFamily: 'lexend-400',
 		fontSize: 12,
-		lineHeight: 18,
+		lineHeight: 14,
 		color: colors.dark.text,
 	},
-	bonusXP: { fontFamily: 'lexend-400', fontSize: 12, color: colors.dark.text },
+	bonusXP: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		color: colors.dark.text,
+	},
 	total: {
-		gap: 10,
-		padding: 12,
+		gap: 4,
+		padding: 8,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
 		backgroundColor: `${colors.light.secondary}88`,
 	},
-	totalHeading: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-	totalText: { flex: 1, gap: 2 },
-	totalXP: { fontFamily: 'lexend-700', fontSize: 28 },
+	totalHeading: {
+		flexDirection: 'row',
+		gap: 8,
+	},
+	totalText: {
+		display: 'flex',
+		justifyContent: 'center',
+		flex: 1,
+	},
+	totalXP: {
+		fontFamily: 'lexend-700',
+		fontSize: 28,
+	},
 	totalXPLabel: {
 		fontFamily: 'lexend-400',
 		fontSize: 12,
