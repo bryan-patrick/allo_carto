@@ -19,6 +19,7 @@ const titleEntry = getCompletionEntry(1);
 interface CompletionPassageProps {
 	deck: CardDeck;
 	results: DeckWordResultProps[];
+	onReadyChange?: (isReady: boolean) => void;
 }
 
 interface PassageProgress {
@@ -32,7 +33,11 @@ interface PassageProgress {
  * Use the modal's passage renderer with saved progress for the entire passage,
  * including vocabulary outside the cards selected for this session.
  */
-export default function CompletionPassage({ deck, results }: CompletionPassageProps) {
+export default function CompletionPassage({
+	deck,
+	results,
+	onReadyChange,
+}: CompletionPassageProps) {
 	const { id: userId } = useUserContext() ?? {};
 	const [progress, setProgress] = useState<PassageProgress>();
 	const [hasLoadError, setHasLoadError] = useState(false);
@@ -43,6 +48,10 @@ export default function CompletionPassage({ deck, results }: CompletionPassagePr
 	if (hasLoadError || !userId) {
 		message = 'Could not load passage progress.';
 	}
+
+	useEffect(() => {
+		onReadyChange?.(hasCurrentProgress);
+	}, [hasCurrentProgress, onReadyChange]);
 
 	useEffect(() => {
 		if (!userId) return;

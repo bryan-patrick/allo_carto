@@ -2,4 +2,5 @@ export { deleteDB, getDB, setDB } from './connection';
 export { default as getTables } from './getTables';
 export { default as getDeck } from './queries/getDeck';
 export { default as getWordProgressById } from './queries/getWordProgressById';
+export { default as saveDeckPassageFeedback } from './queries/saveDeckPassageFeedback';
 export { default as resetDB } from './resetDB';

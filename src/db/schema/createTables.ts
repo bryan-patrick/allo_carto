@@ -114,6 +114,7 @@ export default async function createTables(): Promise<void> {
 	await createUserWordsTable();
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
+	await createDeckPassageFeedbackTable();
 }
 
 /**
@@ -135,5 +136,30 @@ async function createDeckCompletionsTable(): Promise<void> {
 		);
 		CREATE INDEX IF NOT EXISTS deckCompletionsByDeck
 			ON deckCompletions (userId, deckId);
+	`);
+}
+
+/**
+ * Save one Yes or No answer each time the user tries a deck
+ * This one is actually pretty easy
+ */
+async function createDeckPassageFeedbackTable(): Promise<void> {
+	const database = await getDB();
+
+	await database.execAsync(`
+		CREATE TABLE IF NOT EXISTS deckPassageFeedback (
+			userId TEXT NOT NULL,
+			sessionId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			isEasierToRead INTEGER NOT NULL CHECK (isEasierToRead IN (0, 1)),
+			correctCount INTEGER NOT NULL CHECK (correctCount >= 0),
+			incorrectCount INTEGER NOT NULL CHECK (incorrectCount >= 0),
+			skippedCount INTEGER NOT NULL CHECK (skippedCount >= 0),
+			answeredAt TEXT NOT NULL,
+			PRIMARY KEY (userId, sessionId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+		CREATE INDEX IF NOT EXISTS deckPassageFeedbackByDeck
+			ON deckPassageFeedback (userId, deckId);
 	`);
 }
