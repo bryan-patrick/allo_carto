@@ -12,7 +12,7 @@ export const DeckWelcomeToAlloCarto = createCardDeck({
 	passage: [
 		{ text: 'Bienvenue', wordId: 'word_interjection_bienvenue' },
 		{ text: 'à', wordId: 'word_preposition_a' },
-		{ text: 'Allô Carto', unlockExempt: true, after: '!\n\n' },
+		{ text: 'Allô Carto', unlockExempt: true, after: '!\n' },
 		{ text: 'C’', wordId: 'word_pronoun_ce', after: '' },
 		{ text: 'est', wordId: 'word_auxiliary_est' },
 		{ text: 'une', wordId: 'word_article_une' },

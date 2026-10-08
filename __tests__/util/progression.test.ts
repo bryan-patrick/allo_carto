@@ -1,5 +1,5 @@
-import type { StoryAtlas } from '@/data/french/storyAtlas';
 import { storyAreas } from '@/data/french/storyAreas';
+import type { StoryAtlas } from '@/data/french/storyAtlas';
 import { makeMockCardDeck } from '@/src/components/CardDeck/mockCardDeck';
 import {
 	findAtlasLocationByChapterId,
@@ -62,7 +62,7 @@ function makeAtlas(): StoryAtlas {
 				requiredLevel: 1,
 				name: 'Story two',
 				description: 'The second story',
-				category: 'Cat Files',
+				category: 'Leo the Cat',
 				unlockRequirements: [
 					{
 						id: 'story_one',

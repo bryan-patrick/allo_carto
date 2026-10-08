@@ -60,7 +60,7 @@ const colors = {
 		Directions: '#315674',
 		Shopping: '#713E53',
 		Beginner: '#433e45',
-		'Cat Files': '#424536',
+		'Leo the Cat': '#424536',
 	},
 	rarity: {
 		Common: '#f0d2a1',

@@ -2,13 +2,14 @@ import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { DeckWordResultProps } from '@/src/components/CardDeck/deckSessionTypes';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import PassageHighlightLayer from '@/src/components/PassageHighlightLayer';
 import ProgressBar from '@/src/components/ProgressBar';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
-import { useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 /**
@@ -20,8 +21,10 @@ interface DeckPassageViewProps {
 	minimumPassageHeight?: number;
 	onContentHeightChange?: (contentHeight: number) => void;
 	results?: DeckWordResultProps[];
+	sessionLegendHeader?: ReactNode;
 	showLearningControls?: boolean;
 	showProgress?: boolean;
+	showTitle?: boolean;
 	wordProgressCounts: DeckWordProgressCounts;
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
 }
@@ -49,6 +52,8 @@ const learningLevelOpacity: Record<WordProgressKey, number> = {
 	mastered: 1,
 };
 const filteredOutWordOpacity = 0.05;
+const passageLineHeight = 32;
+const passageHighlightVerticalInset = 2;
 
 /**
  * Helper functions
@@ -107,8 +112,10 @@ export default function DeckPassageView({
 	minimumPassageHeight = 300,
 	onContentHeightChange,
 	results,
+	sessionLegendHeader,
 	showLearningControls = true,
 	showProgress = true,
+	showTitle = true,
 	wordProgressCounts,
 	wordProgressKeyByWordId,
 }: DeckPassageViewProps) {
@@ -135,7 +142,66 @@ export default function DeckPassageView({
 	const hasReportedContentHeight = useRef(false);
 	const resultsByWordId = new Map((results ?? []).map(result => [result.wordId, result]));
 	const hasSessionResults = results !== undefined;
+	const hasPassageHeader = showTitle || showProgress || showLearningControls;
 	const passageTextContainerStyle = { minHeight: minimumPassageHeight };
+
+	/**
+	 * Share the exact text and typography between foreground and background.
+	 */
+	const passageSegments = deck.passage.map(({ text, wordId, unlockExempt, after }, index) => {
+		const key = `${index}-${wordId ?? text}`;
+		const isCurrentWord = Boolean(currentWordId && wordId === currentWordId && !unlockExempt);
+		const trailingText = getPassageTrailingText(after);
+		const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
+		const result = resultsByWordId.get(wordId ?? '');
+		const isHidden = !unlockExempt && progress === 'unseen';
+		let displayProgress = progress;
+		let displayText = text;
+		let opacity = wordProgressOpacityByKey[progress];
+
+		if (unlockExempt) {
+			displayProgress = 'known';
+			opacity = exemptWordOpacity;
+		} else if (progress === 'unseen') {
+			displayText = '?';
+			opacity = new Animated.Value(0.2);
+		}
+
+		const wordColor = getLearningLevelColor(displayProgress, useLearningLevelColors);
+		let backgroundColor: string | undefined;
+		let displayOpacity: number | Animated.Value = opacity;
+		let accessibilityLabel = displayText;
+
+		if (result && !unlockExempt && !isHidden) {
+			accessibilityLabel = `${displayText}, ${result.outcome}`;
+			backgroundColor = `${colors.light.danger}33`;
+
+			if (result.outcome === 'correct') {
+				backgroundColor = colors.light.success;
+			}
+		}
+
+		if (isCurrentWord) {
+			backgroundColor = '#FFFFAAFF';
+			displayOpacity = 1;
+		}
+
+		const progressStyle = {
+			color: wordColor,
+			opacity: displayOpacity,
+		};
+		return {
+			key,
+			accessibilityLabel,
+			displayText,
+			trailingText,
+			textStyle: progressStyle,
+			highlightStyle: { backgroundColor, opacity: displayOpacity },
+		};
+	});
+	const hasPassageHighlights = passageSegments.some(
+		segment => segment.highlightStyle.backgroundColor,
+	);
 
 	/**
 	 * Passage metadata
@@ -172,9 +238,14 @@ export default function DeckPassageView({
 		passageHeightMeasurements.current[section] = height;
 
 		const { footer, header, passage } = passageHeightMeasurements.current;
-		const contentHeight = footer + header + passage;
+		let headerHeight = 0;
 
-		if (!footer || !header || !passage || hasReportedContentHeight.current) {
+		if (hasPassageHeader) headerHeight = header;
+
+		const contentHeight = footer + headerHeight + passage;
+		const isHeaderMeasured = !hasPassageHeader || header > 0;
+
+		if (!footer || !isHeaderMeasured || !passage || hasReportedContentHeight.current) {
 			return;
 		}
 
@@ -228,87 +299,91 @@ export default function DeckPassageView({
 	 */
 	return (
 		<View style={styles.passageView}>
-			<View
-				onLayout={({ nativeEvent }) => handleHeightMeasurement('header', nativeEvent.layout.height)}
-				style={styles.header}
-			>
-				<Text style={[styles.title, { color: storyColor }]}>{deck.title}</Text>
-				{showProgress && (
-					<View style={styles.progressMeta}>
-						<View
-							accessible
-							accessibilityLabel={seenAccessibilityLabel}
-							accessibilityRole="progressbar"
-							accessibilityValue={seenAccessibilityValue}
-							style={styles.progressColumn}
-						>
-							<Text style={styles.progressLabel}>{seenText}</Text>
-							<ProgressBar
-								color={storyColor}
-								percent={seenPercent}
-								style={styles.progressBarContainer}
-							/>
+			{hasPassageHeader && (
+				<View
+					onLayout={({ nativeEvent }) =>
+						handleHeightMeasurement('header', nativeEvent.layout.height)
+					}
+					style={styles.header}
+				>
+					{showTitle && <Text style={[styles.title, { color: storyColor }]}>{deck.title}</Text>}
+					{showProgress && (
+						<View style={styles.progressMeta}>
+							<View
+								accessible
+								accessibilityLabel={seenAccessibilityLabel}
+								accessibilityRole="progressbar"
+								accessibilityValue={seenAccessibilityValue}
+								style={styles.progressColumn}
+							>
+								<Text style={styles.progressLabel}>{seenText}</Text>
+								<ProgressBar
+									color={storyColor}
+									percent={seenPercent}
+									style={styles.progressBarContainer}
+								/>
+							</View>
+							<View style={styles.progressDivider} />
+							<View
+								accessible
+								accessibilityLabel={completionAccessibilityLabel}
+								accessibilityRole="progressbar"
+								accessibilityValue={completionAccessibilityValue}
+								style={styles.progressColumn}
+							>
+								<Text style={styles.progressLabel}>{completionText}</Text>
+								<ProgressBar
+									color={storyColor}
+									percent={deckCompletionPercent}
+									style={styles.progressBarContainer}
+								/>
+							</View>
 						</View>
-						<View style={styles.progressDivider} />
-						<View
-							accessible
-							accessibilityLabel={completionAccessibilityLabel}
-							accessibilityRole="progressbar"
-							accessibilityValue={completionAccessibilityValue}
-							style={styles.progressColumn}
-						>
-							<Text style={styles.progressLabel}>{completionText}</Text>
-							<ProgressBar
-								color={storyColor}
-								percent={deckCompletionPercent}
-								style={styles.progressBarContainer}
-							/>
-						</View>
-					</View>
-				)}
-				{showLearningControls && (
-					<View style={styles.passageToggles}>
-						<View style={styles.learningLevelToggle}>
-							<Text style={styles.learningLevelColorsLabel}>
-								Use level&nbsp;
-								<Text style={styles.learningLevelColorsWord}>
-									<Text style={{ color: colors.dark.text }}>c</Text>
-									<Text style={{ color: colors.wordProgress.new }}>o</Text>
-									<Text style={{ color: colors.wordProgress.learning }}>l</Text>
-									<Text style={{ color: colors.wordProgress.familiar }}>o</Text>
-									<Text style={{ color: colors.wordProgress.known }}>r</Text>
-									<Text style={{ color: colors.wordProgress.mastered }}>s</Text>
+					)}
+					{showLearningControls && (
+						<View style={styles.passageToggles}>
+							<View style={styles.learningLevelToggle}>
+								<Text style={styles.learningLevelColorsLabel}>
+									Use level&nbsp;
+									<Text style={styles.learningLevelColorsWord}>
+										<Text style={{ color: colors.dark.text }}>c</Text>
+										<Text style={{ color: colors.wordProgress.new }}>o</Text>
+										<Text style={{ color: colors.wordProgress.learning }}>l</Text>
+										<Text style={{ color: colors.wordProgress.familiar }}>o</Text>
+										<Text style={{ color: colors.wordProgress.known }}>r</Text>
+										<Text style={{ color: colors.wordProgress.mastered }}>s</Text>
+									</Text>
 								</Text>
-							</Text>
-							<View style={styles.learningLevelColorsSwitchContainer}>
-								<Switch
-									accessibilityLabel="Use learning level colors"
-									hitSlop={12}
-									ios_backgroundColor={colors.light.border}
-									onValueChange={enabled => setSetting('useLearningLevelColors', enabled)}
-									style={styles.learningLevelColorsSwitch}
-									trackColor={{ false: colors.light.border, true: storyColor }}
-									value={useLearningLevelColors}
-								/>
+								<View style={styles.learningLevelColorsSwitchContainer}>
+									<Switch
+										accessibilityLabel="Use learning level colors"
+										hitSlop={12}
+										ios_backgroundColor={colors.light.border}
+										onValueChange={enabled => setSetting('useLearningLevelColors', enabled)}
+										style={styles.learningLevelColorsSwitch}
+										trackColor={{ false: colors.light.border, true: storyColor }}
+										value={useLearningLevelColors}
+									/>
+								</View>
+							</View>
+							<View style={styles.learningLevelToggle}>
+								<Text style={styles.learningLevelColorsLabel}>Use level opacity</Text>
+								<View style={styles.learningLevelColorsSwitchContainer}>
+									<Switch
+										accessibilityLabel="Use level opacity"
+										hitSlop={12}
+										ios_backgroundColor={colors.light.border}
+										onValueChange={enabled => setSetting('useLevelOpacity', enabled)}
+										style={styles.learningLevelColorsSwitch}
+										trackColor={{ false: colors.light.border, true: storyColor }}
+										value={useLevelOpacity}
+									/>
+								</View>
 							</View>
 						</View>
-						<View style={styles.learningLevelToggle}>
-							<Text style={styles.learningLevelColorsLabel}>Use level opacity</Text>
-							<View style={styles.learningLevelColorsSwitchContainer}>
-								<Switch
-									accessibilityLabel="Use level opacity"
-									hitSlop={12}
-									ios_backgroundColor={colors.light.border}
-									onValueChange={enabled => setSetting('useLevelOpacity', enabled)}
-									style={styles.learningLevelColorsSwitch}
-									trackColor={{ false: colors.light.border, true: storyColor }}
-									value={useLevelOpacity}
-								/>
-							</View>
-						</View>
-					</View>
-				)}
-			</View>
+					)}
+				</View>
+			)}
 
 			<ScrollView
 				indicatorStyle="black"
@@ -330,90 +405,69 @@ export default function DeckPassageView({
 							/>
 						))}
 					</View>
-					<Text
-						onTextLayout={({ nativeEvent }) => {
-							const nextMetrics = nativeEvent.lines.map(({ y, height }) => ({ y, height }));
+					<View style={styles.passageTextLayout}>
+						{hasPassageHighlights && (
+							<PassageHighlightLayer
+								lineHeight={passageLineHeight}
+								lineMetrics={passageLineMetrics}
+								verticalInset={passageHighlightVerticalInset}
+							>
+								<Text style={[styles.passageText, styles.passageHighlightText]}>
+									{passageSegments.map(segment => (
+										<Text
+											key={segment.key}
+											style={styles.passageText}
+										>
+											<Animated.Text
+												style={[
+													styles.passageWord,
+													styles.passageHighlightText,
+													segment.highlightStyle,
+												]}
+											>
+												{segment.displayText}
+											</Animated.Text>
+											<Text style={styles.passageHighlightText}>{segment.trailingText}</Text>
+										</Text>
+									))}
+								</Text>
+							</PassageHighlightLayer>
+						)}
+						<Text
+							onTextLayout={({ nativeEvent }) => {
+								const nextMetrics = nativeEvent.lines.map(({ y, height }) => ({ y, height }));
 
-							setPassageLineMetrics(currentMetrics => {
-								const metricsAreUnchanged =
-									currentMetrics.length === nextMetrics.length &&
-									currentMetrics.every(
-										(metric, index) =>
-											metric.y === nextMetrics[index].y &&
-											metric.height === nextMetrics[index].height,
-									);
+								setPassageLineMetrics(currentMetrics => {
+									const metricsAreUnchanged =
+										currentMetrics.length === nextMetrics.length &&
+										currentMetrics.every(
+											(metric, index) =>
+												metric.y === nextMetrics[index].y &&
+												metric.height === nextMetrics[index].height,
+										);
 
-								if (metricsAreUnchanged) return currentMetrics;
-								return nextMetrics;
-							});
-						}}
-					>
-						{deck.passage.map(({ text, wordId, unlockExempt, after }, index) => {
-							const key = `${index}-${wordId ?? text}`;
-							const isCurrentWord = Boolean(
-								currentWordId && wordId === currentWordId && !unlockExempt,
-							);
-							const trailingText = getPassageTrailingText(after);
-							const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
-							const result = resultsByWordId.get(wordId ?? '');
-							const isHidden = !unlockExempt && progress === 'unseen';
-							let displayProgress = progress;
-							let displayText = text;
-							let opacity = wordProgressOpacityByKey[progress];
-
-							if (unlockExempt) {
-								displayProgress = 'known';
-								opacity = exemptWordOpacity;
-							} else if (progress === 'unseen') {
-								displayText = '?';
-								opacity = new Animated.Value(0.2);
-							}
-
-							const wordColor = getLearningLevelColor(displayProgress, useLearningLevelColors);
-							let backgroundColor: string | undefined;
-							let displayOpacity: number | Animated.Value = opacity;
-							let accessibilityLabel = displayText;
-
-							if (result && !unlockExempt && !isHidden) {
-								accessibilityLabel = `${displayText}, ${result.outcome}`;
-								backgroundColor = `${colors.light.danger}33`;
-
-								if (result.outcome === 'correct') {
-									backgroundColor = colors.light.success;
-								}
-							}
-
-							if (isCurrentWord) {
-								backgroundColor = '#FFFFAAFF';
-								displayOpacity = 1;
-							}
-
-							const progressStyle = {
-								backgroundColor,
-								color: wordColor,
-								opacity: displayOpacity,
-							};
-
-							/**
-							 * Render the individual word
-							 */
-							return (
+									if (metricsAreUnchanged) return currentMetrics;
+									return nextMetrics;
+								});
+							}}
+						>
+							{passageSegments.map((segment, index) => (
 								<Text
-									key={key}
+									key={segment.key}
 									style={styles.passageText}
 								>
 									<Animated.Text
-										accessibilityLabel={accessibilityLabel}
+										accessibilityLabel={segment.accessibilityLabel}
 										testID={`passage-word-${index}`}
-										style={[styles.passageWord, progressStyle]}
+										style={[styles.passageWord, segment.textStyle]}
 									>
-										{displayText}
+										{segment.displayText}
 									</Animated.Text>
-									{trailingText}
+									{segment.trailingText}
 								</Text>
-							);
-						})}
-					</Text>
+							))}
+						</Text>
+					</View>
 				</View>
 			</ScrollView>
 
@@ -470,6 +524,7 @@ export default function DeckPassageView({
 				)}
 				{hasSessionResults && (
 					<View style={styles.sessionLegend}>
+						{sessionLegendHeader}
 						<Text style={styles.sessionDescription}>Highlighted words are from this session.</Text>
 						<View style={styles.sessionLegendItems}>
 							<Text style={[styles.sessionLegendLabel, styles.sessionCorrect]}>Correct</Text>
@@ -559,7 +614,7 @@ const styles = StyleSheet.create({
 	passageScrollView: {
 		flex: 1,
 		borderBottomColor: colors.light.goldenBorder,
-		borderBottomWidth: 2,
+		borderBottomWidth: 1,
 		paddingHorizontal: 16,
 		paddingVertical: 8,
 	},
@@ -581,16 +636,18 @@ const styles = StyleSheet.create({
 		left: 0,
 		right: 0,
 	},
+	passageTextLayout: { position: 'relative' },
+	passageHighlightText: { color: 'transparent' },
 	passageText: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 16,
-		lineHeight: 32,
+		lineHeight: passageLineHeight,
 	},
 	passageWord: {
 		fontFamily: 'lexend-400',
 		fontSize: 16,
-		lineHeight: 32,
+		lineHeight: passageLineHeight,
 	},
 	unseenPassageWord: {
 		color: 'transparent',
