@@ -212,14 +212,16 @@ export const words_a_cab_and_a_close_call: Word[] = [
 		partOfSpeech: 'expression',
 		rarity: 'Epic',
 	}),
+	/**
+	 * Reused for both the past participle and the third-person present form.
+	 */
 	defineWord({
 		id: 'word_verb_dit',
 		frenchWord: 'dit',
-		englishWords: ['said', 'told'],
+		englishWords: ['said', 'told', 'says', 'tells'],
 		pronunciation: 'dee',
 		CEFR: 'A1',
 		lemmaId: 'word_verb_dire',
-		form: 'past participle',
 		partOfSpeech: 'verb',
 		rarity: 'Common',
 	}),

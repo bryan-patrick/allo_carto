@@ -2,6 +2,7 @@ import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { DeckWordResultProps } from '@/src/components/CardDeck/deckSessionTypes';
 import DeckPassageView from '@/src/components/DeckPassageView';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { getDB, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
@@ -77,22 +78,36 @@ export default function CompletionPassage({ deck, results }: CompletionPassagePr
 		setLoadAttempt(loadAttempt + 1);
 	}
 
+	const passageReminder = (
+		<Animated.View
+			entering={titleEntry}
+			style={styles.reminder}
+		>
+			<MaterialSymbol
+				color={colors.dark.primaryActive}
+				name="menu_book"
+				size={22}
+			/>
+			<Text
+				accessibilityRole="header"
+				style={styles.title}
+			>
+				Is the deck passage above easier to read now?
+			</Text>
+		</Animated.View>
+	);
+
 	if (hasCurrentProgress && progress) {
 		return (
 			<View style={styles.container}>
-				<Animated.Text
-					accessibilityRole="header"
-					entering={titleEntry}
-					style={styles.title}
-				>
-					Read the passage again
-				</Animated.Text>
 				<DeckPassageView
 					deck={deck}
 					minimumPassageHeight={0}
 					results={results}
+					sessionLegendHeader={passageReminder}
 					showLearningControls={false}
 					showProgress={false}
+					showTitle={false}
 					wordProgressCounts={progress.counts}
 					wordProgressKeyByWordId={progress.byWordId}
 				/>
@@ -117,16 +132,29 @@ export default function CompletionPassage({ deck, results }: CompletionPassagePr
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1 },
-	title: {
-		fontFamily: 'lexend-600',
-		fontSize: 16,
-		color: colors.dark.text,
-		paddingHorizontal: 16,
-		paddingTop: 12,
+	container: {
+		flex: 1,
 	},
-	message: { padding: 16, gap: 12 },
-	text: { fontFamily: 'lexend-400', fontSize: 14, color: colors.dark.text },
+	reminder: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	title: {
+		flexShrink: 1,
+		fontFamily: 'lexend-600',
+		fontSize: 18,
+		color: colors.dark.text,
+	},
+	message: {
+		padding: 16,
+		gap: 12,
+	},
+	text: {
+		fontFamily: 'lexend-400',
+		fontSize: 14,
+		color: colors.dark.text,
+	},
 	retry: {
 		alignSelf: 'flex-start',
 		minHeight: 44,
