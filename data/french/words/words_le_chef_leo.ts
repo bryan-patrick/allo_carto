@@ -6,15 +6,6 @@ function defineWord(word: SeedWord): Word {
 	return { ...word, isVulgar: false, correctCount: 0 };
 }
 
-/**
- * CEFR and rarity are editorial estimates for these passage meanings and forms.
- * Pronunciations use the dictionary's existing English respelling convention.
- * Québec pronunciation references include Usito's entries for grille-pain,
- * débrancher, and fumer: https://usito.usherbrooke.ca/définitions/grille-pain,
- * https://usito.usherbrooke.ca/définitions/débrancher,
- * https://usito.usherbrooke.ca/définitions/fumer_1.
- * Present-tense regarde and trouve have separate IDs from regardé and trouvé.
- */
 export const words_le_chef_leo: Word[] = [
 	defineWord({
 		id: 'word_verb_voit',

@@ -10,8 +10,7 @@ export interface PassageHighlightLayerProps {
 }
 
 /**
- * Clip only the backgrounds, leaving text layout and glyphs untouched.
- * The duplicate text beneath the mask supplies the exact word wrapping.
+ * Highlights the words in the passage
  */
 export default function PassageHighlightLayer({
 	children,

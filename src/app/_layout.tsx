@@ -100,6 +100,7 @@ export default function AppLayout() {
 
 		if (resetDB) {
 			await database.execAsync(`
+        DROP TABLE IF EXISTS deckPassageFeedback;
         DROP TABLE IF EXISTS deckCompletions;
         DROP TABLE IF EXISTS userProgress;
         DROP TABLE IF EXISTS userWords;

@@ -8,7 +8,7 @@ import CompletionUnlocks from '@/src/components/DeckCompletion/CompletionUnlocks
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
 import { getCompletionEntry } from '@/src/components/DeckCompletion/completionAnimations';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import { getDeck } from '@/src/db/interface';
+import { getDeck, saveDeckPassageFeedback } from '@/src/db/interface';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
@@ -115,11 +115,14 @@ export default function DeckResultsView() {
 	 */
 	const [step, setStep] = useState(0);
 	const [isRepeating, setIsRepeating] = useState(false);
+	const [isPassageReady, setIsPassageReady] = useState(false);
+	const [pendingFeedback, setPendingFeedback] = useState<boolean | null>(null);
 
 	/**
 	 * Block another Repeat press right away while the deck is loading.
 	 */
 	const isStartingDeck = useRef(false);
+	const isSavingPassageFeedback = useRef(false);
 
 	/**
 	 * Leave room for the phone's controls at the bottom of the screen.
@@ -180,6 +183,7 @@ export default function DeckResultsView() {
 	 * Block Repeat while the user is unknown, progress is saving, or a deck is loading.
 	 */
 	const repeatDisabled = !userId || isUpdatingProgress || isRepeating;
+	const feedbackDisabled = !userId || !isPassageReady || pendingFeedback !== null;
 
 	/**
 	 * Start with the normal heading and button labels for this step.
@@ -225,6 +229,7 @@ export default function DeckResultsView() {
 					<CompletionPassage
 						deck={cardDeck}
 						results={session.results}
+						onReadyChange={setIsPassageReady}
 					/>
 				);
 
@@ -363,12 +368,49 @@ export default function DeckResultsView() {
 	}
 
 	/**
+	 * Save the response before advancing. A ref also blocks presses that
+	 * arrive before React has disabled both buttons for the pending write.
+	 */
+	async function handlePassageFeedback(isEasierToRead: boolean) {
+		if (
+			feedbackDisabled ||
+			!userId ||
+			!session ||
+			!hasReview ||
+			step !== 0 ||
+			isSavingPassageFeedback.current
+		) {
+			return;
+		}
+
+		isSavingPassageFeedback.current = true;
+		setPendingFeedback(isEasierToRead);
+
+		try {
+			await saveDeckPassageFeedback({
+				userId,
+				sessionId: session.id,
+				deckId: cardDeck.id,
+				isEasierToRead,
+				results: session.results,
+			});
+			setStep(1);
+		} catch (error) {
+			console.error('Could not save passage feedback:', error);
+			Alert.alert('Could not save your answer', 'Please try again.');
+		} finally {
+			isSavingPassageFeedback.current = false;
+			setPendingFeedback(null);
+		}
+	}
+
+	/**
 	 * Go to the previous review step, or leave if this is the first step.
 	 */
 	useFocusEffect(
 		useCallback(() => {
 			const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-				if (isStartingDeck.current) {
+				if (isStartingDeck.current || isSavingPassageFeedback.current) {
 					return true;
 				}
 
@@ -441,6 +483,49 @@ export default function DeckResultsView() {
 			<View style={styles.footerActions}>{nextButton}</View>
 		</View>
 	);
+
+	if (hasReview && step === 0) {
+		let noLabel = 'No';
+		let yesLabel = 'Yes';
+		const feedbackButtonStyle: ViewStyle[] = [styles.feedbackButton];
+		const feedbackAccessibilityState = {
+			disabled: feedbackDisabled,
+			busy: pendingFeedback !== null,
+		};
+
+		if (pendingFeedback === false) noLabel = 'Saving…';
+		if (pendingFeedback === true) yesLabel = 'Saving…';
+		if (feedbackDisabled) feedbackButtonStyle.push(styles.disabledButton);
+
+		footerContent = (
+			<View style={styles.footerRow}>
+				<LinkButton
+					handler={() => handlePassageFeedback(false)}
+					disabled={feedbackDisabled}
+					accessibilityRole="button"
+					accessibilityLabel="No, the passage is not easier to read"
+					accessibilityState={feedbackAccessibilityState}
+					useArrow={false}
+					color={storyColor}
+					style={feedbackButtonStyle}
+				>
+					{noLabel}
+				</LinkButton>
+				<LinkButton
+					handler={() => handlePassageFeedback(true)}
+					disabled={feedbackDisabled}
+					accessibilityRole="button"
+					accessibilityLabel="Yes, the passage is easier to read"
+					accessibilityState={feedbackAccessibilityState}
+					useArrow={false}
+					color={storyColor}
+					style={feedbackButtonStyle}
+				>
+					{yesLabel}
+				</LinkButton>
+			</View>
+		);
+	}
 
 	if (showRepeat) {
 		footerContent = (
@@ -595,5 +680,6 @@ const styles = StyleSheet.create({
 	footerRow: { flexDirection: 'row', gap: 8 },
 	footerActions: { flex: 1 },
 	nextButton: { minHeight: 44 },
+	feedbackButton: { flex: 1, flexBasis: 0, minWidth: 0, minHeight: 44 },
 	disabledButton: { opacity: 0.5 },
 });
