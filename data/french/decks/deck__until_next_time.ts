@@ -67,7 +67,7 @@ export const DeckUntilNextTime = createCardDeck({
 		{ text: 'téléphone', wordId: 'word_noun_telephone' },
 		{ text: 'et', wordId: 'word_conjunction_et' },
 		{ text: 'a', wordId: 'word_auxiliary_a' },
-		{ text: 'dit', wordId: 'word_verb_dit', after: ' : « ' },
+		{ text: 'dit', wordId: 'word_verb_dit', after: '\u00a0: « ' },
 		{ text: 'Merci', wordId: 'word_interjection_merci', after: '… ' },
 		{ text: 'encore', wordId: 'word_adverb_encore' },
 		{ text: 'une', wordId: 'word_article_une' },

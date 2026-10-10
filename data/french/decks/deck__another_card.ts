@@ -4,7 +4,7 @@ export const DeckAnotherCard = createCardDeck({
 	id: 'deck__another_card',
 	title: 'Another Card',
 	description: 'Léo finds a cheese card. Wallace says no.',
-	chapter: 'Oh non !',
+	chapter: 'Oh non!',
 	CEFR: ['A1', 'A2'],
 	unlockRequirements: [{ id: 'deck__its_paper', requiredCompletionPercentage: 20 }],
 	words: [],
@@ -19,7 +19,7 @@ export const DeckAnotherCard = createCardDeck({
 		{ text: 'du', wordId: 'word_preposition_du' },
 		{ text: 'fromage', wordId: 'word_noun_fromage', after: '.\n\n' },
 		{ text: 'Wallace', unlockExempt: true },
-		{ text: 'dit', wordId: 'word_verb_dit', after: ' : « ' },
+		{ text: 'dit', wordId: 'word_verb_dit', after: '\u00a0: « ' },
 		{ text: 'Non', wordId: 'word_adverb_non', after: '. »' },
 	],
 });

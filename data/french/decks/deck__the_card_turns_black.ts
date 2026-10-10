@@ -19,6 +19,6 @@ export const DeckTheCardTurnsBlack = createCardDeck({
 		{ text: 'devient', wordId: 'word_verb_devient' },
 		{ text: 'noire', wordId: 'word_adjective_noire', after: '. ' },
 		{ text: 'Ça', wordId: 'word_pronoun_ca' },
-		{ text: 'fume', wordId: 'word_verb_fume', after: ' !' },
+		{ text: 'fume', wordId: 'word_verb_fume', after: '!' },
 	],
 });

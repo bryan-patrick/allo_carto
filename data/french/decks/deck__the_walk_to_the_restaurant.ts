@@ -71,7 +71,7 @@ export const DeckTheWalkToTheRestaurant = createCardDeck({
 		{ text: 'a', wordId: 'word_auxiliary_a' },
 		{ text: 'regardé', wordId: 'word_verb_regarde' },
 		{ text: 'l’', wordId: 'word_article_la', after: '' },
-		{ text: 'heure', wordId: 'word_noun_heure', after: ' : ' },
+		{ text: 'heure', wordId: 'word_noun_heure', after: '\u00a0: ' },
 		{ text: 'il', wordId: 'word_pronoun_il' },
 		{ text: 'était', wordId: 'word_verb_etait' },
 		{ text: 'six', wordId: 'word_numeral_six' },

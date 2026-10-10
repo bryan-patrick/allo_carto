@@ -18,6 +18,6 @@ export const DeckACardInTheToaster = createCardDeck({
 		{ text: 'dans', wordId: 'word_preposition_dans' },
 		{ text: 'le', wordId: 'word_article_le' },
 		{ text: 'grille-pain', wordId: 'word_noun_grille_pain', after: '. ' },
-		{ text: 'Clic', wordId: 'word_interjection_clic', after: ' !' },
+		{ text: 'Clic', wordId: 'word_interjection_clic', after: '!' },
 	],
 });

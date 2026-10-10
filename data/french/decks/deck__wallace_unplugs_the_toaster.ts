@@ -4,7 +4,7 @@ export const DeckWallaceUnplugsTheToaster = createCardDeck({
 	id: 'deck__wallace_unplugs_the_toaster',
 	title: 'Wallace Unplugs the Toaster',
 	description: 'Wallace smells smoke and quickly unplugs the toaster.',
-	chapter: 'Oh non !',
+	chapter: 'Oh non!',
 	CEFR: ['A1', 'A2'],
 	unlockRequirements: [{ id: 'deck__the_card_turns_black', requiredCompletionPercentage: 20 }],
 	words: [],
