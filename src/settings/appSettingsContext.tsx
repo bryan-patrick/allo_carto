@@ -11,7 +11,7 @@ import {
 /**
  * Types
  */
-type SetSetting = (key: keyof AppSettings, value: boolean | number | null) => void;
+type SetSetting = <Key extends keyof AppSettings>(key: Key, value: AppSettings[Key]) => void;
 
 interface AppSettingsContextValue {
 	settings: AppSettings;

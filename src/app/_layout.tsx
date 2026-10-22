@@ -79,6 +79,7 @@ export default function AppLayout() {
 		'azeret-mono-400': require('./assets/fonts/azeret-mono-400.ttf'),
 		'azeret-mono-600': require('./assets/fonts/azeret-mono-600.ttf'),
 		'shadows-400': require('./assets/fonts/shadows-400.ttf'),
+		'ipa-400': require('./assets/fonts/noto-sans-400.ttf'),
 	});
 
 	/**

@@ -58,6 +58,20 @@ export const sharedWordCardStyles = StyleSheet.create({
 		lineHeight: 16,
 		gap: 12,
 	},
+	readablePronunciation: {
+		fontFamily: 'lexend-400',
+		color: colors.dark.text,
+		fontSize: 14,
+		lineHeight: 20,
+		textAlign: 'center',
+	},
+	ipaPronunciation: {
+		fontFamily: 'ipa-400',
+		color: colors.dark.text,
+		fontSize: 16,
+		lineHeight: 22,
+		textAlign: 'center',
+	},
 	wordDetailDivider: {
 		borderLeftColor: colors.dark.text,
 		borderLeftWidth: 1,

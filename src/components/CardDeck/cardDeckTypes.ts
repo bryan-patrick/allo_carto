@@ -64,6 +64,7 @@ export interface Word {
 	frenchArticle?: string;
 	englishArticle?: string;
 	pronunciation: string;
+	ipaPronunciation: string;
 	isVulgar: boolean;
 	CEFR: CEFR;
 	lemmaId?: string;
@@ -81,6 +82,7 @@ export const initialWordState: Word = {
 	frenchWord: '',
 	englishWords: [''],
 	pronunciation: '',
+	ipaPronunciation: '',
 	isVulgar: false,
 	CEFR: 'A1',
 	correctCount: 0,

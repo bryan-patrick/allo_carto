@@ -7,6 +7,7 @@ export interface WordRow {
 	frenchArticle?: string;
 	englishArticle?: string;
 	pronunciation: string;
+	ipaPronunciation: string;
 	isVulgar: number;
 	CEFR: CEFR;
 	lemmaId?: string;

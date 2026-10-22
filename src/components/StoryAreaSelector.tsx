@@ -2,12 +2,21 @@ import type { StoryArea } from '@/data/french/storyAreas';
 import colors from '@/src/app/colors';
 import { formatAreaLevelRange } from '@/src/util/storyAreas';
 import { Button, Host, Text as NativeText, RNHostView, Row } from '@expo/ui';
+import { foregroundColor } from '@expo/ui/swift-ui/modifiers';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
+const headingColor = colors.light.background;
+const titleModifiers: ReturnType<typeof foregroundColor>[] = [];
 let areaFontFamily = 'lexend-600';
 
-if (Platform.OS === 'ios') areaFontFamily = 'Lexend-SemiBold';
+if (Platform.OS === 'ios') {
+	areaFontFamily = 'Lexend-SemiBold';
+	/**
+	 * Use the color modifier supported by the native Expo Go runtime.
+	 */
+	titleModifiers.push(foregroundColor(headingColor));
+}
 
 /**
  * Typing
@@ -56,12 +65,17 @@ export default function StoryAreaSelector({ area, isExpanded, onPress }: StoryAr
 								alignment="center"
 								spacing={8}
 							>
-								<NativeText textStyle={styles.name}>{area.name}</NativeText>
+								<NativeText
+									modifiers={titleModifiers}
+									textStyle={styles.name}
+								>
+									{area.name}
+								</NativeText>
 								<Row style={styles.chevron}>
 									<RNHostView matchContents>
 										<MaterialSymbol
 											accessible={false}
-											color={colors.light.background}
+											color={headingColor}
 											name="expand_more"
 											size={24}
 											style={styles.chevron}
@@ -91,7 +105,7 @@ const styles = StyleSheet.create({
 		height: 24,
 	},
 	name: {
-		color: colors.light.background,
+		color: headingColor,
 		fontFamily: areaFontFamily,
 		fontSize: 18,
 		textAlign: 'center',

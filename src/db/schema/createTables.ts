@@ -15,6 +15,7 @@ async function createWordsTable(): Promise<void> {
 					frenchArticle TEXT,
 					englishArticle TEXT,
 					pronunciation TEXT NOT NULL,
+					ipaPronunciation TEXT NOT NULL,
 					isVulgar INTEGER NOT NULL,
 					CEFR TEXT NOT NULL,
 					lemmaId TEXT,

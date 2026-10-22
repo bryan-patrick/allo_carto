@@ -19,6 +19,7 @@ import TTSButton from './TTSButton';
 import { useWordCardUI } from './useWordCardUI';
 import { FEEDBACK_TEXT_FRONT } from './wordCardContext';
 import WordCardHeader from './WordCardHeader';
+import WordPronunciation from './WordPronunciation';
 
 const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 
@@ -59,15 +60,8 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	/**
 	 * Word data
 	 */
-	const {
-		pronunciation,
-		frenchArticle,
-		englishArticle,
-		englishWords,
-		frenchWord,
-		form,
-		partOfSpeech,
-	} = currentCard;
+	const { frenchArticle, englishArticle, englishWords, frenchWord, form, partOfSpeech } =
+		currentCard;
 
 	/**
 	 * Render the articlea and word the user has selected.
@@ -118,7 +112,10 @@ const WordCardFront = memo(function WordCardFrontMemo({
 						<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
 						<TTSButton wordsToSay={displayedFrenchWord} />
 					</View>
-					<Text style={sharedWordCardStyles.wordDetailText}>({pronunciation})</Text>
+					<WordPronunciation
+						pronunciation={currentCard.pronunciation}
+						ipaPronunciation={currentCard.ipaPronunciation}
+					/>
 					<View style={sharedWordCardStyles.wordMetaContainer}>
 						{partOfSpeech && (
 							<Text style={sharedWordCardStyles.wordDetailText}>{partOfSpeechCapitalized}</Text>
