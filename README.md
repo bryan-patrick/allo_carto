@@ -17,6 +17,7 @@ It's still very much a work in progress. Eventually I'd like to polish it up and
 
 ## Roadmap
 
+- Chapter select redesign. I'm going to implement a new view for chapter selects. As much as I love the postcard, I'd like a dotted line / map approach with illustrations and minimal chapter data.
 - Collections and collectible cards
 - Unlockables and achievements
 - More ways to study a deck, including reverse and english-to-french multiple choice modes. Also prestiging a mastered word is on the list
