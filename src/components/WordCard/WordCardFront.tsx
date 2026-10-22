@@ -15,6 +15,7 @@ import Animated from 'react-native-reanimated';
 import formatFrenchWordWithArticle from '../../util/formatFrenchWordWithArticle';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import { sharedWordCardStyles } from './sharedWordCardStyles';
+import TTSButton from './TTSButton';
 import { useWordCardUI } from './useWordCardUI';
 import { FEEDBACK_TEXT_FRONT } from './wordCardContext';
 import WordCardHeader from './WordCardHeader';
@@ -113,7 +114,10 @@ const WordCardFront = memo(function WordCardFrontMemo({
 			<View style={sharedWordCardStyles.wordCardInner}>
 				<WordCardHeader />
 				<View style={sharedWordCardStyles.cardMain}>
-					<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
+					<View style={sharedWordCardStyles.wordIdContainer}>
+						<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
+						<TTSButton wordsToSay={displayedFrenchWord} />
+					</View>
 					<Text style={sharedWordCardStyles.wordDetailText}>({pronunciation})</Text>
 					<View style={sharedWordCardStyles.wordMetaContainer}>
 						{partOfSpeech && (

@@ -54,19 +54,20 @@ export default function StoryAreaSelector({ area, isExpanded, onPress }: StoryAr
 						>
 							<Row
 								alignment="center"
-								spacing={4}
+								spacing={8}
 							>
 								<NativeText textStyle={styles.name}>{area.name}</NativeText>
-								{/** Trying out the Material icon for this one */}
-								<RNHostView matchContents>
-									<MaterialSymbol
-										accessible={false}
-										color={colors.light.background}
-										name="expand_more"
-										size={24}
-										style={styles.chevron}
-									/>
-								</RNHostView>
+								<Row style={styles.chevron}>
+									<RNHostView matchContents>
+										<MaterialSymbol
+											accessible={false}
+											color={colors.light.background}
+											name="expand_more"
+											size={24}
+											style={styles.chevron}
+										/>
+									</RNHostView>
+								</Row>
 							</Row>
 						</Button>
 					</Host>

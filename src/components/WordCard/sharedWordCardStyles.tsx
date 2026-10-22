@@ -2,7 +2,7 @@ import colors from '@/src/app/colors';
 import { StyleSheet } from 'react-native';
 
 /**
- * Shared style - front and back of cards
+ * Shared styles - front and back of cards
  */
 export const sharedWordCardStyles = StyleSheet.create({
 	wordCardContainer: {
@@ -29,10 +29,19 @@ export const sharedWordCardStyles = StyleSheet.create({
 		gap: 4,
 		marginTop: 12,
 	},
+	wordIdContainer: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignContent: 'center',
+		alignItems: 'center',
+		gap: 2,
+	},
 	wordId: {
 		color: colors.dark.text,
 		flexShrink: 1,
 		fontSize: 22,
+		lineHeight: 24,
+		paddingLeft: 26,
 		fontFamily: 'lexend-600',
 		textAlign: 'center',
 	},
