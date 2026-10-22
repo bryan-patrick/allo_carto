@@ -6,7 +6,7 @@ Allô Carto is a flashcard app I’m building to help people (including me) lear
 
 The basic idea is that instead of studying a bunch of completely disconnected things, the cards in Allô Carto are tied to stories. You can read through a story without knowing everything, study the decks associated with it, and then come back and understand more of what you read. The better you know the vocabulary, the more the story starts to make sense.
 
-It's still very much a work in progress. Eventually I'd like to polish it up and put it on the App Store, but for now I'm mostly just having fun building the thing.
+It's still very much a work in progress. Eventually I'd like to polish it up and put it on the App Store.
 
 ## Built with
 
@@ -20,13 +20,15 @@ It's still very much a work in progress. Eventually I'd like to polish it up and
 - Collections and collectible cards
 - Unlockables and achievements
 - More ways to study a deck, including reverse and english-to-french multiple choice modes. Also prestiging a mastered word is on the list
-- I will be adding history focused content, especially history related stuff
 - Collections will also include grammar rules, unlocked by learning word sequences that have that apply that grammar rule
 - We need a toast system to alert users to collectables
 - A more technical issue, once a deck is started we need to lock that progress. Currently, exiting a deck will allow a reset of it.
-- We probably need two progress bars per deck or chapter, words known and words unique to this deck. Sometimes that'll be 0 and that's OK, but it would be cool for a user to be able to say, "oh snap this deck has 13 words I've never seen!"
 
-### Leveling refactor
+### Implemented
+
+- ~~Add `fr CA` TTS with a speaker button~~
+- ~~IPA pronunciations~~
+- ~~We probably need two progress bars per deck or chapter, words known and words unique to this deck. Sometimes that'll be 0 and that's OK, but it would be cool for a user to be able to say, "oh snap this deck has 13 words I've never seen!"~~
 - ~~Add user levels and XP~~
 - ~~Lock stories/decks behind level requirements and group them into level ranges~~
 - ~~Make early decks much shorter~~
@@ -36,9 +38,9 @@ It's still very much a work in progress. Eventually I'd like to polish it up and
 - Add collections for discovered words, including learning level and completion bonuses
 
 ### I made a new design for the results view, these need to be done to implement it
+
 - Show new collection discoveries during results
 - Add collection detail/word views
-- Add `fr CA` TTS with a speaker button
 
 ## A note about AI
 
@@ -46,17 +48,31 @@ AI has been used in a few parts of the project. Some of my own photographs were 
 
 ## Pronunciation notes
 
-The pronunciation guides are intentionally informal approximations rather than official phonetic transcriptions:
+Text to speach has been added and it uses `fr-CA`. Also, we now have IPA pronunciations!
+
+Settings offers **Readable pronunciation** (the default) and **IPA**. Both formats cover the complete French text shown on the card, including its article and applicable liaison or elision.
+
+Each word stores these (in props) as `pronunciation` and `ipaPronunciation`. Update both together when adding or correcting a word.
+
+Vowels in readable pronunciation are written like this:
 
 - `an` / `en`: `ahn`
 - `on`: `ohn`
 - `in` / `ain` / `ein`: `an`
 - `un`: `uhn`
 
-The final `n` is generally there to suggest a French nasal sound. It is included often because these guides favor being approachable over being linguistically exact.
+The final `n` is generally there to suggest a French nasal sound. It is included often because these guides favor being approachable over exact. That's what IPA is for.
+
+### Copyright
+
+IPA transcriptions are informed by the Québec French pronunciation dictionary by **Marie-Hélène Côté, Université de Lausanne**, converted to the SPPAS format and SAMPA by **Brigitte Bigi, CNRS, Laboratoire Parole et Langage**. They include editorial transcriptions for missing words, inflections, expressions, and context-dependent senses. These estimates are not presented as dictionary-verified or official pronunciations. Per-word provenance, retained dictionary source entries, copyright notices, and license terms are in [data/french/pronunciations](data/french/pronunciations/README.md).
 
 ## Fonts
 
-**Lexend** is used throughout the application, with **Azeret Mono** for compact rank/CEFR labels. Static font weights live in `src/app/assets/fonts/` and are loaded asynchronously via the `useFonts` hook in Expo.
+**Lexend**: interface and readable pronunciations. **Azeret Mono**: rank/CEFR labels.
+
+**Noto Sans Regular**: IPA (Lexend lacks required symbols). [License](src/app/assets/fonts/NotoSans-OFL.txt).
+
+Fonts live in `src/app/assets/fonts/`, loaded with Expo's `useFonts`.
 
 [Adding custom fonts in React Native](https://blog.logrocket.com/how-to-add-custom-fonts-react-native/)
