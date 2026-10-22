@@ -1,0 +1,3 @@
+Copyright (c) Marie-Hélène Côté, Université de Lausanne
+Author: Marie-Hélène Côté
+Converted (file format and phoneset) by Brigitte Bigi, CNRS, LPL, Aix-en-Pce, France.

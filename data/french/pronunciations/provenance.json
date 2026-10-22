@@ -1,0 +1,2857 @@
+{
+	"word_noun_vent": {
+		"method": "dictionary",
+		"frqHeadwords": ["vent"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_frais": {
+		"method": "dictionary",
+		"frqHeadwords": ["frais"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_frappe": {
+		"method": "dictionary",
+		"frqHeadwords": ["frappé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_pendant_que": {
+		"method": "inferred",
+		"frqHeadwords": ["pendant", "que"],
+		"note": "Compose the two dictionary words."
+	},
+	"word_expression_j_attendais": {
+		"method": "inferred",
+		"frqHeadwords": ["je", "attendais"],
+		"note": "Elide je before attendais."
+	},
+	"word_adverb_dehors": {
+		"method": "dictionary",
+		"frqHeadwords": ["dehors"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_l_ete": {
+		"method": "dictionary",
+		"frqHeadwords": ["été"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_conjunction_alors": {
+		"method": "dictionary",
+		"frqHeadwords": ["alors"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_l_air": {
+		"method": "dictionary",
+		"frqHeadwords": ["air"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_faisait_du_bien": {
+		"method": "inferred",
+		"frqHeadwords": ["faisait", "du", "bien"],
+		"note": "Compose the dictionary phrase components."
+	},
+	"word_noun_chauffeur": {
+		"method": "dictionary",
+		"frqHeadwords": ["chauffeur"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_taxi": {
+		"method": "dictionary",
+		"frqHeadwords": ["taxi"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_aide": {
+		"method": "dictionary",
+		"frqHeadwords": ["aidé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_mes": {
+		"method": "dictionary",
+		"frqHeadwords": ["mes"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_viens_de": {
+		"method": "inferred",
+		"frqHeadwords": ["viens", "de"],
+		"note": "Compose the dictionary words."
+	},
+	"word_proper_noun_cameroun": {
+		"method": "dictionary",
+		"frqHeadwords": ["cameroun"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_m_a_t_il": {
+		"method": "inferred",
+		"frqHeadwords": ["me", "a", "il"],
+		"note": "Elision and the inversion linking t; retain formal il."
+	},
+	"word_verb_dit": {
+		"method": "dictionary",
+		"frqHeadwords": ["dit"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_toi": {
+		"method": "dictionary",
+		"frqHeadwords": ["toi"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_tu": {
+		"method": "dictionary",
+		"frqHeadwords": ["tu"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_proper_noun_etats_unis": {
+		"method": "dictionary",
+		"frqHeadwords": ["états-unis"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_repondu": {
+		"method": "dictionary",
+		"frqHeadwords": ["répondu"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_en_route_vers": {
+		"method": "inferred",
+		"frqHeadwords": ["en", "route", "vers"],
+		"note": "Compose the dictionary phrase components."
+	},
+	"word_noun_hotel": {
+		"method": "dictionary",
+		"frqHeadwords": ["hôtel"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_raconte": {
+		"method": "dictionary",
+		"frqHeadwords": ["raconté"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_arrivee": {
+		"method": "dictionary",
+		"frqHeadwords": ["arrivée"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_au_debut": {
+		"method": "inferred",
+		"frqHeadwords": ["au", "début"],
+		"note": "Compose the dictionary words."
+	},
+	"word_pronoun_ca": {
+		"method": "dictionary",
+		"frqHeadwords": ["ça"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_difficile": {
+		"method": "dictionary",
+		"frqHeadwords": ["difficile"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_trop": {
+		"method": "dictionary",
+		"frqHeadwords": ["trop"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_froid": {
+		"method": "dictionary",
+		"frqHeadwords": ["froid"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_pays": {
+		"method": "dictionary",
+		"frqHeadwords": ["pays"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_pronoun_lui": {
+		"method": "dictionary",
+		"frqHeadwords": ["lui"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_manquait": {
+		"method": "dictionary",
+		"frqHeadwords": ["manquait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_avec_le_temps": {
+		"method": "inferred",
+		"frqHeadwords": ["avec", "le", "temps"],
+		"note": "Compose the dictionary phrase components."
+	},
+	"word_expression_tombe_amoureux": {
+		"method": "inferred",
+		"frqHeadwords": ["tombé", "amoureux"],
+		"note": "Compose the dictionary words without optional liaison after the participle."
+	},
+	"word_article_des": {
+		"method": "dictionary",
+		"frqHeadwords": ["des"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_gens": {
+		"method": "dictionary",
+		"frqHeadwords": ["gens"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_collines": {
+		"method": "dictionary",
+		"frqHeadwords": ["collines"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_montre": {
+		"method": "dictionary",
+		"frqHeadwords": ["montré"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_quelques": {
+		"method": "dictionary",
+		"frqHeadwords": ["quelques"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_endroits": {
+		"method": "dictionary",
+		"frqHeadwords": ["endroits"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_en_chemin": {
+		"method": "inferred",
+		"frqHeadwords": ["en", "chemin"],
+		"note": "Compose the dictionary words."
+	},
+	"word_expression_tout_a_coup": {
+		"method": "inferred",
+		"frqHeadwords": ["tout", "à", "coup"],
+		"note": "Include the linking t in the fixed expression."
+	},
+	"word_verb_freine": {
+		"method": "inferred",
+		"frqHeadwords": ["freiner"],
+		"note": "The past participle has the same pronunciation as the infinitive."
+	},
+	"word_adverb_brusquement": {
+		"method": "dictionary",
+		"frqHeadwords": ["brusquement"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_il_y_avait": {
+		"method": "inferred",
+		"frqHeadwords": ["il", "y", "avait"],
+		"note": "Compose the phrase, retaining formal il."
+	},
+	"word_noun_l_ecureuil": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the standard Québec word form; final euil is œj. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_rue": {
+		"method": "dictionary",
+		"frqHeadwords": ["rue"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_s_est_sauve": {
+		"method": "inferred",
+		"frqHeadwords": ["se", "est", "sauvé"],
+		"note": "Elision before the auxiliary; compose with FRQ est and sauvé."
+	},
+	"word_expression_juste_a_temps": {
+		"method": "inferred",
+		"frqHeadwords": ["juste", "à", "temps"],
+		"note": "Compose the phrase with Québec lax y in juste."
+	},
+	"word_adjective_chanceux": {
+		"method": "inferred",
+		"frqHeadwords": ["chance"],
+		"note": "Add the masculine adjective suffix ø to chance."
+	},
+	"word_expression_achete_toi": {
+		"method": "inferred",
+		"frqHeadwords": ["acheter", "toi"],
+		"note": "Use the present imperative stem and the stressed pronoun."
+	},
+	"word_noun_manteau": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the nasal first syllable and final eau. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_veux": {
+		"method": "dictionary",
+		"frqHeadwords": ["veux"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_rester": {
+		"method": "dictionary",
+		"frqHeadwords": ["rester"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_ici": {
+		"method": "dictionary",
+		"frqHeadwords": ["ici"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_sortais": {
+		"method": "dictionary",
+		"frqHeadwords": ["sortais"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_voiture": {
+		"method": "dictionary",
+		"frqHeadwords": ["voiture"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_automne": {
+		"method": "dictionary",
+		"frqHeadwords": ["automne"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_s_etait_installe": {
+		"method": "inferred",
+		"frqHeadwords": ["était"],
+		"note": "Elide se and include liaison t before installé."
+	},
+	"word_noun_quartier": {
+		"method": "dictionary",
+		"frqHeadwords": ["quartier"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_feuilles": {
+		"method": "inferred",
+		"frqHeadwords": ["feuille"],
+		"note": "The plural has the same isolated pronunciation as feuille. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_rouges": {
+		"method": "dictionary",
+		"frqHeadwords": ["rouges"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_couvraient": {
+		"method": "inferred",
+		"frqHeadwords": ["couvrir"],
+		"note": "Imperfect stem couvr plus ɛ."
+	},
+	"word_noun_pelouses": {
+		"method": "inferred",
+		"frqHeadwords": ["pelouse"],
+		"note": "The plural has the same isolated pronunciation as pelouse. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_vertes": {
+		"method": "dictionary",
+		"frqHeadwords": ["vertes"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_s_accumulaient": {
+		"method": "inferred",
+		"frqHeadwords": ["accumuler"],
+		"note": "Elide se and use the imperfect ending ɛ."
+	},
+	"word_expression_le_long_des": {
+		"method": "inferred",
+		"frqHeadwords": ["le", "long", "des"],
+		"note": "Compose the dictionary phrase components."
+	},
+	"word_noun_trottoirs": {
+		"method": "dictionary",
+		"frqHeadwords": ["trottoirs"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_se_glissaient": {
+		"method": "inferred",
+		"frqHeadwords": ["se", "glisser"],
+		"note": "Use the imperfect ending ɛ."
+	},
+	"word_preposition_sous": {
+		"method": "dictionary",
+		"frqHeadwords": ["sous"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_voitures": {
+		"method": "dictionary",
+		"frqHeadwords": ["voitures"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_stationnees": {
+		"method": "dictionary",
+		"frqHeadwords": ["stationnées"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_petites": {
+		"method": "dictionary",
+		"frqHeadwords": ["petites"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_maisons": {
+		"method": "dictionary",
+		"frqHeadwords": ["maisons"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_se_serraient": {
+		"method": "inferred",
+		"frqHeadwords": ["se", "serrer"],
+		"note": "Use the FRQ serr stem and imperfect ending ɛ."
+	},
+	"word_expression_les_unes_contre_les_autres": {
+		"method": "inferred",
+		"frqHeadwords": ["les", "unes", "contre", "autres"],
+		"note": "Include both required plural liaisons."
+	},
+	"word_preposition_derriere": {
+		"method": "dictionary",
+		"frqHeadwords": ["derrière"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_basses": {
+		"method": "dictionary",
+		"frqHeadwords": ["basses"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_clotures": {
+		"method": "inferred",
+		"frqHeadwords": ["clôture"],
+		"note": "The plural has the same isolated pronunciation as the FRQ singular. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_vieux": {
+		"method": "dictionary",
+		"frqHeadwords": ["vieux"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_parterres": {
+		"method": "inferred",
+		"frqHeadwords": ["parterre"],
+		"note": "The plural has the same isolated pronunciation as parterre. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_fleurs": {
+		"method": "dictionary",
+		"frqHeadwords": ["fleurs"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_soufflait": {
+		"method": "inferred",
+		"frqHeadwords": ["souffler"],
+		"note": "Use the imperfect ending ɛ."
+	},
+	"word_noun_arbres": {
+		"method": "dictionary",
+		"frqHeadwords": ["arbres"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_poussait": {
+		"method": "inferred",
+		"frqHeadwords": ["pousser"],
+		"note": "Use the imperfect ending ɛ."
+	},
+	"word_adjective_seches": {
+		"method": "inferred",
+		"frqHeadwords": ["sèche"],
+		"note": "The plural has the same isolated pronunciation as sèche."
+	},
+	"word_noun_herbe": {
+		"method": "dictionary",
+		"frqHeadwords": ["herbe"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_tout_pres": {
+		"method": "inferred",
+		"frqHeadwords": ["tout", "près"],
+		"note": "Compose the dictionary words without liaison before p."
+	},
+	"word_adverb_haut": {
+		"method": "dictionary",
+		"frqHeadwords": ["haut"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_erable": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the Québec singular form. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_gros": {
+		"method": "dictionary",
+		"frqHeadwords": ["gros"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_tigre": {
+		"method": "inferred",
+		"frqHeadwords": ["tigre"],
+		"note": "Use the derived adjective ending e; i is tense in its open syllable."
+	},
+	"word_adjective_brun": {
+		"method": "dictionary",
+		"frqHeadwords": ["brun"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_regardait": {
+		"method": "dictionary",
+		"frqHeadwords": ["regardait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_danser": {
+		"method": "dictionary",
+		"frqHeadwords": ["danser"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_entre": {
+		"method": "dictionary",
+		"frqHeadwords": ["entre"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_branches": {
+		"method": "dictionary",
+		"frqHeadwords": ["branches"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_a_moitie": {
+		"method": "inferred",
+		"frqHeadwords": ["à", "moitié"],
+		"note": "Compose the dictionary words."
+	},
+	"word_adjective_endormi": {
+		"method": "dictionary",
+		"frqHeadwords": ["endormi"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_debut": {
+		"method": "dictionary",
+		"frqHeadwords": ["début"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_samedi": {
+		"method": "dictionary",
+		"frqHeadwords": ["samedi"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_soir": {
+		"method": "dictionary",
+		"frqHeadwords": ["soir"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_faim": {
+		"method": "dictionary",
+		"frqHeadwords": ["faim"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_horloge": {
+		"method": "dictionary",
+		"frqHeadwords": ["horloge"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_indiquait": {
+		"method": "dictionary",
+		"frqHeadwords": ["indiquait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_numeral_six": {
+		"method": "dictionary",
+		"frqHeadwords": ["six"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_numeral_quinze": {
+		"method": "dictionary",
+		"frqHeadwords": ["quinze"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_ciel": {
+		"method": "dictionary",
+		"frqHeadwords": ["ciel"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_bleu": {
+		"method": "dictionary",
+		"frqHeadwords": ["bleu"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_ouvert": {
+		"method": "dictionary",
+		"frqHeadwords": ["ouvert"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_garde_robe": {
+		"method": "inferred",
+		"frqHeadwords": ["garde", "robe"],
+		"note": "Compose the lexical compound. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_mis": {
+		"method": "dictionary",
+		"frqHeadwords": ["mis"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_chemise": {
+		"method": "dictionary",
+		"frqHeadwords": ["chemise"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_blanche": {
+		"method": "dictionary",
+		"frqHeadwords": ["blanche"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_jean": {
+		"method": "inferred",
+		"frqHeadwords": ["jean"],
+		"note": "Clothing sense: FRQ jean corresponds to the given name; use the Québec jeans loanword pronunciation. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_bas": {
+		"method": "dictionary",
+		"frqHeadwords": ["bas"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_noirs": {
+		"method": "dictionary",
+		"frqHeadwords": ["noirs"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_souliers": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the plural from the regular soulier pronunciation. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_bruns": {
+		"method": "inferred",
+		"frqHeadwords": ["brun"],
+		"note": "The plural has the same isolated pronunciation as brun."
+	},
+	"word_verb_trouve": {
+		"method": "dictionary",
+		"frqHeadwords": ["trouvé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_leger": {
+		"method": "dictionary",
+		"frqHeadwords": ["léger"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_porte": {
+		"method": "dictionary",
+		"frqHeadwords": ["porte"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_cles": {
+		"method": "dictionary",
+		"frqHeadwords": ["clés"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_telephone": {
+		"method": "dictionary",
+		"frqHeadwords": ["téléphone"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_table": {
+		"method": "dictionary",
+		"frqHeadwords": ["table"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_cuisine": {
+		"method": "dictionary",
+		"frqHeadwords": ["cuisine"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_restaurant": {
+		"method": "dictionary",
+		"frqHeadwords": ["restaurant"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_rues": {
+		"method": "dictionary",
+		"frqHeadwords": ["rues"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_preposition_chez": {
+		"method": "dictionary",
+		"frqHeadwords": ["chez"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_y": {
+		"method": "dictionary",
+		"frqHeadwords": ["y"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_alle": {
+		"method": "dictionary",
+		"frqHeadwords": ["allé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_envie": {
+		"method": "dictionary",
+		"frqHeadwords": ["envie"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_essayer": {
+		"method": "dictionary",
+		"frqHeadwords": ["essayer"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_nouveau": {
+		"method": "dictionary",
+		"frqHeadwords": ["nouveau"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_parti": {
+		"method": "dictionary",
+		"frqHeadwords": ["parti"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_demie": {
+		"method": "dictionary",
+		"frqHeadwords": ["demie"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_roulaient": {
+		"method": "inferred",
+		"frqHeadwords": ["rouler"],
+		"note": "Use the imperfect ending ɛ."
+	},
+	"word_noun_trottoir": {
+		"method": "dictionary",
+		"frqHeadwords": ["trottoir"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_traverse": {
+		"method": "dictionary",
+		"frqHeadwords": ["traversé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_vert": {
+		"method": "dictionary",
+		"frqHeadwords": ["vert"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_continue": {
+		"method": "dictionary",
+		"frqHeadwords": ["continué"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_tout_droit": {
+		"method": "inferred",
+		"frqHeadwords": ["tout", "droit"],
+		"note": "Compose the dictionary words."
+	},
+	"word_preposition_jusqu_au": {
+		"method": "dictionary",
+		"frqHeadwords": ["jusqu'au"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_prochain": {
+		"method": "dictionary",
+		"frqHeadwords": ["prochain"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_coin": {
+		"method": "dictionary",
+		"frqHeadwords": ["coin"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_tourne": {
+		"method": "dictionary",
+		"frqHeadwords": ["tourné"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_a_gauche": {
+		"method": "inferred",
+		"frqHeadwords": ["à", "gauche"],
+		"note": "Compose the dictionary words."
+	},
+	"word_noun_boulangerie": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the standard careful form with medial schwa. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_petite": {
+		"method": "dictionary",
+		"frqHeadwords": ["petite"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_epicerie": {
+		"method": "inferred",
+		"frqHeadwords": ["épiceries"],
+		"note": "Use the FRQ plural pronunciation for the singular. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_chaude": {
+		"method": "dictionary",
+		"frqHeadwords": ["chaude"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_brillait": {
+		"method": "inferred",
+		"frqHeadwords": ["briller"],
+		"note": "Use the imperfect ending ɛ."
+	},
+	"word_noun_fenetres": {
+		"method": "dictionary",
+		"frqHeadwords": ["fenêtres"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_regarde": {
+		"method": "dictionary",
+		"frqHeadwords": ["regardé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_heure": {
+		"method": "dictionary",
+		"frqHeadwords": ["heure"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_numeral_quarante_deux": {
+		"method": "inferred",
+		"frqHeadwords": ["quarante", "deux"],
+		"note": "Compose the dictionary number components."
+	},
+	"word_verb_entre": {
+		"method": "dictionary",
+		"frqHeadwords": ["entré"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_serveuse": {
+		"method": "inferred",
+		"frqHeadwords": ["serveur"],
+		"note": "Use the feminine suffix øz. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_souri": {
+		"method": "inferred",
+		"frqHeadwords": ["sourire"],
+		"note": "Remove the infinitive ending for the past participle."
+	},
+	"word_interjection_bonsoir": {
+		"method": "dictionary",
+		"frqHeadwords": ["bonsoir"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_personne": {
+		"method": "dictionary",
+		"frqHeadwords": ["personne"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adverb_oui": {
+		"method": "dictionary",
+		"frqHeadwords": ["oui"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_elle": {
+		"method": "dictionary",
+		"frqHeadwords": ["elle"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_enleve": {
+		"method": "dictionary",
+		"frqHeadwords": ["enlevé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_assis": {
+		"method": "dictionary",
+		"frqHeadwords": ["assis"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_vous": {
+		"method": "dictionary",
+		"frqHeadwords": ["vous"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_voulez": {
+		"method": "dictionary",
+		"frqHeadwords": ["voulez"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_boire": {
+		"method": "dictionary",
+		"frqHeadwords": ["boire"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_boisson_gazeuse": {
+		"method": "inferred",
+		"frqHeadwords": ["boisson", "gazeux"],
+		"note": "Use the feminine suffix øz. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_beaucoup_de": {
+		"method": "inferred",
+		"frqHeadwords": ["beaucoup", "de"],
+		"note": "Compose the dictionary words."
+	},
+	"word_noun_glace": {
+		"method": "dictionary",
+		"frqHeadwords": ["glace"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_ouvrant": {
+		"method": "dictionary",
+		"frqHeadwords": ["ouvrant"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_menu": {
+		"method": "dictionary",
+		"frqHeadwords": ["menu"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_accroche": {
+		"method": "dictionary",
+		"frqHeadwords": ["accroché"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_verre": {
+		"method": "dictionary",
+		"frqHeadwords": ["verre"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_eau": {
+		"method": "dictionary",
+		"frqHeadwords": ["eau"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_coude": {
+		"method": "dictionary",
+		"frqHeadwords": ["coude"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_renversee": {
+		"method": "inferred",
+		"frqHeadwords": ["renversé"],
+		"note": "The feminine participle has the same pronunciation as renversé."
+	},
+	"word_adverb_parfois": {
+		"method": "dictionary",
+		"frqHeadwords": ["parfois"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_maladroit": {
+		"method": "inferred",
+		"frqHeadwords": ["maladroite"],
+		"note": "Remove the feminine final t."
+	},
+	"word_interjection_oh": {
+		"method": "dictionary",
+		"frqHeadwords": ["oh"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_non": {
+		"method": "dictionary",
+		"frqHeadwords": ["non"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_desole": {
+		"method": "dictionary",
+		"frqHeadwords": ["désolé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_ri": {
+		"method": "inferred",
+		"frqHeadwords": ["rire"],
+		"note": "Remove the infinitive final ʁ for the past participle."
+	},
+	"word_adverb_doucement": {
+		"method": "dictionary",
+		"frqHeadwords": ["doucement"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_grave": {
+		"method": "dictionary",
+		"frqHeadwords": ["grave"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_essuye": {
+		"method": "dictionary",
+		"frqHeadwords": ["essuyé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_apporte": {
+		"method": "dictionary",
+		"frqHeadwords": ["apporté"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_autre": {
+		"method": "dictionary",
+		"frqHeadwords": ["autre"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_soupes": {
+		"method": "inferred",
+		"frqHeadwords": ["soupe"],
+		"note": "The plural has the same isolated pronunciation as soupe. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_nouilles": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the plural form with the Québec lax vowel in a closed syllable. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_plats": {
+		"method": "dictionary",
+		"frqHeadwords": ["plats"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_riz": {
+		"method": "dictionary",
+		"frqHeadwords": ["riz"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_raviolis": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the loanword plural with silent final s. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_viandes": {
+		"method": "inferred",
+		"frqHeadwords": ["viande"],
+		"note": "The plural has the same isolated pronunciation as viande. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_grillees": {
+		"method": "inferred",
+		"frqHeadwords": ["griller"],
+		"note": "The participle has the same pronunciation as the infinitive."
+	},
+	"word_noun_bol": {
+		"method": "dictionary",
+		"frqHeadwords": ["bol"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_photo": {
+		"method": "dictionary",
+		"frqHeadwords": ["photo"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_pronoun_quoi": {
+		"method": "dictionary",
+		"frqHeadwords": ["quoi"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_explique": {
+		"method": "dictionary",
+		"frqHeadwords": ["expliqué"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_conjunction_que": {
+		"method": "dictionary",
+		"frqHeadwords": ["que"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_bouillon": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the two syllables and final nasal vowel. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_porc": {
+		"method": "dictionary",
+		"frqHeadwords": ["porc"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_champignons": {
+		"method": "inferred",
+		"frqHeadwords": ["champignon"],
+		"note": "The plural has the same isolated pronunciation as champignon. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_oignons": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the traditional pronunciation with silent spelling i. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_verts": {
+		"method": "dictionary",
+		"frqHeadwords": ["verts"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_oeufs": {
+		"method": "inferred",
+		"frqHeadwords": ["oeufs"],
+		"note": "Normalize the ligature; the plural has no final f. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_parfait": {
+		"method": "dictionary",
+		"frqHeadwords": ["parfait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_vais": {
+		"method": "dictionary",
+		"frqHeadwords": ["vais"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_prendre": {
+		"method": "dictionary",
+		"frqHeadwords": ["prendre"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_s_il_vous_plait": {
+		"method": "inferred",
+		"frqHeadwords": ["il", "vous", "plaît"],
+		"note": "Compose the polite expression, retaining formal il."
+	},
+	"word_adverb_aussi": {
+		"method": "dictionary",
+		"frqHeadwords": ["aussi"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_commande": {
+		"method": "dictionary",
+		"frqHeadwords": ["commandé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_partager": {
+		"method": "dictionary",
+		"frqHeadwords": ["partager"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_absolument": {
+		"method": "dictionary",
+		"frqHeadwords": ["absolument"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_personne": {
+		"method": "dictionary",
+		"frqHeadwords": ["personne"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_conjunction_quand": {
+		"method": "dictionary",
+		"frqHeadwords": ["quand"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_vapeur": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the standard Québec form. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_montait": {
+		"method": "dictionary",
+		"frqHeadwords": ["montait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_sentait": {
+		"method": "dictionary",
+		"frqHeadwords": ["sentait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_ail": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the standard diphthong-like vowel and glide. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_gingembre": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the two nasal vowels and final consonant cluster. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_goute": {
+		"method": "inferred",
+		"frqHeadwords": ["goûter"],
+		"note": "The participle has the same pronunciation as the infinitive."
+	},
+	"word_expression_d_abord": {
+		"method": "dictionary",
+		"frqHeadwords": ["d'abord"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_morceau": {
+		"method": "dictionary",
+		"frqHeadwords": ["morceau"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_oeuf": {
+		"method": "inferred",
+		"frqHeadwords": ["oeuf"],
+		"note": "Normalize the ligature; retain singular final f. Include the stored article with elision or liaison where applicable."
+	},
+	"word_pronoun_tout": {
+		"method": "dictionary",
+		"frqHeadwords": ["tout"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_sale": {
+		"method": "dictionary",
+		"frqHeadwords": ["salé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_plein": {
+		"method": "dictionary",
+		"frqHeadwords": ["plein"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_gout": {
+		"method": "dictionary",
+		"frqHeadwords": ["goût"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_pris": {
+		"method": "dictionary",
+		"frqHeadwords": ["pris"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_baguettes": {
+		"method": "inferred",
+		"frqHeadwords": ["baguette"],
+		"note": "The plural has the same isolated pronunciation as baguette. Include the stored article with elision or liaison where applicable."
+	},
+	"word_pronoun_les": {
+		"method": "dictionary",
+		"frqHeadwords": ["les"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_maladroitement": {
+		"method": "inferred",
+		"frqHeadwords": ["maladroite"],
+		"note": "Add adverbial mɑ̃ to the feminine stem."
+	},
+	"word_verb_deplacees": {
+		"method": "dictionary",
+		"frqHeadwords": ["déplacées"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_doigts": {
+		"method": "dictionary",
+		"frqHeadwords": ["doigts"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_pronoun_elles": {
+		"method": "dictionary",
+		"frqHeadwords": ["elles"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_auxiliary_sont": {
+		"method": "dictionary",
+		"frqHeadwords": ["sont"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_tombees": {
+		"method": "dictionary",
+		"frqHeadwords": ["tombées"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_par_terre": {
+		"method": "inferred",
+		"frqHeadwords": ["par", "terre"],
+		"note": "Compose the dictionary words."
+	},
+	"word_verb_vu": {
+		"method": "dictionary",
+		"frqHeadwords": ["vu"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_fourchette": {
+		"method": "dictionary",
+		"frqHeadwords": ["fourchette"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_numeral_sept": {
+		"method": "dictionary",
+		"frqHeadwords": ["sept"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_numeral_cinquante": {
+		"method": "dictionary",
+		"frqHeadwords": ["cinquante"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_facture": {
+		"method": "dictionary",
+		"frqHeadwords": ["facture"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_paye": {
+		"method": "dictionary",
+		"frqHeadwords": ["payé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_remis": {
+		"method": "dictionary",
+		"frqHeadwords": ["remis"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_remercie": {
+		"method": "dictionary",
+		"frqHeadwords": ["remercié"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_se": {
+		"method": "dictionary",
+		"frqHeadwords": ["se"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_levant": {
+		"method": "inferred",
+		"frqHeadwords": ["lever"],
+		"note": "Use the present participle ending ɑ̃."
+	},
+	"word_verb_oublie": {
+		"method": "dictionary",
+		"frqHeadwords": ["oublié"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_appele": {
+		"method": "dictionary",
+		"frqHeadwords": ["appelé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_avant": {
+		"method": "dictionary",
+		"frqHeadwords": ["avant"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_arrive_subjunctive": {
+		"method": "dictionary",
+		"frqHeadwords": ["arrive"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_retourne": {
+		"method": "dictionary",
+		"frqHeadwords": ["retourné"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_chercher": {
+		"method": "dictionary",
+		"frqHeadwords": ["chercher"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_interjection_merci": {
+		"method": "dictionary",
+		"frqHeadwords": ["merci"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_fois": {
+		"method": "dictionary",
+		"frqHeadwords": ["fois"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_chemin": {
+		"method": "dictionary",
+		"frqHeadwords": ["chemin"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_heureux": {
+		"method": "dictionary",
+		"frqHeadwords": ["heureux"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_satisfait": {
+		"method": "dictionary",
+		"frqHeadwords": ["satisfait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_beaucoup": {
+		"method": "dictionary",
+		"frqHeadwords": ["beaucoup"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_plu": {
+		"method": "dictionary",
+		"frqHeadwords": ["plu"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_deja": {
+		"method": "dictionary",
+		"frqHeadwords": ["déjà"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_retourner": {
+		"method": "dictionary",
+		"frqHeadwords": ["retourner"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_plus": {
+		"method": "dictionary",
+		"frqHeadwords": ["plus"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_tard": {
+		"method": "dictionary",
+		"frqHeadwords": ["tard"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_soiree": {
+		"method": "dictionary",
+		"frqHeadwords": ["soirée"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_determiner_notre": {
+		"method": "dictionary",
+		"frqHeadwords": ["notre"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_avion": {
+		"method": "dictionary",
+		"frqHeadwords": ["avion"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_amorce": {
+		"method": "dictionary",
+		"frqHeadwords": ["amorcé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_sa": {
+		"method": "dictionary",
+		"frqHeadwords": ["sa"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_descente": {
+		"method": "dictionary",
+		"frqHeadwords": ["descente"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_lumieres": {
+		"method": "dictionary",
+		"frqHeadwords": ["lumières"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_ambrees": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the feminine plural adjective with silent es."
+	},
+	"word_noun_piste": {
+		"method": "dictionary",
+		"frqHeadwords": ["piste"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_brillaient": {
+		"method": "inferred",
+		"frqHeadwords": ["briller"],
+		"note": "Use the imperfect ending ɛ."
+	},
+	"word_noun_obscurite": {
+		"method": "dictionary",
+		"frqHeadwords": ["obscurité"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_article_une": {
+		"method": "dictionary",
+		"frqHeadwords": ["une"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_courte": {
+		"method": "dictionary",
+		"frqHeadwords": ["courte"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_attente": {
+		"method": "dictionary",
+		"frqHeadwords": ["attente"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_pronoun_nous": {
+		"method": "dictionary",
+		"frqHeadwords": ["nous"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_auxiliary_sommes": {
+		"method": "dictionary",
+		"frqHeadwords": ["sommes"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_sortis": {
+		"method": "dictionary",
+		"frqHeadwords": ["sortis"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_entres": {
+		"method": "dictionary",
+		"frqHeadwords": ["entrés"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_c_etait": {
+		"method": "inferred",
+		"frqHeadwords": ["était"],
+		"note": "Elide ce before était."
+	},
+	"word_adjective_chaleureux": {
+		"method": "dictionary",
+		"frqHeadwords": ["chaleureux"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_en": {
+		"method": "dictionary",
+		"frqHeadwords": ["en"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_marchant": {
+		"method": "inferred",
+		"frqHeadwords": ["marcher"],
+		"note": "Use the present participle ending ɑ̃."
+	},
+	"word_preposition_vers": {
+		"method": "dictionary",
+		"frqHeadwords": ["vers"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_zone": {
+		"method": "dictionary",
+		"frqHeadwords": ["zone"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_recuperation": {
+		"method": "dictionary",
+		"frqHeadwords": ["récupération"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_preposition_des": {
+		"method": "dictionary",
+		"frqHeadwords": ["des"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_bagages": {
+		"method": "dictionary",
+		"frqHeadwords": ["bagages"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_j_ai": {
+		"method": "inferred",
+		"frqHeadwords": ["je", "ai"],
+		"note": "Elide je before ai."
+	},
+	"word_verb_apercu": {
+		"method": "dictionary",
+		"frqHeadwords": ["aperçu"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_grand": {
+		"method": "dictionary",
+		"frqHeadwords": ["grand"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_panneau": {
+		"method": "dictionary",
+		"frqHeadwords": ["panneau"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adverb_ou": {
+		"method": "dictionary",
+		"frqHeadwords": ["où"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_ecrit": {
+		"method": "dictionary",
+		"frqHeadwords": ["écrit"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_international": {
+		"method": "dictionary",
+		"frqHeadwords": ["international"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_proper_noun_jean_lesage": {
+		"method": "inferred",
+		"frqHeadwords": ["jean"],
+		"note": "Jean is the given name here; estimate the surname Lesage."
+	},
+	"word_verb_demande": {
+		"method": "dictionary",
+		"frqHeadwords": ["demandé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_qui": {
+		"method": "dictionary",
+		"frqHeadwords": ["qui"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_plaque": {
+		"method": "dictionary",
+		"frqHeadwords": ["plaque"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adverb_tout": {
+		"method": "dictionary",
+		"frqHeadwords": ["tout"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_pres": {
+		"method": "dictionary",
+		"frqHeadwords": ["près"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_expliquait": {
+		"method": "dictionary",
+		"frqHeadwords": ["expliquait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_qu_il": {
+		"method": "inferred",
+		"frqHeadwords": ["que", "il"],
+		"note": "Elide que before formal il."
+	},
+	"word_auxiliary_avait": {
+		"method": "dictionary",
+		"frqHeadwords": ["avait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_auxiliary_ete": {
+		"method": "dictionary",
+		"frqHeadwords": ["été"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_avocat": {
+		"method": "dictionary",
+		"frqHeadwords": ["avocat"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_premier": {
+		"method": "dictionary",
+		"frqHeadwords": ["premier"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_ministre": {
+		"method": "dictionary",
+		"frqHeadwords": ["ministre"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_preposition_du": {
+		"method": "dictionary",
+		"frqHeadwords": ["du"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_proper_noun_quebec": {
+		"method": "dictionary",
+		"frqHeadwords": ["québec"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_gouvernement": {
+		"method": "dictionary",
+		"frqHeadwords": ["gouvernement"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_contribue": {
+		"method": "dictionary",
+		"frqHeadwords": ["contribué"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_transformer": {
+		"method": "dictionary",
+		"frqHeadwords": ["transformer"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_ecoles": {
+		"method": "dictionary",
+		"frqHeadwords": ["écoles"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_economie": {
+		"method": "dictionary",
+		"frqHeadwords": ["économie"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_province": {
+		"method": "dictionary",
+		"frqHeadwords": ["province"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_periode": {
+		"method": "dictionary",
+		"frqHeadwords": ["période"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_appelee": {
+		"method": "dictionary",
+		"frqHeadwords": ["appelée"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_revolution": {
+		"method": "dictionary",
+		"frqHeadwords": ["révolution"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_tranquille": {
+		"method": "dictionary",
+		"frqHeadwords": ["tranquille"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_la": {
+		"method": "dictionary",
+		"frqHeadwords": ["là"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_d_ou": {
+		"method": "inferred",
+		"frqHeadwords": ["de", "où"],
+		"note": "Elide de before où."
+	},
+	"word_verb_viens": {
+		"method": "dictionary",
+		"frqHeadwords": ["viens"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_ne": {
+		"method": "dictionary",
+		"frqHeadwords": ["ne"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_jamais": {
+		"method": "dictionary",
+		"frqHeadwords": ["jamais"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_rien": {
+		"method": "dictionary",
+		"frqHeadwords": ["rien"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_appris": {
+		"method": "dictionary",
+		"frqHeadwords": ["appris"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_sur": {
+		"method": "dictionary",
+		"frqHeadwords": ["sur"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_curieux": {
+		"method": "dictionary",
+		"frqHeadwords": ["curieux"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_d_en": {
+		"method": "inferred",
+		"frqHeadwords": ["de", "en"],
+		"note": "Elide de before en."
+	},
+	"word_verb_apprendre": {
+		"method": "dictionary",
+		"frqHeadwords": ["apprendre"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_davantage": {
+		"method": "dictionary",
+		"frqHeadwords": ["davantage"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_demandais": {
+		"method": "dictionary",
+		"frqHeadwords": ["demandais"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_conjunction_si": {
+		"method": "dictionary",
+		"frqHeadwords": ["si"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_j_allais": {
+		"method": "inferred",
+		"frqHeadwords": ["je", "allais"],
+		"note": "Elide je before allais."
+	},
+	"word_verb_trouver": {
+		"method": "dictionary",
+		"frqHeadwords": ["trouver"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_d_autres": {
+		"method": "dictionary",
+		"frqHeadwords": ["d'autres"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_partout": {
+		"method": "dictionary",
+		"frqHeadwords": ["partout"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_ville": {
+		"method": "dictionary",
+		"frqHeadwords": ["ville"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_voit": {
+		"method": "dictionary",
+		"frqHeadwords": ["voit"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_il_y_a": {
+		"method": "inferred",
+		"frqHeadwords": ["il", "y", "a"],
+		"note": "Use formal il and the common smooth y a sequence."
+	},
+	"word_adjective_beau": {
+		"method": "dictionary",
+		"frqHeadwords": ["beau"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_croissant": {
+		"method": "dictionary",
+		"frqHeadwords": ["croissant"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_regarde_present": {
+		"method": "dictionary",
+		"frqHeadwords": ["regarde"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_grille_pain": {
+		"method": "inferred",
+		"frqHeadwords": ["grille", "pain"],
+		"note": "Compose the dictionary compound components. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_lit": {
+		"method": "dictionary",
+		"frqHeadwords": ["lit"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_livre": {
+		"method": "dictionary",
+		"frqHeadwords": ["livre"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_prend": {
+		"method": "dictionary",
+		"frqHeadwords": ["prend"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_met": {
+		"method": "dictionary",
+		"frqHeadwords": ["met"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_interjection_clic": {
+		"method": "inferred",
+		"frqHeadwords": ["clics"],
+		"note": "The singular has the same pronunciation as the plural."
+	},
+	"word_verb_chauffe": {
+		"method": "inferred",
+		"frqHeadwords": ["chaud"],
+		"note": "Estimate the present stem of chauffer."
+	},
+	"word_verb_devient": {
+		"method": "dictionary",
+		"frqHeadwords": ["devient"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_noire": {
+		"method": "dictionary",
+		"frqHeadwords": ["noire"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_fume": {
+		"method": "inferred",
+		"frqHeadwords": ["fumer"],
+		"note": "Use the present stem, with Québec lax y in a closed syllable."
+	},
+	"word_verb_sent": {
+		"method": "dictionary",
+		"frqHeadwords": ["sent"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_fumee": {
+		"method": "dictionary",
+		"frqHeadwords": ["fumée"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_debranche": {
+		"method": "inferred",
+		"frqHeadwords": ["débrancher"],
+		"note": "Use the present stem without infinitive e."
+	},
+	"word_adverb_vite": {
+		"method": "dictionary",
+		"frqHeadwords": ["vite"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_cest": {
+		"method": "inferred",
+		"frqHeadwords": ["ce", "est"],
+		"note": "Elide ce before the FRQ auxiliary est."
+	},
+	"word_article_du": {
+		"method": "dictionary",
+		"frqHeadwords": ["du"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_papier": {
+		"method": "dictionary",
+		"frqHeadwords": ["papier"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_nest": {
+		"method": "inferred",
+		"frqHeadwords": ["ne", "est"],
+		"note": "Elide ne before the FRQ auxiliary est."
+	},
+	"word_verb_trouve_present": {
+		"method": "dictionary",
+		"frqHeadwords": ["trouve"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_fromage": {
+		"method": "dictionary",
+		"frqHeadwords": ["fromage"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_numeral_trois": {
+		"method": "dictionary",
+		"frqHeadwords": ["trois"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_heures": {
+		"method": "dictionary",
+		"frqHeadwords": ["heures"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_matin": {
+		"method": "dictionary",
+		"frqHeadwords": ["matin"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_lundi": {
+		"method": "dictionary",
+		"frqHeadwords": ["lundi"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_appartement": {
+		"method": "inferred",
+		"frqHeadwords": ["appartement"],
+		"note": "Use the careful schwa in appartement rather than the FRQ œ variant. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_pluie": {
+		"method": "dictionary",
+		"frqHeadwords": ["pluie"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_tapait": {
+		"method": "inferred",
+		"frqHeadwords": ["taper"],
+		"note": "Use the imperfect ending ɛ."
+	},
+	"word_expression_en_rythme": {
+		"method": "inferred",
+		"frqHeadwords": ["en", "rythme"],
+		"note": "Compose the dictionary words."
+	},
+	"word_preposition_contre": {
+		"method": "dictionary",
+		"frqHeadwords": ["contre"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_fenetre": {
+		"method": "dictionary",
+		"frqHeadwords": ["fenêtre"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_a_cote_de": {
+		"method": "inferred",
+		"frqHeadwords": ["à", "côté", "de"],
+		"note": "Compose the dictionary phrase components."
+	},
+	"word_noun_lit": {
+		"method": "dictionary",
+		"frqHeadwords": ["lit"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_chaud": {
+		"method": "dictionary",
+		"frqHeadwords": ["chaud"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_radiateur": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the standard Québec form. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adverb_ailleurs": {
+		"method": "dictionary",
+		"frqHeadwords": ["ailleurs"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_piece": {
+		"method": "dictionary",
+		"frqHeadwords": ["pièce"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_perdu": {
+		"method": "dictionary",
+		"frqHeadwords": ["perdu"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_presque": {
+		"method": "dictionary",
+		"frqHeadwords": ["presque"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_toutes": {
+		"method": "dictionary",
+		"frqHeadwords": ["toutes"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_ses": {
+		"method": "dictionary",
+		"frqHeadwords": ["ses"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_couleurs": {
+		"method": "dictionary",
+		"frqHeadwords": ["couleurs"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_pave": {
+		"method": "dictionary",
+		"frqHeadwords": ["pavé"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_sombre": {
+		"method": "dictionary",
+		"frqHeadwords": ["sombre"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_silhouettes": {
+		"method": "inferred",
+		"frqHeadwords": ["silhouette"],
+		"note": "The plural has the same isolated pronunciation as silhouette. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_batiments": {
+		"method": "dictionary",
+		"frqHeadwords": ["bâtiments"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_lumiere": {
+		"method": "dictionary",
+		"frqHeadwords": ["lumière"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_orange": {
+		"method": "dictionary",
+		"frqHeadwords": ["orange"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_lampadaires": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the plural with silent s. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_de_temps_en_temps": {
+		"method": "inferred",
+		"frqHeadwords": ["de", "temps", "en"],
+		"note": "Include the fixed expression's liaison z."
+	},
+	"word_noun_phares": {
+		"method": "dictionary",
+		"frqHeadwords": ["phares"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_blancs": {
+		"method": "dictionary",
+		"frqHeadwords": ["blancs"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_glissaient": {
+		"method": "inferred",
+		"frqHeadwords": ["glisser"],
+		"note": "Use the imperfect ending ɛ."
+	},
+	"word_noun_murs": {
+		"method": "dictionary",
+		"frqHeadwords": ["murs"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_plafond": {
+		"method": "dictionary",
+		"frqHeadwords": ["plafond"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_projetant": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the present participle with medial schwa."
+	},
+	"word_adjective_etranges": {
+		"method": "dictionary",
+		"frqHeadwords": ["étranges"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_ombres": {
+		"method": "inferred",
+		"frqHeadwords": ["ombre"],
+		"note": "The plural has the same isolated pronunciation as ombre. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_remonta": {
+		"method": "inferred",
+		"frqHeadwords": ["remonter"],
+		"note": "Use the past historic ending a."
+	},
+	"word_noun_couverture": {
+		"method": "dictionary",
+		"frqHeadwords": ["couverture"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_ferma": {
+		"method": "inferred",
+		"frqHeadwords": ["fermer"],
+		"note": "Use the past historic ending a."
+	},
+	"word_noun_yeux": {
+		"method": "dictionary",
+		"frqHeadwords": ["yeux"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_secondes": {
+		"method": "dictionary",
+		"frqHeadwords": ["secondes"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_quelque_chose": {
+		"method": "inferred",
+		"frqHeadwords": ["quelque", "chose"],
+		"note": "Use the careful phrase form with schwa after quelque."
+	},
+	"word_verb_tapa": {
+		"method": "inferred",
+		"frqHeadwords": ["taper"],
+		"note": "Use the past historic ending a."
+	},
+	"word_pronoun_ce": {
+		"method": "dictionary",
+		"frqHeadwords": ["ce"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_netait": {
+		"method": "inferred",
+		"frqHeadwords": ["ne", "était"],
+		"note": "Elide ne before était."
+	},
+	"word_adverb_pas": {
+		"method": "dictionary",
+		"frqHeadwords": ["pas"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_repoussa": {
+		"method": "inferred",
+		"frqHeadwords": ["pousser"],
+		"note": "Estimate the prefixed stem and past historic ending a."
+	},
+	"word_verb_ouvrit": {
+		"method": "inferred",
+		"frqHeadwords": ["ouvrir"],
+		"note": "Use the past historic form without the infinitive final ʁ."
+	},
+	"word_expression_de_nouveau": {
+		"method": "inferred",
+		"frqHeadwords": ["de", "nouveau"],
+		"note": "Compose the dictionary words."
+	},
+	"word_numeral_deux": {
+		"method": "dictionary",
+		"frqHeadwords": ["deux"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_grands": {
+		"method": "dictionary",
+		"frqHeadwords": ["grands"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_jaunes": {
+		"method": "dictionary",
+		"frqHeadwords": ["jaunes"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_le": {
+		"method": "dictionary",
+		"frqHeadwords": ["le"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_fixaient": {
+		"method": "inferred",
+		"frqHeadwords": ["fixer"],
+		"note": "Use the imperfect ending ɛ."
+	},
+	"word_preposition_a_travers": {
+		"method": "inferred",
+		"frqHeadwords": ["à", "travers"],
+		"note": "Compose the dictionary words."
+	},
+	"word_noun_vitre": {
+		"method": "dictionary",
+		"frqHeadwords": ["vitre"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_clignerent": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the past historic plural form."
+	},
+	"word_verb_cligna": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the past historic singular form."
+	},
+	"word_expression_a_son_tour": {
+		"method": "inferred",
+		"frqHeadwords": ["à", "son", "tour"],
+		"note": "Compose the dictionary phrase components."
+	},
+	"word_noun_miaulement": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the standard word form with optional medial schwa omitted. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_etouffe": {
+		"method": "dictionary",
+		"frqHeadwords": ["étouffé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_se_fit_entendre": {
+		"method": "inferred",
+		"frqHeadwords": ["se", "fit", "entendre"],
+		"note": "Include the formal liaison t after fit."
+	},
+	"word_interjection_bienvenue": {
+		"method": "dictionary",
+		"frqHeadwords": ["bienvenue"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_application": {
+		"method": "dictionary",
+		"frqHeadwords": ["application"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_francais": {
+		"method": "dictionary",
+		"frqHeadwords": ["français"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_histoire": {
+		"method": "dictionary",
+		"frqHeadwords": ["histoire"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_histoires": {
+		"method": "dictionary",
+		"frqHeadwords": ["histoires"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_utilise": {
+		"method": "dictionary",
+		"frqHeadwords": ["utilise"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_carte_eclair": {
+		"method": "inferred",
+		"frqHeadwords": ["carte", "éclair"],
+		"note": "Compose the dictionary compound components. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_cartes_eclair": {
+		"method": "inferred",
+		"frqHeadwords": ["carte", "éclair"],
+		"note": "The plural compound has the same pronunciation as the singular. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_rendre": {
+		"method": "dictionary",
+		"frqHeadwords": ["rendre"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_apprentissage": {
+		"method": "dictionary",
+		"frqHeadwords": ["apprentissage"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_facile": {
+		"method": "dictionary",
+		"frqHeadwords": ["facile"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_chaque": {
+		"method": "dictionary",
+		"frqHeadwords": ["chaque"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_chapitre": {
+		"method": "dictionary",
+		"frqHeadwords": ["chapitre"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_chapitres": {
+		"method": "dictionary",
+		"frqHeadwords": ["chapitres"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_deck": {
+		"method": "dictionary",
+		"frqHeadwords": ["deck"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_decks": {
+		"method": "inferred",
+		"frqHeadwords": ["deck"],
+		"note": "Use the existing French loanword entry with silent plural s. Include the stored article with elision or liaison where applicable."
+	},
+	"word_conjunction_comme": {
+		"method": "dictionary",
+		"frqHeadwords": ["comme"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_celui": {
+		"method": "dictionary",
+		"frqHeadwords": ["celui"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_lis": {
+		"method": "dictionary",
+		"frqHeadwords": ["lis"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_moment": {
+		"method": "dictionary",
+		"frqHeadwords": ["moment"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_contient": {
+		"method": "dictionary",
+		"frqHeadwords": ["contient"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_court": {
+		"method": "dictionary",
+		"frqHeadwords": ["court"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_passage": {
+		"method": "dictionary",
+		"frqHeadwords": ["passage"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_etudie": {
+		"method": "dictionary",
+		"frqHeadwords": ["étudie"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_deviendra": {
+		"method": "dictionary",
+		"frqHeadwords": ["deviendra"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_reponds": {
+		"method": "dictionary",
+		"frqHeadwords": ["réponds"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_correctement": {
+		"method": "dictionary",
+		"frqHeadwords": ["correctement"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_monte": {
+		"method": "dictionary",
+		"frqHeadwords": ["monte"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_niveau": {
+		"method": "dictionary",
+		"frqHeadwords": ["niveau"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_gagnes": {
+		"method": "inferred",
+		"frqHeadwords": ["gagner"],
+		"note": "Use the present stem without infinitive e."
+	},
+	"word_noun_carte": {
+		"method": "dictionary",
+		"frqHeadwords": ["carte"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_eleve": {
+		"method": "dictionary",
+		"frqHeadwords": ["élevé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_mieux": {
+		"method": "dictionary",
+		"frqHeadwords": ["mieux"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_connais": {
+		"method": "dictionary",
+		"frqHeadwords": ["connais"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_mot": {
+		"method": "dictionary",
+		"frqHeadwords": ["mot"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_mots": {
+		"method": "dictionary",
+		"frqHeadwords": ["mots"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_selectionne": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the present verb form."
+	},
+	"word_verb_voir": {
+		"method": "dictionary",
+		"frqHeadwords": ["voir"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_en_evidence": {
+		"method": "inferred",
+		"frqHeadwords": ["en", "évidence"],
+		"note": "Include liaison n before the vowel."
+	},
+	"word_determiner_certains": {
+		"method": "dictionary",
+		"frqHeadwords": ["certains"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_font_partie_de": {
+		"method": "inferred",
+		"frqHeadwords": ["font", "partie", "de"],
+		"note": "Compose the dictionary phrase components."
+	},
+	"word_noun_collections": {
+		"method": "dictionary",
+		"frqHeadwords": ["collections"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_par_exemple": {
+		"method": "inferred",
+		"frqHeadwords": ["par", "exemple"],
+		"note": "Compose the dictionary words."
+	},
+	"word_verb_peux": {
+		"method": "dictionary",
+		"frqHeadwords": ["peux"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_collectionner": {
+		"method": "inferred",
+		"frqHeadwords": ["collections"],
+		"note": "Estimate the derived infinitive ending e."
+	},
+	"word_determiner_tous": {
+		"method": "inferred",
+		"frqHeadwords": ["tous", "tout"],
+		"note": "Determiner before a following noun; omit the s of the standalone pronoun tous."
+	},
+	"word_noun_jours": {
+		"method": "dictionary",
+		"frqHeadwords": ["jours"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_semaine": {
+		"method": "dictionary",
+		"frqHeadwords": ["semaine"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_complete": {
+		"method": "dictionary",
+		"frqHeadwords": ["complète"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_gagner": {
+		"method": "dictionary",
+		"frqHeadwords": ["gagner"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_bonus": {
+		"method": "dictionary",
+		"frqHeadwords": ["bonus"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adverb_peut_etre": {
+		"method": "dictionary",
+		"frqHeadwords": ["peut-être"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_special": {
+		"method": "dictionary",
+		"frqHeadwords": ["spécial"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_apprends": {
+		"method": "dictionary",
+		"frqHeadwords": ["apprends"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_tes": {
+		"method": "dictionary",
+		"frqHeadwords": ["tes"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_amuse": {
+		"method": "dictionary",
+		"frqHeadwords": ["amuse"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_je": {
+		"method": "dictionary",
+		"frqHeadwords": ["je"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_pronoun_me": {
+		"method": "dictionary",
+		"frqHeadwords": ["me"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_auxiliary_suis": {
+		"method": "dictionary",
+		"frqHeadwords": ["suis"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_reveille": {
+		"method": "dictionary",
+		"frqHeadwords": ["réveillé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_tres": {
+		"method": "dictionary",
+		"frqHeadwords": ["très"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_mon": {
+		"method": "dictionary",
+		"frqHeadwords": ["mon"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_j_etais": {
+		"method": "inferred",
+		"frqHeadwords": ["je", "étais"],
+		"note": "Elide je before étais."
+	},
+	"word_conjunction_mais": {
+		"method": "dictionary",
+		"frqHeadwords": ["mais"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_j_avais": {
+		"method": "inferred",
+		"frqHeadwords": ["je", "avais"],
+		"note": "Elide je before avais."
+	},
+	"word_pronoun_il": {
+		"method": "inferred",
+		"frqHeadwords": ["il"],
+		"note": "Retain the formal final l rather than the reduced FRQ i variant."
+	},
+	"word_verb_faisait": {
+		"method": "dictionary",
+		"frqHeadwords": ["faisait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_noir": {
+		"method": "dictionary",
+		"frqHeadwords": ["noir"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_conjunction_et": {
+		"method": "dictionary",
+		"frqHeadwords": ["et"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_calme": {
+		"method": "dictionary",
+		"frqHeadwords": ["calme"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_l_aube": {
+		"method": "dictionary",
+		"frqHeadwords": ["aube"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_etait": {
+		"method": "dictionary",
+		"frqHeadwords": ["était"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_determiner_ma": {
+		"method": "dictionary",
+		"frqHeadwords": ["ma"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_dos": {
+		"method": "dictionary",
+		"frqHeadwords": ["dos"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_etaient": {
+		"method": "dictionary",
+		"frqHeadwords": ["étaient"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_prets": {
+		"method": "dictionary",
+		"frqHeadwords": ["prêts"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_sorti": {
+		"method": "dictionary",
+		"frqHeadwords": ["sorti"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_cousin": {
+		"method": "dictionary",
+		"frqHeadwords": ["cousin"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_auxiliary_est": {
+		"method": "dictionary",
+		"frqHeadwords": ["est"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_arrive": {
+		"method": "dictionary",
+		"frqHeadwords": ["arrivé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_peu": {
+		"method": "dictionary",
+		"frqHeadwords": ["peu"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_m_a": {
+		"method": "inferred",
+		"frqHeadwords": ["me", "a"],
+		"note": "Elide me before a; retain FRQ's vowel for a."
+	},
+	"word_verb_conduit": {
+		"method": "dictionary",
+		"frqHeadwords": ["conduit"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_l_aeroport": {
+		"method": "dictionary",
+		"frqHeadwords": ["aéroport"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_article_le": {
+		"method": "dictionary",
+		"frqHeadwords": ["le"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_trajet": {
+		"method": "dictionary",
+		"frqHeadwords": ["trajet"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_pronoun_on": {
+		"method": "dictionary",
+		"frqHeadwords": ["on"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_auxiliary_a": {
+		"method": "dictionary",
+		"frqHeadwords": ["a"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_ecoute": {
+		"method": "dictionary",
+		"frqHeadwords": ["écouté"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_article_la": {
+		"method": "dictionary",
+		"frqHeadwords": ["la"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_douce": {
+		"method": "dictionary",
+		"frqHeadwords": ["douce"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_parle": {
+		"method": "dictionary",
+		"frqHeadwords": ["parlé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_article_un": {
+		"method": "dictionary",
+		"frqHeadwords": ["un"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_feu": {
+		"method": "dictionary",
+		"frqHeadwords": ["feu"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adjective_rouge": {
+		"method": "dictionary",
+		"frqHeadwords": ["rouge"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_revele": {
+		"method": "dictionary",
+		"frqHeadwords": ["révélé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_chat": {
+		"method": "dictionary",
+		"frqHeadwords": ["chat"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_bois": {
+		"method": "dictionary",
+		"frqHeadwords": ["bois"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_expression_l_ai": {
+		"method": "inferred",
+		"frqHeadwords": ["le", "ai"],
+		"note": "Elide le before ai."
+	},
+	"word_verb_nomme": {
+		"method": "dictionary",
+		"frqHeadwords": ["nommé"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_ombre": {
+		"method": "dictionary",
+		"frqHeadwords": ["ombre"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_verb_stationne": {
+		"method": "inferred",
+		"frqHeadwords": ["stationnées"],
+		"note": "Use the existing feminine plural participle pronunciation."
+	},
+	"word_determiner_son": {
+		"method": "dictionary",
+		"frqHeadwords": ["son"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_au": {
+		"method": "dictionary",
+		"frqHeadwords": ["au"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_expression_s_est": {
+		"method": "inferred",
+		"frqHeadwords": ["se", "est"],
+		"note": "Elide se before the FRQ auxiliary est."
+	},
+	"word_verb_serres": {
+		"method": "dictionary",
+		"frqHeadwords": ["serrés"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_article_les": {
+		"method": "dictionary",
+		"frqHeadwords": ["les"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_bras": {
+		"method": "dictionary",
+		"frqHeadwords": ["bras"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_conjunction_puis": {
+		"method": "dictionary",
+		"frqHeadwords": ["puis"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_souhaite": {
+		"method": "dictionary",
+		"frqHeadwords": ["souhaité"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_bon": {
+		"method": "dictionary",
+		"frqHeadwords": ["bon"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_nouvelle": {
+		"method": "dictionary",
+		"frqHeadwords": ["nouvelle"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_commencait": {
+		"method": "dictionary",
+		"frqHeadwords": ["commençait"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_sac": {
+		"method": "dictionary",
+		"frqHeadwords": ["sac"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_preposition_pour": {
+		"method": "dictionary",
+		"frqHeadwords": ["pour"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_apres": {
+		"method": "dictionary",
+		"frqHeadwords": ["après"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_pendant": {
+		"method": "dictionary",
+		"frqHeadwords": ["pendant"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_verb_attendre": {
+		"method": "dictionary",
+		"frqHeadwords": ["attendre"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_reveil": {
+		"method": "dictionary",
+		"frqHeadwords": ["réveil"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_musique": {
+		"method": "dictionary",
+		"frqHeadwords": ["musique"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adverb_tot": {
+		"method": "dictionary",
+		"frqHeadwords": ["tôt"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adverb_encore": {
+		"method": "dictionary",
+		"frqHeadwords": ["encore"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_dans": {
+		"method": "dictionary",
+		"frqHeadwords": ["dans"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_avec": {
+		"method": "dictionary",
+		"frqHeadwords": ["avec"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_a": {
+		"method": "dictionary",
+		"frqHeadwords": ["à"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_preposition_de": {
+		"method": "dictionary",
+		"frqHeadwords": ["de"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_petit": {
+		"method": "dictionary",
+		"frqHeadwords": ["petit"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_grande": {
+		"method": "dictionary",
+		"frqHeadwords": ["grande"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_noun_char": {
+		"method": "dictionary",
+		"frqHeadwords": ["char"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_valise": {
+		"method": "dictionary",
+		"frqHeadwords": ["valise"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_voyage": {
+		"method": "dictionary",
+		"frqHeadwords": ["voyage"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_hate": {
+		"method": "dictionary",
+		"frqHeadwords": ["hâte"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_debarcadere": {
+		"method": "inferred",
+		"frqHeadwords": [],
+		"note": "Estimate the Québec noun form. Include the stored article with elision or liaison where applicable."
+	},
+	"word_noun_aventure": {
+		"method": "dictionary",
+		"frqHeadwords": ["aventure"],
+		"note": "Convert FRQ SAMPA to IPA. Include the stored article with elision or liaison where applicable."
+	},
+	"word_adverb_loin": {
+		"method": "dictionary",
+		"frqHeadwords": ["loin"],
+		"note": "Convert FRQ SAMPA to IPA."
+	},
+	"word_adjective_fatigue": {
+		"method": "dictionary",
+		"frqHeadwords": ["fatigué"],
+		"note": "Convert FRQ SAMPA to IPA."
+	}
+}
