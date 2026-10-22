@@ -41,6 +41,7 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
 		englishArticle: 'The',
 		englishWords: ['coffee'],
 		pronunciation: 'ka-fay',
+		ipaPronunciation: 'kafe',
 		isVulgar: false,
 		CEFR: 'A1',
 		correctCount: 14,
