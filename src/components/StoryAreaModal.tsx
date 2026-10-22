@@ -47,8 +47,7 @@ function StoryAreaOption({
 }: StoryAreaOptionProps) {
 	const isLocked = userLevel < area.minLevel;
 	const levelRange = formatAreaLevelRange(area);
-	const areaStyle = { borderLeftColor: area.color };
-	const iconStyle = { backgroundColor: `${area.color}18` };
+	const iconStyle = { backgroundColor: `${area.color}18`, borderColor: area.color };
 	const unlockLabel = `Unlocks at Lvl. ${area.minLevel}`;
 
 	if (isLocked) {
@@ -58,7 +57,7 @@ function StoryAreaOption({
 				accessibilityRole="button"
 				accessibilityState={{ disabled: true }}
 				disabled
-				style={[styles.areaCard, areaStyle]}
+				style={[styles.areaCard]}
 			>
 				<View style={styles.areaHeading}>
 					<View style={[styles.areaIcon, iconStyle]}>
@@ -93,7 +92,6 @@ function StoryAreaOption({
 			onPress={() => onSelect(area)}
 			style={({ pressed }) => [
 				styles.areaCard,
-				areaStyle,
 				isSelected && styles.selectedArea,
 				pressed && styles.pressedArea,
 			]}
@@ -257,7 +255,7 @@ const styles = StyleSheet.create({
 		width: 36,
 	},
 	introduction: {
-		color: colors.dark.primary,
+		color: colors.dark.text,
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 		paddingHorizontal: 20,
@@ -270,16 +268,15 @@ const styles = StyleSheet.create({
 	areaCard: {
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 2,
-		borderWidth: 1,
-		borderLeftWidth: 4,
+		borderWidth: 2,
 		backgroundColor: 'rgba(255, 255, 255, 0.15)',
 		gap: 12,
-		padding: 12,
+		padding: 8,
 	},
 	selectedArea: {
 		borderColor: colors.dark.primary,
 		borderLeftWidth: 8,
-		backgroundColor: 'rgba(255, 255, 255, 0.15)',
+		backgroundColor: 'rgba(255, 255, 255, 0.3)',
 	},
 	pressedArea: {
 		opacity: 0.75,
@@ -291,10 +288,11 @@ const styles = StyleSheet.create({
 	},
 	areaIcon: {
 		alignItems: 'center',
-		borderRadius: 0,
+		borderRadius: 2,
 		justifyContent: 'center',
 		height: 44,
 		width: 44,
+		borderWidth: 1,
 	},
 	areaTitleContainer: {
 		flex: 1,

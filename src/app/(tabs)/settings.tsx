@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { resetDB } from '../../db/interface';
 import { useUserProgress } from '../../db/useUserProgress';
-import type { BooleanSettingKey } from '../../settings/appSettings';
+import type { BooleanSettingKey, PronunciationFormat } from '../../settings/appSettings';
 import { useAppSettings } from '../../settings/useAppSettings';
 import { getCardsPerDeck, maxCardsPerDeck, minCardsPerDeck } from '../../util/cardsPerDeck';
 import colors from '../colors';
@@ -11,6 +11,11 @@ import colors from '../colors';
 const passageSettings: { key: BooleanSettingKey; label: string }[] = [
 	{ key: 'useLearningLevelColors', label: 'Use learning level colors' },
 	{ key: 'useLevelOpacity', label: 'Use level opacity' },
+];
+
+const pronunciationOptions: { value: PronunciationFormat; label: string }[] = [
+	{ value: 'readable', label: 'Readable pronunciation' },
+	{ value: 'ipa', label: 'IPA' },
 ];
 
 const cardCountOptions = Array.from(
@@ -99,6 +104,30 @@ export default function Settings() {
 								style={[styles.cardCountOption, isSelected && styles.selectedCardCountOption]}
 							>
 								<Text style={styles.text}>{amount}</Text>
+							</Pressable>
+						);
+					})}
+				</View>
+			</View>
+			<View style={styles.section}>
+				<Text style={styles.heading}>Pronunciation</Text>
+				<View
+					accessibilityRole="radiogroup"
+					accessibilityLabel="Pronunciation format"
+					style={styles.cardCountOptions}
+				>
+					{pronunciationOptions.map(({ value, label }) => {
+						const isSelected = settings.pronunciationFormat === value;
+
+						return (
+							<Pressable
+								key={value}
+								accessibilityRole="radio"
+								accessibilityState={{ checked: isSelected }}
+								onPress={() => setSetting('pronunciationFormat', value)}
+								style={[styles.cardCountOption, isSelected && styles.selectedCardCountOption]}
+							>
+								<Text style={styles.text}>{label}</Text>
 							</Pressable>
 						);
 					})}

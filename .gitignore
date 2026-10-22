@@ -4,6 +4,7 @@ node_modules
 *.db
 *.sqlite
 *.sqlite3
+frq
 
 .dart_tool
 .idea

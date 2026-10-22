@@ -144,6 +144,7 @@ describe('<WordCardContainer />', () => {
 			frenchWord: 'combien',
 			englishWords: ['how much'],
 			pronunciation: 'kohm-byen',
+			ipaPronunciation: 'kɔ̃bjɛ̃',
 			isVulgar: false,
 			CEFR: 'A1',
 			partOfSpeech: 'expression',

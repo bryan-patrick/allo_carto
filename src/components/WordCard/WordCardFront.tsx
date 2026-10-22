@@ -15,9 +15,11 @@ import Animated from 'react-native-reanimated';
 import formatFrenchWordWithArticle from '../../util/formatFrenchWordWithArticle';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import { sharedWordCardStyles } from './sharedWordCardStyles';
+import TTSButton from './TTSButton';
 import { useWordCardUI } from './useWordCardUI';
 import { FEEDBACK_TEXT_FRONT } from './wordCardContext';
 import WordCardHeader from './WordCardHeader';
+import WordPronunciation from './WordPronunciation';
 
 const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 
@@ -58,15 +60,8 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	/**
 	 * Word data
 	 */
-	const {
-		pronunciation,
-		frenchArticle,
-		englishArticle,
-		englishWords,
-		frenchWord,
-		form,
-		partOfSpeech,
-	} = currentCard;
+	const { frenchArticle, englishArticle, englishWords, frenchWord, form, partOfSpeech } =
+		currentCard;
 
 	/**
 	 * Render the articlea and word the user has selected.
@@ -113,8 +108,14 @@ const WordCardFront = memo(function WordCardFrontMemo({
 			<View style={sharedWordCardStyles.wordCardInner}>
 				<WordCardHeader />
 				<View style={sharedWordCardStyles.cardMain}>
-					<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
-					<Text style={sharedWordCardStyles.wordDetailText}>({pronunciation})</Text>
+					<View style={sharedWordCardStyles.wordIdContainer}>
+						<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
+						<TTSButton wordsToSay={displayedFrenchWord} />
+					</View>
+					<WordPronunciation
+						pronunciation={currentCard.pronunciation}
+						ipaPronunciation={currentCard.ipaPronunciation}
+					/>
 					<View style={sharedWordCardStyles.wordMetaContainer}>
 						{partOfSpeech && (
 							<Text style={sharedWordCardStyles.wordDetailText}>{partOfSpeechCapitalized}</Text>
