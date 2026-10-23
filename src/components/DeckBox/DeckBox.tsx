@@ -47,9 +47,6 @@ interface DeckBoxProps {
  * DeckBox component
  */
 export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps) {
-	/**
-	 * Destructure deck
-	 */
 	const { CEFR, description: deckDescription, passage, title: deckTitle, wordIds } = deck;
 
 	/**
@@ -307,9 +304,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 										onPressOut={handlePassageButtonPressOut}
 										style={[styles.passageButton, { borderColor: storyColor }]}
 									>
-										<Text style={[styles.passageButtonText, { color: storyColor }]}>
-											Read passage
-										</Text>
+										<Text style={[styles.passageButtonText, { color: storyColor }]}>Read</Text>
 										<Animated.View
 											style={{ transform: [{ translateY: passageChevronTranslateY }] }}
 										>

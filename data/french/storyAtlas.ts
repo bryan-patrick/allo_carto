@@ -69,6 +69,7 @@ export interface DeckChapter extends Progression {
 	id: string;
 	label: string;
 	name: string;
+	description?: string;
 	decks: CardDeck[];
 	image?: ImageSourcePropType;
 }
@@ -93,6 +94,7 @@ export const storyAtlas: StoryAtlas = {
 					id: 'welcome-to-allo-carto-chapter-1',
 					label: 'Chapter 1',
 					name: 'What is Allô Carto?',
+					description: 'Discover how stories and flashcards help you learn French with Allô Carto.',
 					image: whatIsAlloCarto,
 					decks: [DeckWelcomeToAlloCarto, DeckStoriesAndFlashcards],
 				},
@@ -100,6 +102,7 @@ export const storyAtlas: StoryAtlas = {
 					id: 'welcome-to-allo-carto-chapter-2',
 					label: 'Chapter 2',
 					name: 'How it works',
+					description: 'Explore chapters and decks, study their words, and earn XP as you learn.',
 					image: howItWorks,
 					unlockRequirements: [
 						{ id: 'welcome-to-allo-carto-chapter-1', requiredCompletionPercentage: 12 },
@@ -110,6 +113,8 @@ export const storyAtlas: StoryAtlas = {
 					id: 'welcome-to-allo-carto-chapter-3',
 					label: 'Chapter 3',
 					name: 'Additional information',
+					description:
+						'Track your vocabulary, discover collections, and keep learning through stories.',
 					image: additionalInformation,
 					unlockRequirements: [
 						{ id: 'welcome-to-allo-carto-chapter-2', requiredCompletionPercentage: 12 },
@@ -131,12 +136,15 @@ export const storyAtlas: StoryAtlas = {
 					id: 'le-chef-leo-chapter-1',
 					label: 'Chapter 1',
 					name: 'A Good Croissant',
+					description:
+						'Hungry Léo spots a croissant on a card and turns his attention to the toaster.',
 					decks: [DeckLeoIsHungry, DeckABeautifulCroissant, DeckTheCardAndTheToaster],
 				},
 				{
 					id: 'le-chef-leo-chapter-2',
 					label: 'Chapter 2',
 					name: 'The Kitchen',
+					description: 'While Wallace reads, Léo takes the card and puts it in the toaster.',
 					unlockRequirements: [{ id: 'le-chef-leo-chapter-1', requiredCompletionPercentage: 12 }],
 					decks: [DeckLeoTakesTheCard, DeckACardInTheToaster, DeckTheCardTurnsBlack],
 				},
@@ -144,6 +152,8 @@ export const storyAtlas: StoryAtlas = {
 					id: 'le-chef-leo-chapter-3',
 					label: 'Chapter 3',
 					name: 'Oh No!',
+					description:
+						'Wallace unplugs the smoking toaster, but Léo has already found another card.',
 					unlockRequirements: [{ id: 'le-chef-leo-chapter-2', requiredCompletionPercentage: 12 }],
 					decks: [DeckWallaceUnplugsTheToaster, DeckItsPaper, DeckAnotherCard],
 				},
@@ -162,6 +172,8 @@ export const storyAtlas: StoryAtlas = {
 					id: 'a-new-restaurant-chapter-1',
 					label: 'Chapter 1',
 					name: 'Getting Ready',
+					description:
+						'Wallace gets ready for dinner and walks through the autumn streets to a new restaurant.',
 					image: gettingReady,
 					decks: [DeckGettingReady, DeckTheWalkToTheRestaurant],
 				},
@@ -169,6 +181,8 @@ export const storyAtlas: StoryAtlas = {
 					id: 'a-table-for-one',
 					label: 'Chapter 2',
 					name: 'A Table for One',
+					description:
+						'Wallace settles in for noodles and dumplings, with a few small mishaps along the way.',
 					image: aTableForOne,
 					unlockRequirements: [
 						{ id: 'a-new-restaurant-chapter-1', requiredCompletionPercentage: 12 },
@@ -191,6 +205,7 @@ export const storyAtlas: StoryAtlas = {
 					id: 'leo-in-the-window',
 					label: 'Chapter 1',
 					name: 'Leo in the Window',
+					description: 'On a rainy night, a pair of yellow eyes appears at Wallace’s window.',
 					image: leoInTheWindow,
 					decks: [DeckRainyNight, DeckWindowWatcher],
 				},
@@ -209,6 +224,7 @@ export const storyAtlas: StoryAtlas = {
 					id: 'leaves-all-over',
 					label: 'Chapter 1',
 					name: 'Leaves All Over',
+					description: 'Autumn leaves fill the neighborhood as Leo watches from a maple tree.',
 					image: leavesInTheYard,
 					decks: [DeckAutumnInTheNeighborhood],
 				},

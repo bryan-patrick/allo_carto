@@ -14,7 +14,7 @@ export const DeckHaveFun = createCardDeck({
 	passage: [
 		{ text: 'C’', wordId: 'word_pronoun_ce', after: '' },
 		{ text: 'est', wordId: 'word_auxiliary_est' },
-		{ text: 'tout', wordId: 'word_pronoun_tout', after: '!\n\n' },
+		{ text: 'tout', wordId: 'word_pronoun_tout', after: '! ' },
 		{ text: 'Lis', wordId: 'word_verb_lis' },
 		{ text: 'des', wordId: 'word_article_des' },
 		{ text: 'histoires', wordId: 'word_noun_histoires', after: '. ' },
@@ -23,7 +23,7 @@ export const DeckHaveFun = createCardDeck({
 		{ text: 'mots', wordId: 'word_noun_mots', after: '. ' },
 		{ text: 'Complète', wordId: 'word_verb_complete' },
 		{ text: 'tes', wordId: 'word_determiner_tes' },
-		{ text: 'collections', wordId: 'word_noun_collections', after: '.\n\n' },
+		{ text: 'collections', wordId: 'word_noun_collections', after: '. ' },
 		{ text: 'Amuse', wordId: 'word_verb_amuse' },
 		{ text: 'toi', wordId: 'word_pronoun_toi' },
 		{ text: 'avec', wordId: 'word_preposition_avec' },

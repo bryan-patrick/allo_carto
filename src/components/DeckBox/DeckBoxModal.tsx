@@ -1,5 +1,5 @@
 import colors from '@/src/app/colors';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckPassageView from '@/src/components/DeckPassageView';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
@@ -25,7 +25,7 @@ const postcardBackground = require('@/src/app/assets/images/postcard-parts/backg
  */
 interface DeckBoxModalProps {
 	currentWordId?: string;
-	deck: CardDeck;
+	deck: ReadingPassage;
 	modalVisible: boolean;
 	setModalVisible: (modalVisible: boolean) => void;
 	wordProgressCounts: DeckWordProgressCounts;
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-end',
 	},
 	sheet: {
+		backgroundColor: colors.light.secondary,
 		borderColor: colors.light.goldenBorder,
 		borderTopLeftRadius: 24,
 		borderTopRightRadius: 24,
