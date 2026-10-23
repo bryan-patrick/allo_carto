@@ -1,5 +1,5 @@
 import colors from '@/src/app/colors';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
 import type { DeckWordResultProps } from '@/src/components/CardDeck/deckSessionTypes';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import PassageHighlightLayer from '@/src/components/PassageHighlightLayer';
@@ -17,7 +17,7 @@ import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 
  */
 interface DeckPassageViewProps {
 	currentWordId?: string;
-	deck: CardDeck;
+	deck: ReadingPassage;
 	minimumPassageHeight?: number;
 	onContentHeightChange?: (contentHeight: number) => void;
 	results?: DeckWordResultProps[];
@@ -68,6 +68,7 @@ function getPassageWordOpacity(
 		return filteredOutWordOpacity;
 	}
 
+	if (progress === 'unseen') return learningLevelOpacity.unseen;
 	if (useLevelOpacity) return learningLevelOpacity[progress];
 	return 1;
 }
@@ -164,7 +165,6 @@ export default function DeckPassageView({
 			opacity = exemptWordOpacity;
 		} else if (progress === 'unseen') {
 			displayText = '?';
-			opacity = new Animated.Value(0.2);
 		}
 
 		const wordColor = getLearningLevelColor(displayProgress, useLearningLevelColors);
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		borderBottomColor: colors.light.goldenBorder,
-		borderBottomWidth: 2,
+		borderBottomWidth: 1,
 		paddingBottom: 12,
 		paddingHorizontal: 16,
 		paddingTop: 12,
@@ -612,6 +612,7 @@ const styles = StyleSheet.create({
 		transform: [{ scale: 0.65 }, { translateX: '-35%' }],
 	},
 	passageScrollView: {
+		backgroundColor: `${colors.light.secondary}80`,
 		flex: 1,
 		borderBottomColor: colors.light.goldenBorder,
 		borderBottomWidth: 1,
@@ -705,7 +706,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		minWidth: '40%',
 		paddingHorizontal: 4,
-		paddingVertical: 6,
+		paddingVertical: 3,
 	},
 	progressLegendIcon: {
 		width: 18,

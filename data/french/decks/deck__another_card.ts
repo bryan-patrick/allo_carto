@@ -17,7 +17,7 @@ export const DeckAnotherCard = createCardDeck({
 		{ text: 'autre', wordId: 'word_adjective_autre' },
 		{ text: 'carte', wordId: 'word_noun_carte' },
 		{ text: 'du', wordId: 'word_preposition_du' },
-		{ text: 'fromage', wordId: 'word_noun_fromage', after: '.\n\n' },
+		{ text: 'fromage', wordId: 'word_noun_fromage', after: '. ' },
 		{ text: 'Wallace', unlockExempt: true },
 		{ text: 'dit', wordId: 'word_verb_dit', after: '\u00a0: « ' },
 		{ text: 'Non', wordId: 'word_adverb_non', after: '. »' },

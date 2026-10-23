@@ -1,6 +1,7 @@
 import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import LockedSection from '@/src/components/LockedSection';
+import ReadingDescription from '@/src/components/ReadingDescription';
 import { getUnlockCriteria } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
 import { StyleSheet, Text, View } from 'react-native';
@@ -35,7 +36,7 @@ export default function Story({
 	/**
 	 * Destructure story
 	 */
-	const { category, name, description, materialSymbolName, requiredLevel } = story;
+	const { category, name, materialSymbolName, requiredLevel } = story;
 	const color = colors.category[category];
 	const seenWordCount = progressById[story.id]?.seenWordCount ?? 0;
 	const wordCount =
@@ -73,7 +74,11 @@ export default function Story({
 							<View style={[styles.separatorBox, { backgroundColor: color }]} />
 							<View style={styles.separatorLine} />
 						</View>
-						<Text style={styles.storyDescription}>{description}</Text>
+						<ReadingDescription
+							item={story}
+							color={color}
+							style={styles.storyDescription}
+						/>
 					</View>
 					{!isLocked && (
 						<>

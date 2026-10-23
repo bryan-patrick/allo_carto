@@ -177,7 +177,7 @@ export default function StoryAreaModal({
 							accessibilityRole="header"
 							style={styles.title}
 						>
-							Explore areas
+							Level Areas
 						</Text>
 						<Pressable
 							accessibilityLabel="Close area selection"
@@ -193,9 +193,7 @@ export default function StoryAreaModal({
 							/>
 						</Pressable>
 					</View>
-					<Text style={styles.introduction}>
-						Your level: Lvl. {userLevel}. Choose an area to explore its stories.
-					</Text>
+					<Text style={styles.introduction}>Select a story area (you are level {userLevel}).</Text>
 					<ScrollView contentContainerStyle={styles.areaList}>
 						{areaOptions.map(({ area, storyCount }) => (
 							<StoryAreaOption
@@ -267,7 +265,7 @@ const styles = StyleSheet.create({
 	},
 	areaCard: {
 		borderColor: colors.light.goldenBorder,
-		borderRadius: 2,
+		borderRadius: 8,
 		borderWidth: 2,
 		backgroundColor: 'rgba(255, 255, 255, 0.15)',
 		gap: 12,
@@ -288,7 +286,7 @@ const styles = StyleSheet.create({
 	},
 	areaIcon: {
 		alignItems: 'center',
-		borderRadius: 2,
+		borderRadius: 4,
 		justifyContent: 'center',
 		height: 44,
 		width: 44,

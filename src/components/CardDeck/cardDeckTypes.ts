@@ -49,6 +49,8 @@ export interface CardDeck extends CardDeckDefinition {
 	wordIds: string[];
 }
 
+export type ReadingPassage = Pick<CardDeck, 'id' | 'title' | 'passage' | 'wordIds'>;
+
 /**
  * Word type
  * As a general rule, ids should always be slug-safe (no accents or anything)

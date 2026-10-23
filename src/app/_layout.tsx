@@ -13,7 +13,6 @@ import { CardDeckContext, initialCardDeckState } from '../components/CardDeck/ca
 import { cardDeckReducer } from '../components/CardDeck/cardDeckReducer';
 import LevelBadge from '../components/LevelBadge';
 import Loader from '../components/Loader';
-import SelectionBreadcrumbs from '../components/SelectionBreadcrumbs';
 import DeckProgress from '../components/WordCard/DeckProgress';
 import { getTables, setDB } from '../db/interface';
 import getMonHomme, { UserRow } from '../db/queries/getMonHomme';
@@ -38,7 +37,7 @@ function getTabHeaderOptions(route: Route<string>) {
 		return {
 			headerShown: true,
 			headerTransparent: true,
-			headerTitle: () => <SelectionBreadcrumbs currentViewIndex={0} />,
+			headerTitle: '',
 		};
 	}
 
@@ -183,7 +182,7 @@ export default function AppLayout() {
 												headerShown: true,
 												headerTransparent: true,
 												headerBackTitle: 'Back',
-												headerTitle: () => <SelectionBreadcrumbs currentViewIndex={1} />,
+												headerTitle: '',
 												headerBackButtonDisplayMode: 'minimal',
 												scrollEdgeEffects: {
 													top: 'hidden',
@@ -196,7 +195,7 @@ export default function AppLayout() {
 												headerShown: true,
 												headerTransparent: true,
 												headerBackTitle: 'Back',
-												headerTitle: () => <SelectionBreadcrumbs currentViewIndex={2} />,
+												headerTitle: '',
 												headerBackButtonDisplayMode: 'minimal',
 											}}
 										/>
@@ -214,7 +213,7 @@ export default function AppLayout() {
 											name="(routes)/DeckResults"
 											options={{
 												headerShown: true,
-												headerTitle: () => <SelectionBreadcrumbs currentViewIndex={2} />,
+												headerTitle: '',
 												headerBackVisible: false,
 												gestureEnabled: false,
 											}}

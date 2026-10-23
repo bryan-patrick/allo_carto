@@ -5,6 +5,9 @@ import { Pressable } from 'react-native';
 import Animated, { css, useReducedMotion } from 'react-native-reanimated';
 import MaterialSymbol from '../MaterialSymbol';
 
+/**
+ * Typing
+ */
 interface TTSButtonProps {
 	wordsToSay: string;
 }
@@ -57,6 +60,9 @@ export default function TTSButton({ wordsToSay }: TTSButtonProps) {
 	);
 }
 
+/**
+ * Styles (css!)
+ */
 const styles = css.create({
 	button: {
 		borderRadius: 8,

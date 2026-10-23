@@ -123,6 +123,16 @@ export default function LinkButton({
 		typeStyle = { backgroundColor: color };
 	}
 
+	if (!iconElement && useArrow) {
+		iconElement = (
+			<SVGRightArrow
+				height={String(arrowSize)}
+				width={String(arrowSize)}
+				color={resolvedArrowColor}
+			/>
+		);
+	}
+
 	/**
 	 * Pull in props when used for a navigation link.
 	 */
@@ -220,15 +230,8 @@ export default function LinkButton({
 					},
 				]}
 			>
-				{iconElement}
 				<Text style={[styles.linkText, outlineTextStyle]}>{children}</Text>
-				{useArrow && (
-					<SVGRightArrow
-						height={String(arrowSize)}
-						width={String(arrowSize)}
-						color={resolvedArrowColor}
-					/>
-				)}
+				{iconElement}
 			</View>
 		</AnimatedPressable>
 	);
