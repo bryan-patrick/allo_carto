@@ -1,7 +1,6 @@
 import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import formatFrenchWordWithArticle from '@/src/util/formatFrenchWordWithArticle';
 import { useSoundEffect } from '@/src/util/useSoundEffect';
 import {
 	impactAsync,
@@ -9,7 +8,6 @@ import {
 	notificationAsync,
 	NotificationFeedbackType,
 } from 'expo-haptics';
-import * as Speech from 'expo-speech';
 import { ReactElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, PressableProps, StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -48,7 +46,6 @@ export default function WordCardButton({
 	const { cardDeckDispatch, currentCard } = useCardDeck();
 	const { isUpdatingProgress, writeCorrectAnswer: recordCorrectAnswer } = useUserProgress();
 	const { settings } = useAppSettings();
-	const playCorrect = useSoundEffect('correct');
 	const playIncorrect = useSoundEffect('incorrect');
 	const lastSoundedAnswer = useRef<string | null>(null);
 
@@ -172,38 +169,24 @@ export default function WordCardButton({
 			return;
 		}
 
-		const isCorrect = cardState.stage === 'CORRECT' && cardState.progress === 'SUCCESS';
 		const isIncorrect =
 			(cardState.stage === 'READY' && cardState.progress === 'WARNING') ||
 			(cardState.stage === 'INCORRECT' && cardState.progress === 'DANGER');
 		const answerId = `${currentCard.id}:${cardState.attempts}`;
 
-		if ((!isCorrect && !isIncorrect) || lastSoundedAnswer.current === answerId) {
+		if (!isIncorrect || lastSoundedAnswer.current === answerId) {
 			return;
 		}
 
 		lastSoundedAnswer.current = answerId;
 
-		if (isCorrect) {
-			const wordsToSay = formatFrenchWordWithArticle({
-				article: currentCard.frenchArticle,
-				word: currentCard.frenchWord,
-			});
-			playCorrect(() => {
-				Speech.speak(wordsToSay, { language: 'fr-CA', rate: 0.8 });
-			});
-		} else {
-			playIncorrect();
-		}
+		playIncorrect();
 	}, [
 		currentCard.id,
-		currentCard.frenchArticle,
-		currentCard.frenchWord,
 		cardState.attempts,
 		cardState.stage,
 		cardState.progress,
 		cardState.isAnswerRevealed,
-		playCorrect,
 		playIncorrect,
 	]);
 

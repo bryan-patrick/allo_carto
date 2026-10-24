@@ -8,11 +8,8 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { defaultAppSettings } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getUserExperience } from '@/src/util/userExperience';
-import { act, render, userEvent, waitFor } from '@testing-library/react-native';
+import { render, userEvent, waitFor } from '@testing-library/react-native';
 import { useAudioPlayer } from 'expo-audio';
-import * as Speech from 'expo-speech';
-
-const mockPlaybackListeners = new Set<(status: { didJustFinish: boolean }) => void>();
 
 jest.mock('expo-audio', () => {
 	const player = {
@@ -20,17 +17,10 @@ jest.mock('expo-audio', () => {
 		seekTo: jest.fn(async () => {}),
 		play: jest.fn(),
 		pause: jest.fn(),
-		addListener: jest.fn(
-			(_event: string, listener: (status: { didJustFinish: boolean }) => void) => {
-				mockPlaybackListeners.add(listener);
-				return { remove: () => mockPlaybackListeners.delete(listener) };
-			},
-		),
+		addListener: jest.fn(() => ({ remove: jest.fn() })),
 	};
 	return { useAudioPlayer: jest.fn(() => player) };
 });
-
-jest.mock('expo-speech', () => ({ speak: jest.fn() }));
 
 jest.mock('expo-haptics', () => ({
 	impactAsync: jest.fn(),
@@ -86,8 +76,6 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
 describe('<WordCardButton />', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		mockPlaybackListeners.clear();
-		jest.mocked(Speech.speak).mockClear();
 		mockUseAppSettings.mockReturnValue({
 			settings: defaultAppSettings,
 			setSetting: jest.fn(),
@@ -180,7 +168,7 @@ describe('<WordCardButton />', () => {
 	});
 
 	test.each([true, false])(
-		'records a correct answer with sound effects enabled: %s',
+		'records a correct answer without a sound effect (effects enabled: %s)',
 		async enabled => {
 			mockUseAppSettings.mockReturnValue({
 				settings: { ...defaultAppSettings, soundEffectsEnabled: enabled },
@@ -211,20 +199,7 @@ describe('<WordCardButton />', () => {
 
 			const player = jest.mocked(useAudioPlayer).mock.results[0].value;
 			expect(player.volume).toBe(0.5);
-			expect(player.play).toHaveBeenCalledTimes(enabled ? 1 : 0);
-
-			if (enabled) {
-				expect(Speech.speak).not.toHaveBeenCalled();
-				await act(() => {
-					mockPlaybackListeners.forEach(listener => listener({ didJustFinish: true }));
-				});
-			}
-			expect(Speech.speak).toHaveBeenCalledWith('cafe', { language: 'fr-CA', rate: 0.8 });
-
-			await act(() => {
-				mockPlaybackListeners.forEach(listener => listener({ didJustFinish: true }));
-			});
-			expect(Speech.speak).toHaveBeenCalledTimes(1);
+			expect(player.play).not.toHaveBeenCalled();
 		},
 	);
 });

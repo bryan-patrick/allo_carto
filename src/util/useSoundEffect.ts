@@ -17,65 +17,66 @@ const sounds: Record<string, AudioSource> = {
 export function useSoundEffect(sound: keyof typeof sounds) {
 	const { settings } = useAppSettings();
 	const player = useAudioPlayer(sounds[sound]);
-	const onFinished = useRef<(() => void) | undefined>(undefined);
 	const activePlayer = useRef<AudioPlayer | null>(null);
+	const playbackFinished = useRef<((completed: boolean) => void) | null>(null);
 	const enabled = settings.soundEffectsEnabled;
 
 	useEffect(() => {
 		activePlayer.current = player;
 		activePlayer.current.volume = sound === 'tap' ? 0.1 : 0.5;
 
-		function finishPlayback() {
-			const callback = onFinished.current;
-			onFinished.current = undefined;
-			callback?.();
+		function finishPlayback(completed: boolean) {
+			const resolve = playbackFinished.current;
+			playbackFinished.current = null;
+			resolve?.(completed);
 		}
 
 		const subscription = player.addListener('playbackStatusUpdate', status => {
 			if (status.didJustFinish) {
-				finishPlayback();
+				finishPlayback(true);
 			}
 		});
 
 		if (!enabled) {
 			activePlayer.current = null;
 			player.pause();
-			finishPlayback();
 		}
 
 		return () => {
 			activePlayer.current = null;
+			finishPlayback(false);
 			subscription.remove();
 		};
 	}, [enabled, player, sound]);
 
 	const playSound = useCallback(
-		async function playSound(afterSound?: () => void) {
+		async function playSound() {
 			if (!enabled) {
-				afterSound?.();
-				return;
+				return true;
 			}
 
 			const audioPlayer = activePlayer.current;
 			if (!audioPlayer) {
-				return;
+				return false;
 			}
 
-			onFinished.current = afterSound;
+			playbackFinished.current?.(false);
+			playbackFinished.current = null;
 			try {
 				await audioPlayer.seekTo(0);
 				if (activePlayer.current !== audioPlayer) {
-					return;
+					return false;
 				}
 
+				const finished = new Promise<boolean>(resolve => {
+					playbackFinished.current = resolve;
+				});
 				audioPlayer.play();
+				return await finished;
 			} catch (error) {
+				playbackFinished.current = null;
 				console.warn(`Could not play ${sound} sound:`, error);
-				if (activePlayer.current === audioPlayer) {
-					const callback = onFinished.current;
-					onFinished.current = undefined;
-					callback?.();
-				}
+				return activePlayer.current === audioPlayer;
 			}
 		},
 		[enabled, sound],
