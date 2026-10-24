@@ -2,6 +2,7 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckCardsAndXp = createCardDeck({
 	id: 'deck__cards_and_xp',
+	requiredLevel: 6,
 	title: 'Cards and XP',
 	description: 'Learn how correct answers level up your cards and earn XP.',
 	chapter: 'How it works',

@@ -68,8 +68,8 @@ function StoryAreaOption({
 						/>
 					</View>
 					<View style={styles.areaTitleContainer}>
-						<Text style={styles.areaName}>{unlockLabel}</Text>
-						<Text style={styles.areaLevels}>{levelRange}</Text>
+						<Text style={[styles.areaName, styles.centeredText]}>{unlockLabel}</Text>
+						<Text style={[styles.areaLevels, styles.centeredText]}>{levelRange}</Text>
 					</View>
 				</View>
 			</Pressable>
@@ -216,6 +216,9 @@ export default function StoryAreaModal({
  * Styles
  */
 const styles = StyleSheet.create({
+	centeredText: {
+		textAlign: 'center',
+	},
 	backdrop: {
 		backgroundColor: 'rgba(18, 18, 18, 0.8)',
 		justifyContent: 'flex-end',
@@ -324,6 +327,7 @@ const styles = StyleSheet.create({
 		gap: 4,
 	},
 	areaStatusText: {
+		textAlign: 'center',
 		fontFamily: 'lexend-600',
 		fontSize: 12,
 	},

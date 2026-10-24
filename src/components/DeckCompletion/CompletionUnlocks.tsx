@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		borderColor: colors.light.goldenBorder,
 	},
-	type: { fontFamily: 'lexend-600', fontSize: 12, textTransform: 'uppercase' },
+	type: { fontFamily: 'lexend-600', fontSize: 12, textTransform: 'uppercase', textAlign: 'center' },
 	title: {
 		fontFamily: 'lexend-600',
 		fontSize: 22,
@@ -155,5 +155,5 @@ const styles = StyleSheet.create({
 	actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 8 },
 	button: { flexGrow: 1, minWidth: 100 },
 	unlocked: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-	status: { fontFamily: 'lexend-600', fontSize: 16 },
+	status: { fontFamily: 'lexend-600', fontSize: 16, textAlign: 'center' },
 });

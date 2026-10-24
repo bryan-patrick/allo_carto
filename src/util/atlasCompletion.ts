@@ -252,9 +252,10 @@ export function getReadyToUnlockAtlasItems(props: Omit<IsItemUnlockedProps, 'id'
 }
 
 /**
- * Keep accepted offers visible on the results page while also revealing eligible children.
+ * We use this to build the list for the screen where we ask the user what to unlock.
+ * We keep an item in the list after it is unlocked so the screen can show "Unlocked!".
  */
-export function getAtlasUnlockOffers(props: Omit<IsItemUnlockedProps, 'id'>): AtlasItem[] {
+export function getUnlockScreenItems(props: Omit<IsItemUnlockedProps, 'id'>): AtlasItem[] {
 	return getAtlasItems(props.atlas ?? storyAtlas).filter(item => {
 		return (
 			item.requiresChoice &&

@@ -143,7 +143,7 @@ export default function CardDeck() {
 	 * Block locked decks
 	 */
 	if (isLocked) {
-		return <Text>This deck is locked.</Text>;
+		return <Text style={{ textAlign: 'center' }}>This deck is locked.</Text>;
 	}
 
 	/**

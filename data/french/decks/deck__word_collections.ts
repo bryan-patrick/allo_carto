@@ -2,6 +2,7 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckWordCollections = createCardDeck({
 	id: 'deck__word_collections',
+	requiredLevel: 8,
 	title: 'Word Collections',
 	description: 'Discover collections and their rewards.',
 	chapter: 'Additional information',

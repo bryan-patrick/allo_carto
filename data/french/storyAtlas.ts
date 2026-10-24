@@ -92,6 +92,7 @@ export const storyAtlas: StoryAtlas = {
 			chapters: [
 				{
 					id: 'welcome-to-allo-carto-chapter-1',
+					requiredLevel: 1,
 					label: 'Chapter 1',
 					name: 'What is Allô Carto?',
 					description: 'Discover how stories and flashcards help you learn French with Allô Carto.',
@@ -100,6 +101,7 @@ export const storyAtlas: StoryAtlas = {
 				},
 				{
 					id: 'welcome-to-allo-carto-chapter-2',
+					requiredLevel: 4,
 					label: 'Chapter 2',
 					name: 'How it works',
 					description: 'Explore chapters and decks, study their words, and earn XP as you learn.',
@@ -109,6 +111,7 @@ export const storyAtlas: StoryAtlas = {
 				},
 				{
 					id: 'welcome-to-allo-carto-chapter-3',
+					requiredLevel: 7,
 					label: 'Chapter 3',
 					name: 'Additional information',
 					description:

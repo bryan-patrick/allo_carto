@@ -71,14 +71,12 @@ export default function LockedSection({
 						{isUnlocking ? 'Unlocking…' : `Unlock ${itemType}`}
 					</LinkButton>
 				:	criteria.map(({ label, isUnlocked }, index) => (
-						<View
+						<Text
 							key={`${label}-${index}`}
-							style={styles.criterion}
+							style={[styles.criteriaText, textStyle, isUnlocked && styles.criteriaMet]}
 						>
-							<Text style={[styles.criteriaText, textStyle, isUnlocked && styles.criteriaMet]}>
-								{label}
-							</Text>
-						</View>
+							{label}
+						</Text>
 					))
 				}
 			</View>
@@ -96,6 +94,7 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 6,
 	},
 	criteria: {
+		alignSelf: 'stretch',
 		flexShrink: 1,
 		marginVertical: 8,
 		padding: 8,
@@ -112,11 +111,6 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		lineHeight: 22,
 		textAlign: 'center',
-	},
-	criterion: {
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-		gap: 6,
 	},
 	criteriaMet: {
 		textDecorationLine: 'line-through',

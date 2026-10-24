@@ -2,6 +2,7 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckStudyAndReadAgain = createCardDeck({
 	id: 'deck__study_and_read_again',
+	requiredLevel: 5,
 	title: 'Study and Read Again',
 	description: 'Study a deck, then return to its passage.',
 	chapter: 'How it works',
