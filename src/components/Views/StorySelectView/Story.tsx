@@ -1,5 +1,6 @@
 import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import CollectionGems from '@/src/components/CollectionGems';
 import LockedSection from '@/src/components/LockedSection';
 import ReadingDescription from '@/src/components/ReadingDescription';
 import { getUnlockCriteria } from '@/src/util/atlasCompletion';
@@ -49,7 +50,9 @@ export default function Story({
 	const unlockCriteria = getUnlockCriteria(story, progressById, userLevel);
 	let padding = 12;
 
-	if (isLocked) padding = 6;
+	if (isLocked) {
+		padding = 6;
+	}
 
 	/**
 	 * Render the component
@@ -66,7 +69,14 @@ export default function Story({
 				<View style={[styles.storyContainerInner, { padding }]}>
 					<View style={styles.storyTitleContainer}>
 						<View style={styles.storyLabelRow}>
-							<Text style={[styles.category, { color }]}>{category}</Text>
+							<View style={styles.categoryRow}>
+								<Text style={[styles.category, { color }]}>{category}</Text>
+								<CollectionGems
+									title={name}
+									progress={progressById[story.id]}
+									size={16}
+								/>
+							</View>
 							<Text style={[styles.category, { color }]}>Lvl. {requiredLevel}</Text>
 						</View>
 						<Text style={styles.storyTitle}>{name}</Text>
@@ -98,6 +108,7 @@ export default function Story({
 					)}
 					{isLocked && (
 						<LockedSection
+							itemId={story.id}
 							color={color}
 							unlockCriteria={unlockCriteria}
 						/>
@@ -132,6 +143,13 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		gap: 12,
+	},
+	categoryRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		flexShrink: 1,
+		flexWrap: 'wrap',
+		gap: 8,
 	},
 	storyTitle: {
 		color: colors.dark.text,

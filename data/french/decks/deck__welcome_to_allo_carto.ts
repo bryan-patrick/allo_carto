@@ -2,6 +2,7 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckWelcomeToAlloCarto = createCardDeck({
 	id: 'deck__welcome_to_allo_carto',
+	requiredLevel: 1,
 	title: 'Welcome to Allô Carto',
 	description: 'Meet Allô Carto and learn French through stories.',
 	chapter: 'What is this?',

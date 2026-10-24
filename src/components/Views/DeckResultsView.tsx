@@ -12,7 +12,7 @@ import { getDeck, saveDeckPassageFeedback } from '@/src/db/interface';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { getUnlockedAtlasItems } from '@/src/util/atlasCompletion';
+import { getUnlockScreenItems } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
@@ -47,9 +47,9 @@ const completionSteps = [
 	{ title: 'Word results', icon: 'cards_star', description: 'Here’s how you did on each word.' },
 	{ title: 'XP & rewards', icon: 'trophy', description: 'Great work! Here’s what you earned.' },
 	{
-		title: 'New unlocks!',
+		title: 'Ready to unlock!',
 		icon: 'lock_open',
-		description: 'Here’s what you unlocked this session.',
+		description: 'Choose what you’d like to unlock.',
 	},
 ];
 
@@ -134,21 +134,24 @@ export default function DeckResultsView() {
 	 * Compare access at the start of the session with saved progress after all XP bonuses.
 	 * A missing starting snapshot cannot reliably identify new unlocks.
 	 */
-	const unlockedItems = useMemo(() => {
-		if (!cardDeckState.isComplete || !session?.completion || !session.unlockedIdsBefore) {
+	const unlockScreenItems = useMemo(() => {
+		if (!session?.completion || !session.unlockedIdsBefore) {
 			return [];
 		}
 
-		const previouslyUnlocked = new Set(session.unlockedIdsBefore);
+		const previouslyAvailable = new Set([
+			...session.unlockedIdsBefore,
+			...(session.readyToUnlockIdsBefore ?? []),
+		]);
 		const userLevel = getUserExperience(session.completion.totalXP).level;
 
-		return getUnlockedAtlasItems({ progressById, userLevel }).filter(
-			item => !previouslyUnlocked.has(item.id),
+		return getUnlockScreenItems({ progressById, userLevel }).filter(
+			item => !previouslyAvailable.has(item.id),
 		);
-	}, [cardDeckState.isComplete, progressById, session]);
+	}, [progressById, session]);
 	let totalSteps = completionSteps.length - 1;
 
-	if (unlockedItems.length > 0) {
+	if (unlockScreenItems.length > 0) {
 		totalSteps = completionSteps.length;
 	}
 
@@ -268,7 +271,7 @@ export default function DeckResultsView() {
 			case 3:
 				content = (
 					<CompletionUnlocks
-						items={unlockedItems}
+						items={unlockScreenItems}
 						color={storyColor}
 					/>
 				);
@@ -447,7 +450,7 @@ export default function DeckResultsView() {
 		backButton = (
 			<LinkButton
 				handler={() => setStep(step - 1)}
-				disabled={isRepeating}
+				disabled={isRepeating || isUpdatingProgress}
 				useArrow={false}
 				type="outline"
 				showShadow={false}
@@ -466,7 +469,7 @@ export default function DeckResultsView() {
 	const nextButton = (
 		<LinkButton
 			handler={handleNext}
-			disabled={isRepeating}
+			disabled={isRepeating || isUpdatingProgress}
 			color={storyColor}
 			fullwidth
 			style={styles.nextButton}
@@ -588,20 +591,22 @@ export default function DeckResultsView() {
 						entering={headerEntry}
 						style={styles.header}
 					>
-						<View style={styles.headingRow}>
+						<View style={[styles.headingRow, step === 3 && styles.unlockHeading]}>
 							<MaterialSymbol
 								name={icon}
-								size={28}
+								size={step === 3 ? 72 : 28}
 								color={storyColor}
 							/>
-							<View style={styles.headingText}>
+							<View style={[styles.headingText, step === 3 && styles.unlockHeadingText]}>
 								<Text
 									accessibilityRole="header"
-									style={[styles.title, headingColor]}
+									style={[styles.title, headingColor, step === 3 && styles.centeredText]}
 								>
 									{title}
 								</Text>
-								<Text style={styles.description}>{description}</Text>
+								<Text style={[styles.description, step === 3 && styles.centeredText]}>
+									{description}
+								</Text>
 							</View>
 						</View>
 						{hasReview && (
@@ -628,6 +633,9 @@ export default function DeckResultsView() {
  * Styles
  */
 const styles = StyleSheet.create({
+	unlockHeading: { flexDirection: 'column', alignItems: 'center', gap: 12 },
+	unlockHeadingText: { flex: 0, alignSelf: 'stretch' },
+	centeredText: { textAlign: 'center' },
 	container: {
 		flex: 1,
 		paddingTop: 8,

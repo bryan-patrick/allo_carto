@@ -73,7 +73,7 @@ export default function ViewCards() {
 	 * Block locked decks
 	 */
 	if (deck && !isItemUnlocked({ id: deck.id, progressById, userLevel: experience.level })) {
-		return <Text>This deck is locked.</Text>;
+		return <Text style={{ textAlign: 'center' }}>This deck is locked.</Text>;
 	}
 
 	/**

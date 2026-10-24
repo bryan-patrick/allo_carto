@@ -1,5 +1,5 @@
 import type { DeckSessionProps } from '@/src/components/CardDeck/deckSessionTypes';
-import { getUnlockedAtlasItems } from './atlasCompletion';
+import { getReadyToUnlockAtlasItems, getUnlockedAtlasItems } from './atlasCompletion';
 import type { ProgressById } from './progression';
 import { getUserExperience } from './userExperience';
 
@@ -14,6 +14,9 @@ export function createDeckSession(xpBefore: number, progressById: ProgressById):
 		id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
 		xpBefore,
 		unlockedIdsBefore,
+		readyToUnlockIdsBefore: getReadyToUnlockAtlasItems({ progressById, userLevel }).map(
+			item => item.id,
+		),
 		results: [],
 	};
 }

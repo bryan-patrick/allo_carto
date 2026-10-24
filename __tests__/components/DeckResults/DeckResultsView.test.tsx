@@ -66,6 +66,9 @@ describe('<DeckResultsView />', () => {
 				session: {
 					id: 'completed-session',
 					xpBefore: 0,
+					// Real sessions keep these lists so the results screen can check for new unlocks.
+					unlockedIdsBefore: [],
+					readyToUnlockIdsBefore: [],
 					results: [],
 					completion: { bonuses: [{ kind: 'completion', xp: 50 }], totalXP: 50 },
 				},

@@ -6,7 +6,7 @@ export const DeckTheCardTurnsBlack = createCardDeck({
 	description: 'The toaster heats up and the card starts smoking.',
 	chapter: 'La cuisine',
 	CEFR: ['A1', 'A2'],
-	unlockRequirements: [{ id: 'deck__a_card_in_the_toaster', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__a_card_in_the_toaster', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage: "The toaster heats up. The card turns black. It's smoking!",

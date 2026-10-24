@@ -94,6 +94,7 @@ describe('<WordCardButton />', () => {
 			writeCorrectAnswer: mockRecordCorrectAnswer,
 			writeDeckCompletion: jest.fn(),
 			writeWordSeen: jest.fn(),
+			unlockItem: jest.fn(),
 			reloadProgress: jest.fn(),
 			status: 'ready',
 		});
@@ -178,6 +179,7 @@ describe('<WordCardButton />', () => {
 			writeCorrectAnswer: mockRecordCorrectAnswer,
 			writeDeckCompletion: jest.fn(),
 			writeWordSeen: jest.fn(),
+			unlockItem: jest.fn(),
 			reloadProgress: jest.fn(),
 			status: 'ready',
 		});

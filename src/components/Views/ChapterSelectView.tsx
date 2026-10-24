@@ -3,6 +3,7 @@ import ChapterDeckList from '@/src/components/ChapterDeckList';
 import ChapterHeader from '@/src/components/ChapterHeader';
 import Loader from '@/src/components/Loader';
 import LockedSection from '@/src/components/LockedSection';
+import CollectionGems from '@/src/components/CollectionGems';
 import ReadingDescription from '@/src/components/ReadingDescription';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
@@ -105,6 +106,7 @@ export default function ChapterSelectView() {
 					<Text style={styles.storyCategoryText}>Story locked</Text>
 					<Text style={styles.storyTitleText}>Complete its requirements before continuing.</Text>
 					<LockedSection
+						itemId={selectedStory.id}
 						color={colors.light.secondary}
 						textColor={colors.light.secondary}
 						unlockCriteria={storyUnlockCriteria}
@@ -137,9 +139,16 @@ export default function ChapterSelectView() {
 						size={32}
 						color={colors.light.goldenBorder}
 					/>
-					<Text style={styles.storyCategoryText}>
-						{category} · Lvl. {requiredLevel}
-					</Text>
+					<View style={styles.storyCategoryRow}>
+						<Text style={styles.storyCategoryText}>
+							{category} · Lvl. {requiredLevel}
+						</Text>
+						<CollectionGems
+							title={name}
+							progress={progressById[selectedStory.id]}
+							size={16}
+						/>
+					</View>
 					<Text style={styles.storyTitleText}>{name}</Text>
 					<ReadingDescription
 						item={selectedStory}
@@ -207,6 +216,7 @@ export default function ChapterSelectView() {
 										{isLocked && (
 											<View style={styles.lockedInner}>
 												<LockedSection
+													itemId={chapter.id}
 													color={categoryColor}
 													unlockCriteria={unlockCriteria}
 												/>
@@ -237,6 +247,12 @@ export default function ChapterSelectView() {
  * Styles
  */
 const styles = StyleSheet.create({
+	storyCategoryRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+	},
 	background: {
 		height: '100%',
 		backgroundColor: colors.dark.background,

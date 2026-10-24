@@ -6,7 +6,7 @@ export const DeckACardInTheToaster = createCardDeck({
 	description: 'Léo puts the card in the toaster.',
 	chapter: 'La cuisine',
 	CEFR: ['A1', 'A2'],
-	unlockRequirements: [{ id: 'deck__leo_takes_the_card', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__leo_takes_the_card', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage: 'He puts the card in the toaster. Click!',

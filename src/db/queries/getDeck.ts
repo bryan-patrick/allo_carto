@@ -5,6 +5,9 @@ import { getDB } from '../connection';
 import type { WordRow } from '../types';
 import getDeckWordChoices from './getDeckWordChoices';
 
+/**
+ * Typing
+ */
 interface GetDeckProps {
 	deck: CardDeck;
 	amount: number;
@@ -15,6 +18,10 @@ interface DeckWordRow extends WordRow {
 	userSeenCount: number;
 }
 
+/**
+ * We use this to load the words for flash cards.
+ * Basically, we're converting each row into usable data for the app's flashcards
+ */
 function parseWordRow(row: DeckWordRow): Word {
 	const { englishWords, isVulgar, userCorrectCount, userSeenCount, ...wordFields } = row;
 
@@ -63,6 +70,7 @@ export default async function getDeck({
 
 	/**
 	 * Get the DB
+	 *
 	 * Select all the words in that deck (deck.wordIds)
 	 * The word raffle happens after this query.
 	 * We need all of the possible words here so every word
@@ -90,14 +98,16 @@ export default async function getDeck({
 
 		/**
 		 * Draw the cards.
-		 * Word progress adds a slight bias and rarity still affects the chance.
+		 * Raffle before deduplicating so every form can be drawn across sessions.
+		 * Keep only one form per lemma in this session.
 		 */
-		const selectedWords = wordRaffle(dedupeByLemma(words), amount, word => {
+		const raffledWords = wordRaffle(words, words.length, word => {
 			return getDeckWordProgressSelectionWeight({
 				correctCount: word.correctCount,
 				seenCount: word.seenCount ?? 0,
 			});
 		});
+		const selectedWords = dedupeByLemma(raffledWords).slice(0, amount);
 
 		/**
 		 * Return the deck

@@ -1,4 +1,5 @@
 import { MaterialSymbols_400Regular } from '@expo-google-fonts/material-symbols/400Regular';
+import { MaterialSymbols_400Regular_Filled } from '@expo-google-fonts/material-symbols/400Regular_Filled';
 import { setAudioModeAsync } from 'expo-audio';
 import { useFonts } from 'expo-font';
 import { Stack, ThemeProvider } from 'expo-router';
@@ -73,6 +74,7 @@ export default function AppLayout() {
 	 */
 	const [fontsLoaded, fontError] = useFonts({
 		MaterialSymbols_400Regular,
+		MaterialSymbols_400Regular_Filled,
 		'lexend-400': require('./assets/fonts/lexend-400.ttf'),
 		'lexend-600': require('./assets/fonts/lexend-600.ttf'),
 		'lexend-700': require('./assets/fonts/lexend-700.ttf'),

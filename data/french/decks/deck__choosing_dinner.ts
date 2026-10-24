@@ -6,7 +6,7 @@ export const DeckChoosingDinner = createCardDeck({
 	description: 'Wallace orders a bowl of noodles and six pork dumplings all for himself.',
 	chapter: 'A Table for One',
 	CEFR: ['A1', 'A2', 'B1'],
-	unlockRequirements: [{ id: 'deck__a_table_for_one', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__a_table_for_one', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

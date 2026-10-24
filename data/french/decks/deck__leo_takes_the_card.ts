@@ -6,7 +6,7 @@ export const DeckLeoTakesTheCard = createCardDeck({
 	description: 'While Wallace reads, Léo takes the card.',
 	chapter: 'La cuisine',
 	CEFR: ['A1', 'A2'],
-	unlockRequirements: [{ id: 'deck__the_card_and_the_toaster', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__the_card_and_the_toaster', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage: 'Wallace is reading a book. Léo takes the card.',

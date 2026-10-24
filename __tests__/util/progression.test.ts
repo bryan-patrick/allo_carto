@@ -4,9 +4,13 @@ import { makeMockCardDeck } from '@/src/components/CardDeck/mockCardDeck';
 import {
 	findAtlasLocationByChapterId,
 	getAtlasCompletionItems,
+	getUnlockScreenItems,
+	isItemReadyToUnlock,
 	isItemUnlocked,
 } from '@/src/util/atlasCompletion';
 import { getCompletionPercentage, type ProgressById } from '@/src/util/progression';
+import { getCollectionLevel } from '@/src/util/collectionProgress';
+import { emptyDeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 
 function makeProgressById(percentages: Record<string, number>): ProgressById {
 	const result: ProgressById = {};
@@ -34,7 +38,7 @@ function makeAtlas(): StoryAtlas {
 		unlockRequirements: [
 			{
 				id: 'deck_one',
-				requiredCompletionPercentage: 50,
+				requiredWordProgress: 'new',
 			},
 		],
 	});
@@ -66,7 +70,7 @@ function makeAtlas(): StoryAtlas {
 				unlockRequirements: [
 					{
 						id: 'story_one',
-						requiredCompletionPercentage: 50,
+						requiredWordProgress: 'new',
 					},
 				],
 				chapters: [
@@ -150,8 +154,11 @@ describe('progression', () => {
 		]);
 	});
 
-	test('checks every parent before allowing direct access to a child', () => {
+	test('keeps eligible content locked until its parent unlock is accepted', () => {
 		const atlas = makeAtlas();
+		const progressById = makeProgressById({ story_one: 100, story_two: 0 });
+		progressById.story_one.wordCount = 4;
+		progressById.story_one.wordProgressCounts = { ...emptyDeckWordProgressCounts, mastered: 4 };
 
 		expect(
 			isItemUnlocked({
@@ -161,13 +168,46 @@ describe('progression', () => {
 				userLevel: 1,
 			}),
 		).toBe(false);
-		expect(
-			isItemUnlocked({
-				atlas,
-				id: 'deck_three',
-				progressById: makeProgressById({ story_one: 50 }),
-				userLevel: 1,
-			}),
-		).toBe(true);
+		const props = { atlas, progressById, userLevel: 1 };
+		expect(isItemReadyToUnlock({ ...props, id: 'story_two' })).toBe(true);
+		expect(isItemUnlocked({ ...props, id: 'deck_three' })).toBe(false);
+		progressById.story_two.isUnlocked = 1;
+		expect(isItemUnlocked({ ...props, id: 'deck_three' })).toBe(true);
+	});
+
+	test('keeps an accepted unlock accessible and visible in results even when its requirements change', () => {
+		const atlas = makeAtlas();
+		const progressById = makeProgressById({ deck_one: 12.5, deck_two: 0 });
+		progressById.deck_one.wordCount = 2;
+		progressById.deck_one.wordProgressCounts = { ...emptyDeckWordProgressCounts, new: 2 };
+		const props = { atlas, progressById, userLevel: 1 };
+		expect(isItemReadyToUnlock({ ...props, id: 'deck_two' })).toBe(true);
+		expect(isItemUnlocked({ ...props, id: 'deck_two' })).toBe(false);
+		expect(getUnlockScreenItems(props).map(item => item.id)).toContain('deck_two');
+		progressById.deck_two.isUnlocked = 1;
+		progressById.deck_one.wordProgressCounts = { ...emptyDeckWordProgressCounts, unseen: 2 };
+		expect(isItemUnlocked({ ...props, id: 'deck_two' })).toBe(true);
+		expect(isItemReadyToUnlock({ ...props, id: 'deck_two' })).toBe(false);
+		expect(getUnlockScreenItems(props).map(item => item.id)).toContain('deck_two');
+	});
+
+	test('awards a collection level from its weakest word, including words shared across decks', () => {
+		const progress = makeProgressById({ chapter_one: 90 }).chapter_one;
+		progress.wordCount = 3;
+		progress.wordProgressCounts = { ...emptyDeckWordProgressCounts, unseen: 1, mastered: 2 };
+		expect(getCollectionLevel(progress)).toBe('unseen');
+		progress.wordProgressCounts = { ...emptyDeckWordProgressCounts, learning: 1, mastered: 2 };
+		expect(getCollectionLevel(progress)).toBe('learning');
+		progress.wordProgressCounts = {
+			...emptyDeckWordProgressCounts,
+			familiar: 1,
+			known: 1,
+			mastered: 1,
+		};
+		expect(getCollectionLevel(progress)).toBe('familiar');
+		progress.wordProgressCounts = { ...emptyDeckWordProgressCounts, known: 1, mastered: 2 };
+		expect(getCollectionLevel(progress)).toBe('known');
+		progress.wordProgressCounts = { ...emptyDeckWordProgressCounts, mastered: 3 };
+		expect(getCollectionLevel(progress)).toBe('mastered');
 	});
 });

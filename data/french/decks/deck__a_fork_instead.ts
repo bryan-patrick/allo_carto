@@ -6,7 +6,7 @@ export const DeckAForkInstead = createCardDeck({
 	description: 'Wallace enjoys his steaming bowl of noodles, but his chopsticks slip away.',
 	chapter: 'A Table for One',
 	CEFR: ['A1', 'A2', 'B1', 'B2'],
-	unlockRequirements: [{ id: 'deck__choosing_dinner', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__choosing_dinner', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

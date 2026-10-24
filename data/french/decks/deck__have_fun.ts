@@ -2,11 +2,12 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckHaveFun = createCardDeck({
 	id: 'deck__have_fun',
+	requiredLevel: 9,
 	title: 'Have Fun',
 	description: 'Read stories, learn words, and have fun with Allô Carto.',
 	chapter: 'Additional information',
 	CEFR: ['A1', 'A2'],
-	unlockRequirements: [{ id: 'deck__word_collections', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__word_collections', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

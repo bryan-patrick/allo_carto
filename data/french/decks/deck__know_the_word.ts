@@ -2,6 +2,7 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckKnowTheWord = createCardDeck({
 	id: 'deck__know_the_word',
+	requiredLevel: 7,
 	title: 'Know the Word',
 	description: 'See your vocabulary progress and find words in their passages.',
 	chapter: 'Additional information',

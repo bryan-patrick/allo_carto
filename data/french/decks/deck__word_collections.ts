@@ -2,11 +2,12 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckWordCollections = createCardDeck({
 	id: 'deck__word_collections',
+	requiredLevel: 8,
 	title: 'Word Collections',
 	description: 'Discover collections and their rewards.',
 	chapter: 'Additional information',
 	CEFR: ['A1', 'A2', 'B1'],
-	unlockRequirements: [{ id: 'deck__know_the_word', requiredCompletionPercentage: 15 }],
+	unlockRequirements: [{ id: 'deck__know_the_word', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

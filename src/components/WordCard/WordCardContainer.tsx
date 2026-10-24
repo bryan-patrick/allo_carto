@@ -66,16 +66,22 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 	 */
 	useEffect(() => {
 		async function markWordSeen() {
-			if (!isCurrent || isUpdatingProgress) return;
-			if (seenWordId.current === word.id) return;
+			if (!isCurrent || isUpdatingProgress) {
+				return;
+			}
+			if (seenWordId.current === word.id) {
+				return;
+			}
 
-			const didWrite = await recordWordSeen(word.id);
+			const didWrite = await recordWordSeen(word.id, cardDeckState.cardDeck.id);
 
-			if (didWrite) seenWordId.current = word.id;
+			if (didWrite) {
+				seenWordId.current = word.id;
+			}
 		}
 
 		markWordSeen();
-	}, [isCurrent, isUpdatingProgress, recordWordSeen, word.id]);
+	}, [isCurrent, isUpdatingProgress, recordWordSeen, word.id, cardDeckState.cardDeck.id]);
 
 	/**
 	 * Side effects

@@ -1,4 +1,5 @@
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
+import type { WordProgressKey } from './wordProgress';
 
 /**
  * Typing
@@ -7,7 +8,7 @@ export type ProgressType = 'story' | 'chapter' | 'deck';
 
 export interface UnlockRequirement {
 	id: string;
-	requiredCompletionPercentage: number;
+	requiredWordProgress: Exclude<WordProgressKey, 'unseen'>;
 }
 
 export interface Progression {
@@ -27,6 +28,9 @@ export interface UserProgressRow {
 	seenPercentage?: number;
 	seenWordCount?: number;
 	wordCount?: number;
+	hasStartedFlashcards?: number;
+	isUnlocked?: number;
+	wordProgressCounts?: DeckWordProgressCounts;
 }
 
 export type ProgressById = Record<string, UserProgressRow>;
@@ -44,11 +48,13 @@ export function getCompletionPercentage({
 		'new' | 'learning' | 'familiar' | 'known' | 'mastered'
 	>;
 }): number {
-	if (wordCount === 0) return 0;
+	if (wordCount === 0) {
+		return 0;
+	}
 
 	/**
 	 * Each progress stage is worth more points.
-	 * These values preserve the existing completion and unlock behavior.
+	 * These values describe learned progress; gems use each word's actual level.
 	 */
 	const earnedPoints =
 		wordProgressCounts.new * 0.5 +

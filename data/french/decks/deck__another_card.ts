@@ -6,7 +6,7 @@ export const DeckAnotherCard = createCardDeck({
 	description: 'Léo finds a cheese card. Wallace says no.',
 	chapter: 'Oh non!',
 	CEFR: ['A1', 'A2'],
-	unlockRequirements: [{ id: 'deck__its_paper', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__its_paper', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage: 'Léo finds another card: cheese.\n\nWallace says, « No. »',

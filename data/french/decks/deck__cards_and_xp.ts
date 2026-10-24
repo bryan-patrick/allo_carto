@@ -2,11 +2,12 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckCardsAndXp = createCardDeck({
 	id: 'deck__cards_and_xp',
+	requiredLevel: 6,
 	title: 'Cards and XP',
 	description: 'Learn how correct answers level up your cards and earn XP.',
 	chapter: 'How it works',
 	CEFR: ['A1', 'A2', 'B1'],
-	unlockRequirements: [{ id: 'deck__study_and_read_again', requiredCompletionPercentage: 12 }],
+	unlockRequirements: [{ id: 'deck__study_and_read_again', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage: 'When you get a flashcard right, the card levels up. You also earn XP.',

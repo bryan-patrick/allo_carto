@@ -6,7 +6,7 @@ export const DeckTheWalkToTheRestaurant = createCardDeck({
 	description: 'Wallace follows the autumn sidewalks to the warmly lit restaurant.',
 	chapter: 'A New Restaurant',
 	CEFR: ['A1', 'A2', 'B1'],
-	unlockRequirements: [{ id: 'deck__getting_ready', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__getting_ready', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

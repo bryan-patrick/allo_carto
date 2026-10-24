@@ -60,6 +60,7 @@ describe('<WordCardContainer />', () => {
 			writeCorrectAnswer: jest.fn(),
 			writeDeckCompletion: jest.fn(),
 			writeWordSeen: mockRecordWordSeen,
+			unlockItem: jest.fn(),
 			reloadProgress: jest.fn(),
 			status: 'ready',
 		});
@@ -193,7 +194,7 @@ describe('<WordCardContainer />', () => {
 		);
 
 		await waitFor(() => {
-			expect(mockRecordWordSeen).toHaveBeenCalledWith('word_noun_cafe');
+			expect(mockRecordWordSeen).toHaveBeenCalledWith('word_noun_cafe', 'deck__testing');
 		});
 	});
 });

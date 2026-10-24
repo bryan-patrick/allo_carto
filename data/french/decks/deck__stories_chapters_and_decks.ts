@@ -2,6 +2,7 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 
 export const DeckStoriesChaptersAndDecks = createCardDeck({
 	id: 'deck__stories_chapters_and_decks',
+	requiredLevel: 4,
 	title: 'Stories, Chapters, and Decks',
 	description: 'Explore the chapters and decks in each story.',
 	chapter: 'How it works',
