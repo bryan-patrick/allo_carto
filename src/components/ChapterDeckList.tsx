@@ -21,7 +21,7 @@ import { createDeckSession } from '@/src/util/createDeckSession';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 
@@ -38,6 +38,10 @@ interface MetadataItemProps {
 	color: string;
 	icon: string;
 	text: string;
+}
+
+interface ProgressMetadataProps extends MetadataItemProps {
+	percent: number;
 }
 
 interface PassageState {
@@ -62,7 +66,7 @@ function MetadataItem({ color, icon, text }: MetadataItemProps) {
 	);
 }
 
-function ProgressMetadata({ color, icon, text, percent }: MetadataItemProps & { percent: number }) {
+function ProgressMetadata({ color, icon, text, percent }: ProgressMetadataProps) {
 	return (
 		<View style={styles.completionMetadata}>
 			<MetadataItem
@@ -83,6 +87,7 @@ function ProgressMetadata({ color, icon, text, percent }: MetadataItemProps & { 
  * The chapter's decks and their passage preview
  */
 export default function ChapterDeckList({ chapter, progressById, story }: ChapterDeckListProps) {
+	const router = useRouter();
 	/**
 	 * Context and state
 	 */
@@ -101,8 +106,12 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 	 * Load and begin the selected deck
 	 */
 	async function handleSelectDeck(deck: CardDeck) {
-		if (!userId || isUpdatingProgress || isStartingDeck.current) return;
-		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) return;
+		if (!userId || isUpdatingProgress || isStartingDeck.current) {
+			return;
+		}
+		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) {
+			return;
+		}
 
 		isStartingDeck.current = true;
 
@@ -132,8 +141,12 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 	 * Load passage progress before opening the passage view
 	 */
 	async function handleShowPassage(deck: ReadingPassage) {
-		if (!userId || loadingPassageId) return;
-		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) return;
+		if (!userId || loadingPassageId) {
+			return;
+		}
+		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) {
+			return;
+		}
 
 		setLoadingPassageId(deck.id);
 

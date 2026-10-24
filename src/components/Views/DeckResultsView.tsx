@@ -17,7 +17,7 @@ import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { getUserExperience } from '@/src/util/userExperience';
-import { router, useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {
 	Alert,
@@ -100,6 +100,7 @@ function findDeckAtlasLocation(cardDeck: CardDeck): DeckAtlasLocation | undefine
  * Show the passage, word results, rewards, and any new unlocks.
  */
 export default function DeckResultsView() {
+	const router = useRouter();
 	/**
 	 * Get the deck, saved results, user, XP, and settings from the app.
 	 */
@@ -300,7 +301,7 @@ export default function DeckResultsView() {
 		}
 
 		router.replace('/(tabs)');
-	}, [atlasLocation]);
+	}, [atlasLocation, router]);
 
 	/**
 	 * Load the deck again using saved word progress and the user's settings.
@@ -493,9 +494,15 @@ export default function DeckResultsView() {
 			busy: pendingFeedback !== null,
 		};
 
-		if (pendingFeedback === false) noLabel = 'Saving…';
-		if (pendingFeedback === true) yesLabel = 'Saving…';
-		if (feedbackDisabled) feedbackButtonStyle.push(styles.disabledButton);
+		if (pendingFeedback === false) {
+			noLabel = 'Saving…';
+		}
+		if (pendingFeedback === true) {
+			yesLabel = 'Saving…';
+		}
+		if (feedbackDisabled) {
+			feedbackButtonStyle.push(styles.disabledButton);
+		}
 
 		footerContent = (
 			<View style={styles.footerRow}>

@@ -1,9 +1,14 @@
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import VolumeSetting from '../../components/VolumeSetting';
 import { resetDB } from '../../db/interface';
 import { useUserProgress } from '../../db/useUserProgress';
-import type { BooleanSettingKey, PronunciationFormat } from '../../settings/appSettings';
+import {
+	clampAudioVolume,
+	type BooleanSettingKey,
+	type PronunciationFormat,
+} from '../../settings/appSettings';
 import { useAppSettings } from '../../settings/useAppSettings';
 import { getCardsPerDeck, maxCardsPerDeck, minCardsPerDeck } from '../../util/cardsPerDeck';
 import colors from '../colors';
@@ -134,6 +139,13 @@ export default function Settings() {
 						value={settings.ttsOnCorrectEnabled}
 					/>
 				</View>
+				{settings.ttsOnCorrectEnabled && (
+					<VolumeSetting
+						label="TTS volume"
+						value={settings.ttsVolume}
+						onValueChange={value => setSetting('ttsVolume', clampAudioVolume(value))}
+					/>
+				)}
 				<View
 					accessibilityRole="radiogroup"
 					accessibilityLabel="Pronunciation format"
@@ -174,15 +186,24 @@ export default function Settings() {
 					</View>
 				))}
 			</View>
-			<View style={styles.settingRow}>
-				<Text style={styles.settingLabel}>Sound effects</Text>
-				<Switch
-					accessibilityLabel="Sound effects"
-					ios_backgroundColor={colors.dark.border}
-					onValueChange={enabled => setSetting('soundEffectsEnabled', enabled)}
-					trackColor={{ false: colors.dark.border, true: colors.dark.primaryActive }}
-					value={settings.soundEffectsEnabled}
-				/>
+			<View style={styles.section}>
+				<View style={styles.settingRow}>
+					<Text style={styles.settingLabel}>Sound effects</Text>
+					<Switch
+						accessibilityLabel="Sound effects"
+						ios_backgroundColor={colors.dark.border}
+						onValueChange={enabled => setSetting('soundEffectsEnabled', enabled)}
+						trackColor={{ false: colors.dark.border, true: colors.dark.primaryActive }}
+						value={settings.soundEffectsEnabled}
+					/>
+				</View>
+				{settings.soundEffectsEnabled && (
+					<VolumeSetting
+						label="Sound effects volume"
+						value={settings.soundEffectsVolume}
+						onValueChange={value => setSetting('soundEffectsVolume', clampAudioVolume(value))}
+					/>
+				)}
 			</View>
 			<View style={styles.settingRow}>
 				<Text style={styles.settingLabel}>Show skip word link</Text>

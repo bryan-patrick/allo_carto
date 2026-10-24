@@ -5,18 +5,23 @@ import { isValidCardsPerDeck } from '@/src/util/cardsPerDeck';
  */
 export type PronunciationFormat = 'readable' | 'ipa';
 
-export interface AppSettings {
+interface BooleanSettings {
 	soundEffectsEnabled: boolean;
 	ttsOnCorrectEnabled: boolean;
 	useLearningLevelColors: boolean;
 	useLevelOpacity: boolean;
 	showDebugOptions: boolean;
 	showSkipWordLink: boolean;
+}
+
+export interface AppSettings extends BooleanSettings {
+	soundEffectsVolume: number;
+	ttsVolume: number;
 	cardsPerDeck: number | null;
 	pronunciationFormat: PronunciationFormat;
 }
 
-export type BooleanSettingKey = Exclude<keyof AppSettings, 'cardsPerDeck' | 'pronunciationFormat'>;
+export type BooleanSettingKey = keyof BooleanSettings;
 
 const booleanSettingKeys: BooleanSettingKey[] = [
 	'soundEffectsEnabled',
@@ -27,12 +32,28 @@ const booleanSettingKeys: BooleanSettingKey[] = [
 	'showSkipWordLink',
 ];
 
+const volumeSettingKeys: ('soundEffectsVolume' | 'ttsVolume')[] = [
+	'soundEffectsVolume',
+	'ttsVolume',
+];
+export const maxAudioVolume = 0.5;
+
+export function clampAudioVolume(volume: number): number {
+	if (!Number.isFinite(volume)) {
+		return 0;
+	}
+
+	return Math.max(0, Math.min(maxAudioVolume, volume));
+}
+
 /**
  * Default settings
  */
 export const defaultAppSettings: AppSettings = {
 	soundEffectsEnabled: true,
 	ttsOnCorrectEnabled: true,
+	soundEffectsVolume: 0.4,
+	ttsVolume: maxAudioVolume,
 	useLearningLevelColors: false,
 	useLevelOpacity: false,
 	showDebugOptions: false,
@@ -65,6 +86,14 @@ export function readAppSettings(value: string | null): AppSettings {
 
 		if (typeof setting === 'boolean') {
 			settingsCopy[key] = setting;
+		}
+	}
+
+	for (const key of volumeSettingKeys) {
+		const volume = saved[key];
+
+		if (typeof volume === 'number' && Number.isFinite(volume)) {
+			settingsCopy[key] = clampAudioVolume(volume);
 		}
 	}
 

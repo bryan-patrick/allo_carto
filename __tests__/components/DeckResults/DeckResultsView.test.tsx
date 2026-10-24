@@ -5,7 +5,11 @@ import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckResultsView from '@/src/components/Views/DeckResultsView';
 import { saveDeckPassageFeedback } from '@/src/db/interface';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { router } from 'expo-router';
+
+const mockRouter = {
+	dismissTo: jest.fn(),
+	replace: jest.fn(),
+};
 
 jest.mock('@/src/components/CardDeck/useCardDeck');
 
@@ -28,10 +32,7 @@ jest.mock('@/src/settings/useAppSettings', () => ({
 
 jest.mock('expo-router', () => ({
 	useFocusEffect: jest.fn(),
-	router: {
-		dismissTo: jest.fn(),
-		replace: jest.fn(),
-	},
+	useRouter: () => mockRouter,
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
@@ -49,7 +50,6 @@ jest.mock('expo-audio', () => ({
 }));
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
-const mockRouterDismissTo = jest.mocked(router.dismissTo);
 const story = storyAtlas.stories.find(story =>
 	story.chapters.some(chapter => chapter.decks.length > 0),
 )!;
@@ -57,7 +57,7 @@ const chapter = story.chapters.find(chapter => chapter.decks.length > 0)!;
 
 describe('<DeckResultsView />', () => {
 	beforeEach(() => {
-		mockRouterDismissTo.mockClear();
+		mockRouter.dismissTo.mockClear();
 		jest.mocked(saveDeckPassageFeedback).mockClear();
 		mockUseCardDeck.mockReturnValue({
 			cardDeckState: makeMockCardDeckState({
@@ -91,7 +91,7 @@ describe('<DeckResultsView />', () => {
 		});
 		await fireEvent.press(getByText('Next'));
 		await fireEvent.press(getByText('Finish'));
-		expect(mockRouterDismissTo).toHaveBeenCalledWith({
+		expect(mockRouter.dismissTo).toHaveBeenCalledWith({
 			pathname: '/ChapterSelect',
 			params: {
 				chapterId: chapter.id,
