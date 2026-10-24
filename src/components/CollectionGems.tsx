@@ -31,39 +31,39 @@ function getGemInfo(
 
 	return {
 		unseen: {
-			label: 'Unseen',
+			label: '0/3 Gems',
 			filledCount: 0,
 			description: `${seenWordCount}/${wordCount} words seen. See every word to earn your first gem.`,
 		},
 		inProgress: {
-			label: 'First gem in progress',
+			label: '0/3 Gems',
 			filledCount: 0,
 			description: `${seenWordCount}/${wordCount} words seen. See every word to earn your first gem.`,
 		},
 		new: {
-			label: 'New',
+			label: '1/3 Gems',
 			filledCount: 1,
-			description: `Every word is at least New.\n\n${getWordsAtLevel(progress, 'learning')}/${wordCount} words are at least Learning. Bring every word to Learning to earn your next gem.`,
+			description: `Every word is at least level "New".\n\n${getWordsAtLevel(progress, 'learning')}/${wordCount} words are at least Learning. Bring every word to Learning to earn your next gem.`,
 		},
 		learning: {
-			label: 'Learning',
+			label: '2/3 Gems',
 			filledCount: 2,
-			description: `Every word is at least Learning.\n\n${getWordsAtLevel(progress, 'familiar')}/${wordCount} words are at least Familiar. Bring every word to Familiar to earn your next gem.`,
+			description: `Every word is at least level "Learning".\n\n${getWordsAtLevel(progress, 'familiar')}/${wordCount} words are at least Familiar. Bring every word to Familiar to earn your next gem.`,
 		},
 		familiar: {
-			label: 'Familiar',
+			label: '3/3 Gems',
 			filledCount: 3,
-			description: 'Every word is at least Familiar.\n\nAll three gems earned!',
+			description: 'Every word is at least level "Familiar".\n\nAll three gems earned!',
 		},
 		known: {
-			label: 'Known',
+			label: '💠💠💠',
 			filledCount: 3,
-			description: 'Every word is at least Known.\n\nAll three gems earned!',
+			description: 'Every word is at least Known.',
 		},
 		mastered: {
-			label: 'Mastered',
+			label: '💎💎💎💯',
 			filledCount: 3,
-			description: 'Every word is at least Mastered.\n\nAll three gems earned!',
+			description: 'Every word is mastered.',
 		},
 	};
 }
@@ -84,7 +84,7 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 	const { label, filledCount, description } = gemResponses[situation];
 
 	function showProgress() {
-		Alert.alert(`${title} · ${label}`, description);
+		Alert.alert(`${title} (${label})`, description);
 	}
 
 	/**

@@ -12,7 +12,7 @@ import { getDeck, saveDeckPassageFeedback } from '@/src/db/interface';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { getAtlasUnlockOffers } from '@/src/util/atlasCompletion';
+import { getUnlockScreenItems } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
@@ -134,7 +134,7 @@ export default function DeckResultsView() {
 	 * Compare access at the start of the session with saved progress after all XP bonuses.
 	 * A missing starting snapshot cannot reliably identify new unlocks.
 	 */
-	const unlockOffers = useMemo(() => {
+	const unlockScreenItems = useMemo(() => {
 		if (!session?.completion || !session.unlockedIdsBefore) {
 			return [];
 		}
@@ -145,13 +145,13 @@ export default function DeckResultsView() {
 		]);
 		const userLevel = getUserExperience(session.completion.totalXP).level;
 
-		return getAtlasUnlockOffers({ progressById, userLevel }).filter(
+		return getUnlockScreenItems({ progressById, userLevel }).filter(
 			item => !previouslyAvailable.has(item.id),
 		);
 	}, [progressById, session]);
 	let totalSteps = completionSteps.length - 1;
 
-	if (unlockOffers.length > 0) {
+	if (unlockScreenItems.length > 0) {
 		totalSteps = completionSteps.length;
 	}
 
@@ -271,7 +271,7 @@ export default function DeckResultsView() {
 			case 3:
 				content = (
 					<CompletionUnlocks
-						items={unlockOffers}
+						items={unlockScreenItems}
 						color={storyColor}
 					/>
 				);

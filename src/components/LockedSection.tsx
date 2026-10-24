@@ -7,8 +7,8 @@ import {
 } from '@/src/util/atlasCompletion';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
-import MaterialSymbol from './MaterialSymbol';
 import LinkButton from './LinkButton';
+import MaterialSymbol from './MaterialSymbol';
 
 interface LockedSectionProps {
 	color?: string;
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
 	criteria: {
 		flexShrink: 1,
 		marginVertical: 8,
+		padding: 8,
 		gap: 4,
 	},
 	criteriaTitle: {
@@ -109,7 +110,8 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		fontFamily: 'lexend-400',
 		fontSize: 14,
-		lineHeight: 21,
+		lineHeight: 22,
+		textAlign: 'center',
 	},
 	criterion: {
 		flexDirection: 'row',

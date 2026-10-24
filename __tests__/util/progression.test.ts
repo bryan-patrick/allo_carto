@@ -4,7 +4,7 @@ import { makeMockCardDeck } from '@/src/components/CardDeck/mockCardDeck';
 import {
 	findAtlasLocationByChapterId,
 	getAtlasCompletionItems,
-	getAtlasUnlockOffers,
+	getUnlockScreenItems,
 	isItemReadyToUnlock,
 	isItemUnlocked,
 } from '@/src/util/atlasCompletion';
@@ -183,12 +183,12 @@ describe('progression', () => {
 		const props = { atlas, progressById, userLevel: 1 };
 		expect(isItemReadyToUnlock({ ...props, id: 'deck_two' })).toBe(true);
 		expect(isItemUnlocked({ ...props, id: 'deck_two' })).toBe(false);
-		expect(getAtlasUnlockOffers(props).map(item => item.id)).toContain('deck_two');
+		expect(getUnlockScreenItems(props).map(item => item.id)).toContain('deck_two');
 		progressById.deck_two.isUnlocked = 1;
 		progressById.deck_one.wordProgressCounts = { ...emptyDeckWordProgressCounts, unseen: 2 };
 		expect(isItemUnlocked({ ...props, id: 'deck_two' })).toBe(true);
 		expect(isItemReadyToUnlock({ ...props, id: 'deck_two' })).toBe(false);
-		expect(getAtlasUnlockOffers(props).map(item => item.id)).toContain('deck_two');
+		expect(getUnlockScreenItems(props).map(item => item.id)).toContain('deck_two');
 	});
 
 	test('awards a collection level from its weakest word, including words shared across decks', () => {
