@@ -21,7 +21,9 @@ jest.mock('@/src/db/useUserContext', () => ({
 }));
 
 jest.mock('@/src/settings/useAppSettings', () => ({
-	useAppSettings: () => ({ settings: { cardsPerDeck: null } }),
+	useAppSettings: () => ({
+		settings: jest.requireActual('@/src/settings/appSettings').defaultAppSettings,
+	}),
 }));
 
 jest.mock('expo-router/react-navigation', () => ({
@@ -45,6 +47,8 @@ jest.mock('expo-audio', () => ({
 		volume: 0,
 		seekTo: jest.fn(),
 		play: jest.fn(),
+		pause: jest.fn(),
+		addListener: jest.fn(() => ({ remove: jest.fn() })),
 	})),
 }));
 

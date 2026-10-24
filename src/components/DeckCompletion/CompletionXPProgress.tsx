@@ -1,7 +1,8 @@
 import colors from '@/src/app/colors';
 import ProgressBar, { progressBarAnimationDuration } from '@/src/components/ProgressBar';
 import { getUserExperience } from '@/src/util/userExperience';
-import { useEffect, useState } from 'react';
+import { useSoundEffect } from '@/src/util/useSoundEffect';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 
@@ -16,7 +17,7 @@ interface CompletionXPProgressProps {
 }
 
 /**
- * Fill the bar to show the user's new XP. This hasn't been working well...
+ * TODO: Fill the bar to show the user's new XP. This hasn't been working well...
  * Might have something to do with the reduced motion
  * The carry over on level up does work though.
  */
@@ -27,6 +28,8 @@ export default function CompletionXPProgress({
 	color,
 }: CompletionXPProgressProps) {
 	const reducedMotion = useReducedMotion();
+	const playLevelUp = useSoundEffect('levelUp');
+	const lastSoundedLevel = useRef(getUserExperience(fromXP).level);
 
 	const [experience, setExperience] = useState(() => {
 		if (reducedMotion) {
@@ -49,6 +52,16 @@ export default function CompletionXPProgress({
 	if (experience.level > previousExperience.level) {
 		levelUpLabel = `Level up! Lvl. ${previousExperience.level} → Lvl. ${experience.level}`;
 	}
+
+	/**
+	 * Play the level up sound
+	 */
+	useEffect(() => {
+		if (experience.level > lastSoundedLevel.current) {
+			lastSoundedLevel.current = experience.level;
+			playLevelUp();
+		}
+	}, [experience.level, playLevelUp]);
 
 	/**
 	 * Wait until the XP amounts finish counting, then fill the bar

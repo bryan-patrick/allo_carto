@@ -1,5 +1,25 @@
 import type { CardRarity, CEFR } from '@/src/components/CardDeck/cardDeckTypes';
 
+/**
+ * Typing
+ */
+interface UserLevelDefinition {
+	level: number;
+	toNext: number | null;
+}
+
+export interface UserExperience {
+	totalXP: number;
+	level: number;
+	isMaxLevel: boolean;
+	xpIntoLevel: number;
+	xpForNextLevel: number;
+	progressPercentage: number;
+}
+
+/**
+ * More xp for rare cards
+ */
 export const correctAnswerXPByRarity: Record<CardRarity, number> = {
 	Common: 10,
 	Rare: 15,
@@ -26,13 +46,8 @@ export const userExperienceConfig = {
 	perfectDeckXP: 50,
 };
 
-interface UserLevelDefinition {
-	level: number;
-	toNext: number | null;
-}
-
 /**
- * XP required to advance from each level. The capped level has no requirement.
+ * XP required for each level
  */
 export const userLevels: readonly UserLevelDefinition[] = [
 	{ level: 1, toNext: 400 },
@@ -66,18 +81,6 @@ export const userLevels: readonly UserLevelDefinition[] = [
 	{ level: 29, toNext: 44300 },
 	{ level: 30, toNext: null },
 ];
-
-/**
- * I think the only exception to types not going at the top
- */
-export interface UserExperience {
-	totalXP: number;
-	level: number;
-	isMaxLevel: boolean;
-	xpIntoLevel: number;
-	xpForNextLevel: number;
-	progressPercentage: number;
-}
 
 /**
  * Look up the player's level using the XP table.

@@ -152,6 +152,16 @@ export default function Settings() {
 				))}
 			</View>
 			<View style={styles.settingRow}>
+				<Text style={styles.settingLabel}>Sound effects</Text>
+				<Switch
+					accessibilityLabel="Sound effects"
+					ios_backgroundColor={colors.dark.border}
+					onValueChange={enabled => setSetting('soundEffectsEnabled', enabled)}
+					trackColor={{ false: colors.dark.border, true: colors.dark.primaryActive }}
+					value={settings.soundEffectsEnabled}
+				/>
+			</View>
+			<View style={styles.settingRow}>
 				<Text style={styles.settingLabel}>Show skip word link</Text>
 				<Switch
 					accessibilityLabel="Show skip word link"

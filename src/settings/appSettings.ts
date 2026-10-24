@@ -6,6 +6,7 @@ import { isValidCardsPerDeck } from '@/src/util/cardsPerDeck';
 export type PronunciationFormat = 'readable' | 'ipa';
 
 export interface AppSettings {
+	soundEffectsEnabled: boolean;
 	useLearningLevelColors: boolean;
 	useLevelOpacity: boolean;
 	showDebugOptions: boolean;
@@ -17,6 +18,7 @@ export interface AppSettings {
 export type BooleanSettingKey = Exclude<keyof AppSettings, 'cardsPerDeck' | 'pronunciationFormat'>;
 
 const booleanSettingKeys: BooleanSettingKey[] = [
+	'soundEffectsEnabled',
 	'useLearningLevelColors',
 	'useLevelOpacity',
 	'showDebugOptions',
@@ -27,6 +29,7 @@ const booleanSettingKeys: BooleanSettingKey[] = [
  * Default settings
  */
 export const defaultAppSettings: AppSettings = {
+	soundEffectsEnabled: true,
 	useLearningLevelColors: false,
 	useLevelOpacity: false,
 	showDebugOptions: false,
