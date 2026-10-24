@@ -1,4 +1,4 @@
-import { useAudioPlayer } from 'expo-audio';
+import { useSoundEffect } from '@/src/util/useSoundEffect';
 import { useLinkProps } from 'expo-router/react-navigation';
 import { cloneElement, isValidElement, ReactElement, ReactNode, useEffect, useState } from 'react';
 import {
@@ -24,11 +24,6 @@ import SVGRightArrow from './SVG/SVGRightArrow';
  */
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const linkButtonShadowHeight = 2;
-
-/**
- * Audio Import
- */
-const tapAudio = require('@/src/app/assets/sounds/tap.wav');
 
 /**
  * Typing
@@ -80,7 +75,7 @@ export default function LinkButton({
 	type = 'fill',
 	...pressableProps
 }: LinkButtonProps) {
-	const tapPlayer = useAudioPlayer(tapAudio);
+	const playTapSound = useSoundEffect('tap');
 	const linkProps = useLinkProps({
 		screen: screen ?? '',
 		params: params ?? {},
@@ -148,14 +143,6 @@ export default function LinkButton({
 	} = allTheProps;
 
 	/**
-	 * Sound effect
-	 */
-	useEffect(() => {
-		// eslint-disable-next-line react-hooks/immutability
-		tapPlayer.volume = 0.2;
-	}, [tapPlayer]);
-
-	/**
 	 * Handle animations on pressed
 	 */
 	useEffect(() => {
@@ -178,18 +165,6 @@ export default function LinkButton({
 			shadowOffsetHeight.set(buttonShadowHeight);
 		}
 	}, [buttonShadowHeight, isPressed, shadowOffsetHeight, top]);
-
-	/**
-	 * Action handlers
-	 */
-	async function playTapSound() {
-		try {
-			await tapPlayer.seekTo(0);
-			tapPlayer.play();
-		} catch {
-			console.log('There was an error while playing the LinkButton tap sound.');
-		}
-	}
 
 	/**
 	 * Render the thing

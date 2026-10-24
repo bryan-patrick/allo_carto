@@ -8,12 +8,25 @@ import { useAppSettings } from '../../settings/useAppSettings';
 import { getCardsPerDeck, maxCardsPerDeck, minCardsPerDeck } from '../../util/cardsPerDeck';
 import colors from '../colors';
 
-const passageSettings: { key: BooleanSettingKey; label: string }[] = [
+/**
+ * Typing
+ */
+interface PassageSetting {
+	key: BooleanSettingKey;
+	label: string;
+}
+
+interface PronunciationOption {
+	value: PronunciationFormat;
+	label: string;
+}
+
+const passageSettings: PassageSetting[] = [
 	{ key: 'useLearningLevelColors', label: 'Use learning level colors' },
 	{ key: 'useLevelOpacity', label: 'Use level opacity' },
 ];
 
-const pronunciationOptions: { value: PronunciationFormat; label: string }[] = [
+const pronunciationOptions: PronunciationOption[] = [
 	{ value: 'readable', label: 'Readable pronunciation' },
 	{ value: 'ipa', label: 'IPA' },
 ];
@@ -111,6 +124,16 @@ export default function Settings() {
 			</View>
 			<View style={styles.section}>
 				<Text style={styles.heading}>Pronunciation</Text>
+				<View style={styles.settingRow}>
+					<Text style={styles.settingLabel}>Use TTS on correct answers</Text>
+					<Switch
+						accessibilityLabel="Pronounce correct answers"
+						ios_backgroundColor={colors.dark.border}
+						onValueChange={enabled => setSetting('ttsOnCorrectEnabled', enabled)}
+						trackColor={{ false: colors.dark.border, true: colors.dark.primaryActive }}
+						value={settings.ttsOnCorrectEnabled}
+					/>
+				</View>
 				<View
 					accessibilityRole="radiogroup"
 					accessibilityLabel="Pronunciation format"
@@ -152,6 +175,16 @@ export default function Settings() {
 				))}
 			</View>
 			<View style={styles.settingRow}>
+				<Text style={styles.settingLabel}>Sound effects</Text>
+				<Switch
+					accessibilityLabel="Sound effects"
+					ios_backgroundColor={colors.dark.border}
+					onValueChange={enabled => setSetting('soundEffectsEnabled', enabled)}
+					trackColor={{ false: colors.dark.border, true: colors.dark.primaryActive }}
+					value={settings.soundEffectsEnabled}
+				/>
+			</View>
+			<View style={styles.settingRow}>
 				<Text style={styles.settingLabel}>Show skip word link</Text>
 				<Switch
 					accessibilityLabel="Show skip word link"
@@ -188,6 +221,9 @@ export default function Settings() {
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

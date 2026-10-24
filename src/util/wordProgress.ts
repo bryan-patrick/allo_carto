@@ -23,25 +23,25 @@ export const wordProgressDefinitions: WordProgressDefinition[] = [
 	{
 		key: 'learning',
 		name: 'Learning',
-		minCorrectCount: 2,
+		minCorrectCount: 5,
 		symbolName: 'school',
 	},
 	{
 		key: 'familiar',
 		name: 'Familiar',
-		minCorrectCount: 5,
+		minCorrectCount: 15,
 		symbolName: 'person_celebrate',
 	},
 	{
 		key: 'known',
 		name: 'Known',
-		minCorrectCount: 7,
+		minCorrectCount: 30,
 		symbolName: 'cognition_2',
 	},
 	{
 		key: 'mastered',
 		name: 'Mastered',
-		minCorrectCount: 10,
+		minCorrectCount: 50,
 		symbolName: 'star',
 	},
 ];

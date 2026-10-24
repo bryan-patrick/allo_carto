@@ -1,6 +1,8 @@
 import colors from '@/src/app/colors';
+import { useAppSettings } from '@/src/settings/useAppSettings';
+import { useSoundEffect } from '@/src/util/useSoundEffect';
 import * as Speech from 'expo-speech';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable } from 'react-native';
 import Animated, { css, useReducedMotion } from 'react-native-reanimated';
 import MaterialSymbol from '../MaterialSymbol';
@@ -10,13 +12,38 @@ import MaterialSymbol from '../MaterialSymbol';
  */
 interface TTSButtonProps {
 	wordsToSay: string;
+	autoPlay?: boolean;
+}
+
+interface SpeakWordOptions {
+	wordsToSay: string;
+	setIsPlaying(playing: boolean): void;
+}
+
+function speakWord({ wordsToSay, setIsPlaying }: SpeakWordOptions) {
+	function finishPlayback() {
+		setIsPlaying(false);
+	}
+
+	Speech.speak(wordsToSay, {
+		language: 'fr-CA',
+		rate: 0.8,
+		onStart: () => setIsPlaying(true),
+		onDone: finishPlayback,
+		onStopped: finishPlayback,
+		onError: finishPlayback,
+	});
 }
 
 /**
  * The TTS button for the word cards (front and back)
  */
-export default function TTSButton({ wordsToSay }: TTSButtonProps) {
+export default function TTSButton({ wordsToSay, autoPlay = false }: TTSButtonProps) {
+	const { settings } = useAppSettings();
+	const playCorrect = useSoundEffect('correct');
 	const [isPlaying, setIsPlaying] = useState(false);
+	const autoPlayedWord = useRef<string | null>(null);
+	const shouldAutoSpeak = useRef(false);
 	const reduceMotion = useReducedMotion();
 	const buttonStyles = [
 		styles.button,
@@ -25,19 +52,32 @@ export default function TTSButton({ wordsToSay }: TTSButtonProps) {
 	];
 	const iconStyles = [styles.icon, isPlaying && styles.playingIcon];
 
-	function finishPlayback() {
-		setIsPlaying(false);
-	}
+	/**
+	 * TTS on correct answer
+	 */
+	useEffect(() => {
+		shouldAutoSpeak.current = autoPlay && settings.ttsOnCorrectEnabled;
+
+		async function pronounceCorrectAnswer() {
+			const completed = await playCorrect();
+
+			if (completed && shouldAutoSpeak.current && autoPlayedWord.current === wordsToSay) {
+				speakWord({ wordsToSay, setIsPlaying });
+			}
+		}
+
+		if (autoPlay && autoPlayedWord.current !== wordsToSay) {
+			autoPlayedWord.current = wordsToSay;
+			pronounceCorrectAnswer();
+		}
+
+		return () => {
+			shouldAutoSpeak.current = false;
+		};
+	}, [autoPlay, wordsToSay, playCorrect, settings.ttsOnCorrectEnabled]);
 
 	function speak() {
-		Speech.speak(wordsToSay, {
-			language: 'fr-CA',
-			rate: 0.8,
-			onStart: () => setIsPlaying(true),
-			onDone: finishPlayback,
-			onStopped: finishPlayback,
-			onError: finishPlayback,
-		});
+		speakWord({ wordsToSay, setIsPlaying });
 	}
 
 	return (

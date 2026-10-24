@@ -99,7 +99,10 @@ const WordCardBack = memo(function WordCardBackMemo({
 				<View style={sharedWordCardStyles.cardMain}>
 					<View style={sharedWordCardStyles.wordIdContainer}>
 						<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
-						<TTSButton wordsToSay={displayedFrenchWord} />
+						<TTSButton
+							wordsToSay={displayedFrenchWord}
+							autoPlay={cardState.stage === 'CORRECT' && !cardState.isAnswerRevealed}
+						/>
 					</View>
 					<WordPronunciation
 						pronunciation={currentCard.pronunciation}

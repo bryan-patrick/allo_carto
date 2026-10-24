@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
+import { useSoundEffect } from '@/src/util/useSoundEffect';
 import {
 	impactAsync,
 	ImpactFeedbackStyle,
@@ -45,6 +46,8 @@ export default function WordCardButton({
 	const { cardDeckDispatch, currentCard } = useCardDeck();
 	const { isUpdatingProgress, writeCorrectAnswer: recordCorrectAnswer } = useUserProgress();
 	const { settings } = useAppSettings();
+	const playIncorrect = useSoundEffect('incorrect');
+	const lastSoundedAnswer = useRef<string | null>(null);
 
 	/**
 	 * Style vars
@@ -156,6 +159,36 @@ export default function WordCardButton({
 				setIsAnswerPending(false);
 			});
 	}, [currentCard.id, cardState.attempts, cardDeckDispatch, recordCorrectAnswer]);
+
+	/**
+	 * Sound effects
+	 * Plays once per answer
+	 */
+	useEffect(() => {
+		if (cardState.attempts === 0 || cardState.isAnswerRevealed) {
+			return;
+		}
+
+		const isIncorrect =
+			(cardState.stage === 'READY' && cardState.progress === 'WARNING') ||
+			(cardState.stage === 'INCORRECT' && cardState.progress === 'DANGER');
+		const answerId = `${currentCard.id}:${cardState.attempts}`;
+
+		if (!isIncorrect || lastSoundedAnswer.current === answerId) {
+			return;
+		}
+
+		lastSoundedAnswer.current = answerId;
+
+		playIncorrect();
+	}, [
+		currentCard.id,
+		cardState.attempts,
+		cardState.stage,
+		cardState.progress,
+		cardState.isAnswerRevealed,
+		playIncorrect,
+	]);
 
 	/**
 	 * Side effects (and haptics) for dispatching check answer

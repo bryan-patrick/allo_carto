@@ -9,6 +9,18 @@ import { defaultAppSettings } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getUserExperience } from '@/src/util/userExperience';
 import { render, userEvent, waitFor } from '@testing-library/react-native';
+import { useAudioPlayer } from 'expo-audio';
+
+jest.mock('expo-audio', () => {
+	const player = {
+		volume: 1,
+		seekTo: jest.fn(async () => {}),
+		play: jest.fn(),
+		pause: jest.fn(),
+		addListener: jest.fn(() => ({ remove: jest.fn() })),
+	};
+	return { useAudioPlayer: jest.fn(() => player) };
+});
 
 jest.mock('expo-haptics', () => ({
 	impactAsync: jest.fn(),
@@ -63,6 +75,7 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
 
 describe('<WordCardButton />', () => {
 	beforeEach(() => {
+		jest.clearAllMocks();
 		mockUseAppSettings.mockReturnValue({
 			settings: defaultAppSettings,
 			setSetting: jest.fn(),
@@ -154,28 +167,39 @@ describe('<WordCardButton />', () => {
 		expect(getByTestId('word-card-button')).toBeDisabled();
 	});
 
-	test('records a correct answer and increments its score', async () => {
-		const cardDeckDispatch = jest.fn();
-		mockDeckState(cardDeckDispatch);
-
-		mockUseWordCardUI.mockReturnValue({
-			cardState: {
-				...initialWordCardState,
-				stage: 'CORRECT',
-				progress: 'SUCCESS',
-				feedbackKey: 'CORRECT_SUCCESS_NONE',
-				attempts: 1,
-			},
-			wordCardUIDispatch: jest.fn(),
-		});
-
-		await render(<WordCardButton>Next card</WordCardButton>);
-
-		await waitFor(() => {
-			expect(mockRecordCorrectAnswer).toHaveBeenCalledWith('word_noun_cafe');
-			expect(cardDeckDispatch).toHaveBeenCalledWith({
-				type: 'INCREMENT_WORD_SCORE',
+	test.each([true, false])(
+		'records a correct answer without a sound effect (effects enabled: %s)',
+		async enabled => {
+			mockUseAppSettings.mockReturnValue({
+				settings: { ...defaultAppSettings, soundEffectsEnabled: enabled },
+				setSetting: jest.fn(),
 			});
-		});
-	});
+			const cardDeckDispatch = jest.fn();
+			mockDeckState(cardDeckDispatch);
+
+			mockUseWordCardUI.mockReturnValue({
+				cardState: {
+					...initialWordCardState,
+					stage: 'CORRECT',
+					progress: 'SUCCESS',
+					feedbackKey: 'CORRECT_SUCCESS_NONE',
+					attempts: 1,
+				},
+				wordCardUIDispatch: jest.fn(),
+			});
+
+			await render(<WordCardButton>Next card</WordCardButton>);
+
+			await waitFor(() => {
+				expect(mockRecordCorrectAnswer).toHaveBeenCalledWith('word_noun_cafe');
+				expect(cardDeckDispatch).toHaveBeenCalledWith({
+					type: 'INCREMENT_WORD_SCORE',
+				});
+			});
+
+			const player = jest.mocked(useAudioPlayer).mock.results[0].value;
+			expect(player.volume).toBe(0.5);
+			expect(player.play).not.toHaveBeenCalled();
+		},
+	);
 });
