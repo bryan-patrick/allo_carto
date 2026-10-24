@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
+import DeckHeader from '@/src/components/DeckHeader';
 import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
@@ -253,6 +254,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 							{isLocked && (
 								<View style={styles.lockedInner}>
 									<LockedSection
+										itemId={deck.id}
 										color={storyColor}
 										unlockCriteria={unlockCriteria}
 									/>
@@ -261,8 +263,13 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 							{!isLocked && (
 								<View style={styles.deckDetails}>
 									<View style={styles.titleContainer}>
-										<Text style={styles.deckTitle}>{deckTitle}</Text>
-										<Text style={styles.deckDescription}>{deckDescription}</Text>
+										<DeckHeader
+											title={deckTitle}
+											progress={progressById[deck.id]}
+											titleStyle={styles.deckTitle}
+										>
+											<Text style={styles.deckDescription}>{deckDescription}</Text>
+										</DeckHeader>
 									</View>
 								</View>
 							)}

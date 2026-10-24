@@ -1,3 +1,4 @@
+import { findCompletionPath } from '@/src/util/atlasCompletion';
 import { getDB, logThisIfItFails } from '../connection';
 
 async function createWordsTable(): Promise<void> {
@@ -115,7 +116,79 @@ export default async function createTables(): Promise<void> {
 	await createUserWordsTable();
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
+	await ensureFlashcardsStartedColumn();
+	await ensureUnlockedColumn();
 	await createDeckPassageFeedbackTable();
+}
+
+/**
+ * Keep previously studied decks and their parents accessible after the upgrade.
+ */
+async function ensureUnlockedColumn(): Promise<void> {
+	const statements = {
+		getColumns: 'PRAGMA table_info(userProgress);',
+		addUnlockedColumn: `
+			ALTER TABLE userProgress
+			ADD COLUMN isUnlocked INTEGER NOT NULL DEFAULT 0;
+		`,
+		getStudiedDecks: `
+			SELECT userId, id
+			FROM userProgress
+			WHERE hasStartedFlashcards = 1;
+		`,
+		saveUnlockedProgress: `
+			INSERT INTO userProgress (userId, id, type, completionPercentage, isUnlocked)
+			VALUES (?, ?, ?, 0, 1)
+			ON CONFLICT(userId, id)
+			DO UPDATE SET isUnlocked = 1;
+		`,
+	};
+
+	const progressTypes = ['story', 'chapter', 'deck'] as const;
+	const database = await getDB();
+	const columns = await database.getAllAsync<{ name: string }>(statements.getColumns);
+	const hasUnlockedColumn = columns.some(column => column.name === 'isUnlocked');
+
+	if (!hasUnlockedColumn) {
+		await database.withExclusiveTransactionAsync(async transaction => {
+			await transaction.execAsync(statements.addUnlockedColumn);
+
+			const studiedDecks = await transaction.getAllAsync<{ userId: string; id: string }>(
+				statements.getStudiedDecks,
+			);
+
+			for (const deck of studiedDecks) {
+				const path = findCompletionPath({ id: deck.id });
+
+				for (const [index, item] of path.entries()) {
+					const type = progressTypes[index];
+
+					await transaction.runAsync(statements.saveUnlockedProgress, deck.userId, item.id, type);
+				}
+			}
+		});
+	}
+}
+
+/**
+ * Preserve completed flashcard decks when upgrading existing databases.
+ */
+async function ensureFlashcardsStartedColumn(): Promise<void> {
+	const database = await getDB();
+	const columns = await database.getAllAsync<{ name: string }>('PRAGMA table_info(userProgress)');
+
+	if (columns.some(column => column.name === 'hasStartedFlashcards')) {
+		return;
+	}
+
+	await database.withExclusiveTransactionAsync(async transaction => {
+		await transaction.execAsync(`
+			ALTER TABLE userProgress ADD COLUMN hasStartedFlashcards INTEGER NOT NULL DEFAULT 0;
+			INSERT INTO userProgress (userId, id, type, completionPercentage, hasStartedFlashcards)
+			SELECT DISTINCT userId, deckId, 'deck', 0, 1 FROM deckCompletions WHERE 1
+			ON CONFLICT(userId, id) DO UPDATE SET hasStartedFlashcards = 1;
+		`);
+	});
 }
 
 /**

@@ -6,9 +6,7 @@ export const DeckItsPaper = createCardDeck({
 	description: 'Wallace explains why the card is no good.',
 	chapter: 'Oh non!',
 	CEFR: ['A1', 'A2'],
-	unlockRequirements: [
-		{ id: 'deck__wallace_unplugs_the_toaster', requiredCompletionPercentage: 20 },
-	],
+	unlockRequirements: [{ id: 'deck__wallace_unplugs_the_toaster', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage: "« Léo, it's paper. It's not good! »",

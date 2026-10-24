@@ -349,10 +349,12 @@ export async function writeWordSeen({
 	database: sqliteDatabase,
 	userId,
 	wordId,
+	deckId,
 }: {
 	database: SQLiteDatabase;
 	userId: string;
 	wordId: string;
+	deckId?: string;
 }): Promise<void> {
 	/**
 	 * Seen writes use the same lock
@@ -379,6 +381,16 @@ export async function writeWordSeen({
 		});
 
 		await incrementSeenCount(userId, wordId, database);
+
+		if (deckId) {
+			await database.runAsync(
+				`INSERT INTO userProgress (userId, id, type, completionPercentage, hasStartedFlashcards)
+				VALUES (?, ?, 'deck', 0, 1)
+				ON CONFLICT(userId, id) DO UPDATE SET hasStartedFlashcards = 1;`,
+				userId,
+				deckId,
+			);
+		}
 		const nextWordProgress = getWordProgressKeyFromCounts({
 			correctCount: previousCorrectCount,
 			seenCount: previousSeenCount + 1,

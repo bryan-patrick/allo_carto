@@ -7,7 +7,7 @@ export const DeckUntilNextTime = createCardDeck({
 		'Wallace pays the bill, retrieves his forgotten phone, and heads home eager to return.',
 	chapter: 'A Table for One',
 	CEFR: ['A1', 'A2', 'B1'],
-	unlockRequirements: [{ id: 'deck__a_fork_instead', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__a_fork_instead', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

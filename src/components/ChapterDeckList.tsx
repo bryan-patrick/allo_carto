@@ -4,6 +4,7 @@ import type { CardDeck, ReadingPassage } from '@/src/components/CardDeck/cardDec
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import ChapterHeader from '@/src/components/ChapterHeader';
 import DeckBoxModal from '@/src/components/DeckBox/DeckBoxModal';
+import DeckHeader from '@/src/components/DeckHeader';
 import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
@@ -199,8 +200,10 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 						style={[styles.deckRow, isFirstDeck && styles.firstDeckRow]}
 					>
 						{!isLocked && (
-							<View>
-								<Text style={[styles.deckTitle]}>{deck.title}</Text>
+							<DeckHeader
+								title={deck.title}
+								progress={progressById[deck.id]}
+							>
 								<View
 									accessible
 									accessibilityLabel={metadataAccessibilityLabel}
@@ -226,11 +229,12 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 										percent={completionPercent}
 									/>
 								</View>
-							</View>
+							</DeckHeader>
 						)}
 
 						{isLocked && (
 							<LockedSection
+								itemId={deck.id}
 								color={storyColor}
 								unlockCriteria={unlockCriteria}
 							/>
@@ -315,11 +319,6 @@ const styles = StyleSheet.create({
 	},
 	firstDeckRow: {
 		borderTopLeftRadius: 8,
-	},
-	deckTitle: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 14,
 	},
 	metadata: {
 		alignItems: 'flex-start',

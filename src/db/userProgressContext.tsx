@@ -16,6 +16,7 @@ import {
 } from 'react';
 import loadUserXP from './queries/getUserExperience';
 import getUserProgress from './queries/getUserProgress';
+import unlockAtlasItem from './queries/unlockAtlasItem';
 import {
 	writeCorrectAnswer,
 	writeDeckCompletion,
@@ -42,7 +43,8 @@ interface UserProgressContextProps {
 	writeDeckCompletion: (
 		request: DeckCompletionRequest,
 	) => Promise<DeckCompletionReceiptProps | false>;
-	writeWordSeen: (wordId: string) => Promise<boolean>;
+	writeWordSeen: (wordId: string, deckId?: string) => Promise<boolean>;
+	unlockItem: (id: string) => Promise<boolean>;
 	reloadProgress: () => Promise<void>;
 }
 
@@ -57,6 +59,7 @@ const initialValue: UserProgressContextProps = {
 	writeCorrectAnswer: async () => false,
 	writeDeckCompletion: async () => false,
 	writeWordSeen: async () => false,
+	unlockItem: async () => false,
 	reloadProgress: async () => {},
 };
 
@@ -171,13 +174,20 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 * Save that a word was seen
 	 */
 	const recordWordSeen = useCallback(
-		async (wordId: string): Promise<boolean> => {
+		async (wordId: string, deckId?: string): Promise<boolean> => {
 			return runProgressWrite(async () => {
-				await writeWordSeen({ database, userId: userId!, wordId });
+				await writeWordSeen({ database, userId: userId!, wordId, deckId });
 				return true;
 			});
 		},
 		[database, runProgressWrite, userId],
+	);
+
+	const unlockItem = useCallback(
+		async (id: string): Promise<boolean> => {
+			return runProgressWrite(() => unlockAtlasItem({ database, userId: userId!, id }));
+		},
+		[database, userId, runProgressWrite],
 	);
 
 	/**
@@ -191,6 +201,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			writeCorrectAnswer: recordCorrectAnswer,
 			writeDeckCompletion: recordDeckCompletion,
 			writeWordSeen: recordWordSeen,
+			unlockItem,
 			reloadProgress: refreshProgress,
 			status,
 		}),
@@ -201,6 +212,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			recordCorrectAnswer,
 			recordDeckCompletion,
 			recordWordSeen,
+			unlockItem,
 			refreshProgress,
 			status,
 		],

@@ -8,6 +8,7 @@ export type MaterialSymbolProps = Omit<TextProps, 'children'> & {
 	color?: ColorValue;
 	name: string;
 	size?: number;
+	filled?: boolean;
 };
 
 /**
@@ -18,6 +19,7 @@ export default function MaterialSymbol({
 	allowFontScaling = false,
 	color,
 	name,
+	filled = false,
 	size: fontSize = 24,
 	style,
 	...props
@@ -30,6 +32,7 @@ export default function MaterialSymbol({
 			style={[
 				styles.symbol,
 				{
+					fontFamily: filled ? 'MaterialSymbols_400Regular_Filled' : 'MaterialSymbols_400Regular',
 					color,
 					fontSize,
 				},

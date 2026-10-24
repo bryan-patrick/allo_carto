@@ -6,9 +6,7 @@ export const DeckATableForOne = createCardDeck({
 	description: 'A friendly waitress welcomes Wallace, whose drink order ends with a small spill.',
 	chapter: 'A Table for One',
 	CEFR: ['A1', 'A2', 'B1'],
-	unlockRequirements: [
-		{ id: 'deck__the_walk_to_the_restaurant', requiredCompletionPercentage: 20 },
-	],
+	unlockRequirements: [{ id: 'deck__the_walk_to_the_restaurant', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

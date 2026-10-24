@@ -6,9 +6,7 @@ export const DeckStudyAndReadAgain = createCardDeck({
 	description: 'Study a deck, then return to its passage.',
 	chapter: 'How it works',
 	CEFR: ['A1', 'A2', 'B1'],
-	unlockRequirements: [
-		{ id: 'deck__stories_chapters_and_decks', requiredCompletionPercentage: 12 },
-	],
+	unlockRequirements: [{ id: 'deck__stories_chapters_and_decks', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage:

@@ -1,6 +1,6 @@
 import type { DeckChapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
-import MaterialSymbol from '@/src/components/MaterialSymbol';
+import CollectionGems from '@/src/components/CollectionGems';
 import ReadingDescription from '@/src/components/ReadingDescription';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
@@ -22,13 +22,8 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 	const { label, name, description } = chapter;
 	const { progressById } = useUserProgress();
 	const progress = progressById[chapter.id];
-	const seenWordCount = progress?.seenWordCount ?? 0;
 	const wordCount =
 		progress?.wordCount ?? new Set(chapter.decks.flatMap(deck => deck.wordIds)).size;
-	const learnedPercent = Math.floor(progress?.completionPercentage ?? 0);
-	const seenText = `${seenWordCount}/${wordCount}`;
-	const learnedText = `${learnedPercent}%`;
-	const progressLabel = `${seenWordCount} of ${wordCount} words seen, ${learnedPercent} percent learned`;
 	const hasWords = wordCount > 0;
 
 	return (
@@ -38,28 +33,11 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 					<View style={styles.labelRow}>
 						<Text style={[styles.label, { color }]}>{label}</Text>
 						{hasWords && (
-							<View
-								accessible
-								accessibilityLabel={progressLabel}
-								style={styles.progressRow}
-							>
-								<View style={styles.progressItem}>
-									<MaterialSymbol
-										color={colors.dark.text}
-										name="cards_star"
-										size={12}
-									/>
-									<Text style={styles.progressText}>{seenText}</Text>
-								</View>
-								<View style={styles.progressItem}>
-									<MaterialSymbol
-										color={colors.dark.text}
-										name="cognition_2"
-										size={12}
-									/>
-									<Text style={styles.progressText}>{learnedText}</Text>
-								</View>
-							</View>
+							<CollectionGems
+								title={name}
+								progress={progress}
+								size={14}
+							/>
 						)}
 					</View>
 					<Text style={styles.title}>{name}</Text>
@@ -106,22 +84,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		borderColor: colors.light.goldenBorder,
 		gap: 8,
-	},
-	progressRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-		marginHorizontal: 4,
-	},
-	progressItem: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 2,
-	},
-	progressText: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-400',
-		fontSize: 10,
 	},
 	label: {
 		fontFamily: 'lexend-700',

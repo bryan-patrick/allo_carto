@@ -104,9 +104,7 @@ export const storyAtlas: StoryAtlas = {
 					name: 'How it works',
 					description: 'Explore chapters and decks, study their words, and earn XP as you learn.',
 					image: howItWorks,
-					unlockRequirements: [
-						{ id: 'welcome-to-allo-carto-chapter-1', requiredCompletionPercentage: 12 },
-					],
+					unlockRequirements: [{ id: 'deck__stories_and_flashcards', requiredWordProgress: 'new' }],
 					decks: [DeckStoriesChaptersAndDecks, DeckStudyAndReadAgain, DeckCardsAndXp],
 				},
 				{
@@ -116,9 +114,7 @@ export const storyAtlas: StoryAtlas = {
 					description:
 						'Track your vocabulary, discover collections, and keep learning through stories.',
 					image: additionalInformation,
-					unlockRequirements: [
-						{ id: 'welcome-to-allo-carto-chapter-2', requiredCompletionPercentage: 12 },
-					],
+					unlockRequirements: [{ id: 'deck__cards_and_xp', requiredWordProgress: 'new' }],
 					decks: [DeckKnowTheWord, DeckWordCollections, DeckHaveFun],
 				},
 			],
@@ -145,7 +141,9 @@ export const storyAtlas: StoryAtlas = {
 					label: 'Chapter 2',
 					name: 'The Kitchen',
 					description: 'While Wallace reads, Léo takes the card and puts it in the toaster.',
-					unlockRequirements: [{ id: 'le-chef-leo-chapter-1', requiredCompletionPercentage: 12 }],
+					unlockRequirements: [
+						{ id: 'deck__the_card_and_the_toaster', requiredWordProgress: 'new' },
+					],
 					decks: [DeckLeoTakesTheCard, DeckACardInTheToaster, DeckTheCardTurnsBlack],
 				},
 				{
@@ -154,7 +152,7 @@ export const storyAtlas: StoryAtlas = {
 					name: 'Oh No!',
 					description:
 						'Wallace unplugs the smoking toaster, but Léo has already found another card.',
-					unlockRequirements: [{ id: 'le-chef-leo-chapter-2', requiredCompletionPercentage: 12 }],
+					unlockRequirements: [{ id: 'deck__the_card_turns_black', requiredWordProgress: 'new' }],
 					decks: [DeckWallaceUnplugsTheToaster, DeckItsPaper, DeckAnotherCard],
 				},
 			],
@@ -185,7 +183,7 @@ export const storyAtlas: StoryAtlas = {
 						'Wallace settles in for noodles and dumplings, with a few small mishaps along the way.',
 					image: aTableForOne,
 					unlockRequirements: [
-						{ id: 'a-new-restaurant-chapter-1', requiredCompletionPercentage: 12 },
+						{ id: 'deck__the_walk_to_the_restaurant', requiredWordProgress: 'new' },
 					],
 					decks: [DeckATableForOne, DeckChoosingDinner, DeckAForkInstead, DeckUntilNextTime],
 				},

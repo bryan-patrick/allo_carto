@@ -1,7 +1,9 @@
 import type { DeckChapter, DeckStory, StoryAtlas } from '@/data/french/storyAtlas';
 import { storyAtlas } from '@/data/french/storyAtlas';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import { getWordsAtLevel, hasCollectionLevel } from './collectionProgress';
 import type { ProgressById, Progression, ProgressType } from './progression';
+import { getWordProgressDefinitionByKey, type WordProgressKey } from './wordProgress';
 
 /**
  * Typing
@@ -28,7 +30,14 @@ interface IsItemUnlockedProps extends FindCompletionPathProps {
 }
 
 export type UnlockCriteria =
-	| { isUnlocked: boolean; requiredPercentage: number; title: string }
+	| {
+			isUnlocked: boolean;
+			requiredWordProgress: WordProgressKey;
+			title: string;
+			qualifiedWordCount: number;
+			wordCount: number;
+	  }
+	| { isUnlocked: boolean; requiredUnlock: string }
 	| { isUnlocked: boolean; requiredLevel: number };
 
 export interface AtlasChapterLocation {
@@ -36,11 +45,12 @@ export interface AtlasChapterLocation {
 	chapter: DeckChapter;
 }
 
-export interface UnlockedAtlasItem {
+export interface AtlasItem {
 	id: string;
 	type: ProgressType;
 	title: string;
 	context?: string;
+	requiresChoice: boolean;
 }
 
 /**
@@ -127,15 +137,24 @@ export function getAtlasItemsContainingWord({
  *
  * A story returns [story], a chapter returns [story, chapter], and a deck returns [story, chapter, deck].
  */
-function findCompletionPath({ atlas = storyAtlas, id }: FindCompletionPathProps): Progression[] {
+export function findCompletionPath({
+	atlas = storyAtlas,
+	id,
+}: FindCompletionPathProps): Progression[] {
 	for (const story of atlas.stories) {
-		if (story.id === id) return [story];
+		if (story.id === id) {
+			return [story];
+		}
 
 		for (const chapter of story.chapters) {
-			if (chapter.id === id) return [story, chapter];
+			if (chapter.id === id) {
+				return [story, chapter];
+			}
 
 			for (const deck of chapter.decks) {
-				if (deck.id === id) return [story, chapter, deck];
+				if (deck.id === id) {
+					return [story, chapter, deck];
+				}
 			}
 		}
 	}
@@ -143,48 +162,51 @@ function findCompletionPath({ atlas = storyAtlas, id }: FindCompletionPathProps)
 	return [];
 }
 
-/**
- * An item is only unlocked when it and all of its parents have met their unlock requirements.
- */
+function requiresUnlockChoice(item: Progression): boolean {
+	return (item.requiredLevel ?? 1) > 1 || (item.unlockRequirements?.length ?? 0) > 0;
+}
+
+/** Ungated starting content opens with its parent. Other content needs a saved choice. */
 export function isItemUnlocked({
 	atlas = storyAtlas,
 	id,
 	progressById,
-	userLevel,
 }: IsItemUnlockedProps): boolean {
 	const path = findCompletionPath({ atlas, id });
-
-	if (path.length === 0) return false;
-
-	for (const item of path) {
-		if (item.requiredLevel !== undefined && userLevel < item.requiredLevel) {
-			return false;
-		}
-
-		for (const requirement of item.unlockRequirements ?? []) {
-			const completionPercentage = progressById[requirement.id]?.completionPercentage ?? 0;
-
-			if (completionPercentage < requirement.requiredCompletionPercentage) {
-				return false;
-			}
-		}
+	if (path.length === 0) {
+		return false;
 	}
-
-	return true;
+	return path.every(
+		item => !requiresUnlockChoice(item) || Boolean(progressById[item.id]?.isUnlocked),
+	);
 }
 
-/**
- * List accessible content in story order, including each item's parent requirements.
- */
-export function getUnlockedAtlasItems({
-	atlas = storyAtlas,
-	progressById,
-	userLevel,
-}: Omit<IsItemUnlockedProps, 'id'>): UnlockedAtlasItem[] {
-	const items: UnlockedAtlasItem[] = [];
+/** Meeting the requirements offers a choice; it never grants access by itself. */
+export function isItemReadyToUnlock(props: IsItemUnlockedProps): boolean {
+	const path = findCompletionPath(props);
+	const item = path[path.length - 1];
+	if (!item || !requiresUnlockChoice(item) || props.progressById[item.id]?.isUnlocked) {
+		return false;
+	}
+	const parent = path[path.length - 2];
+	if (parent && !isItemUnlocked({ ...props, id: parent.id })) {
+		return false;
+	}
+	return getItemUnlockCriteria(item, props.progressById, props.userLevel, props.atlas).every(
+		criterion => criterion.isUnlocked,
+	);
+}
+
+function getAtlasItems(atlas: StoryAtlas): AtlasItem[] {
+	const items: AtlasItem[] = [];
 
 	for (const story of atlas.stories) {
-		items.push({ id: story.id, type: 'story', title: story.name });
+		items.push({
+			id: story.id,
+			type: 'story',
+			title: story.name,
+			requiresChoice: requiresUnlockChoice(story),
+		});
 
 		for (const chapter of story.chapters) {
 			items.push({
@@ -192,6 +214,7 @@ export function getUnlockedAtlasItems({
 				type: 'chapter',
 				title: chapter.name,
 				context: `${story.name} · ${chapter.label}`,
+				requiresChoice: requiresUnlockChoice(chapter),
 			});
 
 			for (const deck of chapter.decks) {
@@ -200,12 +223,35 @@ export function getUnlockedAtlasItems({
 					type: 'deck',
 					title: deck.title,
 					context: `${story.name} · ${chapter.name}`,
+					requiresChoice: requiresUnlockChoice(deck),
 				});
 			}
 		}
 	}
 
-	return items.filter(item => isItemUnlocked({ atlas, id: item.id, progressById, userLevel }));
+	return items;
+}
+
+export function getUnlockedAtlasItems(props: Omit<IsItemUnlockedProps, 'id'>): AtlasItem[] {
+	return getAtlasItems(props.atlas ?? storyAtlas).filter(item =>
+		isItemUnlocked({ ...props, id: item.id }),
+	);
+}
+
+export function getReadyToUnlockAtlasItems(props: Omit<IsItemUnlockedProps, 'id'>): AtlasItem[] {
+	return getAtlasItems(props.atlas ?? storyAtlas).filter(item =>
+		isItemReadyToUnlock({ ...props, id: item.id }),
+	);
+}
+
+/** Keep accepted offers visible on the results page while also revealing eligible children. */
+export function getAtlasUnlockOffers(props: Omit<IsItemUnlockedProps, 'id'>): AtlasItem[] {
+	return getAtlasItems(props.atlas ?? storyAtlas).filter(item => {
+		return (
+			item.requiresChoice &&
+			(isItemUnlocked({ ...props, id: item.id }) || isItemReadyToUnlock({ ...props, id: item.id }))
+		);
+	});
 }
 
 /**
@@ -216,7 +262,9 @@ export function findStoryById(
 	atlas: StoryAtlas = storyAtlas,
 ): DeckStory | undefined {
 	for (const story of atlas.stories) {
-		if (story.id === id) return story;
+		if (story.id === id) {
+			return story;
+		}
 	}
 }
 
@@ -227,7 +275,9 @@ export function findAtlasLocationByChapterId(
 	chapterId: string | undefined,
 	atlas: StoryAtlas = storyAtlas,
 ): AtlasChapterLocation | undefined {
-	if (!chapterId) return;
+	if (!chapterId) {
+		return;
+	}
 
 	for (const story of atlas.stories) {
 		const chapter = story.chapters.find(chapter => chapter.id === chapterId);
@@ -256,13 +306,19 @@ export function findChapterById(
  */
 function getItemName(id: string, atlas: StoryAtlas = storyAtlas): string {
 	for (const story of atlas.stories) {
-		if (story.id === id) return story.name;
+		if (story.id === id) {
+			return story.name;
+		}
 
 		for (const chapter of story.chapters) {
-			if (chapter.id === id) return chapter.name;
+			if (chapter.id === id) {
+				return chapter.name;
+			}
 
 			for (const deck of chapter.decks) {
-				if (deck.id === id) return deck.title;
+				if (deck.id === id) {
+					return deck.title;
+				}
 			}
 		}
 	}
@@ -270,49 +326,68 @@ function getItemName(id: string, atlas: StoryAtlas = storyAtlas): string {
 	return id;
 }
 
-/**
- * Build each UI explanation for unlocking an item.
- */
-export function getUnlockCriteria(
+/** Explain the item's own requirements using the same word counts as its gems. */
+function getItemUnlockCriteria(
 	item: Progression,
 	progressById: ProgressById,
 	userLevel: number,
 	atlas: StoryAtlas = storyAtlas,
 ): UnlockCriteria[] {
 	const criteria: UnlockCriteria[] = [];
-	const path = findCompletionPath({ atlas, id: item.id });
-
-	if (path.length === 0) path.push(item);
-
-	for (const ancestor of path) {
-		if (ancestor.requiredLevel !== undefined && ancestor.requiredLevel > 1) {
-			criteria.push({
-				isUnlocked: userLevel >= ancestor.requiredLevel,
-				requiredLevel: ancestor.requiredLevel,
-			});
-		}
-
-		for (const requirement of ancestor.unlockRequirements ?? []) {
-			criteria.push({
-				isUnlocked:
-					(progressById[requirement.id]?.completionPercentage ?? 0) >=
-					requirement.requiredCompletionPercentage,
-				requiredPercentage: requirement.requiredCompletionPercentage,
-				title: getItemName(requirement.id, atlas),
-			});
-		}
+	if (item.requiredLevel !== undefined && item.requiredLevel > 1) {
+		criteria.push({
+			isUnlocked: userLevel >= item.requiredLevel,
+			requiredLevel: item.requiredLevel,
+		});
 	}
-
+	for (const requirement of item.unlockRequirements ?? []) {
+		const progress = progressById[requirement.id];
+		criteria.push({
+			isUnlocked: hasCollectionLevel(progress, requirement.requiredWordProgress),
+			requiredWordProgress: requirement.requiredWordProgress,
+			title: getItemName(requirement.id, atlas),
+			qualifiedWordCount: getWordsAtLevel(progress, requirement.requiredWordProgress),
+			wordCount: progress?.wordCount ?? 0,
+		});
+	}
 	return criteria;
 }
 
-/**
- * Build a plain-text explanation for an unlock criterion.
- */
+export function getUnlockCriteria(
+	item: Progression,
+	progressById: ProgressById,
+	userLevel: number,
+	atlas: StoryAtlas = storyAtlas,
+): UnlockCriteria[] {
+	const path = findCompletionPath({ atlas, id: item.id });
+	const criteria: UnlockCriteria[] = [];
+	for (const ancestor of path) {
+		if (progressById[ancestor.id]?.isUnlocked) {
+			continue;
+		}
+		const requirements = getItemUnlockCriteria(ancestor, progressById, userLevel, atlas);
+		criteria.push(...requirements);
+		if (ancestor.id !== item.id && requiresUnlockChoice(ancestor)) {
+			criteria.push({ isUnlocked: false, requiredUnlock: getItemName(ancestor.id, atlas) });
+		}
+	}
+	return criteria;
+}
+
 export function formatUnlockCriterion(criterion: UnlockCriteria): string {
 	if ('requiredLevel' in criterion) {
 		return `Reach Lvl. ${criterion.requiredLevel} to unlock.`;
 	}
-
-	return `Reach ${criterion.requiredPercentage}% in ${criterion.title} to unlock.`;
+	if ('requiredUnlock' in criterion) {
+		return `Unlock “${criterion.requiredUnlock}” first.`;
+	}
+	const level = getWordProgressDefinitionByKey(criterion.requiredWordProgress);
+	const remaining = Math.max(0, criterion.wordCount - criterion.qualifiedWordCount);
+	if (criterion.isUnlocked) {
+		return `Every word in “${criterion.title}” is at least ${level.name}.`;
+	}
+	if (criterion.requiredWordProgress === 'new') {
+		return `See every word in “${criterion.title}” to unlock.\n${remaining} more to see (${criterion.qualifiedWordCount}/${criterion.wordCount} seen).`;
+	}
+	return `Bring every word in “${criterion.title}” to ${level.name} to unlock.\n${criterion.qualifiedWordCount}/${criterion.wordCount} words ready.`;
 }

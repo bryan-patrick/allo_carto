@@ -6,7 +6,7 @@ export const DeckABeautifulCroissant = createCardDeck({
 	description: 'A beautiful croissant appears on the card.',
 	chapter: 'Un bon croissant',
 	CEFR: ['A1', 'A2'],
-	unlockRequirements: [{ id: 'deck__leo_is_hungry', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__leo_is_hungry', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage: 'On the card, there is a beautiful croissant.',

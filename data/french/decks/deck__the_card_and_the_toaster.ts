@@ -6,7 +6,7 @@ export const DeckTheCardAndTheToaster = createCardDeck({
 	description: 'Léo looks from the card to the toaster.',
 	chapter: 'Un bon croissant',
 	CEFR: ['A1', 'A2'],
-	unlockRequirements: [{ id: 'deck__a_beautiful_croissant', requiredCompletionPercentage: 20 }],
+	unlockRequirements: [{ id: 'deck__a_beautiful_croissant', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
 	englishPassage: 'Léo looks at the card. He also looks at the toaster.',
