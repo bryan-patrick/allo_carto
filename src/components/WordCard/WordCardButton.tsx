@@ -245,14 +245,14 @@ export default function WordCardButton({
 
 	/**
 	 * Action handlers
+	 * Advance after release so the current card does not unmount an active touch responder.
 	 */
-	const handlePressIn = useCallback(() => {
+	const handlePress = useCallback(() => {
 		if (pressInFlight.current || isUpdatingProgress) {
 			return;
 		}
 
 		pressInFlight.current = true;
-		setIsPressed(true);
 		setIsAnswerPending(true);
 
 		if (hasSaveError) {
@@ -264,6 +264,10 @@ export default function WordCardButton({
 
 		checkAnswer();
 	}, [checkAnswer, isUpdatingProgress, hasSaveError, persistCorrectAnswer]);
+
+	const handlePressIn = useCallback(() => {
+		setIsPressed(true);
+	}, []);
 
 	const handlePressOut = useCallback(() => {
 		setIsPressed(false);
@@ -324,6 +328,7 @@ export default function WordCardButton({
 				<AnimatedPressable
 					{...props}
 					disabled={isDisabled}
+					onPress={handlePress}
 					onPressIn={handlePressIn}
 					onPressOut={handlePressOut}
 					hitSlop={10}

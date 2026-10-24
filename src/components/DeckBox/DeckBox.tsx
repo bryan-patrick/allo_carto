@@ -19,7 +19,7 @@ import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import type { WordProgressKey } from '@/src/util/wordProgress';
-import { router, useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { Alert, Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeckBoxModal from './DeckBoxModal';
@@ -47,6 +47,7 @@ interface DeckBoxProps {
  * DeckBox component
  */
 export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps) {
+	const router = useRouter();
 	const { CEFR, description: deckDescription, passage, title: deckTitle, wordIds } = deck;
 
 	/**
@@ -146,7 +147,9 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	 * Select deck handler
 	 */
 	const handleSelectDeck = useCallback(async () => {
-		if (!userId || isUpdatingProgress || isStartingDeck.current) return;
+		if (!userId || isUpdatingProgress || isStartingDeck.current) {
+			return;
+		}
 
 		isStartingDeck.current = true;
 
@@ -178,6 +181,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		cardDeckDispatch,
 		experience.totalXP,
 		progressById,
+		router,
 	]);
 
 	/**

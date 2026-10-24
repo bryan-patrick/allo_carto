@@ -1,14 +1,15 @@
 import { MaterialSymbols_400Regular } from '@expo-google-fonts/material-symbols/400Regular';
 import { setAudioModeAsync } from 'expo-audio';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, ThemeProvider } from 'expo-router';
 import {
 	getFocusedRouteNameFromRoute,
-	ThemeProvider,
-	type Route,
+	type DescriptorRouteProp,
+	type ParamListBase,
 } from 'expo-router/react-navigation';
 import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
 import { Suspense, useCallback, useEffect, useReducer, useState } from 'react';
+import { Platform } from 'react-native';
 import { CardDeckContext, initialCardDeckState } from '../components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '../components/CardDeck/cardDeckReducer';
 import LevelBadge from '../components/LevelBadge';
@@ -30,7 +31,7 @@ const resetDB = false;
 /**
  * The native header follows the current tab
  */
-function getTabHeaderOptions(route: Route<string>) {
+function getTabHeaderOptions(route: DescriptorRouteProp<ParamListBase>) {
 	const tabName = getFocusedRouteNameFromRoute(route) ?? 'index';
 
 	if (tabName === 'index') {
@@ -150,6 +151,12 @@ export default function AppLayout() {
 								<UserProgressProvider userId={user?.id}>
 									<Stack
 										screenOptions={{
+											headerTransparent: false,
+											headerTitleStyle: Platform.select({
+												ios: alloTheme.fonts.bold,
+												default: alloTheme.fonts.medium,
+											}),
+											headerBackTitleStyle: alloTheme.fonts.regular,
 											headerRight: () => <LevelBadge />,
 										}}
 									>
@@ -204,7 +211,6 @@ export default function AppLayout() {
 											options={{
 												headerShown: true,
 												headerBackTitle: 'Back',
-												headerTransparent: true,
 												headerBackButtonDisplayMode: 'minimal',
 												headerTitle: 'View cards',
 											}}

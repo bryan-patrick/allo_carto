@@ -1,5 +1,5 @@
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { type ReactNode, useContext, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import {
 	Alert,
@@ -44,6 +44,7 @@ interface WordCardProps {
  * card flip effect.
  */
 export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
+	const router = useRouter();
 	/**
 	 * State
 	 */
@@ -70,16 +71,24 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 			break;
 		case 'WARNING':
 			feedbackStyle = sharedWordCardStyles.feedbackWarning;
-			if (hasArticleMistake) articleSlotStyle = sharedWordCardStyles.answerSlotWarning;
-			if (hasWordMistake) wordSlotStyle = sharedWordCardStyles.answerSlotWarning;
+			if (hasArticleMistake) {
+				articleSlotStyle = sharedWordCardStyles.answerSlotWarning;
+			}
+			if (hasWordMistake) {
+				wordSlotStyle = sharedWordCardStyles.answerSlotWarning;
+			}
 			break;
 		case 'DANGER':
 			feedbackStyle = sharedWordCardStyles.feedbackError;
 			articleSlotStyle = sharedWordCardStyles.answerSlotSuccess;
 			wordSlotStyle = sharedWordCardStyles.answerSlotSuccess;
 
-			if (hasArticleMistake) articleSlotStyle = sharedWordCardStyles.answerSlotError;
-			if (hasWordMistake) wordSlotStyle = sharedWordCardStyles.answerSlotError;
+			if (hasArticleMistake) {
+				articleSlotStyle = sharedWordCardStyles.answerSlotError;
+			}
+			if (hasWordMistake) {
+				wordSlotStyle = sharedWordCardStyles.answerSlotError;
+			}
 			break;
 	}
 
@@ -153,14 +162,22 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 	 * and the user hits the 'Next Card ->' button.
 	 */
 	useEffect(() => {
-		if (!isCurrent || cardState.stage !== 'COMPLETED' || isUpdatingProgress) return;
+		if (!isCurrent || cardState.stage !== 'COMPLETED' || isUpdatingProgress) {
+			return;
+		}
 		const { cardDeck, session } = cardDeckState;
 
-		if (!session || !session.results.some(result => result.wordId === currentCard.id)) return;
+		if (!session || !session.results.some(result => result.wordId === currentCard.id)) {
+			return;
+		}
 
 		async function completeCard() {
-			if (!session) return;
-			if (isCompletingCard.current) return;
+			if (!session) {
+				return;
+			}
+			if (isCompletingCard.current) {
+				return;
+			}
 			isCompletingCard.current = true;
 
 			if (cardDeckState.currentIndex === cardDeckState.cardDeck.words.length - 1) {
@@ -211,6 +228,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 		cardDeckDispatch,
 		isUpdatingProgress,
 		writeDeckCompletion,
+		router,
 	]);
 
 	/**

@@ -6,15 +6,28 @@ import LockedSection from '@/src/components/LockedSection';
 import ReadingDescription from '@/src/components/ReadingDescription';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, type UnknownOutputParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { useEffect, useRef } from 'react';
-import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+	ImageBackground,
+	ScrollView,
+	type ScrollViewInstance,
+	StyleSheet,
+	Text,
+	View,
+} from 'react-native';
 import colors from '../../app/colors';
 import MaterialSymbol from '../MaterialSymbol';
 
 const postmarkBackgroundImage = require('@/src/app/assets/images/postcard-parts/background.jpg');
 const postmarkBackgroundBorderedImage = require('@/src/app/assets/images/postcard-parts/background-bordered.jpg');
+
+interface ChapterSelectParams extends UnknownOutputParams {
+	storyId?: string;
+	chapterId?: string;
+	deckPickerRequest?: string;
+}
 
 /**
  * ChapterSelectView component
@@ -32,12 +45,8 @@ export default function ChapterSelectView() {
 		storyId,
 		chapterId: requestedChapterId,
 		deckPickerRequest: chapterReturnRequest,
-	} = useLocalSearchParams<{
-		storyId?: string;
-		chapterId?: string;
-		deckPickerRequest?: string;
-	}>();
-	const scrollViewRef = useRef<ScrollView>(null);
+	} = useLocalSearchParams<ChapterSelectParams>();
+	const scrollViewRef = useRef<ScrollViewInstance>(null);
 	const chapterPositions = useRef<Record<string, number>>({});
 	const selectedStory = findStoryById(storyId);
 
@@ -63,8 +72,12 @@ export default function ChapterSelectView() {
 	/**
 	 * Wait for the user's stored percentages
 	 */
-	if (status === 'loading') return <Loader />;
-	if (status === 'error') return <Text>Could not load chapter progress.</Text>;
+	if (status === 'loading') {
+		return <Loader />;
+	}
+	if (status === 'error') {
+		return <Text>Could not load chapter progress.</Text>;
+	}
 
 	/**
 	 * In case we are routed here without state
@@ -142,7 +155,9 @@ export default function ChapterSelectView() {
 						const isEven = index % 2 === 0;
 						let rotate = '3deg';
 
-						if (isEven) rotate = '-4deg';
+						if (isEven) {
+							rotate = '-4deg';
+						}
 
 						const chapterId = chapter.id;
 						const isLocked = !isItemUnlocked({

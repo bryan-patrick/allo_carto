@@ -3,16 +3,16 @@ import WordCard from '@/src/components/WordCard/WordCard';
 import { useWordCardUI } from '@/src/components/WordCard/useWordCardUI';
 import { initialWordCardState } from '@/src/components/WordCard/wordCardContext';
 import { render, waitFor } from '@testing-library/react-native';
-import { router } from 'expo-router';
 import { ReactNode } from 'react';
 
 jest.mock('@/src/components/WordCard/useWordCardUI');
 
+const mockRouter = {
+	replace: jest.fn(),
+};
+
 jest.mock('expo-router', () => ({
-	router: {
-		push: jest.fn(),
-		replace: jest.fn(),
-	},
+	useRouter: () => mockRouter,
 }));
 
 jest.mock('@/src/components/WordCard/WordCardFront', () => {
@@ -30,7 +30,6 @@ jest.mock('@/src/components/WordCard/WordCardBack', () => {
 });
 
 const mockUseWordCardUI = jest.mocked(useWordCardUI);
-const mockRouterReplace = jest.mocked(router.replace);
 
 async function renderWithAFakeDispatchSoWeCanDoActions(
 	children: ReactNode,
@@ -64,7 +63,7 @@ async function renderWithAFakeDispatchSoWeCanDoActions(
 
 describe('<WordCard />', () => {
 	beforeEach(() => {
-		mockRouterReplace.mockClear();
+		mockRouter.replace.mockClear();
 		mockUseWordCardUI.mockReset();
 	});
 
@@ -80,7 +79,7 @@ describe('<WordCard />', () => {
 		await renderWithAFakeDispatchSoWeCanDoActions(<WordCard isCurrent={true} />);
 
 		await waitFor(() => {
-			expect(mockRouterReplace).toHaveBeenCalledWith('/DeckResults');
+			expect(mockRouter.replace).toHaveBeenCalledWith('/DeckResults');
 		});
 	});
 });

@@ -1,6 +1,6 @@
 import colors from '@/src/app/colors';
+import { clampAudioVolume } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { useSoundEffect } from '@/src/util/useSoundEffect';
 import * as Speech from 'expo-speech';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable } from 'react-native';
@@ -17,22 +17,33 @@ interface TTSButtonProps {
 
 interface SpeakWordOptions {
 	wordsToSay: string;
+	volume: number;
 	setIsPlaying(playing: boolean): void;
 }
 
-function speakWord({ wordsToSay, setIsPlaying }: SpeakWordOptions) {
+const speechPaddingMs = 200;
+
+function speakWord({ wordsToSay, volume, setIsPlaying }: SpeakWordOptions) {
+	setIsPlaying(true);
+
 	function finishPlayback() {
 		setIsPlaying(false);
 	}
 
-	Speech.speak(wordsToSay, {
-		language: 'fr-CA',
-		rate: 0.8,
-		onStart: () => setIsPlaying(true),
-		onDone: finishPlayback,
-		onStopped: finishPlayback,
-		onError: finishPlayback,
-	});
+	function startSpeech() {
+		Speech.speak(wordsToSay, {
+			language: 'fr-CA',
+			rate: 0.8,
+			volume: clampAudioVolume(volume),
+			onStart: () => setIsPlaying(true),
+			onDone: finishPlayback,
+			onStopped: finishPlayback,
+			onError: finishPlayback,
+		});
+	}
+
+	const timer = setTimeout(startSpeech, speechPaddingMs);
+	return timer;
 }
 
 /**
@@ -40,10 +51,9 @@ function speakWord({ wordsToSay, setIsPlaying }: SpeakWordOptions) {
  */
 export default function TTSButton({ wordsToSay, autoPlay = false }: TTSButtonProps) {
 	const { settings } = useAppSettings();
-	const playCorrect = useSoundEffect('correct');
 	const [isPlaying, setIsPlaying] = useState(false);
 	const autoPlayedWord = useRef<string | null>(null);
-	const shouldAutoSpeak = useRef(false);
+	const speechTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const reduceMotion = useReducedMotion();
 	const buttonStyles = [
 		styles.button,
@@ -56,32 +66,28 @@ export default function TTSButton({ wordsToSay, autoPlay = false }: TTSButtonPro
 	 * TTS on correct answer
 	 */
 	useEffect(() => {
-		shouldAutoSpeak.current = autoPlay && settings.ttsOnCorrectEnabled;
+		if (autoPlay && autoPlayedWord.current !== wordsToSay) {
+			autoPlayedWord.current = wordsToSay;
 
-		async function pronounceCorrectAnswer() {
-			const completed = await playCorrect();
-
-			if (completed && shouldAutoSpeak.current && autoPlayedWord.current === wordsToSay) {
-				speakWord({ wordsToSay, setIsPlaying });
+			if (settings.ttsOnCorrectEnabled) {
+				speechTimer.current = speakWord({ wordsToSay, volume: settings.ttsVolume, setIsPlaying });
 			}
 		}
 
-		if (autoPlay && autoPlayedWord.current !== wordsToSay) {
-			autoPlayedWord.current = wordsToSay;
-			pronounceCorrectAnswer();
-		}
-
 		return () => {
-			shouldAutoSpeak.current = false;
+			if (speechTimer.current !== null) {
+				clearTimeout(speechTimer.current);
+			}
 		};
-	}, [autoPlay, wordsToSay, playCorrect, settings.ttsOnCorrectEnabled]);
+	}, [autoPlay, wordsToSay, settings.ttsOnCorrectEnabled, settings.ttsVolume]);
 
 	function speak() {
-		speakWord({ wordsToSay, setIsPlaying });
+		speechTimer.current = speakWord({ wordsToSay, volume: settings.ttsVolume, setIsPlaying });
 	}
 
 	return (
 		<Pressable
+			android_disableSound
 			accessibilityLabel={`Pronounce ${wordsToSay}`}
 			accessibilityRole="button"
 			accessibilityState={{ busy: isPlaying, disabled: isPlaying }}

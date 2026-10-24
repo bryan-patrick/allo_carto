@@ -1,9 +1,9 @@
+import { clampAudioVolume } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { AudioSource, useAudioPlayer, type AudioPlayer } from 'expo-audio';
 import { useCallback, useEffect, useRef } from 'react';
 
 const sounds: Record<string, AudioSource> = {
-	correct: require('@/src/app/assets/sounds/correct.m4a'),
 	incorrect: require('@/src/app/assets/sounds/incorrect.m4a'),
 	levelUp: require('@/src/app/assets/sounds/level-up.m4a'),
 	tap: require('@/src/app/assets/sounds/tap.wav'),
@@ -16,14 +16,15 @@ const sounds: Record<string, AudioSource> = {
  */
 export function useSoundEffect(sound: keyof typeof sounds) {
 	const { settings } = useAppSettings();
-	const player = useAudioPlayer(sounds[sound]);
+	const player = useAudioPlayer(sounds[sound], { keepAudioSessionActive: true });
 	const activePlayer = useRef<AudioPlayer | null>(null);
 	const playbackFinished = useRef<((completed: boolean) => void) | null>(null);
 	const enabled = settings.soundEffectsEnabled;
+	const volume = clampAudioVolume(settings.soundEffectsVolume);
 
 	useEffect(() => {
 		activePlayer.current = player;
-		activePlayer.current.volume = sound === 'tap' ? 0.1 : 0.5;
+		activePlayer.current.volume = sound === 'tap' ? volume * 0.375 : volume;
 
 		function finishPlayback(completed: boolean) {
 			const resolve = playbackFinished.current;
@@ -47,7 +48,7 @@ export function useSoundEffect(sound: keyof typeof sounds) {
 			finishPlayback(false);
 			subscription.remove();
 		};
-	}, [enabled, player, sound]);
+	}, [enabled, player, sound, volume]);
 
 	const playSound = useCallback(
 		async function playSound() {

@@ -8,7 +8,7 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { defaultAppSettings } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getUserExperience } from '@/src/util/userExperience';
-import { render, userEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, userEvent, waitFor } from '@testing-library/react-native';
 import { useAudioPlayer } from 'expo-audio';
 
 jest.mock('expo-audio', () => {
@@ -139,6 +139,36 @@ describe('<WordCardButton />', () => {
 		});
 	});
 
+	test('advances once on a completed press, keeping a cancelled press on the current card', async () => {
+		const wordCardUIDispatch = jest.fn();
+		const { currentCard } = mockDeckState();
+		const user = userEvent.setup();
+		mockUseWordCardUI.mockReturnValue({
+			cardState: {
+				...initialWordCardState,
+				stage: 'CORRECT',
+				progress: 'SUCCESS',
+				attempts: 1,
+				selectedArticle: 'The',
+				selectedWord: 'coffee',
+			},
+			wordCardUIDispatch,
+		});
+
+		const { getByText } = await render(<WordCardButton>Next card</WordCardButton>);
+		const button = getByText('Next card');
+
+		await fireEvent(button, 'pressIn');
+		expect(wordCardUIDispatch).not.toHaveBeenCalled();
+		await fireEvent(button, 'pressOut');
+		expect(wordCardUIDispatch).not.toHaveBeenCalled();
+
+		await user.press(button);
+		await user.press(button);
+		expect(wordCardUIDispatch).toHaveBeenCalledTimes(1);
+		expect(wordCardUIDispatch).toHaveBeenCalledWith({ type: 'CHECK_ANSWER', currentCard });
+	});
+
 	test('cannot check an answer while another progress write is running', async () => {
 		mockDeckState();
 		mockUseUserProgress.mockReturnValue({
@@ -198,7 +228,7 @@ describe('<WordCardButton />', () => {
 			});
 
 			const player = jest.mocked(useAudioPlayer).mock.results[0].value;
-			expect(player.volume).toBe(0.5);
+			expect(player.volume).toBe(0.4);
 			expect(player.play).not.toHaveBeenCalled();
 		},
 	);

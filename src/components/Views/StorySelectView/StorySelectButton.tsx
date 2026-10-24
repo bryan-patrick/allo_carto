@@ -32,7 +32,7 @@ export default function StorySelectButton({
 			arrowSize={16}
 			hitSlop={10}
 			params={{ storyId }}
-			screen="(routes)/ChapterSelect"
+			screen="/(routes)/ChapterSelect"
 			color={color}
 			disabled={disabled}
 			fullwidth
