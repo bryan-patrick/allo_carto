@@ -36,6 +36,10 @@ describe('<TTSButton />', () => {
 		mockUseAppSettings.mockReturnValue({ settings: defaultAppSettings, setSetting: jest.fn() });
 	});
 
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
 	test.each([
 		[true, true],
 		[true, false],
@@ -68,10 +72,12 @@ describe('<TTSButton />', () => {
 		}
 
 		if (tts) {
-			expect(Speech.speak).toHaveBeenCalledWith(
-				'le café',
-				expect.objectContaining({ language: 'fr-CA', rate: 0.8 }),
-			);
+			await waitFor(() => {
+				expect(Speech.speak).toHaveBeenCalledWith(
+					'le café',
+					expect.objectContaining({ language: 'fr-CA', rate: 0.8 }),
+				);
+			});
 			const speech = jest.mocked(Speech.speak).mock.calls[0][1]!;
 			await act(() => speech.onStart?.());
 			expect(getByRole('button', { busy: true })).toBeDisabled();
@@ -95,13 +101,23 @@ describe('<TTSButton />', () => {
 		expect(Speech.speak).toHaveBeenCalledTimes(tts ? 1 : 0);
 	});
 
-	test('manual pronunciation uses the same active state and clears it when stopped', async () => {
+	test('manual pronunciation waits 200 ms with the button active, even with automatic TTS off', async () => {
+		jest.useFakeTimers();
 		mockUseAppSettings.mockReturnValue({
 			settings: { ...defaultAppSettings, ttsOnCorrectEnabled: false },
 			setSetting: jest.fn(),
 		});
 		const { getByRole } = await render(<TTSButton wordsToSay="le café" />);
 		await fireEvent.press(getByRole('button'));
+		expect(getByRole('button')).toBeDisabled();
+		expect(Speech.speak).not.toHaveBeenCalled();
+
+		await act(() => jest.advanceTimersByTime(199));
+		expect(Speech.speak).not.toHaveBeenCalled();
+		await act(() => jest.advanceTimersByTime(1));
+		expect(Speech.speak).toHaveBeenCalledTimes(1);
+		const player = jest.mocked(useAudioPlayer).mock.results[0].value;
+		expect(player.play).not.toHaveBeenCalled();
 
 		const speech = jest.mocked(Speech.speak).mock.calls[0][1]!;
 		await act(() => speech.onStart?.());
@@ -109,6 +125,16 @@ describe('<TTSButton />', () => {
 
 		await act(() => speech.onStopped?.());
 		expect(getByRole('button')).toBeEnabled();
+	});
+
+	test('cancels pending pronunciation when the button unmounts during the padding', async () => {
+		jest.useFakeTimers();
+		const { getByRole, unmount } = await render(<TTSButton wordsToSay="le café" />);
+		await fireEvent.press(getByRole('button'));
+
+		await unmount();
+		await act(() => jest.advanceTimersByTime(200));
+		expect(Speech.speak).not.toHaveBeenCalled();
 	});
 
 	test('does not start TTS if the card is left while the correct sound is playing', async () => {

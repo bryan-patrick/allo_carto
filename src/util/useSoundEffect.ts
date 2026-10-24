@@ -16,14 +16,14 @@ const sounds: Record<string, AudioSource> = {
  */
 export function useSoundEffect(sound: keyof typeof sounds) {
 	const { settings } = useAppSettings();
-	const player = useAudioPlayer(sounds[sound]);
+	const player = useAudioPlayer(sounds[sound], { keepAudioSessionActive: true });
 	const activePlayer = useRef<AudioPlayer | null>(null);
 	const playbackFinished = useRef<((completed: boolean) => void) | null>(null);
 	const enabled = settings.soundEffectsEnabled;
 
 	useEffect(() => {
 		activePlayer.current = player;
-		activePlayer.current.volume = sound === 'tap' ? 0.1 : 0.5;
+		activePlayer.current.volume = sound === 'tap' ? 0.15 : 0.4;
 
 		function finishPlayback(completed: boolean) {
 			const resolve = playbackFinished.current;

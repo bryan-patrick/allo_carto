@@ -20,19 +20,28 @@ interface SpeakWordOptions {
 	setIsPlaying(playing: boolean): void;
 }
 
+const speechPaddingMs = 200;
+
 function speakWord({ wordsToSay, setIsPlaying }: SpeakWordOptions) {
+	setIsPlaying(true);
+
 	function finishPlayback() {
 		setIsPlaying(false);
 	}
 
-	Speech.speak(wordsToSay, {
-		language: 'fr-CA',
-		rate: 0.8,
-		onStart: () => setIsPlaying(true),
-		onDone: finishPlayback,
-		onStopped: finishPlayback,
-		onError: finishPlayback,
-	});
+	function startSpeech() {
+		Speech.speak(wordsToSay, {
+			language: 'fr-CA',
+			rate: 0.8,
+			onStart: () => setIsPlaying(true),
+			onDone: finishPlayback,
+			onStopped: finishPlayback,
+			onError: finishPlayback,
+		});
+	}
+
+	const timer = setTimeout(startSpeech, speechPaddingMs);
+	return timer;
 }
 
 /**
@@ -44,6 +53,7 @@ export default function TTSButton({ wordsToSay, autoPlay = false }: TTSButtonPro
 	const [isPlaying, setIsPlaying] = useState(false);
 	const autoPlayedWord = useRef<string | null>(null);
 	const shouldAutoSpeak = useRef(false);
+	const speechTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const reduceMotion = useReducedMotion();
 	const buttonStyles = [
 		styles.button,
@@ -62,7 +72,7 @@ export default function TTSButton({ wordsToSay, autoPlay = false }: TTSButtonPro
 			const completed = await playCorrect();
 
 			if (completed && shouldAutoSpeak.current && autoPlayedWord.current === wordsToSay) {
-				speakWord({ wordsToSay, setIsPlaying });
+				speechTimer.current = speakWord({ wordsToSay, setIsPlaying });
 			}
 		}
 
@@ -73,15 +83,19 @@ export default function TTSButton({ wordsToSay, autoPlay = false }: TTSButtonPro
 
 		return () => {
 			shouldAutoSpeak.current = false;
+			if (speechTimer.current !== null) {
+				clearTimeout(speechTimer.current);
+			}
 		};
 	}, [autoPlay, wordsToSay, playCorrect, settings.ttsOnCorrectEnabled]);
 
 	function speak() {
-		speakWord({ wordsToSay, setIsPlaying });
+		speechTimer.current = speakWord({ wordsToSay, setIsPlaying });
 	}
 
 	return (
 		<Pressable
+			android_disableSound
 			accessibilityLabel={`Pronounce ${wordsToSay}`}
 			accessibilityRole="button"
 			accessibilityState={{ busy: isPlaying, disabled: isPlaying }}
