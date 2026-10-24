@@ -26,10 +26,6 @@ jest.mock('@/src/settings/useAppSettings', () => ({
 	}),
 }));
 
-jest.mock('expo-router/react-navigation', () => ({
-	useLinkProps: jest.fn(() => ({})),
-}));
-
 jest.mock('expo-router', () => ({
 	useFocusEffect: jest.fn(),
 	router: {

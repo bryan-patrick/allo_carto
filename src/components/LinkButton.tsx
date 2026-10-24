@@ -1,5 +1,5 @@
 import { useSoundEffect } from '@/src/util/useSoundEffect';
-import { useLinkProps } from 'expo-router/react-navigation';
+import { Link, type Href, type RoutePath } from 'expo-router';
 import { cloneElement, isValidElement, ReactElement, ReactNode, useEffect, useState } from 'react';
 import {
 	Pressable,
@@ -28,13 +28,10 @@ const linkButtonShadowHeight = 2;
 /**
  * Typing
  */
-interface LinkButtonProps extends Omit<PressableProps, 'style'> {
+interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> {
 	SVGElement?: ReactElement;
 	handler?: () => Promise<void> | void;
 	children?: ReactNode;
-	params?: Record<string, string | string[] | undefined>;
-	screen?: string;
-	href?: string;
 	props?: any;
 	arrowSize?: number;
 	useArrow?: boolean;
@@ -49,15 +46,39 @@ interface LinkButtonProps extends Omit<PressableProps, 'style'> {
 	type?: 'fill' | 'outline';
 }
 
+interface LinkButtonProps extends ButtonProps {
+	params?: Record<string, string | string[] | undefined>;
+	screen?: RoutePath;
+	href?: Href;
+}
+
+interface ButtonIconProps {
+	color?: string;
+}
+
 /**
  * LinkButton Component
- * A link that looks like a button
+ * A button that looks like a link
  */
-export default function LinkButton({
+export default function LinkButton({ screen, params, href, ...props }: LinkButtonProps) {
+	const destination = href ?? (screen ? { pathname: screen, params } : undefined);
+
+	if (destination) {
+		return (
+			<Link
+				href={destination}
+				asChild
+			>
+				<Button {...props} />
+			</Link>
+		);
+	}
+
+	return <Button {...props} />;
+}
+
+function Button({
 	handler = () => {},
-	screen,
-	params,
-	href,
 	children,
 	SVGElement,
 	style,
@@ -74,13 +95,8 @@ export default function LinkButton({
 	showShadow = true,
 	type = 'fill',
 	...pressableProps
-}: LinkButtonProps) {
+}: ButtonProps) {
 	const playTapSound = useSoundEffect('tap');
-	const linkProps = useLinkProps({
-		screen: screen ?? '',
-		params: params ?? {},
-		href,
-	});
 	const [isPressed, setIsPressed] = useState(false);
 	const buttonShadowHeight = showShadow ? linkButtonShadowHeight : 0;
 	const top = useSharedValue(0);
@@ -93,7 +109,7 @@ export default function LinkButton({
 		},
 	}));
 
-	let allTheProps = { ...pressableProps, ...props };
+	const allTheProps = { ...pressableProps, ...props };
 	let typeStyle: ViewStyle = {};
 	let outlineTextStyle = {};
 	let iconElement = SVGElement;
@@ -110,7 +126,7 @@ export default function LinkButton({
 			outlineTextStyle = { color };
 			resolvedArrowColor = color;
 
-			if (isValidElement<{ color?: string }>(SVGElement)) {
+			if (isValidElement<ButtonIconProps>(SVGElement)) {
 				iconElement = cloneElement(SVGElement, { color });
 			}
 		}
@@ -126,13 +142,6 @@ export default function LinkButton({
 				color={resolvedArrowColor}
 			/>
 		);
-	}
-
-	/**
-	 * Pull in props when used for a navigation link.
-	 */
-	if (screen) {
-		allTheProps = { ...pressableProps, ...props, ...linkProps };
 	}
 
 	const {

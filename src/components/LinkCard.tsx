@@ -1,3 +1,4 @@
+import type { RoutePath } from 'expo-router';
 import { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import colors from '../app/colors';
@@ -10,7 +11,7 @@ interface CardProps {
 	title: string;
 	SVGElement?: ReactNode;
 	description?: string;
-	screen: string;
+	screen: RoutePath;
 	linkText: string;
 }
 

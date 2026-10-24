@@ -2,10 +2,18 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+/**
+ * Typing
+ */
+interface LineMetrics {
+	y: number;
+	height: number;
+}
+
 export interface PassageHighlightLayerProps {
 	children: ReactNode;
 	lineHeight: number;
-	lineMetrics: { y: number; height: number }[];
+	lineMetrics: LineMetrics[];
 	verticalInset: number;
 }
 
@@ -45,7 +53,17 @@ export default function PassageHighlightLayer({
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
-	mask: { flex: 1 },
-	band: { position: 'absolute', left: 0, right: 0, backgroundColor: '#000' },
+	mask: {
+		flex: 1,
+	},
+	band: {
+		position: 'absolute',
+		left: 0,
+		right: 0,
+		backgroundColor: '#000',
+	},
 });

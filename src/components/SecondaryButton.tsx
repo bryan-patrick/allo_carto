@@ -62,8 +62,8 @@ export default function SecondaryButton({
 		buttonTypeStyle = { backgroundColor: 'transparent' };
 
 		if (color) {
-			buttonTypeStyle.borderColor = color;
-			outlineTextStyle.color = color;
+			buttonTypeStyle = { backgroundColor: 'transparent', borderColor: color };
+			outlineTextStyle = { color };
 		}
 	} else if (color) {
 		buttonTypeStyle = { backgroundColor: color };

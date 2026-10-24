@@ -5,7 +5,8 @@ import { Stack } from 'expo-router';
 import {
 	getFocusedRouteNameFromRoute,
 	ThemeProvider,
-	type Route,
+	type DescriptorRouteProp,
+	type ParamListBase,
 } from 'expo-router/react-navigation';
 import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
 import { Suspense, useCallback, useEffect, useReducer, useState } from 'react';
@@ -30,7 +31,7 @@ const resetDB = false;
 /**
  * The native header follows the current tab
  */
-function getTabHeaderOptions(route: Route<string>) {
+function getTabHeaderOptions(route: DescriptorRouteProp<ParamListBase>) {
 	const tabName = getFocusedRouteNameFromRoute(route) ?? 'index';
 
 	if (tabName === 'index') {
