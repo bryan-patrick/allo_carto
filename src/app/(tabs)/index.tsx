@@ -1,8 +1,8 @@
-import StorySelectView from '@/src/components/Views/StorySelectView';
+import ChapterSelectView from '@/src/components/Views/ChapterSelectView';
 
 /**
- * Story selection is the application's home screen.
+ * Home opens the chapters for the user's chosen story.
  */
-export default function StorySelectScreen() {
-	return <StorySelectView />;
+export default function HomeScreen() {
+	return <ChapterSelectView />;
 }

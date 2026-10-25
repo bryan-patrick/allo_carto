@@ -58,6 +58,7 @@ export default function ChapterPostcard({
 								itemId={chapter.id}
 								color={color}
 								unlockCriteria={unlockCriteria}
+								fontSizeOffset={2}
 							/>
 						</View>
 					)}
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
 	comingSoonText: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
-		fontSize: 14,
+		fontSize: 16,
 		paddingVertical: 16,
 	},
 });

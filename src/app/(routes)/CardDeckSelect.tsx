@@ -4,6 +4,7 @@ import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { hasParagraphContent } from '@/src/util/atlasContent';
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -23,7 +24,7 @@ export default function CardDeckSelect() {
 	const scrollIndicatorInsets = { top: headerHeight };
 	const chapter = findChapterById(chapterId);
 	const decks =
-		chapter?.decks.map(deck => ({
+		chapter?.decks.filter(hasParagraphContent).map(deck => ({
 			...deck,
 			chapter: chapter.name,
 		})) ?? [];

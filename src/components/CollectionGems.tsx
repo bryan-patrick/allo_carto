@@ -74,6 +74,7 @@ function getGemInfo(
 export default function CollectionGems({ title, progress, size = 18 }: CollectionGemsProps) {
 	const gemResponses = getGemInfo(progress);
 	const level = getCollectionLevel(progress);
+	const gemColor = colors.wordProgress[level];
 
 	let situation: WordProgressKey | 'inProgress' = level;
 
@@ -108,8 +109,8 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 						name="diamond"
 						size={size}
 						filled={filled}
-						color={filled ? colors.wordProgress[level] : colors.light.border}
-						style={!filled && styles.unfilled}
+						color={filled ? gemColor : colors.light.border}
+						style={filled ? styles.filled : styles.unfilled}
 					/>
 				);
 			})}
@@ -121,6 +122,11 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
  * Styles
  */
 const styles = StyleSheet.create({
+	filled: {
+		textShadowOffset: { width: 0, height: 0 },
+		textShadowRadius: 8,
+		textShadowColor: '#ffffff',
+	},
 	unfilled: {
 		opacity: 0.4,
 	},

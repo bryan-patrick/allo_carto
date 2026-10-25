@@ -42,9 +42,10 @@ const aTableForOne = require('@/src/app/assets/images/chapters/a-table-for-one.p
 const whatIsAlloCarto = require('@/src/app/assets/images/chapters/what-is-allo-carto.png');
 const howItWorks = require('@/src/app/assets/images/chapters/how-it-works.png');
 const additionalInformation = require('@/src/app/assets/images/chapters/additional-information.png');
-const neighborhoodPath = require('@/src/app/assets/images/chapters/what-is-this-dep.png');
-const neighborhoodStreet = require('@/src/app/assets/images/chapters/how-it-works-dep.png');
-const quebecView = require('@/src/app/assets/images/chapters/additional-information-dep.png');
+const welcomeChapterOne = require('@/src/app/assets/images/chapter_illustrations/S01CH01.png');
+const welcomeChapterTwo = require('@/src/app/assets/images/chapter_illustrations/S01CH02.png');
+const welcomeChapterThree = require('@/src/app/assets/images/chapter_illustrations/S01CH03.png');
+const welcomeStoryBackground = require('@/src/app/assets/images/story_backgrounds/S01.jpg');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
 /**
@@ -91,7 +92,7 @@ export const storyAtlas: StoryAtlas = {
 			name: 'Welcome to Allô Carto',
 			description: 'Learn how to read stories, study their words, and grow your vocabulary.',
 			category: 'Beginner',
-			image: chapterSelectBackground,
+			image: welcomeStoryBackground,
 			materialSymbolName: 'waving_hand',
 			chapters: [
 				{
@@ -100,8 +101,7 @@ export const storyAtlas: StoryAtlas = {
 					label: 'Chapter 1',
 					name: 'What is Allô Carto?',
 					description: 'Discover how stories and flashcards help you learn French with Allô Carto.',
-					image: neighborhoodPath,
-					characterImage: whatIsAlloCarto,
+					characterImage: welcomeChapterOne,
 					decks: [DeckWelcomeToAlloCarto, DeckStoriesAndFlashcards],
 				},
 				{
@@ -111,8 +111,7 @@ export const storyAtlas: StoryAtlas = {
 					name: 'How it works',
 					description:
 						'Explore chapters and paragraphs, study their words, and earn XP as you learn.',
-					image: neighborhoodStreet,
-					characterImage: howItWorks,
+					characterImage: welcomeChapterTwo,
 					unlockRequirements: [{ id: 'deck__stories_and_flashcards', requiredWordProgress: 'new' }],
 					decks: [DeckStoriesChaptersAndDecks, DeckStudyAndReadAgain, DeckCardsAndXp],
 				},
@@ -123,8 +122,7 @@ export const storyAtlas: StoryAtlas = {
 					name: 'Additional information',
 					description:
 						'Track your vocabulary, discover collections, and keep learning through stories.',
-					image: quebecView,
-					characterImage: additionalInformation,
+					characterImage: welcomeChapterThree,
 					unlockRequirements: [{ id: 'deck__cards_and_xp', requiredWordProgress: 'new' }],
 					decks: [DeckKnowTheWord, DeckWordCollections, DeckHaveFun],
 				},

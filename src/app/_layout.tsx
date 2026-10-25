@@ -13,11 +13,13 @@ import { Suspense, useCallback, useEffect, useReducer, useState } from 'react';
 import { Platform } from 'react-native';
 import { CardDeckContext, initialCardDeckState } from '../components/CardDeck/cardDeckContext';
 import { cardDeckReducer } from '../components/CardDeck/cardDeckReducer';
+import ChapterSelectHeader from '../components/ChapterSelectHeader';
 import LevelBadge from '../components/LevelBadge';
 import Loader from '../components/Loader';
 import DeckProgress from '../components/WordCard/DeckProgress';
 import { getTables, setDB } from '../db/interface';
 import getMonHomme, { UserRow } from '../db/queries/getMonHomme';
+import saveSelectedStory from '../db/queries/saveSelectedStory';
 import { UserContext } from '../db/userContext';
 import { UserProgressProvider } from '../db/userProgressContext';
 import { AppSettingsProvider } from '../settings/appSettingsContext';
@@ -38,8 +40,8 @@ function getTabHeaderOptions(route: DescriptorRouteProp<ParamListBase>) {
 	if (tabName === 'index') {
 		return {
 			headerShown: true,
-			headerTransparent: true,
-			headerTitle: '',
+			headerTransparent: false,
+			header: () => <ChapterSelectHeader />,
 		};
 	}
 
@@ -68,6 +70,25 @@ export default function AppLayout() {
 	 */
 	const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
 	const [user, setUser] = useState<UserRow | null>(null);
+	const userId = user?.id;
+
+	const selectStory = useCallback(
+		async (storyId: string): Promise<boolean> => {
+			if (!userId) {
+				return false;
+			}
+
+			try {
+				await saveSelectedStory({ userId, storyId });
+				setUser(currentUser => (currentUser ? { ...currentUser, selectedStoryId: storyId } : null));
+				return true;
+			} catch (error) {
+				console.error('Could not save the selected story:', error);
+				return false;
+			}
+		},
+		[userId],
+	);
 
 	/**
 	 * Load our fonts
@@ -135,7 +156,7 @@ export default function AppLayout() {
 	 * difficult to debug. Don't put context inside of it.
 	 */
 	return (
-		<UserContext value={user}>
+		<UserContext value={user ? { ...user, selectStory } : null}>
 			<ThemeProvider value={alloTheme}>
 				<CardDeckContext
 					value={{
@@ -160,6 +181,10 @@ export default function AppLayout() {
 											}),
 											headerBackTitleStyle: alloTheme.fonts.regular,
 											headerRight: () => <LevelBadge />,
+											// The badge supplies its own glass background in both header layouts.
+											unstable_headerRightItems: () => [
+												{ type: 'custom', element: <LevelBadge />, hidesSharedBackground: true },
+											],
 										}}
 									>
 										<Stack.Screen

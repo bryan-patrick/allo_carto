@@ -1,109 +1,84 @@
-import type { StoryArea } from '@/data/french/storyAreas';
-import { storyAtlas } from '@/data/french/storyAtlas';
+import { storyAtlas, type DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
-import Loader from '@/src/components/Loader';
-import StoryAreaModal from '@/src/components/StoryAreaModal';
-import StoryAreaSelector from '@/src/components/StoryAreaSelector';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
+import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
-import { getCurrentStoryArea, getStoriesForArea } from '@/src/util/storyAreas';
-import { useHeaderHeight } from 'expo-router/react-navigation';
-import { useState } from 'react';
-import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
-import MaterialSymbol from '../../MaterialSymbol';
+import { hasStoryContent } from '@/src/util/atlasContent';
+import { getSelectedStory } from '@/src/util/getSelectedStory';
+import { formatAreaLevelRange, getStoriesForArea } from '@/src/util/storyAreas';
+import { StyleSheet, Text, View } from 'react-native';
 import Story from './Story';
 
-const rueStVallierO = require('@/src/app/assets/images/stories/rue-st-vallier-o.jpg');
+/**
+ * Typing
+ */
+interface StorySelectViewProps {
+	onSelect: (story: DeckStory) => void;
+	isSelecting: boolean;
+}
 
 /**
- * Component story select view
+ * Show all of the awesome stories we have!
  */
-export default function StorySelectView() {
-	const { areas, stories } = storyAtlas;
-	const { experience, progressById, status } = useUserProgress();
-	const headerHeight = useHeaderHeight();
-	const [selectedAreaId, setSelectedAreaId] = useState<string>();
-	const [isAreaModalVisible, setIsAreaModalVisible] = useState(false);
-	const userLevel = experience.level;
-	const currentArea = getCurrentStoryArea(areas, userLevel);
-	const selectedArea =
-		areas.find(area => area.id === selectedAreaId && userLevel >= area.minLevel) ?? currentArea;
-	const headerContainerStyle = { paddingTop: headerHeight + 16 };
-	const storyCards = getStoriesForArea(stories, selectedArea).map(story => ({
-		story,
-		isLocked: !isItemUnlocked({ id: story.id, progressById, userLevel }),
-		progressPercent: progressById[story.id]?.completionPercentage ?? 0,
+export default function StorySelectView({ onSelect, isSelecting }: StorySelectViewProps) {
+	const { experience, progressById } = useUserProgress();
+	const user = useUserContext();
+
+	const selectedStory = getSelectedStory({
+		selectedStoryId: user?.selectedStoryId,
+		progressById,
+		userLevel: experience.level,
+	});
+
+	const groups = storyAtlas.areas.map(area => ({
+		area,
+		stories: getStoriesForArea(storyAtlas.stories, area),
 	}));
-	const isAreaEmpty = userLevel >= selectedArea.minLevel && storyCards.length === 0;
 
-	function handleSelectArea(area: StoryArea) {
-		if (userLevel < area.minLevel) return;
-
-		setSelectedAreaId(area.id);
-		setIsAreaModalVisible(false);
-	}
-
-	/**
-	 * Wait for the user's stored percentages
-	 */
-	if (status === 'loading') return <Loader />;
-	if (status === 'error') return <Text>Could not load story progress.</Text>;
-
-	/**
-	 * Render the component
-	 */
 	return (
-		<ImageBackground
-			style={styles.background}
-			source={rueStVallierO}
-		>
-			<View style={styles.shade}>
-				<ScrollView
-					contentContainerStyle={styles.scrollContentContainer}
-					key={selectedArea.id}
-					style={styles.scrollView}
+		<View style={styles.groups}>
+			{groups.map(({ area, stories }) => (
+				<View
+					key={area.id}
+					style={styles.group}
 				>
-					<View style={[styles.header, headerContainerStyle]}>
+					<View style={styles.areaHeading}>
 						<MaterialSymbol
-							name="auto_stories"
-							size={32}
-							style={styles.storyIcon}
-							color={colors.light.goldenBorder}
+							name={area.materialSymbolName}
+							color={area.color}
+							size={28}
 						/>
-						<StoryAreaSelector
-							area={selectedArea}
-							isExpanded={isAreaModalVisible}
-							onPress={() => setIsAreaModalVisible(true)}
-						/>
+						<View style={styles.areaDetails}>
+							<Text
+								accessibilityRole="header"
+								style={styles.areaName}
+							>
+								{area.name}
+							</Text>
+							<Text style={styles.areaLevels}>{formatAreaLevelRange(area)}</Text>
+							<Text style={styles.areaDescription}>{area.description}</Text>
+						</View>
 					</View>
-					{storyCards.map(({ story, isLocked, progressPercent }) => (
+					{stories.map(story => (
 						<Story
-							story={story}
-							isLocked={isLocked}
 							key={story.id}
+							story={story}
+							isSelected={story.id === selectedStory?.id}
+							isLocked={
+								!hasStoryContent(story) ||
+								!isItemUnlocked({ id: story.id, progressById, userLevel: experience.level })
+							}
 							progressById={progressById}
-							progressPercent={progressPercent}
-							userLevel={userLevel}
+							progressPercent={progressById[story.id]?.completionPercentage ?? 0}
+							userLevel={experience.level}
+							onSelect={onSelect}
+							isSelecting={isSelecting}
 						/>
 					))}
-					{isAreaEmpty && (
-						<View style={styles.emptyArea}>
-							<Text style={styles.title}>No stories in this area yet.</Text>
-							<Text style={styles.description}>Choose another area to keep exploring.</Text>
-						</View>
-					)}
-				</ScrollView>
-			</View>
-			<StoryAreaModal
-				areas={areas}
-				onRequestClose={() => setIsAreaModalVisible(false)}
-				onSelect={handleSelectArea}
-				selectedAreaId={selectedArea.id}
-				stories={stories}
-				userLevel={userLevel}
-				visible={isAreaModalVisible}
-			/>
-		</ImageBackground>
+				</View>
+			))}
+		</View>
 	);
 }
 
@@ -111,60 +86,39 @@ export default function StorySelectView() {
  * Styles
  */
 const styles = StyleSheet.create({
-	background: {
-		flex: 1,
+	groups: {
+		gap: 28,
+		paddingVertical: 12,
 	},
-	shade: {
-		backgroundColor: 'rgba(0, 0, 0, 0.45)',
-		flex: 1,
+	group: {
+		gap: 16,
 	},
-	emptyArea: {
-		gap: 8,
-		padding: 24,
-	},
-	scrollContentContainer: {
-		display: 'flex',
-		flexGrow: 1,
-		paddingBottom: 12,
+	areaHeading: {
+		flexDirection: 'row',
+		alignItems: 'center',
 		gap: 12,
+		marginHorizontal: 20,
+		paddingBottom: 8,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.light.border,
 	},
-	header: {
-		paddingVertical: 16,
-		paddingHorizontal: 4,
+	areaDetails: {
+		flex: 1,
 		gap: 4,
 	},
-	scrollView: {
-		flex: 1,
-	},
-	storyIcon: {
-		textShadowColor: '#000000',
-		textShadowRadius: 1,
-		textShadowOffset: {
-			width: 0,
-			height: 0,
-		},
-	},
-	title: {
+	areaName: {
 		fontFamily: 'lexend-600',
 		fontSize: 20,
-		textAlign: 'center',
-		color: colors.light.background,
-		textShadowColor: '#000000',
-		textShadowRadius: 50,
-		textShadowOffset: {
-			width: 0,
-			height: 0,
-		},
+		color: colors.dark.text,
 	},
-	description: {
-		textAlign: 'center',
+	areaLevels: {
 		fontFamily: 'lexend-400',
-		color: colors.light.goldenBorder,
-		textShadowColor: '#000000',
-		textShadowRadius: 20,
-		textShadowOffset: {
-			width: 0,
-			height: 0,
-		},
+		fontSize: 12,
+		color: colors.dark.text,
+	},
+	areaDescription: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		color: colors.dark.text,
 	},
 });

@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 	},
 	coverInner: {
+		flexGrow: 1,
 		borderWidth: 2,
 		borderBottomRightRadius: 8,
 		borderTopRightRadius: 8,

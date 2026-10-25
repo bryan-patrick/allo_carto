@@ -194,7 +194,7 @@ export default function DeckResultsView() {
 	 * Change them below when the review needs a different message.
 	 */
 	let description = metadata.description;
-	let repeatLabel = 'Repeat session';
+	let repeatLabel = 'Repeat paragraph';
 	let nextLabel = 'Next';
 	let content;
 	let title = metadata.title;

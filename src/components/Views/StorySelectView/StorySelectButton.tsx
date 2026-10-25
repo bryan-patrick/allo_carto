@@ -1,15 +1,17 @@
 import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 /**
  * Typing
  */
 interface StorySelectButtonProps {
 	story: DeckStory;
+	isSelected: boolean;
 	disabled?: boolean;
 	progressPercent?: number;
+	onSelect: (story: DeckStory) => void;
 }
 
 /**
@@ -17,12 +19,28 @@ interface StorySelectButtonProps {
  */
 export default function StorySelectButton({
 	story,
+	isSelected,
 	disabled = false,
 	progressPercent = 0,
+	onSelect,
 }: StorySelectButtonProps) {
-	const { id: storyId, category } = story;
+	const { category } = story;
 	const color = colors.category[category];
 	const selectText = progressPercent > 0 ? 'Continue Story' : 'Start Story';
+
+	if (isSelected) {
+		return (
+			<View
+				accessible
+				accessibilityRole="text"
+				style={[styles.selectedStory, { borderColor: color }]}
+			>
+				<Text style={[styles.storySelectButtonText, styles.selectedStoryText, { color }]}>
+					Currently selected
+				</Text>
+			</View>
+		);
+	}
 
 	/**
 	 * Render the component
@@ -31,8 +49,8 @@ export default function StorySelectButton({
 		<LinkButton
 			arrowSize={16}
 			hitSlop={10}
-			params={{ storyId }}
-			screen="/(routes)/ChapterSelect"
+			handler={() => onSelect(story)}
+			accessibilityLabel={`Select story: ${story.name}`}
 			color={color}
 			disabled={disabled}
 			fullwidth
@@ -46,6 +64,18 @@ export default function StorySelectButton({
  * Styles
  */
 const styles = StyleSheet.create({
+	selectedStory: {
+		width: '100%',
+		alignItems: 'center',
+		justifyContent: 'center',
+		borderWidth: 1,
+		borderRadius: 8,
+		paddingHorizontal: 16,
+		paddingVertical: 10,
+	},
+	selectedStoryText: {
+		fontFamily: 'lexend-600',
+	},
 	storySelectButtonText: {
 		fontSize: 14,
 	},

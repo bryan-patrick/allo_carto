@@ -16,6 +16,7 @@ import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { hasParagraphContent } from '@/src/util/atlasContent';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import type { ProgressById } from '@/src/util/progression';
@@ -130,7 +131,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 				chapter={chapter}
 				color={storyColor}
 			/>
-			{chapter.decks.map((deck, index) => {
+			{chapter.decks.filter(hasParagraphContent).map((deck, index) => {
 				const isFirstDeck = index === 0;
 				const isLocked = !isItemUnlocked({ id: deck.id, progressById, userLevel });
 				const completionPercent = Math.floor(progressById[deck.id]?.completionPercentage ?? 0);
@@ -152,6 +153,8 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 								subtitle={`Paragraph ${index + 1}`}
 								title={deck.title}
 								progress={progressById[deck.id]}
+								wordCount={new Set(deck.wordIds).size}
+								fontSizeOffset={2}
 							/>
 						)}
 
@@ -162,6 +165,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 									itemId={deck.id}
 									color={storyColor}
 									unlockCriteria={unlockCriteria}
+									fontSizeOffset={2}
 								/>
 							</>
 						)}
@@ -191,7 +195,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 										/>
 									}
 								>
-									Read
+									<Text style={styles.actionText}>Read</Text>
 								</LinkButton>
 								<LinkButton
 									accessibilityLabel={`${actionLabel} for paragraph: ${deck.title}`}
@@ -202,13 +206,14 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 									handler={() => handleSelectDeck(deck)}
 									disabled={isUpdatingProgress}
 									showInnerBorder={false}
+									showShadow={false}
 									style={[
 										styles.actionButton,
 										styles.primaryActionButton,
 										{ borderColor: storyColor },
 									]}
 								>
-									{actionLabel}
+									<Text style={styles.actionText}>{actionLabel}</Text>
 								</LinkButton>
 							</View>
 						)}
@@ -239,7 +244,7 @@ const styles = StyleSheet.create({
 		borderRightWidth: 0,
 		borderBottomWidth: 0,
 		paddingHorizontal: 12,
-		paddingVertical: 16,
+		paddingVertical: 8,
 		marginLeft: 8,
 		gap: 8,
 	},
@@ -249,7 +254,7 @@ const styles = StyleSheet.create({
 	paragraphLabel: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
-		fontSize: 12,
+		fontSize: 14,
 	},
 	actions: {
 		flexDirection: 'row',
@@ -257,6 +262,9 @@ const styles = StyleSheet.create({
 	},
 	actionButton: {
 		flex: 1,
+	},
+	actionText: {
+		fontSize: 16,
 	},
 	secondaryButton: {
 		flex: 1,
@@ -266,8 +274,6 @@ const styles = StyleSheet.create({
 	primaryActionButton: {
 		flex: 2,
 		borderWidth: 1,
-		borderBottomWidth: 2,
-		shadowOpacity: 0,
 	},
 	loadingButton: {
 		opacity: 0.5,

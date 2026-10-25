@@ -71,6 +71,7 @@ async function createUsersTable(): Promise<void> {
 					id TEXT PRIMARY KEY,
 					name TEXT,
 					isMonHomme INTEGER NOT NULL DEFAULT 1,
+					selectedStoryId TEXT,
 					totalXP INTEGER NOT NULL DEFAULT 0 CHECK (totalXP >= 0)
 				);
 			`);
@@ -117,6 +118,7 @@ export default async function createTables(): Promise<void> {
 	await createWordsTable();
 	await ensureWordsFormColumn();
 	await createUsersTable();
+	await ensureSelectedStoryColumn();
 	await createUserWordsTable();
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
@@ -124,6 +126,19 @@ export default async function createTables(): Promise<void> {
 	await ensureUnlockedColumn();
 	await ensureParagraphProgressType();
 	await createDeckPassageFeedbackTable();
+}
+
+/**
+ * Save the selected story!
+ */
+async function ensureSelectedStoryColumn(): Promise<void> {
+	const database = await getDB();
+	const columns = await database.getAllAsync<{ name: string }>('PRAGMA table_info(users);');
+	const hasSelectedStoryColumn = columns.some(column => column.name === 'selectedStoryId');
+
+	if (!hasSelectedStoryColumn) {
+		await database.execAsync('ALTER TABLE users ADD COLUMN selectedStoryId TEXT;');
+	}
 }
 
 /**
@@ -154,7 +169,6 @@ async function ensureParagraphProgressType(): Promise<void> {
 	const hasDeckProgressType = table?.sql.includes("'deck'");
 
 	if (hasDeckProgressType) {
-		// We save this together so a failed copy leaves the original progress in place.
 		await database.withExclusiveTransactionAsync(async transaction => {
 			await transaction.execAsync(statements.renameOldTable);
 			await transaction.execAsync(createUserProgressTableSQL);

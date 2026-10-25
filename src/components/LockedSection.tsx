@@ -3,38 +3,69 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import {
 	formatUnlockCriterion,
 	isItemReadyToUnlock,
+	shouldShowUnlockRequirements,
 	type UnlockCriteria,
 } from '@/src/util/atlasCompletion';
 import { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import {
+	Alert,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
+	type StyleProp,
+	type ViewStyle,
+} from 'react-native';
 import LinkButton from './LinkButton';
 import MaterialSymbol from './MaterialSymbol';
 
 interface LockedSectionProps {
-	compact?: boolean;
+	circular?: boolean;
 	color?: string;
 	textColor?: string;
 	unlockCriteria: UnlockCriteria[];
 	itemId?: string;
+	style?: StyleProp<ViewStyle>;
+	fontSizeOffset?: number;
 }
 
 /**
- * Explains how to unlock a story, chapter, or deck.
+ * We show unlock details when the next story, chapter, or paragraph meets one requirement.
  */
 export default function LockedSection({
-	compact = false,
+	circular = false,
 	color = colors.utility.cardBorder,
 	textColor = colors.dark.text,
 	unlockCriteria,
 	itemId,
+	style,
+	fontSizeOffset = 0,
 }: LockedSectionProps) {
 	const { experience, progressById, isUpdatingProgress, unlockItem } = useUserProgress();
 	const [isUnlocking, setIsUnlocking] = useState(false);
+	const canShowRequirements = Boolean(
+		itemId &&
+		shouldShowUnlockRequirements({ id: itemId, progressById, userLevel: experience.level }),
+	);
 	const isReady = Boolean(
-		itemId && isItemReadyToUnlock({ id: itemId, progressById, userLevel: experience.level }),
+		canShowRequirements &&
+		itemId &&
+		isItemReadyToUnlock({ id: itemId, progressById, userLevel: experience.level }),
 	);
 	const itemType = itemId ? (progressById[itemId]?.type ?? 'paragraph') : 'paragraph';
-	const textStyle = { color: textColor };
+	const titleTextStyle = {
+		color: textColor,
+		fontSize: styles.criteriaTitle.fontSize + fontSizeOffset,
+	};
+	const hintTextStyle = {
+		color: textColor,
+		fontSize: styles.lockedHint.fontSize + fontSizeOffset,
+	};
+	const criteriaTextStyle = {
+		color: textColor,
+		fontSize: styles.criteriaText.fontSize + fontSizeOffset,
+		lineHeight: styles.criteriaText.lineHeight + fontSizeOffset,
+	};
 	const criteria = unlockCriteria.map(criterion => ({
 		isUnlocked: criterion.isUnlocked,
 		label: formatUnlockCriterion(criterion),
@@ -56,7 +87,7 @@ export default function LockedSection({
 		Alert.alert('Unlock requirements', criteria.map(criterion => criterion.label).join('\n\n'));
 	}
 
-	if (compact) {
+	if (circular) {
 		let label = 'Locked';
 
 		if (isReady) {
@@ -68,40 +99,56 @@ export default function LockedSection({
 		}
 
 		return (
-			<LinkButton
-				handler={isReady ? handleUnlock : showRequirements}
-				disabled={isUpdatingProgress || isUnlocking}
+			<Pressable
+				style={[styles.circularControl, style]}
+				onPress={isReady ? handleUnlock : showRequirements}
+				disabled={!canShowRequirements || isUpdatingProgress || isUnlocking}
 				accessibilityLabel={`${label}: ${itemType}`}
-				color={color}
-				type="outline"
-				useArrow={false}
-				showInnerBorder={false}
-				showShadow={false}
-				contentPaddingHorizontal={4}
-				contentPaddingVertical={10}
-				fullwidth
-				SVGElement={
-					<MaterialSymbol
-						name={isReady ? 'lock_open' : 'lock'}
-						color={color}
-						size={16}
-					/>
-				}
+				accessibilityRole="button"
 			>
-				{label}
-			</LinkButton>
+				{({ pressed }) => (
+					<>
+						<View
+							style={[styles.lockCircle, { borderColor: color }, pressed && styles.pressedCircle]}
+						>
+							<MaterialSymbol
+								name={isReady ? 'lock_open' : 'lock'}
+								color={color}
+								size={32}
+							/>
+						</View>
+						<Text style={[styles.circularLabel, { color, fontSize: 12 + fontSizeOffset }]}>
+							{label}
+						</Text>
+					</>
+				)}
+			</Pressable>
+		);
+	}
+
+	if (!canShowRequirements) {
+		return (
+			<View style={[styles.section, { borderColor: color }, style]}>
+				<MaterialSymbol
+					color={color}
+					size={24}
+					name="lock"
+				/>
+				<Text style={[styles.criteriaTitle, titleTextStyle]}>Locked</Text>
+				<Text style={[styles.lockedHint, hintTextStyle]}>Level up to unlock!</Text>
+			</View>
 		);
 	}
 
 	return (
-		<View style={[styles.section, { borderColor: color }]}>
+		<View style={[styles.section, { borderColor: color }, style]}>
 			<MaterialSymbol
 				color={color}
 				size={24}
 				name={isReady ? 'lock_open' : 'lock'}
 			/>
 			<View style={styles.criteria}>
-				<Text style={[styles.criteriaTitle, textStyle]}>
+				<Text style={[styles.criteriaTitle, titleTextStyle]}>
 					{isReady ? 'Ready to unlock!' : 'Complete the following to unlock:'}
 				</Text>
 				{isReady ?
@@ -111,12 +158,14 @@ export default function LockedSection({
 						color={color}
 						useArrow={false}
 					>
-						{isUnlocking ? 'Unlocking…' : `Unlock ${itemType}`}
+						<Text style={{ fontSize: 14 + fontSizeOffset }}>
+							{isUnlocking ? 'Unlocking…' : `Unlock ${itemType}`}
+						</Text>
 					</LinkButton>
 				:	criteria.map(({ label, isUnlocked }, index) => (
 						<Text
 							key={`${label}-${index}`}
-							style={[styles.criteriaText, textStyle, isUnlocked && styles.criteriaMet]}
+							style={[styles.criteriaText, criteriaTextStyle, isUnlocked && styles.criteriaMet]}
 						>
 							{label}
 						</Text>
@@ -128,6 +177,27 @@ export default function LockedSection({
 }
 
 const styles = StyleSheet.create({
+	circularControl: {
+		alignItems: 'center',
+		gap: 4,
+	},
+	lockCircle: {
+		width: 72,
+		height: 72,
+		borderRadius: 36,
+		borderWidth: 2,
+		backgroundColor: `${colors.dark.background}CC`,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	pressedCircle: {
+		opacity: 0.65,
+	},
+	circularLabel: {
+		fontFamily: 'lexend-600',
+		fontSize: 12,
+		textAlign: 'center',
+	},
 	section: {
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -147,6 +217,12 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		fontFamily: 'lexend-600',
 		fontSize: 14,
+	},
+	lockedHint: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		textAlign: 'center',
+		marginTop: 4,
 	},
 	criteriaText: {
 		flexShrink: 1,

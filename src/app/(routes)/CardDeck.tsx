@@ -165,7 +165,7 @@ export default function CardDeck() {
 							style={styles.wordLink}
 						>
 							<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
-								View passage
+								View paragraph
 							</Text>
 						</Pressable>
 						{shouldShowOtherForms && (

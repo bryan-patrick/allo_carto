@@ -7,10 +7,15 @@ import { UserRow } from './queries/getMonHomme';
 /**
  * Init User state
  */
-export const initialUserState: UserRow = {
+interface UserContextValue extends UserRow {
+	selectStory: (storyId: string) => Promise<boolean>;
+}
+
+export const initialUserState: UserContextValue = {
 	id: '',
 	name: '',
 	isMonHomme: 0,
+	selectStory: async () => false,
 };
 
-export const UserContext = createContext<UserRow | null>(initialUserState);
+export const UserContext = createContext<UserContextValue | null>(initialUserState);
