@@ -105,7 +105,7 @@ export default function CompletionPassage({
 					accessibilityRole="header"
 					style={styles.title}
 				>
-					Is the deck above easier to read now?
+					Is the paragraph above easier to read now?
 				</Text>
 				{speechButton}
 			</Animated.View>

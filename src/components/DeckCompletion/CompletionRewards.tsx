@@ -49,9 +49,9 @@ const totalIconSize = 30;
  * Names shown beside each deck bonus.
  */
 const bonusLabels: Record<XPBonusProps['kind'], string> = {
-	completion: 'Deck completed',
-	firstCompletion: 'First deck completion',
-	perfect: 'Perfect deck (no missed words)',
+	completion: 'Session completed',
+	firstCompletion: 'First paragraph review',
+	perfect: 'Perfect session (no missed words)',
 };
 
 /**
@@ -124,7 +124,7 @@ export default function CompletionRewards({ session, color }: CompletionRewardsP
 
 	if (correctCount === 0) {
 		noBonusLabel =
-			'Get at least one word correct to complete the deck and earn completion bonuses.';
+			'Get at least one word correct to complete the session and earn completion bonuses.';
 	}
 
 	/**

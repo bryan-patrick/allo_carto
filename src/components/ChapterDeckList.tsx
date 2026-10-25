@@ -8,7 +8,6 @@ import DeckHeader from '@/src/components/DeckHeader';
 import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import ProgressBar from '@/src/components/ProgressBar';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
@@ -19,7 +18,6 @@ import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
-import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useRouter } from 'expo-router';
@@ -35,16 +33,6 @@ interface ChapterDeckListProps {
 	story: DeckStory;
 }
 
-interface MetadataItemProps {
-	color: string;
-	icon: string;
-	text: string;
-}
-
-interface ProgressMetadataProps extends MetadataItemProps {
-	percent: number;
-}
-
 interface PassageState {
 	deck: ReadingPassage;
 	wordProgressCounts: DeckWordProgressCounts;
@@ -52,40 +40,7 @@ interface PassageState {
 }
 
 /**
- * Helper components
- */
-function MetadataItem({ color, icon, text }: MetadataItemProps) {
-	return (
-		<View style={styles.metadataItem}>
-			<MaterialSymbol
-				color={color}
-				name={icon}
-				size={16}
-			/>
-			<Text style={styles.metadataText}>{text}</Text>
-		</View>
-	);
-}
-
-function ProgressMetadata({ color, icon, text, percent }: ProgressMetadataProps) {
-	return (
-		<View style={styles.completionMetadata}>
-			<MetadataItem
-				color={color}
-				icon={icon}
-				text={text}
-			/>
-			<ProgressBar
-				color={color}
-				percent={percent}
-				style={styles.progressBarContainer}
-			/>
-		</View>
-	);
-}
-
-/**
- * The chapter's decks and their passage preview
+ * We use this to list a chapter's paragraphs and open their reading or flashcard view.
  */
 export default function ChapterDeckList({ chapter, progressById, story }: ChapterDeckListProps) {
 	const router = useRouter();
@@ -120,7 +75,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 			const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
 
 			if (!selectedDeck || selectedDeck.words.length === 0) {
-				Alert.alert('Could not start deck', 'Please try again.');
+				Alert.alert('Could not start session', 'Please try again.');
 				return;
 			}
 
@@ -131,8 +86,8 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 			});
 			router.push('/CardDeck');
 		} catch (error) {
-			console.error('Could not start deck:', error);
-			Alert.alert('Could not start deck', 'Please try again.');
+			console.error('Could not start session:', error);
+			Alert.alert('Could not start session', 'Please try again.');
 		} finally {
 			isStartingDeck.current = false;
 		}
@@ -167,7 +122,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 	}
 
 	/**
-	 * Render the existing deck rows inside the chapter postcard
+	 * Show each paragraph with its number, title, gems, and reading and flashcard actions.
 	 */
 	return (
 		<View style={styles.deckList}>
@@ -179,13 +134,6 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 				const isFirstDeck = index === 0;
 				const isLocked = !isItemUnlocked({ id: deck.id, progressById, userLevel });
 				const completionPercent = Math.floor(progressById[deck.id]?.completionPercentage ?? 0);
-				const seenPercent = Math.floor(progressById[deck.id]?.seenPercentage ?? 0);
-				const seenWordCount = progressById[deck.id]?.seenWordCount ?? 0;
-				const wordCount = progressById[deck.id]?.wordCount ?? new Set(deck.wordIds).size;
-				const seenText = `${seenWordCount}/${wordCount} words seen`;
-				const learnedText = `${completionPercent}% learned`;
-				const deckLevelText = formatCEFRRange(deck.CEFR);
-				const metadataAccessibilityLabel = `${formatCEFRRange(deck.CEFR, ' to ')}, ${seenWordCount} of ${wordCount} words seen, ${completionPercent} percent learned`;
 				const unlockCriteria = getUnlockCriteria(deck, progressById, userLevel);
 				const isLoadingPassage = loadingPassageId === deck.id;
 				let actionLabel = 'Flash Cards';
@@ -201,48 +149,26 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 					>
 						{!isLocked && (
 							<DeckHeader
+								subtitle={`Paragraph ${index + 1}`}
 								title={deck.title}
 								progress={progressById[deck.id]}
-							>
-								<View
-									accessible
-									accessibilityLabel={metadataAccessibilityLabel}
-									style={styles.metadata}
-								>
-									<MetadataItem
-										color={storyColor}
-										icon="globe"
-										text={deckLevelText}
-									/>
-									<View style={styles.metadataDivider} />
-									<ProgressMetadata
-										color={storyColor}
-										icon="cards_star"
-										text={seenText}
-										percent={seenPercent}
-									/>
-									<View style={styles.metadataDivider} />
-									<ProgressMetadata
-										color={storyColor}
-										icon="cognition_2"
-										text={learnedText}
-										percent={completionPercent}
-									/>
-								</View>
-							</DeckHeader>
+							/>
 						)}
 
 						{isLocked && (
-							<LockedSection
-								itemId={deck.id}
-								color={storyColor}
-								unlockCriteria={unlockCriteria}
-							/>
+							<>
+								<Text style={styles.paragraphLabel}>{`Paragraph ${index + 1}`}</Text>
+								<LockedSection
+									itemId={deck.id}
+									color={storyColor}
+									unlockCriteria={unlockCriteria}
+								/>
+							</>
 						)}
 						{!isLocked && (
 							<View style={styles.actions}>
 								<LinkButton
-									accessibilityLabel={`Read passage: ${deck.title}`}
+									accessibilityLabel={`Read paragraph: ${deck.title}`}
 									color={storyColor}
 									contentPaddingHorizontal={4}
 									contentPaddingVertical={4}
@@ -268,7 +194,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 									Read
 								</LinkButton>
 								<LinkButton
-									accessibilityLabel={`${actionLabel} deck: ${deck.title}`}
+									accessibilityLabel={`${actionLabel} for paragraph: ${deck.title}`}
 									arrowColor={colors.light.text}
 									color={storyColor}
 									contentPaddingHorizontal={8}
@@ -320,38 +246,10 @@ const styles = StyleSheet.create({
 	firstDeckRow: {
 		borderTopLeftRadius: 8,
 	},
-	metadata: {
-		alignItems: 'flex-start',
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		marginTop: 8,
-		gap: 6,
-	},
-	metadataItem: {
-		alignItems: 'center',
-		alignContent: 'center',
-		flexDirection: 'row',
-		gap: 4,
-	},
-	metadataText: {
+	paragraphLabel: {
 		color: colors.dark.text,
-		fontFamily: 'lexend-400',
+		fontFamily: 'lexend-600',
 		fontSize: 12,
-	},
-	metadataDivider: {
-		backgroundColor: colors.light.border,
-		height: 22,
-		width: 1,
-	},
-	completionMetadata: {
-		gap: 1,
-	},
-	progressBarContainer: {
-		backgroundColor: '#00000012',
-		borderColor: colors.light.border,
-		borderRadius: 4,
-		borderWidth: 1,
-		height: 4,
 	},
 	actions: {
 		flexDirection: 'row',

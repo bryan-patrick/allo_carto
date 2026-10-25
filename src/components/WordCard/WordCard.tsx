@@ -204,7 +204,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 
 					if (!receipt) {
 						isCompletingCard.current = false;
-						Alert.alert('Could not finish deck', 'Please try again.', [
+						Alert.alert('Could not finish session', 'Please try again.', [
 							{ text: 'Retry', onPress: completeCard },
 						]);
 						return;

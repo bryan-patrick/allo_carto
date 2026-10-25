@@ -43,7 +43,7 @@ const headerEntry = getCompletionEntry(0);
  * Names, icons, and messages for the review steps, in order.
  */
 const completionSteps = [
-	{ title: 'Deck complete!', icon: 'task_alt', description: '' },
+	{ title: 'Session complete!', icon: 'task_alt', description: '' },
 	{ title: 'Word results', icon: 'cards_star', description: 'Here’s how you did on each word.' },
 	{ title: 'XP & rewards', icon: 'trophy', description: 'Great work! Here’s what you earned.' },
 	{
@@ -194,7 +194,7 @@ export default function DeckResultsView() {
 	 * Change them below when the review needs a different message.
 	 */
 	let description = metadata.description;
-	let repeatLabel = 'Repeat deck';
+	let repeatLabel = 'Repeat session';
 	let nextLabel = 'Next';
 	let content;
 	let title = metadata.title;
@@ -225,7 +225,7 @@ export default function DeckResultsView() {
 				description = cardDeck.title;
 
 				if (!cardDeckState.isComplete) {
-					title = 'Deck review';
+					title = 'Session review';
 					icon = 'menu_book';
 				}
 
@@ -257,7 +257,7 @@ export default function DeckResultsView() {
 				 * Encourage another review attempt if the deck did not count as complete.
 				 */
 				if (!cardDeckState.isComplete) {
-					description = 'Keep practicing, you can repeat this deck.';
+					description = 'Keep practicing, you can start another session.';
 				}
 
 				content = (
@@ -278,7 +278,7 @@ export default function DeckResultsView() {
 				break;
 		}
 	} else {
-		title = 'No deck results to review';
+		title = 'No session results to review';
 		icon = 'menu_book';
 		description = 'Finish a review attempt to see your results and rewards.';
 		nextLabel = 'Finish';
@@ -325,7 +325,7 @@ export default function DeckResultsView() {
 			 * Stay on this screen if the deck is missing or has no cards.
 			 */
 			if (!selectedDeck || selectedDeck.words.length === 0) {
-				Alert.alert('Could not start deck', 'Please try again.');
+				Alert.alert('Could not start session', 'Please try again.');
 				return;
 			}
 
@@ -342,7 +342,7 @@ export default function DeckResultsView() {
 			router.replace('/CardDeck');
 		} catch (error) {
 			console.error('Could not repeat deck:', error);
-			Alert.alert('Could not start deck', 'Please try again.');
+			Alert.alert('Could not start session', 'Please try again.');
 		} finally {
 			/**
 			 * Allow another Repeat press after this loading attempt ends.

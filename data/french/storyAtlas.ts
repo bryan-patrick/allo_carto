@@ -42,6 +42,9 @@ const aTableForOne = require('@/src/app/assets/images/chapters/a-table-for-one.p
 const whatIsAlloCarto = require('@/src/app/assets/images/chapters/what-is-allo-carto.png');
 const howItWorks = require('@/src/app/assets/images/chapters/how-it-works.png');
 const additionalInformation = require('@/src/app/assets/images/chapters/additional-information.png');
+const neighborhoodPath = require('@/src/app/assets/images/chapters/what-is-this-dep.png');
+const neighborhoodStreet = require('@/src/app/assets/images/chapters/how-it-works-dep.png');
+const quebecView = require('@/src/app/assets/images/chapters/additional-information-dep.png');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
 /**
@@ -72,6 +75,7 @@ export interface DeckChapter extends Progression {
 	description?: string;
 	decks: CardDeck[];
 	image?: ImageSourcePropType;
+	characterImage?: ImageSourcePropType;
 }
 
 /**
@@ -85,7 +89,7 @@ export const storyAtlas: StoryAtlas = {
 			id: 'welcome-to-allo-carto',
 			requiredLevel: 1,
 			name: 'Welcome to Allô Carto',
-			description: 'Learn how to read stories, study decks, and grow your vocabulary.',
+			description: 'Learn how to read stories, study their words, and grow your vocabulary.',
 			category: 'Beginner',
 			image: chapterSelectBackground,
 			materialSymbolName: 'waving_hand',
@@ -96,7 +100,8 @@ export const storyAtlas: StoryAtlas = {
 					label: 'Chapter 1',
 					name: 'What is Allô Carto?',
 					description: 'Discover how stories and flashcards help you learn French with Allô Carto.',
-					image: whatIsAlloCarto,
+					image: neighborhoodPath,
+					characterImage: whatIsAlloCarto,
 					decks: [DeckWelcomeToAlloCarto, DeckStoriesAndFlashcards],
 				},
 				{
@@ -104,8 +109,10 @@ export const storyAtlas: StoryAtlas = {
 					requiredLevel: 4,
 					label: 'Chapter 2',
 					name: 'How it works',
-					description: 'Explore chapters and decks, study their words, and earn XP as you learn.',
-					image: howItWorks,
+					description:
+						'Explore chapters and paragraphs, study their words, and earn XP as you learn.',
+					image: neighborhoodStreet,
+					characterImage: howItWorks,
 					unlockRequirements: [{ id: 'deck__stories_and_flashcards', requiredWordProgress: 'new' }],
 					decks: [DeckStoriesChaptersAndDecks, DeckStudyAndReadAgain, DeckCardsAndXp],
 				},
@@ -116,7 +123,8 @@ export const storyAtlas: StoryAtlas = {
 					name: 'Additional information',
 					description:
 						'Track your vocabulary, discover collections, and keep learning through stories.',
-					image: additionalInformation,
+					image: quebecView,
+					characterImage: additionalInformation,
 					unlockRequirements: [{ id: 'deck__cards_and_xp', requiredWordProgress: 'new' }],
 					decks: [DeckKnowTheWord, DeckWordCollections, DeckHaveFun],
 				},
@@ -135,6 +143,8 @@ export const storyAtlas: StoryAtlas = {
 					id: 'le-chef-leo-chapter-1',
 					label: 'Chapter 1',
 					name: 'A Good Croissant',
+					image: howItWorks,
+					characterImage: whatIsAlloCarto,
 					description:
 						'Hungry Léo spots a croissant on a card and turns his attention to the toaster.',
 					decks: [DeckLeoIsHungry, DeckABeautifulCroissant, DeckTheCardAndTheToaster],
@@ -143,6 +153,8 @@ export const storyAtlas: StoryAtlas = {
 					id: 'le-chef-leo-chapter-2',
 					label: 'Chapter 2',
 					name: 'The Kitchen',
+					image: howItWorks,
+					characterImage: additionalInformation,
 					description: 'While Wallace reads, Léo takes the card and puts it in the toaster.',
 					unlockRequirements: [
 						{ id: 'deck__the_card_and_the_toaster', requiredWordProgress: 'new' },
@@ -153,6 +165,8 @@ export const storyAtlas: StoryAtlas = {
 					id: 'le-chef-leo-chapter-3',
 					label: 'Chapter 3',
 					name: 'Oh No!',
+					image: additionalInformation,
+					characterImage: whatIsAlloCarto,
 					description:
 						'Wallace unplugs the smoking toaster, but Léo has already found another card.',
 					unlockRequirements: [{ id: 'deck__the_card_turns_black', requiredWordProgress: 'new' }],
@@ -248,7 +262,7 @@ export const storyAtlas: StoryAtlas = {
 			requiredLevel: 10,
 			name: 'Walking the Plains',
 			description:
-				'Born from walking les plaines d’Abraham, these decks follow the plaques and monuments that reveal Québec’s past.',
+				'Born from walking les plaines d’Abraham, these paragraphs follow the plaques and monuments that reveal Québec’s past.',
 			category: 'History',
 			image: chapterSelectBackground,
 			materialSymbolName: 'history_edu',

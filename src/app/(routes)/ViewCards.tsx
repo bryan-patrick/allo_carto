@@ -67,13 +67,13 @@ export default function ViewCards() {
 	 * Wait for the user's stored percentages
 	 */
 	if (status === 'loading') return <Loader />;
-	if (status === 'error') return <Text>Could not load deck progress.</Text>;
+	if (status === 'error') return <Text>Could not load paragraph progress.</Text>;
 
 	/**
 	 * Block locked decks
 	 */
 	if (deck && !isItemUnlocked({ id: deck.id, progressById, userLevel: experience.level })) {
-		return <Text style={{ textAlign: 'center' }}>This deck is locked.</Text>;
+		return <Text style={{ textAlign: 'center' }}>This paragraph is locked.</Text>;
 	}
 
 	/**

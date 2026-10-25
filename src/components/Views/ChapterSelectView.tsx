@@ -1,7 +1,6 @@
 import { chapterSelectBackground } from '@/data/french/storyAtlas';
-import ChapterHeader from '@/src/components/ChapterHeader';
+import ChapterSelectRow from '@/src/components/ChapterSelectRow';
 import CollectionGems from '@/src/components/CollectionGems';
-import LinkButton from '@/src/components/LinkButton';
 import Loader from '@/src/components/Loader';
 import LockedSection from '@/src/components/LockedSection';
 import ReadingDescription from '@/src/components/ReadingDescription';
@@ -75,7 +74,6 @@ export default function ChapterSelectView() {
 	}
 
 	const { name, chapters, category, image, requiredLevel } = selectedStory;
-	const categoryColor = colors.category[category];
 
 	/**
 	 * Show the chapters here and open their paragraphs on the chapter detail view
@@ -113,45 +111,16 @@ export default function ChapterSelectView() {
 						style={styles.storyDescriptionText}
 					/>
 				</View>
-				{chapters.map(chapter => {
-					const isLocked = !isItemUnlocked({ id: chapter.id, progressById, userLevel });
-					const unlockCriteria = getUnlockCriteria(chapter, progressById, userLevel);
-					const hasDecks = chapter.decks.length > 0;
-					const hasStartedChapter = chapter.decks.some(deck =>
-						Boolean(progressById[deck.id]?.hasStartedFlashcards),
-					);
-					const actionLabel = hasStartedChapter ? 'Continue Chapter' : 'Start Chapter';
-
-					return (
-						<View
-							key={chapter.id}
-							style={styles.chapterCard}
-						>
-							<ChapterHeader
-								chapter={chapter}
-								color={categoryColor}
-							/>
-							{isLocked && (
-								<LockedSection
-									itemId={chapter.id}
-									color={categoryColor}
-									unlockCriteria={unlockCriteria}
-								/>
-							)}
-							{!isLocked && hasDecks && (
-								<LinkButton
-									accessibilityLabel={`${actionLabel}: ${chapter.name}`}
-									screen="/(routes)/ChapterDetail"
-									params={{ chapterId: chapter.id }}
-									color={categoryColor}
-								>
-									{actionLabel}
-								</LinkButton>
-							)}
-							{!isLocked && !hasDecks && <Text style={styles.comingSoonText}>Coming soon</Text>}
-						</View>
-					);
-				})}
+				{chapters.map((chapter, index) => (
+					<ChapterSelectRow
+						key={chapter.id}
+						chapter={chapter}
+						story={selectedStory}
+						index={index}
+						progressById={progressById}
+						userLevel={userLevel}
+					/>
+				))}
 			</ScrollView>
 		</ImageBackground>
 	);
@@ -215,20 +184,5 @@ const styles = StyleSheet.create({
 			width: 0,
 			height: 0,
 		},
-	},
-	chapterCard: {
-		marginHorizontal: 8,
-		padding: 12,
-		gap: 12,
-		backgroundColor: colors.light.secondary,
-		borderWidth: 1,
-		borderColor: colors.light.goldenBorder,
-		borderRadius: 8,
-	},
-	comingSoonText: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-400',
-		fontSize: 14,
-		paddingVertical: 16,
 	},
 });

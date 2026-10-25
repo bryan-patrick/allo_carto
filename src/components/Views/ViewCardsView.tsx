@@ -12,7 +12,7 @@ interface ViewCardsViewProps {
  * ViewCardsView component
  */
 export default function ViewCardsView({ deck }: ViewCardsViewProps) {
-	const title = deck?.title ?? 'Some Deck';
+	const title = deck?.title ?? 'Paragraph';
 	const cardCount = deck?.wordIds.length ?? 0;
 	const storyColor = getDeckStoryColor(deck?.id);
 
@@ -28,7 +28,7 @@ export default function ViewCardsView({ deck }: ViewCardsViewProps) {
 				{!deck && (
 					<>
 						<Text style={styles.title}>{title}</Text>
-						<Text style={styles.metaText}>Deck not found.</Text>
+						<Text style={styles.metaText}>Paragraph not found.</Text>
 					</>
 				)}
 			</View>

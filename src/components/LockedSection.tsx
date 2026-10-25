@@ -11,6 +11,7 @@ import LinkButton from './LinkButton';
 import MaterialSymbol from './MaterialSymbol';
 
 interface LockedSectionProps {
+	compact?: boolean;
 	color?: string;
 	textColor?: string;
 	unlockCriteria: UnlockCriteria[];
@@ -21,6 +22,7 @@ interface LockedSectionProps {
  * Explains how to unlock a story, chapter, or deck.
  */
 export default function LockedSection({
+	compact = false,
 	color = colors.utility.cardBorder,
 	textColor = colors.dark.text,
 	unlockCriteria,
@@ -31,7 +33,7 @@ export default function LockedSection({
 	const isReady = Boolean(
 		itemId && isItemReadyToUnlock({ id: itemId, progressById, userLevel: experience.level }),
 	);
-	const itemType = itemId ? (progressById[itemId]?.type ?? 'deck') : 'deck';
+	const itemType = itemId ? (progressById[itemId]?.type ?? 'paragraph') : 'paragraph';
 	const textStyle = { color: textColor };
 	const criteria = unlockCriteria.map(criterion => ({
 		isUnlocked: criterion.isUnlocked,
@@ -48,6 +50,47 @@ export default function LockedSection({
 		if (!didUnlock) {
 			Alert.alert('Could not unlock yet', 'Please try again.');
 		}
+	}
+
+	function showRequirements() {
+		Alert.alert('Unlock requirements', criteria.map(criterion => criterion.label).join('\n\n'));
+	}
+
+	if (compact) {
+		let label = 'Locked';
+
+		if (isReady) {
+			label = `Unlock ${itemType}`;
+		}
+
+		if (isUnlocking) {
+			label = 'Unlocking…';
+		}
+
+		return (
+			<LinkButton
+				handler={isReady ? handleUnlock : showRequirements}
+				disabled={isUpdatingProgress || isUnlocking}
+				accessibilityLabel={`${label}: ${itemType}`}
+				color={color}
+				type="outline"
+				useArrow={false}
+				showInnerBorder={false}
+				showShadow={false}
+				contentPaddingHorizontal={4}
+				contentPaddingVertical={10}
+				fullwidth
+				SVGElement={
+					<MaterialSymbol
+						name={isReady ? 'lock_open' : 'lock'}
+						color={color}
+						size={16}
+					/>
+				}
+			>
+				{label}
+			</LinkButton>
+		);
 	}
 
 	return (

@@ -104,7 +104,7 @@ export function getAtlasCompletionItems(atlas: StoryAtlas = storyAtlas): AtlasCo
 			for (const deck of chapter.decks) {
 				completionItems.push({
 					id: deck.id,
-					type: 'deck',
+					type: 'paragraph',
 					wordIds: getUniqueWordIds([deck]),
 				});
 			}
@@ -227,7 +227,7 @@ function getAtlasItems(atlas: StoryAtlas): AtlasItem[] {
 			for (const deck of chapter.decks) {
 				items.push({
 					id: deck.id,
-					type: 'deck',
+					type: 'paragraph',
 					title: deck.title,
 					context: `${story.name} · ${chapter.name}`,
 					requiresChoice: requiresUnlockChoice(deck),

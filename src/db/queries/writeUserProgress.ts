@@ -385,7 +385,7 @@ export async function writeWordSeen({
 		if (deckId) {
 			await database.runAsync(
 				`INSERT INTO userProgress (userId, id, type, completionPercentage, hasStartedFlashcards)
-				VALUES (?, ?, 'deck', 0, 1)
+				VALUES (?, ?, 'paragraph', 0, 1)
 				ON CONFLICT(userId, id) DO UPDATE SET hasStartedFlashcards = 1;`,
 				userId,
 				deckId,

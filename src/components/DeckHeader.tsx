@@ -9,20 +9,34 @@ import CollectionGems from './CollectionGems';
  */
 interface DeckHeaderProps {
 	title: string;
+	subtitle?: string;
 	progress?: UserProgressRow;
 	children?: ReactNode;
 	titleStyle?: StyleProp<TextStyle>;
 }
 
 /**
- * Separate component that includes our collection gems for the deck header
+ * We use this to show a paragraph's title, gems, and New badge.
  */
-export default function DeckHeader({ title, progress, children, titleStyle }: DeckHeaderProps) {
+export default function DeckHeader({
+	title,
+	subtitle,
+	progress,
+	children,
+	titleStyle,
+}: DeckHeaderProps) {
+	const showNewBadge = !progress?.hasStartedFlashcards;
+
 	return (
 		<View style={styles.container}>
-			{!progress?.hasStartedFlashcards && (
-				<View style={styles.newBadge}>
-					<Text style={styles.newBadgeText}>New!</Text>
+			{(subtitle || showNewBadge) && (
+				<View style={styles.labelRow}>
+					{subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+					{showNewBadge && (
+						<View style={styles.newBadge}>
+							<Text style={styles.newBadgeText}>New!</Text>
+						</View>
+					)}
 				</View>
 			)}
 			<View style={styles.headerRow}>
@@ -43,6 +57,17 @@ export default function DeckHeader({ title, progress, children, titleStyle }: De
 const styles = StyleSheet.create({
 	container: {
 		gap: 6,
+	},
+	labelRow: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		alignItems: 'center',
+		gap: 8,
+	},
+	subtitle: {
+		color: colors.dark.text,
+		fontFamily: 'lexend-600',
+		fontSize: 12,
 	},
 	headerRow: {
 		flexDirection: 'row',
