@@ -4,6 +4,7 @@ import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { hasParagraphContent } from '@/src/util/atlasContent';
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -23,7 +24,7 @@ export default function CardDeckSelect() {
 	const scrollIndicatorInsets = { top: headerHeight };
 	const chapter = findChapterById(chapterId);
 	const decks =
-		chapter?.decks.map(deck => ({
+		chapter?.decks.filter(hasParagraphContent).map(deck => ({
 			...deck,
 			chapter: chapter.name,
 		})) ?? [];
@@ -39,7 +40,7 @@ export default function CardDeckSelect() {
 	 * Wait for the user's stored percentages
 	 */
 	if (status === 'loading') return <Loader />;
-	if (status === 'error') return <Text>Could not load deck progress.</Text>;
+	if (status === 'error') return <Text>Could not load paragraph progress.</Text>;
 
 	/**
 	 * Block locked chapters
@@ -72,9 +73,9 @@ export default function CardDeckSelect() {
 						style={styles.chapterIcon}
 						color={colors.light.goldenBorder}
 					/>
-					<Text style={styles.chapterTitleText}>Select a Deck</Text>
+					<Text style={styles.chapterTitleText}>Select a Paragraph</Text>
 					<Text style={styles.chapterDescriptionText}>
-						Preview a deck’s passage, or select it to begin practicing its words.
+						Read a paragraph, or select it to begin practicing its words.
 					</Text>
 				</View>
 				{decks.length > 0 && (
@@ -92,7 +93,7 @@ export default function CardDeckSelect() {
 				)}
 				{decks.length === 0 && (
 					<View style={styles.noDecksContainer}>
-						<Text style={styles.noDecksText}>Sorry! No decks found.</Text>
+						<Text style={styles.noDecksText}>Sorry! No paragraphs found.</Text>
 					</View>
 				)}
 			</ScrollView>

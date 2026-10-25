@@ -24,6 +24,7 @@ export interface UserRow {
 	id: string;
 	name: string | null;
 	isMonHomme: number;
+	selectedStoryId?: string | null;
 }
 
 export interface UserProgress {
@@ -42,7 +43,8 @@ export default async function getMonHomme() {
 		SELECT
 			id,
 			name,
-			isMonHomme
+			isMonHomme,
+			selectedStoryId
 		FROM users
 		WHERE isMonHomme = 1
 		LIMIT 1;

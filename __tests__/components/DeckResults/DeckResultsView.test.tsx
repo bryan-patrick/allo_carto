@@ -95,11 +95,9 @@ describe('<DeckResultsView />', () => {
 		await fireEvent.press(getByText('Next'));
 		await fireEvent.press(getByText('Finish'));
 		expect(mockRouter.dismissTo).toHaveBeenCalledWith({
-			pathname: '/ChapterSelect',
+			pathname: '/ChapterDetail',
 			params: {
 				chapterId: chapter.id,
-				deckPickerRequest: expect.any(String),
-				storyId: story.id,
 			},
 		});
 	});

@@ -137,13 +137,13 @@ export default function CardDeck() {
 	 * Wait for the user's stored percentages
 	 */
 	if (status === 'loading') return <Loader />;
-	if (status === 'error') return <Text>Could not load deck progress.</Text>;
+	if (status === 'error') return <Text>Could not load paragraph progress.</Text>;
 
 	/**
 	 * Block locked decks
 	 */
 	if (isLocked) {
-		return <Text style={{ textAlign: 'center' }}>This deck is locked.</Text>;
+		return <Text style={{ textAlign: 'center' }}>This paragraph is locked.</Text>;
 	}
 
 	/**
@@ -165,7 +165,7 @@ export default function CardDeck() {
 							style={styles.wordLink}
 						>
 							<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
-								View passage
+								View paragraph
 							</Text>
 						</Pressable>
 						{shouldShowOtherForms && (

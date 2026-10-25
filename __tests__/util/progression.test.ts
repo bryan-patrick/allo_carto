@@ -19,7 +19,7 @@ function makeProgressById(percentages: Record<string, number>): ProgressById {
 		result[id] = {
 			userId: 'user_one',
 			id,
-			type: 'deck',
+			type: 'paragraph',
 			completionPercentage: percentages[id],
 		};
 	}

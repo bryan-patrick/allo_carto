@@ -21,7 +21,7 @@ export default function TabsLayout({ size = 28 }) {
 			<Tabs.Screen
 				name="index"
 				options={{
-					title: 'Stories',
+					title: 'Chapters',
 					tabBarIcon: ({ color }) => (
 						<MaterialSymbol
 							color={color}

@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import ProgressBar from './ProgressBar';
@@ -21,32 +22,43 @@ export default function LevelBadge() {
 
 	const accessibilityLabel = `Level ${level}. ${progressDescription}`;
 
-	if (status !== 'ready') return null;
+	if (status !== 'ready') {
+		return null;
+	}
+
+	const hasLiquidGlass = isLiquidGlassAvailable();
 
 	/**
 	 * Render the badge.
 	 */
 	return (
 		<View>
-			<Pressable
-				accessibilityHint="Opens user progress"
-				accessibilityLabel={accessibilityLabel}
-				accessibilityRole="button"
-				onPress={() => setIsProgressVisible(true)}
-				style={({ pressed }) => [styles.badge, pressed && styles.pressedBadge]}
+			{/* We give the badge its own background so it looks the same in every header. */}
+			<GlassView
+				colorScheme="dark"
+				isInteractive
+				style={[styles.surface, !hasLiquidGlass && styles.fallbackSurface]}
 			>
-				<Text
-					numberOfLines={1}
-					style={styles.levelText}
+				<Pressable
+					accessibilityHint="Opens user progress"
+					accessibilityLabel={accessibilityLabel}
+					accessibilityRole="button"
+					onPress={() => setIsProgressVisible(true)}
+					style={({ pressed }) => [styles.badge, pressed && styles.pressedBadge]}
 				>
-					{levelLabel}
-				</Text>
-				<ProgressBar
-					color={colors.light.goldenBorder}
-					percent={progressPercentage}
-					style={styles.progressBarContainer}
-				/>
-			</Pressable>
+					<Text
+						numberOfLines={1}
+						style={styles.levelText}
+					>
+						{levelLabel}
+					</Text>
+					<ProgressBar
+						color={colors.light.goldenBorder}
+						percent={progressPercentage}
+						style={styles.progressBarContainer}
+					/>
+				</Pressable>
+			</GlassView>
 			<UserProgressModal
 				onRequestClose={() => setIsProgressVisible(false)}
 				visible={isProgressVisible}
@@ -59,6 +71,14 @@ export default function LevelBadge() {
  * Styles
  */
 const styles = StyleSheet.create({
+	surface: {
+		borderRadius: 999,
+	},
+	fallbackSurface: {
+		backgroundColor: '#FFFFFF12',
+		borderColor: '#FFFFFF1F',
+		borderWidth: 1,
+	},
 	badge: {
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -66,6 +86,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 6,
 		gap: 4,
 		minWidth: 72,
+		minHeight: 44,
 	},
 	pressedBadge: {
 		opacity: 0.65,

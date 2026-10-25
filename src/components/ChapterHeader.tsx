@@ -1,6 +1,6 @@
 import type { DeckChapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
-import CollectionGems from '@/src/components/CollectionGems';
+import CollectionProgress from '@/src/components/CollectionProgress';
 import ReadingDescription from '@/src/components/ReadingDescription';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
@@ -33,10 +33,11 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 					<View style={styles.labelRow}>
 						<Text style={[styles.label, { color }]}>{label}</Text>
 						{hasWords && (
-							<CollectionGems
-								title={name}
+							<CollectionProgress
 								progress={progress}
-								size={14}
+								wordCount={wordCount}
+								color={color}
+								fontSize={14}
 							/>
 						)}
 					</View>
@@ -87,19 +88,19 @@ const styles = StyleSheet.create({
 	},
 	label: {
 		fontFamily: 'lexend-700',
-		fontSize: 12,
+		fontSize: 14,
 		textTransform: 'uppercase',
 	},
 	title: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-700',
-		fontSize: 16,
+		fontSize: 18,
 	},
 	description: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
-		fontSize: 13,
-		lineHeight: 18,
+		fontSize: 15,
+		lineHeight: 20,
 		marginBottom: 8,
 	},
 	postmark: {

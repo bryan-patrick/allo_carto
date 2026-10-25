@@ -10,7 +10,7 @@ export const DeckKnowTheWord = createCardDeck({
 	words: [],
 	wordChoices: [],
 	englishPassage:
-		'Higher card levels mean you know the word better. Select “View passage” to see the word highlighted.',
+		'Higher card levels mean you know the word better. Select “View paragraph to see the word highlighted.',
 	passage: [
 		{ text: 'Plus', wordId: 'word_adverb_plus' },
 		{ text: 'le', wordId: 'word_article_le' },
@@ -26,7 +26,7 @@ export const DeckKnowTheWord = createCardDeck({
 		{ text: 'le', wordId: 'word_article_le' },
 		{ text: 'mot', wordId: 'word_noun_mot', after: '. ' },
 		{ text: 'Sélectionne', wordId: 'word_verb_selectionne', after: ' « ' },
-		{ text: 'View passage', unlockExempt: true, after: ' » ' },
+		{ text: 'View paragraph', unlockExempt: true, after: ' » ' },
 		{ text: 'pour', wordId: 'word_preposition_pour' },
 		{ text: 'voir', wordId: 'word_verb_voir' },
 		{ text: 'le', wordId: 'word_article_le' },

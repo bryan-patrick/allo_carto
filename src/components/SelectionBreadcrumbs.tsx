@@ -15,7 +15,7 @@ export default function SelectionBreadcrumbs({ currentViewIndex }: SelectionBrea
 		<ViewIndicator
 			currentViewIndex={currentViewIndex}
 			respectSafeArea={false}
-			views={['Story', 'Chapter', 'Deck']}
+			views={['Story', 'Chapter', 'Paragraph']}
 		/>
 	);
 }

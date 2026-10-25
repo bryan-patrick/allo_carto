@@ -1,6 +1,7 @@
 import type { DeckChapter, DeckStory, StoryAtlas } from '@/data/french/storyAtlas';
 import { storyAtlas } from '@/data/french/storyAtlas';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import { hasChapterContent, hasParagraphContent, hasStoryContent } from './atlasContent';
 import { getWordsAtLevel, hasCollectionLevel } from './collectionProgress';
 import type { ProgressById, Progression, ProgressType } from './progression';
 import { getWordProgressDefinitionByKey, type WordProgressKey } from './wordProgress';
@@ -104,7 +105,7 @@ export function getAtlasCompletionItems(atlas: StoryAtlas = storyAtlas): AtlasCo
 			for (const deck of chapter.decks) {
 				completionItems.push({
 					id: deck.id,
-					type: 'deck',
+					type: 'paragraph',
 					wordIds: getUniqueWordIds([deck]),
 				});
 			}
@@ -204,10 +205,79 @@ export function isItemReadyToUnlock(props: IsItemUnlockedProps): boolean {
 	);
 }
 
+/**
+ * Find the next locked story group, chapter, or paragraph.
+ */
+export function isItemNextToUnlock(props: IsItemUnlockedProps): boolean {
+	const atlas = props.atlas ?? storyAtlas;
+	const path = findCompletionPath({ atlas, id: props.id });
+	const story = atlas.stories.find(story => story.id === path[0]?.id);
+	let lockedStories: DeckStory[];
+	let nextLevel: number;
+	let nextChapter: DeckChapter | undefined;
+	let chapter: DeckChapter | undefined;
+	let nextParagraph: CardDeck | undefined;
+	let isNextToUnlock = false;
+
+	if (story && hasStoryContent(story)) {
+		if (path.length === 1) {
+			lockedStories = atlas.stories.filter(
+				story => hasStoryContent(story) && !isItemUnlocked({ ...props, id: story.id }),
+			);
+
+			nextLevel = Math.min(...lockedStories.map(story => story.requiredLevel));
+
+			isNextToUnlock = lockedStories.some(
+				story => story.id === props.id && story.requiredLevel === nextLevel,
+			);
+		} else if (isItemUnlocked({ ...props, id: story.id })) {
+			if (path.length === 2) {
+				nextChapter = story.chapters
+					.filter(hasChapterContent)
+					.find(chapter => !isItemUnlocked({ ...props, id: chapter.id }));
+
+				isNextToUnlock = nextChapter?.id === props.id;
+			} else {
+				chapter = story.chapters.find(chapter => chapter.id === path[1]?.id);
+
+				if (chapter && isItemUnlocked({ ...props, id: chapter.id })) {
+					nextParagraph = chapter.decks
+						.filter(hasParagraphContent)
+						.find(paragraph => !isItemUnlocked({ ...props, id: paragraph.id }));
+
+					isNextToUnlock = nextParagraph?.id === props.id;
+				}
+			}
+		}
+	}
+
+	return isNextToUnlock;
+}
+
+/**
+ * We don't always show requirements to unlock, this determines when we should
+ */
+export function shouldShowUnlockRequirements(props: IsItemUnlockedProps): boolean {
+	if (!isItemNextToUnlock(props)) {
+		return false;
+	}
+
+	const path = findCompletionPath(props);
+	const item = path[path.length - 1];
+
+	return getItemUnlockCriteria(item, props.progressById, props.userLevel, props.atlas).some(
+		criterion => criterion.isUnlocked,
+	);
+}
+
 function getAtlasItems(atlas: StoryAtlas): AtlasItem[] {
 	const items: AtlasItem[] = [];
 
 	for (const story of atlas.stories) {
+		if (!hasStoryContent(story)) {
+			continue;
+		}
+
 		items.push({
 			id: story.id,
 			type: 'story',
@@ -216,6 +286,10 @@ function getAtlasItems(atlas: StoryAtlas): AtlasItem[] {
 		});
 
 		for (const chapter of story.chapters) {
+			if (!hasChapterContent(chapter)) {
+				continue;
+			}
+
 			items.push({
 				id: chapter.id,
 				type: 'chapter',
@@ -225,9 +299,13 @@ function getAtlasItems(atlas: StoryAtlas): AtlasItem[] {
 			});
 
 			for (const deck of chapter.decks) {
+				if (!hasParagraphContent(deck)) {
+					continue;
+				}
+
 				items.push({
 					id: deck.id,
-					type: 'deck',
+					type: 'paragraph',
 					title: deck.title,
 					context: `${story.name} · ${chapter.name}`,
 					requiresChoice: requiresUnlockChoice(deck),
@@ -246,8 +324,10 @@ export function getUnlockedAtlasItems(props: Omit<IsItemUnlockedProps, 'id'>): A
 }
 
 export function getReadyToUnlockAtlasItems(props: Omit<IsItemUnlockedProps, 'id'>): AtlasItem[] {
-	return getAtlasItems(props.atlas ?? storyAtlas).filter(item =>
-		isItemReadyToUnlock({ ...props, id: item.id }),
+	return getAtlasItems(props.atlas ?? storyAtlas).filter(
+		item =>
+			shouldShowUnlockRequirements({ ...props, id: item.id }) &&
+			isItemReadyToUnlock({ ...props, id: item.id }),
 	);
 }
 
@@ -259,7 +339,9 @@ export function getUnlockScreenItems(props: Omit<IsItemUnlockedProps, 'id'>): At
 	return getAtlasItems(props.atlas ?? storyAtlas).filter(item => {
 		return (
 			item.requiresChoice &&
-			(isItemUnlocked({ ...props, id: item.id }) || isItemReadyToUnlock({ ...props, id: item.id }))
+			(isItemUnlocked({ ...props, id: item.id }) ||
+				(shouldShowUnlockRequirements({ ...props, id: item.id }) &&
+					isItemReadyToUnlock({ ...props, id: item.id })))
 		);
 	});
 }

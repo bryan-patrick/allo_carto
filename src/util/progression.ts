@@ -4,7 +4,7 @@ import type { WordProgressKey } from './wordProgress';
 /**
  * Typing
  */
-export type ProgressType = 'story' | 'chapter' | 'deck';
+export type ProgressType = 'story' | 'chapter' | 'paragraph';
 
 export interface UnlockRequirement {
 	id: string;

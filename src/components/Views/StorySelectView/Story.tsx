@@ -19,9 +19,12 @@ import StorySelectButton from './StorySelectButton';
 interface StoryProps {
 	story: DeckStory;
 	isLocked: boolean;
+	isSelected: boolean;
 	progressById: ProgressById;
 	progressPercent: number;
 	userLevel: number;
+	onSelect: (story: DeckStory) => void;
+	isSelecting: boolean;
 }
 
 /**
@@ -32,27 +35,41 @@ export default function Story({
 	progressById,
 	progressPercent,
 	isLocked,
+	isSelected,
 	userLevel,
+	onSelect,
+	isSelecting,
 }: StoryProps) {
-	/**
-	 * Destructure story
-	 */
 	const { category, name, materialSymbolName, requiredLevel } = story;
 	const color = colors.category[category];
+
+	if (isLocked) {
+		return (
+			<Book>
+				<Spine
+					color={color}
+					category={category}
+					materialSymbolName={materialSymbolName}
+				/>
+				<Crease />
+				<Cover>
+					<View style={styles.lockedStory}>
+						<LockedSection
+							itemId={story.id}
+							color={color}
+							style={styles.lockedSection}
+							unlockCriteria={getUnlockCriteria(story, progressById, userLevel)}
+						/>
+					</View>
+				</Cover>
+			</Book>
+		);
+	}
+
 	const seenWordCount = progressById[story.id]?.seenWordCount ?? 0;
 	const wordCount =
 		progressById[story.id]?.wordCount ??
 		new Set(story.chapters.flatMap(chapter => chapter.decks.flatMap(deck => deck.wordIds))).size;
-
-	/**
-	 * Get the unlock criteria
-	 */
-	const unlockCriteria = getUnlockCriteria(story, progressById, userLevel);
-	let padding = 12;
-
-	if (isLocked) {
-		padding = 6;
-	}
 
 	/**
 	 * Render the component
@@ -66,7 +83,7 @@ export default function Story({
 			/>
 			<Crease />
 			<Cover>
-				<View style={[styles.storyContainerInner, { padding }]}>
+				<View style={styles.storyContainerInner}>
 					<View style={styles.storyTitleContainer}>
 						<View style={styles.storyLabelRow}>
 							<View style={styles.categoryRow}>
@@ -90,29 +107,20 @@ export default function Story({
 							style={styles.storyDescription}
 						/>
 					</View>
-					{!isLocked && (
-						<>
-							<View style={styles.storyImageContainer} />
-							<StoryMeta
-								progressPercent={progressPercent}
-								progressColor={color}
-								seenWordCount={seenWordCount}
-								wordCount={wordCount}
-							/>
-							<StorySelectButton
-								story={story}
-								disabled={isLocked}
-								progressPercent={progressPercent}
-							/>
-						</>
-					)}
-					{isLocked && (
-						<LockedSection
-							itemId={story.id}
-							color={color}
-							unlockCriteria={unlockCriteria}
-						/>
-					)}
+					<View style={styles.storyImageContainer} />
+					<StoryMeta
+						progressPercent={progressPercent}
+						progressColor={color}
+						seenWordCount={seenWordCount}
+						wordCount={wordCount}
+					/>
+					<StorySelectButton
+						story={story}
+						isSelected={isSelected}
+						disabled={isSelecting}
+						progressPercent={progressPercent}
+						onSelect={onSelect}
+					/>
 				</View>
 			</Cover>
 		</Book>
@@ -123,6 +131,13 @@ export default function Story({
  * Styles
  */
 const styles = StyleSheet.create({
+	lockedStory: {
+		flexGrow: 1,
+		padding: 6,
+	},
+	lockedSection: {
+		flexGrow: 1,
+	},
 	storyContainerInner: {
 		padding: 12,
 		gap: 12,

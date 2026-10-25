@@ -1,17 +1,16 @@
-import type { StoryArea } from '@/data/french/storyAreas';
+import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
-import { formatAreaLevelRange } from '@/src/util/storyAreas';
 import { Button, Host, Text as NativeText, RNHostView, Row } from '@expo/ui';
 import { foregroundColor } from '@expo/ui/swift-ui/modifiers';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
 const headingColor = colors.light.background;
 const titleModifiers: ReturnType<typeof foregroundColor>[] = [];
-let areaFontFamily = 'lexend-600';
+let storyFontFamily = 'lexend-600';
 
 if (Platform.OS === 'ios') {
-	areaFontFamily = 'Lexend-SemiBold';
+	storyFontFamily = 'Lexend-SemiBold';
 	/**
 	 * Use the color modifier supported by the native Expo Go runtime.
 	 */
@@ -21,26 +20,24 @@ if (Platform.OS === 'ios') {
 /**
  * Typing
  */
-interface StoryAreaSelectorProps {
-	area: StoryArea;
+interface StorySelectorProps {
+	story: DeckStory;
 	isExpanded: boolean;
 	onPress: () => void;
 }
 
 /**
- * The selected area stays visible above the story list.
+ * Component: We use this button to show the story selector modal.
  */
-export default function StoryAreaSelector({ area, isExpanded, onPress }: StoryAreaSelectorProps) {
-	const levelRange = formatAreaLevelRange(area);
-	const accessibilityLabel = `Story group: ${area.name}`;
-	const subtitle = `Stories for ${levelRange}`;
+export default function StorySelector({ story, isExpanded, onPress }: StorySelectorProps) {
+	const accessibilityLabel = `Selected story: ${story.name}`;
 
 	return (
 		<View style={styles.selector}>
 			<View
 				accessible
 				accessibilityActions={[{ name: 'activate' }]}
-				accessibilityHint="Choose a different story group"
+				accessibilityHint="Choose a different story"
 				accessibilityRole="button"
 				accessibilityLabel={accessibilityLabel}
 				accessibilityState={{ expanded: isExpanded }}
@@ -59,17 +56,17 @@ export default function StoryAreaSelector({ area, isExpanded, onPress }: StoryAr
 					>
 						<Button
 							onPress={onPress}
-							variant="outlined"
+							variant="text"
 						>
 							<Row
 								alignment="center"
-								spacing={8}
+								spacing={2}
 							>
 								<NativeText
 									modifiers={titleModifiers}
 									textStyle={styles.name}
 								>
-									{area.name}
+									{story.name}
 								</NativeText>
 								<Row style={styles.chevron}>
 									<RNHostView matchContents>
@@ -87,7 +84,6 @@ export default function StoryAreaSelector({ area, isExpanded, onPress }: StoryAr
 					</Host>
 				</View>
 			</View>
-			<Text style={styles.detail}>{subtitle}</Text>
 		</View>
 	);
 }
@@ -97,8 +93,7 @@ export default function StoryAreaSelector({ area, isExpanded, onPress }: StoryAr
  */
 const styles = StyleSheet.create({
 	selector: {
-		alignItems: 'center',
-		gap: 8,
+		alignItems: 'flex-start',
 	},
 	chevron: {
 		width: 24,
@@ -106,17 +101,8 @@ const styles = StyleSheet.create({
 	},
 	name: {
 		color: headingColor,
-		fontFamily: areaFontFamily,
+		fontFamily: storyFontFamily,
 		fontSize: 18,
 		textAlign: 'center',
-	},
-	detail: {
-		color: colors.light.goldenBorder,
-		fontFamily: 'lexend-400',
-		fontSize: 14,
-		textAlign: 'center',
-		textShadowColor: '#000000',
-		textShadowRadius: 1,
-		textShadowOffset: { width: 0, height: 0 },
 	},
 });

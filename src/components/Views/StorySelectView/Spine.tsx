@@ -97,6 +97,8 @@ const styles = StyleSheet.create({
 		width: '100%',
 		gap: 4,
 		shadowColor: colors.dark.border,
+		paddingVertical: 16,
+		minHeight: 225,
 		shadowOffset: {
 			width: 0,
 			height: 0,

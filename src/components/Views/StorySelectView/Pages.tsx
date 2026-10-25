@@ -14,11 +14,13 @@ export default function Pages() {
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	pagesContainer: {
 		position: 'relative',
-		backgroundColor: 'rgba(0, 0, 0, 0.2)',
-		marginBottom: 8,
+		marginBottom: 0,
 	},
 	pages: {
 		width: '100%',

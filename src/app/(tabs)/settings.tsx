@@ -94,7 +94,7 @@ export default function Settings() {
 			contentContainerStyle={styles.content}
 		>
 			<View style={styles.section}>
-				<Text style={styles.heading}>Cards per deck</Text>
+				<Text style={styles.heading}>Cards per session</Text>
 				<Text style={styles.text}>Choose 5–12 cards, or let the amount grow with your level.</Text>
 				<View style={styles.cardCountOptions}>
 					<Pressable
@@ -110,7 +110,7 @@ export default function Settings() {
 					</Pressable>
 					{cardCountOptions.map(amount => {
 						const isSelected = settings.cardsPerDeck === amount;
-						const accessibilityLabel = `${amount} cards per deck`;
+						const accessibilityLabel = `${amount} cards per session`;
 
 						return (
 							<Pressable

@@ -12,10 +12,11 @@ import getDeckWordProgressCounts, {
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
+import { hasChapterContent, hasParagraphContent } from '@/src/util/atlasContent';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useState } from 'react';
-import { type StyleProp, StyleSheet, Text, type TextStyle } from 'react-native';
+import { Pressable, type StyleProp, StyleSheet, Text, type TextStyle } from 'react-native';
 
 /**
  * Typing
@@ -24,6 +25,8 @@ interface ReadingDescriptionProps {
 	item: DeckChapter | DeckStory;
 	color: string;
 	style?: StyleProp<TextStyle>;
+	showDescription?: boolean;
+	linkLabel?: string;
 }
 
 interface PassageState {
@@ -33,28 +36,37 @@ interface PassageState {
 }
 
 /**
- * A description with an inline button to read its chapter or story
+ * We keep the read label inline and make the description easier to tap as a whole.
  */
-export default function ReadingDescription({ item, color, style }: ReadingDescriptionProps) {
+export default function ReadingDescription({
+	item,
+	color,
+	style,
+	showDescription = true,
+	linkLabel,
+}: ReadingDescriptionProps) {
 	const { id: userId } = useUserContext() ?? {};
 	const { experience, progressById } = useUserProgress();
 	const [loading, setLoading] = useState(false);
 	const [passageState, setPassageState] = useState<PassageState>();
 	let decks: CardDeck[];
-	let readLabel = 'Read chapter';
+	const readLabel = linkLabel ?? ('chapters' in item ? 'Read story' : 'Read chapter');
 
 	if ('chapters' in item) {
-		decks = item.chapters.flatMap(chapter => chapter.decks);
-		readLabel = 'Read story';
+		decks = item.chapters
+			.filter(hasChapterContent)
+			.flatMap(chapter => chapter.decks.filter(hasParagraphContent));
 	} else {
-		decks = item.decks;
+		decks = item.decks.filter(hasParagraphContent);
 	}
 
 	const canRead =
 		decks.length > 0 && isItemUnlocked({ id: item.id, progressById, userLevel: experience.level });
 
 	async function handleRead() {
-		if (!userId || !canRead || loading) return;
+		if (!userId || !canRead || loading) {
+			return;
+		}
 
 		setLoading(true);
 
@@ -90,24 +102,28 @@ export default function ReadingDescription({ item, color, style }: ReadingDescri
 
 	return (
 		<>
-			<Text style={style}>
-				{item.description}
-				{canRead && (
-					<>
-						{' '}
-						<Text
-							accessibilityLabel={`${readLabel} ${item.name}`}
-							accessibilityRole="button"
-							accessibilityState={{ disabled: loading, busy: loading }}
-							disabled={loading}
-							onPress={handleRead}
-							style={[styles.readLink, { color }, loading && styles.loading]}
-						>
-							{readLabel}
-						</Text>
-					</>
-				)}
-			</Text>
+			<Pressable
+				accessible={canRead}
+				accessibilityLabel={canRead ? `${readLabel} ${item.name}` : undefined}
+				accessibilityHint={showDescription ? item.description : undefined}
+				accessibilityRole={canRead ? 'button' : undefined}
+				accessibilityState={{ disabled: !canRead || loading, busy: loading }}
+				disabled={!canRead || loading}
+				hitSlop={8}
+				onPress={handleRead}
+			>
+				<Text style={style}>
+					{showDescription && item.description}
+					{canRead && (
+						<>
+							{showDescription && ' '}
+							<Text style={[styles.readLink, { color }, loading && styles.loading]}>
+								{readLabel}
+							</Text>
+						</>
+					)}
+				</Text>
+			</Pressable>
 			{passageState && (
 				<DeckBoxModal
 					deck={passageState.deck}
@@ -126,7 +142,7 @@ export default function ReadingDescription({ item, color, style }: ReadingDescri
  */
 const styles = StyleSheet.create({
 	readLink: {
-		fontFamily: 'lexend-600',
+		fontFamily: 'lexend-700',
 		textDecorationLine: 'underline',
 	},
 	loading: {

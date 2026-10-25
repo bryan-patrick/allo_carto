@@ -1,6 +1,20 @@
 import { findCompletionPath } from '@/src/util/atlasCompletion';
 import { getDB, logThisIfItFails } from '../connection';
 
+const createUserProgressTableSQL = `
+	CREATE TABLE IF NOT EXISTS userProgress (
+		userId TEXT NOT NULL,
+		id TEXT NOT NULL,
+		type TEXT NOT NULL CHECK (type IN ('story', 'chapter', 'paragraph')),
+		completionPercentage REAL NOT NULL DEFAULT 0
+			CHECK (completionPercentage >= 0 AND completionPercentage <= 100),
+		hasStartedFlashcards INTEGER NOT NULL DEFAULT 0,
+		isUnlocked INTEGER NOT NULL DEFAULT 0,
+		PRIMARY KEY (userId, id),
+		FOREIGN KEY (userId) REFERENCES users(id)
+	);
+`;
+
 async function createWordsTable(): Promise<void> {
 	const database = await getDB();
 
@@ -57,6 +71,7 @@ async function createUsersTable(): Promise<void> {
 					id TEXT PRIMARY KEY,
 					name TEXT,
 					isMonHomme INTEGER NOT NULL DEFAULT 1,
+					selectedStoryId TEXT,
 					totalXP INTEGER NOT NULL DEFAULT 0 CHECK (totalXP >= 0)
 				);
 			`);
@@ -95,17 +110,7 @@ async function createUserProgressTable(): Promise<void> {
 	const database = await getDB();
 
 	await logThisIfItFails('Oops our progress table messed up', async () => {
-		await database.execAsync(`
-			CREATE TABLE IF NOT EXISTS userProgress (
-				userId TEXT NOT NULL,
-				id TEXT NOT NULL,
-				type TEXT NOT NULL CHECK (type IN ('story', 'chapter', 'deck')),
-				completionPercentage REAL NOT NULL DEFAULT 0
-					CHECK (completionPercentage >= 0 AND completionPercentage <= 100),
-				PRIMARY KEY (userId, id),
-				FOREIGN KEY (userId) REFERENCES users(id)
-			)
-		`);
+		await database.execAsync(createUserProgressTableSQL);
 	});
 }
 
@@ -113,12 +118,64 @@ export default async function createTables(): Promise<void> {
 	await createWordsTable();
 	await ensureWordsFormColumn();
 	await createUsersTable();
+	await ensureSelectedStoryColumn();
 	await createUserWordsTable();
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
 	await ensureFlashcardsStartedColumn();
 	await ensureUnlockedColumn();
+	await ensureParagraphProgressType();
 	await createDeckPassageFeedbackTable();
+}
+
+/**
+ * Save the selected story!
+ */
+async function ensureSelectedStoryColumn(): Promise<void> {
+	const database = await getDB();
+	const columns = await database.getAllAsync<{ name: string }>('PRAGMA table_info(users);');
+	const hasSelectedStoryColumn = columns.some(column => column.name === 'selectedStoryId');
+
+	if (!hasSelectedStoryColumn) {
+		await database.execAsync('ALTER TABLE users ADD COLUMN selectedStoryId TEXT;');
+	}
+}
+
+/**
+ * We rename the saved deck progress to paragraph progress without changing IDs or unlocks.
+ * SQLite needs a new table because the old table only allows the name "deck".
+ */
+async function ensureParagraphProgressType(): Promise<void> {
+	const statements = {
+		getTable: "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'userProgress';",
+		renameOldTable: 'ALTER TABLE userProgress RENAME TO userProgressWithDeckTypes;',
+		copyProgress: `
+			INSERT INTO userProgress (
+				userId, id, type, completionPercentage, hasStartedFlashcards, isUnlocked
+			)
+			SELECT
+				userId,
+				id,
+				CASE WHEN type = 'deck' THEN 'paragraph' ELSE type END,
+				completionPercentage,
+				hasStartedFlashcards,
+				isUnlocked
+			FROM userProgressWithDeckTypes;
+		`,
+		removeOldTable: 'DROP TABLE userProgressWithDeckTypes;',
+	};
+	const database = await getDB();
+	const table = await database.getFirstAsync<{ sql: string }>(statements.getTable);
+	const hasDeckProgressType = table?.sql.includes("'deck'");
+
+	if (hasDeckProgressType) {
+		await database.withExclusiveTransactionAsync(async transaction => {
+			await transaction.execAsync(statements.renameOldTable);
+			await transaction.execAsync(createUserProgressTableSQL);
+			await transaction.execAsync(statements.copyProgress);
+			await transaction.execAsync(statements.removeOldTable);
+		});
+	}
 }
 
 /**

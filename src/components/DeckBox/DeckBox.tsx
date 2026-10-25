@@ -84,7 +84,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		wordProgressCounts,
 	});
 	const selectAction = deckCompletionPercent > 0 ? 'Continue' : 'Start';
-	const selectText = `${selectAction} deck`;
+	const selectText = `${selectAction} session`;
 	const deckMetadata = {
 		cardCount: deckCardCount,
 		CEFRLabel: deckCEFRLabel,
@@ -158,7 +158,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 			const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
 
 			if (!selectedDeck || selectedDeck.words.length === 0) {
-				Alert.alert('Could not start deck', 'Please try again.');
+				Alert.alert('Could not start session', 'Please try again.');
 				return;
 			}
 
@@ -169,8 +169,8 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 			});
 			router.push('/CardDeck');
 		} catch (error) {
-			console.error('Could not start deck:', error);
-			Alert.alert('Could not start deck', 'Please try again.');
+			console.error('Could not start session:', error);
+			Alert.alert('Could not start session', 'Please try again.');
 		} finally {
 			isStartingDeck.current = false;
 		}
