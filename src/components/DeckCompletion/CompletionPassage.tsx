@@ -9,13 +9,16 @@ import getDeckWordProgressCounts, {
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import type { WordProgressKey } from '@/src/util/wordProgress';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { getCompletionEntry } from './completionAnimations';
 
 const titleEntry = getCompletionEntry(1);
 
+/**
+ * Typing
+ */
 interface CompletionPassageProps {
 	deck: CardDeck;
 	results: DeckWordResultProps[];
@@ -87,24 +90,27 @@ export default function CompletionPassage({
 		setLoadAttempt(loadAttempt + 1);
 	}
 
-	const passageReminder = (
-		<Animated.View
-			entering={titleEntry}
-			style={styles.reminder}
-		>
-			<MaterialSymbol
-				color={colors.dark.primaryActive}
-				name="menu_book"
-				size={22}
-			/>
-			<Text
-				accessibilityRole="header"
-				style={styles.title}
+	function renderPassageReminder(speechButton: ReactNode) {
+		return (
+			<Animated.View
+				entering={titleEntry}
+				style={styles.reminder}
 			>
-				Is the deck passage above easier to read now?
-			</Text>
-		</Animated.View>
-	);
+				<MaterialSymbol
+					color={colors.dark.primaryActive}
+					name="menu_book"
+					size={22}
+				/>
+				<Text
+					accessibilityRole="header"
+					style={styles.title}
+				>
+					Is the deck above easier to read now?
+				</Text>
+				{speechButton}
+			</Animated.View>
+		);
+	}
 
 	if (hasCurrentProgress && progress) {
 		return (
@@ -113,7 +119,7 @@ export default function CompletionPassage({
 					deck={deck}
 					minimumPassageHeight={0}
 					results={results}
-					sessionLegendHeader={passageReminder}
+					sessionLegendHeader={renderPassageReminder}
 					showLearningControls={false}
 					showProgress={false}
 					showTitle={false}
@@ -140,6 +146,9 @@ export default function CompletionPassage({
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

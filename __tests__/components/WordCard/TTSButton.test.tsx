@@ -1,12 +1,12 @@
 import colors from '@/src/app/colors';
-import TTSButton from '@/src/components/WordCard/TTSButton';
+import TTSButton from '@/src/components/TTSButton';
 import { defaultAppSettings } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import { useAudioPlayer } from 'expo-audio';
 import * as Speech from 'expo-speech';
 
-jest.mock('expo-speech', () => ({ speak: jest.fn() }));
+jest.mock('expo-speech', () => ({ speak: jest.fn(), stop: jest.fn() }));
 jest.mock('@/src/settings/useAppSettings');
 
 jest.mock('expo-audio', () => ({ useAudioPlayer: jest.fn() }));
