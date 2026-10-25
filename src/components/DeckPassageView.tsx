@@ -1,15 +1,16 @@
 import colors from '@/src/app/colors';
-import type { ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
+import type { PassageSegment, ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
 import type { DeckWordResultProps } from '@/src/components/CardDeck/deckSessionTypes';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import PassageHighlightLayer from '@/src/components/PassageHighlightLayer';
 import ProgressBar from '@/src/components/ProgressBar';
+import TTSButton from '@/src/components/TTSButton';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 /**
@@ -21,7 +22,7 @@ interface DeckPassageViewProps {
 	minimumPassageHeight?: number;
 	onContentHeightChange?: (contentHeight: number) => void;
 	results?: DeckWordResultProps[];
-	sessionLegendHeader?: ReactNode;
+	sessionLegendHeader?: (speechButton: ReactNode) => ReactNode;
 	showLearningControls?: boolean;
 	showProgress?: boolean;
 	showTitle?: boolean;
@@ -105,6 +106,32 @@ function getPassageTrailingText(after?: string): string {
 }
 
 /**
+ * We read only the visible words.
+ */
+function getPassageSpeech(
+	passage: PassageSegment[],
+	wordProgressKeyByWordId: Record<string, WordProgressKey>,
+) {
+	let text = '';
+
+	const wordRanges = passage.map(segment => {
+		const progress = wordProgressKeyByWordId[segment.wordId ?? ''] ?? 'unseen';
+		const start = text.length;
+
+		if (segment.unlockExempt || progress !== 'unseen') {
+			text += segment.text;
+		}
+
+		const end = text.length;
+		text += segment.after ?? ' ';
+
+		return { start, end };
+	});
+
+	return { text, wordRanges };
+}
+
+/**
  * DeckPassageView component
  */
 export default function DeckPassageView({
@@ -128,6 +155,11 @@ export default function DeckPassageView({
 	 * State
 	 */
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
+	const [spokenCharacterIndex, setSpokenCharacterIndex] = useState<number | null>(null);
+	const passageSpeech = useMemo(
+		() => getPassageSpeech(deck.passage, wordProgressKeyByWordId),
+		[deck.passage, wordProgressKeyByWordId],
+	);
 	const [activeWordProgressFilter, setActiveWordProgressFilter] = useState<WordProgressKey | null>(
 		null,
 	);
@@ -152,6 +184,11 @@ export default function DeckPassageView({
 	const passageSegments = deck.passage.map(({ text, wordId, unlockExempt, after }, index) => {
 		const key = `${index}-${wordId ?? text}`;
 		const isCurrentWord = Boolean(currentWordId && wordId === currentWordId && !unlockExempt);
+		const range = passageSpeech.wordRanges[index];
+		const isSpokenWord =
+			spokenCharacterIndex !== null &&
+			spokenCharacterIndex >= range.start &&
+			spokenCharacterIndex < range.end;
 		const trailingText = getPassageTrailingText(after);
 		const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
 		const result = resultsByWordId.get(wordId ?? '');
@@ -186,6 +223,11 @@ export default function DeckPassageView({
 			displayOpacity = 1;
 		}
 
+		if (isSpokenWord) {
+			backgroundColor = '#FFFFCC';
+			displayOpacity = 1;
+		}
+
 		const progressStyle = {
 			color: wordColor,
 			opacity: displayOpacity,
@@ -201,6 +243,16 @@ export default function DeckPassageView({
 	});
 	const hasPassageHighlights = passageSegments.some(
 		segment => segment.highlightStyle.backgroundColor,
+	);
+	const speechButton = (
+		<TTSButton
+			accessibilityLabel="Read story aloud"
+			disabled={!passageSpeech.wordRanges.some(range => range.end > range.start)}
+			onBoundary={setSpokenCharacterIndex}
+			onPlaybackEnd={() => setSpokenCharacterIndex(null)}
+			stoppable
+			wordsToSay={passageSpeech.text}
+		/>
 	);
 
 	/**
@@ -306,7 +358,12 @@ export default function DeckPassageView({
 					}
 					style={styles.header}
 				>
-					{showTitle && <Text style={[styles.title, { color: storyColor }]}>{deck.title}</Text>}
+					{showTitle && (
+						<View style={styles.titleRow}>
+							<Text style={[styles.title, { color: storyColor }]}>{deck.title}</Text>
+							{speechButton}
+						</View>
+					)}
 					{showProgress && (
 						<View style={styles.progressMeta}>
 							<View
@@ -524,7 +581,7 @@ export default function DeckPassageView({
 				)}
 				{hasSessionResults && (
 					<View style={styles.sessionLegend}>
-						{sessionLegendHeader}
+						{sessionLegendHeader?.(speechButton)}
 						<Text style={styles.sessionDescription}>Highlighted words are from this session.</Text>
 						<View style={styles.sessionLegendItems}>
 							<Text style={[styles.sessionLegendLabel, styles.sessionCorrect]}>Correct</Text>
@@ -555,7 +612,13 @@ const styles = StyleSheet.create({
 		paddingTop: 12,
 		gap: 8,
 	},
+	titleRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
 	title: {
+		flexShrink: 1,
 		fontFamily: 'lexend-600',
 		fontSize: 20,
 		lineHeight: 20,

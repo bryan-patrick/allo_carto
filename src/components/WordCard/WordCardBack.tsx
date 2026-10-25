@@ -12,7 +12,7 @@ import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import formatFrenchWordWithArticle from '../../util/formatFrenchWordWithArticle';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import { sharedWordCardStyles } from './sharedWordCardStyles';
-import TTSButton from './TTSButton';
+import TTSButton from '../TTSButton';
 import { useWordCardUI } from './useWordCardUI';
 import { FEEDBACK_TEXT_BACK } from './wordCardContext';
 import WordCardHeader from './WordCardHeader';

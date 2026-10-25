@@ -108,14 +108,16 @@ export default function DeckBoxModal({
 							/>
 						</Pressable>
 					</View>
-					<DeckPassageView
-						key={deck.id}
-						currentWordId={currentWordId}
-						deck={deck}
-						onContentHeightChange={height => setPassageMeasurement({ deckId: deck.id, height })}
-						wordProgressCounts={wordProgressCounts}
-						wordProgressKeyByWordId={wordProgressKeyByWordId}
-					/>
+					{modalVisible && (
+						<DeckPassageView
+							key={deck.id}
+							currentWordId={currentWordId}
+							deck={deck}
+							onContentHeightChange={height => setPassageMeasurement({ deckId: deck.id, height })}
+							wordProgressCounts={wordProgressCounts}
+							wordProgressKeyByWordId={wordProgressKeyByWordId}
+						/>
+					)}
 				</ImageBackground>
 			</View>
 		</Modal>
