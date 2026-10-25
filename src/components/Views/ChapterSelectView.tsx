@@ -1,34 +1,17 @@
-import { chapterSelectBackground, type DeckChapter } from '@/data/french/storyAtlas';
-import ChapterDeckList from '@/src/components/ChapterDeckList';
+import { chapterSelectBackground } from '@/data/french/storyAtlas';
 import ChapterHeader from '@/src/components/ChapterHeader';
+import CollectionGems from '@/src/components/CollectionGems';
+import LinkButton from '@/src/components/LinkButton';
 import Loader from '@/src/components/Loader';
 import LockedSection from '@/src/components/LockedSection';
-import CollectionGems from '@/src/components/CollectionGems';
 import ReadingDescription from '@/src/components/ReadingDescription';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findStoryById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
-import { useLocalSearchParams, type UnknownOutputParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { useEffect, useRef } from 'react';
-import {
-	ImageBackground,
-	ScrollView,
-	type ScrollViewInstance,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../../app/colors';
 import MaterialSymbol from '../MaterialSymbol';
-
-const postmarkBackgroundImage = require('@/src/app/assets/images/postcard-parts/background.jpg');
-const postmarkBackgroundBorderedImage = require('@/src/app/assets/images/postcard-parts/background-bordered.jpg');
-
-interface ChapterSelectParams extends UnknownOutputParams {
-	storyId?: string;
-	chapterId?: string;
-	deckPickerRequest?: string;
-}
 
 /**
  * ChapterSelectView component
@@ -42,33 +25,8 @@ export default function ChapterSelectView() {
 	const headerHeight = useHeaderHeight();
 	const scrollContentStyle = { paddingTop: headerHeight + 16 };
 	const scrollIndicatorInsets = { top: headerHeight };
-	const {
-		storyId,
-		chapterId: requestedChapterId,
-		deckPickerRequest: chapterReturnRequest,
-	} = useLocalSearchParams<ChapterSelectParams>();
-	const scrollViewRef = useRef<ScrollViewInstance>(null);
-	const chapterPositions = useRef<Record<string, number>>({});
+	const { storyId } = useLocalSearchParams<{ storyId?: string }>();
 	const selectedStory = findStoryById(storyId);
-
-	/**
-	 * Return to the completed deck's chapter when leaving results
-	 */
-	useEffect(() => {
-		const chapterY = chapterPositions.current[requestedChapterId ?? ''];
-
-		if (chapterY !== undefined) {
-			scrollViewRef.current?.scrollTo({ y: Math.max(0, chapterY - headerHeight), animated: false });
-		}
-	}, [requestedChapterId, chapterReturnRequest, headerHeight]);
-
-	function handleChapterLayout(chapterId: string, chapterY: number) {
-		chapterPositions.current[chapterId] = chapterY;
-
-		if (chapterId === requestedChapterId) {
-			scrollViewRef.current?.scrollTo({ y: Math.max(0, chapterY - headerHeight), animated: false });
-		}
-	}
 
 	/**
 	 * Wait for the user's stored percentages
@@ -120,7 +78,7 @@ export default function ChapterSelectView() {
 	const categoryColor = colors.category[category];
 
 	/**
-	 * Render the story and its chapter deck lists
+	 * Show the chapters here and open their paragraphs on the chapter detail view
 	 */
 	return (
 		<ImageBackground
@@ -128,7 +86,6 @@ export default function ChapterSelectView() {
 			source={image ?? chapterSelectBackground}
 		>
 			<ScrollView
-				ref={scrollViewRef}
 				contentContainerStyle={[styles.scrollContentContainer, scrollContentStyle]}
 				scrollIndicatorInsets={scrollIndicatorInsets}
 				style={styles.scrollView}
@@ -156,88 +113,45 @@ export default function ChapterSelectView() {
 						style={styles.storyDescriptionText}
 					/>
 				</View>
-				{
-					/**
-					 * Map the story's chapters
-					 */
-					chapters.map((chapter: DeckChapter, index: number) => {
-						const isEven = index % 2 === 0;
-						let rotate = '3deg';
+				{chapters.map(chapter => {
+					const isLocked = !isItemUnlocked({ id: chapter.id, progressById, userLevel });
+					const unlockCriteria = getUnlockCriteria(chapter, progressById, userLevel);
+					const hasDecks = chapter.decks.length > 0;
+					const hasStartedChapter = chapter.decks.some(deck =>
+						Boolean(progressById[deck.id]?.hasStartedFlashcards),
+					);
+					const actionLabel = hasStartedChapter ? 'Continue Chapter' : 'Start Chapter';
 
-						if (isEven) {
-							rotate = '-4deg';
-						}
-
-						const chapterId = chapter.id;
-						const isLocked = !isItemUnlocked({
-							id: chapterId,
-							progressById,
-							userLevel,
-						});
-						const unlockCriteria = getUnlockCriteria(chapter, progressById, userLevel);
-						const hasDecks = chapter.decks.length > 0;
-
-						/**
-						 * Render the chapter view/card
-						 */
-						return (
-							<View
-								key={chapterId}
-								onLayout={({ nativeEvent }) => handleChapterLayout(chapterId, nativeEvent.layout.y)}
-								style={styles.chapterPostcardStack}
-							>
-								<ImageBackground
-									source={postmarkBackgroundBorderedImage}
-									resizeMode="stretch"
-									style={[
-										styles.chapterPostcard,
-										{
-											transform: [{ rotate }],
-											padding: 0,
-											position: 'absolute',
-											top: 0,
-											left: 0,
-											height: '100%',
-											width: '100%',
-										},
-									]}
+					return (
+						<View
+							key={chapter.id}
+							style={styles.chapterCard}
+						>
+							<ChapterHeader
+								chapter={chapter}
+								color={categoryColor}
+							/>
+							{isLocked && (
+								<LockedSection
+									itemId={chapter.id}
+									color={categoryColor}
+									unlockCriteria={unlockCriteria}
 								/>
-								<ImageBackground
-									source={postmarkBackgroundImage}
-									style={styles.chapterPostcard}
+							)}
+							{!isLocked && hasDecks && (
+								<LinkButton
+									accessibilityLabel={`${actionLabel}: ${chapter.name}`}
+									screen="/(routes)/ChapterDetail"
+									params={{ chapterId: chapter.id }}
+									color={categoryColor}
 								>
-									<View style={styles.chapterPostcardBorder}>
-										{(isLocked || !hasDecks) && (
-											<ChapterHeader
-												chapter={chapter}
-												color={categoryColor}
-											/>
-										)}
-										{isLocked && (
-											<View style={styles.lockedInner}>
-												<LockedSection
-													itemId={chapter.id}
-													color={categoryColor}
-													unlockCriteria={unlockCriteria}
-												/>
-											</View>
-										)}
-										{!isLocked && hasDecks && (
-											<ChapterDeckList
-												chapter={chapter}
-												progressById={progressById}
-												story={selectedStory}
-											/>
-										)}
-										{!isLocked && !hasDecks && (
-											<Text style={styles.comingSoonText}>Coming soon</Text>
-										)}
-									</View>
-								</ImageBackground>
-							</View>
-						);
-					})
-				}
+									{actionLabel}
+								</LinkButton>
+							)}
+							{!isLocked && !hasDecks && <Text style={styles.comingSoonText}>Coming soon</Text>}
+						</View>
+					);
+				})}
 			</ScrollView>
 		</ImageBackground>
 	);
@@ -272,10 +186,6 @@ const styles = StyleSheet.create({
 	scrollView: {
 		backgroundColor: 'rgba(35, 35, 30, 0.25)',
 	},
-	lockedInner: {
-		paddingVertical: 16,
-		marginBottom: 24,
-	},
 	storyCategoryText: {
 		textAlign: 'center',
 		textTransform: 'uppercase',
@@ -306,24 +216,14 @@ const styles = StyleSheet.create({
 			height: 0,
 		},
 	},
-	chapterPostcardStack: {
-		display: 'flex',
-		margin: 8,
-		position: 'relative',
-	},
-	chapterPostcard: {
-		padding: 6,
-		backgroundColor: colors.dark.background,
-		borderWidth: 2,
-		borderColor: colors.light.border,
-		borderRadius: 12,
-		overflow: 'hidden',
-	},
-	chapterPostcardBorder: {
+	chapterCard: {
+		marginHorizontal: 8,
+		padding: 12,
+		gap: 12,
+		backgroundColor: colors.light.secondary,
 		borderWidth: 1,
-		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
-		gap: 2,
+		borderRadius: 8,
 	},
 	comingSoonText: {
 		color: colors.dark.text,

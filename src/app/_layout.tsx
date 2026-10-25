@@ -199,6 +199,19 @@ export default function AppLayout() {
 											}}
 										/>
 										<Stack.Screen
+											name="(routes)/ChapterDetail"
+											options={{
+												headerShown: true,
+												headerTransparent: true,
+												headerBackTitle: 'Back',
+												headerTitle: '',
+												headerBackButtonDisplayMode: 'minimal',
+												scrollEdgeEffects: {
+													top: 'hidden',
+												},
+											}}
+										/>
+										<Stack.Screen
 											name="(routes)/CardDeckSelect"
 											options={{
 												headerShown: true,

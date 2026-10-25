@@ -285,20 +285,14 @@ export default function DeckResultsView() {
 	}
 
 	/**
-	 * Return to the deck's chapter and open its deck list again.
+	 * Return to the chapter postcard after reviewing its flashcards.
 	 * If we cannot find the chapter, return to the home screen.
 	 */
 	const handleFinish = useCallback(() => {
 		if (atlasLocation) {
-			/**
-			 * Send a new request each time so the chapter opens its deck list again.
-			 */
 			router.dismissTo({
-				pathname: '/ChapterSelect',
-				params: {
-					...atlasLocation,
-					deckPickerRequest: String(Date.now()),
-				},
+				pathname: '/ChapterDetail',
+				params: { chapterId: atlasLocation.chapterId },
 			});
 			return;
 		}
