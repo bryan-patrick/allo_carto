@@ -4,4 +4,5 @@
 export const inkConfig = {
 	correctFlashcard: 1,
 	firstSolveAttempt: 3,
+	maxBalance: 18,
 };

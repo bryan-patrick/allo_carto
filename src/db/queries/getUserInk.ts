@@ -1,4 +1,5 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { inkConfig } from '@/src/util/ink';
 
 interface GetUserInkOptions {
 	database: SQLiteDatabase;
@@ -26,5 +27,5 @@ export default async function getUserInk({ database, userId }: GetUserInkOptions
 		throw new Error(`Could not load Ink for user ${userId}.`);
 	}
 
-	return user.inkBalance;
+	return Math.min(user.inkBalance, inkConfig.maxBalance);
 }

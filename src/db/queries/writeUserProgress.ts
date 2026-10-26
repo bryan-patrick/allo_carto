@@ -6,6 +6,7 @@ import type {
 } from '@/src/components/CardDeck/deckSessionTypes';
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { inkConfig } from '@/src/util/ink';
+import getUserInk from './getUserInk';
 import { getCompletionPercentage } from '@/src/util/progression';
 import {
 	correctAnswerXPByRarity,
@@ -133,7 +134,10 @@ async function updateUserProgressTableItems({
 /**
  * Calculate the awards for a correct answer on a flashcard
  */
-function getCorrectAnswerAward(previousProgress: WordProgressForAward): WordAnswerAwardProps {
+function getCorrectAnswerAward(
+	previousProgress: WordProgressForAward,
+	inkBalance: number,
+): WordAnswerAwardProps {
 	const rarityXP = correctAnswerXPByRarity[previousProgress.rarity];
 	const cefrMultiplier = correctAnswerXPMultiplierByCEFR[previousProgress.CEFR];
 	const wordXP = rarityXP * cefrMultiplier;
@@ -144,6 +148,8 @@ function getCorrectAnswerAward(previousProgress: WordProgressForAward): WordAnsw
 		seenCount: previousProgress.seenCount,
 	});
 	const hasLeveledUp = previousWordProgress !== nextWordProgress;
+	const remainingInkSpace = inkConfig.maxBalance - inkBalance;
+	const ink = Math.min(inkConfig.correctFlashcard, remainingInkSpace);
 	let learningBonusXP = 0;
 	let xp: number;
 
@@ -154,7 +160,7 @@ function getCorrectAnswerAward(previousProgress: WordProgressForAward): WordAnsw
 	xp = wordXP + learningBonusXP;
 
 	return {
-		ink: inkConfig.correctFlashcard,
+		ink,
 		xp,
 		learningBonusXP,
 		previousProgress: previousWordProgress,
@@ -189,7 +195,7 @@ export async function writeCorrectAnswer({
 			INSERT INTO userInk (userId, balance)
 			VALUES (?, ?)
 			ON CONFLICT(userId)
-			DO UPDATE SET balance = balance + excluded.balance;
+			DO UPDATE SET balance = MIN(balance + excluded.balance, ?);
 		`,
 		saveAward: `
 			INSERT INTO flashcardAwards (
@@ -216,6 +222,7 @@ export async function writeCorrectAnswer({
 
 		let previousProgress: WordProgressForAward | null;
 		let nextAward: WordAnswerAwardProps;
+		let inkBalance: number;
 
 		if (savedAward) {
 			award = savedAward;
@@ -232,7 +239,12 @@ export async function writeCorrectAnswer({
 			throw new Error(`Could not load word ${wordId}.`);
 		}
 
-		nextAward = getCorrectAnswerAward(previousProgress);
+		/**
+		 * We only award the Ink that still fits. XP and word progress keep growing
+		 * when the bottle is full, and the receipt records the amount actually added.
+		 */
+		inkBalance = await getUserInk({ database, userId });
+		nextAward = getCorrectAnswerAward(previousProgress, inkBalance);
 
 		/**
 		 * We save all parts of the answer before returning its rewards.
@@ -240,7 +252,7 @@ export async function writeCorrectAnswer({
 		 */
 		await incrementCorrectCount(userId, wordId, database);
 		await incrementUserXP(database, userId, nextAward.xp);
-		await database.runAsync(statements.addInk, userId, nextAward.ink);
+		await database.runAsync(statements.addInk, userId, nextAward.ink, inkConfig.maxBalance);
 
 		if (nextAward.previousProgress !== nextAward.nextProgress) {
 			await updateUserProgressTableItems({ database, userId, wordId });

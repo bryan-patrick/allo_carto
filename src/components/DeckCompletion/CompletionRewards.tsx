@@ -2,6 +2,7 @@ import colors from '@/src/app/colors';
 import type { DeckSessionProps } from '@/src/components/CardDeck/deckSessionTypes';
 import CountUp from '@/src/components/CountUp';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import { inkConfig } from '@/src/util/ink';
 import { StyleSheet, Text, View } from 'react-native';
 import CompletionXPProgress from './CompletionXPProgress';
 
@@ -29,7 +30,14 @@ export default function CompletionRewards({ session, color, inkBalance }: Comple
 	const earnedXP = wordXP + bonusXP;
 	const accentStyle = { color };
 	const earnedInk = completion?.earnedInk ?? 0;
-	const inkDescription = `Earned ${earnedInk} Ink. Balance: ${inkBalance} Ink.`;
+	const isInkFull = inkBalance >= inkConfig.maxBalance;
+	let balanceLabel = `Balance: ${inkBalance.toLocaleString()} / ${inkConfig.maxBalance}`;
+	let inkDescription = `Earned ${earnedInk} Ink. ${balanceLabel} Ink.`;
+
+	if (isInkFull) {
+		balanceLabel += ' · Full';
+		inkDescription += ' Ink is full. Correct answers still earn XP.';
+	}
 
 	if (!completion) {
 		return null;
@@ -56,7 +64,7 @@ export default function CompletionRewards({ session, color, inkBalance }: Comple
 					/>
 					<Text style={styles.label}>Ink earned</Text>
 				</View>
-				<Text style={styles.label}>Balance: {inkBalance.toLocaleString()}</Text>
+				<Text style={[styles.label, isInkFull && styles.fullInkBalance]}>{balanceLabel}</Text>
 			</View>
 			<View style={styles.totals}>
 				<View style={styles.total}>
@@ -103,6 +111,12 @@ const styles = StyleSheet.create({
 		backgroundColor: `${colors.light.secondary}55`,
 	},
 	inkAmount: { flex: 1, gap: 4 },
+	fullInkBalance: {
+		backgroundColor: colors.ink.full,
+		paddingHorizontal: 8,
+		paddingVertical: 6,
+		borderRadius: 6,
+	},
 	totals: { flexDirection: 'row', gap: 12 },
 	total: {
 		flex: 1,

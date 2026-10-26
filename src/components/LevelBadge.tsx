@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { inkConfig } from '@/src/util/ink';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -16,13 +17,23 @@ export default function LevelBadge() {
 	const { level, isMaxLevel, xpIntoLevel, xpForNextLevel, progressPercentage } = experience;
 	const levelLabel = `Lvl. ${level}`;
 	const inkLabel = inkBalance.toLocaleString();
+	const isInkFull = inkBalance >= inkConfig.maxBalance;
+	let inkColor = colors.light.text;
+	let inkIconColor = colors.light.goldenBorder;
+	let inkDescription = `${inkLabel} of ${inkConfig.maxBalance} Ink.`;
 	let progressDescription = `${xpIntoLevel} of ${xpForNextLevel} XP toward level ${level + 1}`;
+
+	if (isInkFull) {
+		inkColor = colors.ink.full;
+		inkIconColor = colors.ink.full;
+		inkDescription += ' Ink is full.';
+	}
 
 	if (isMaxLevel) {
 		progressDescription = 'Maximum level reached';
 	}
 
-	const accessibilityLabel = `Level ${level}. ${progressDescription}. ${inkLabel} Ink.`;
+	const accessibilityLabel = `Level ${level}. ${progressDescription}. ${inkDescription}`;
 
 	if (status !== 'ready') {
 		return null;
@@ -59,11 +70,11 @@ export default function LevelBadge() {
 							<MaterialSymbol
 								name="water_drop"
 								size={14}
-								color={colors.light.goldenBorder}
+								color={inkIconColor}
 							/>
 							<Text
 								numberOfLines={1}
-								style={styles.levelText}
+								style={[styles.levelText, { color: inkColor }]}
 							>
 								{inkLabel}
 							</Text>

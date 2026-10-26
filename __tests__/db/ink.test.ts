@@ -24,6 +24,10 @@ interface SavedRewards {
 	awards: number;
 }
 
+interface StoredInk {
+	balance: number;
+}
+
 /**
  * We run the real reward queries against SQLite here.
  * This small adapter gives Node's SQLite the async methods used by the app.
@@ -207,5 +211,73 @@ describe('saved Ink rewards', () => {
 		expect(retriedReceipt).toEqual(receipt);
 		expect(emptyReceipt.earnedInk).toBe(0);
 		expect(await getUserInk({ database, userId: 'test_user' })).toBe(2);
+	});
+
+	/**
+	 * Near the cap, a card may add less Ink than usual, or none at all.
+	 * We keep earning XP and save the actual Ink award for each session.
+	 */
+	test('caps Ink awards without stopping XP or overstating session earnings', async () => {
+		const firstAnswer = {
+			database,
+			userId: 'test_user',
+			wordId: 'test_word',
+			sessionId: 'session_one',
+		};
+		const secondAnswer = { ...firstAnswer, sessionId: 'session_two' };
+		let firstAward;
+		let fullAward;
+		let receipt;
+		let rewards: SavedRewards | null;
+
+		jest.replaceProperty(inkConfig, 'maxBalance', 3);
+		jest.replaceProperty(inkConfig, 'correctFlashcard', 2);
+		await database.runAsync('INSERT INTO userInk (userId, balance) VALUES (?, ?);', 'test_user', 2);
+
+		firstAward = await writeCorrectAnswer(firstAnswer);
+		fullAward = await writeCorrectAnswer(secondAnswer);
+		await writeCorrectAnswer(secondAnswer);
+		rewards = await database.getFirstAsync<SavedRewards>(`
+			SELECT totalXP,
+				(SELECT correctCount FROM userWords) AS correctCount,
+				(SELECT COUNT(*) FROM flashcardAwards) AS awards
+			FROM users;
+		`);
+		receipt = await writeDeckCompletion({
+			database,
+			userId: 'test_user',
+			deckId: 'test_deck',
+			sessionId: 'session_two',
+			correctCount: 1,
+			isPerfect: false,
+		});
+
+		expect(firstAward.ink).toBe(1);
+		expect(fullAward.ink).toBe(0);
+		expect(fullAward.xp).toBe(10);
+		expect(rewards).toEqual({ totalXP: 20, correctCount: 2, awards: 2 });
+		expect(receipt.earnedInk).toBe(0);
+		expect(await getUserInk({ database, userId: 'test_user' })).toBe(3);
+	});
+
+	test('respects a reduced cap when loading and saving an older balance', async () => {
+		const request = {
+			database,
+			userId: 'test_user',
+			wordId: 'test_word',
+			sessionId: 'session_one',
+		};
+		let award;
+		let savedInk: StoredInk | null;
+
+		jest.replaceProperty(inkConfig, 'maxBalance', 3);
+		await database.runAsync('INSERT INTO userInk (userId, balance) VALUES (?, ?);', 'test_user', 9);
+		expect(await getUserInk({ database, userId: 'test_user' })).toBe(3);
+
+		award = await writeCorrectAnswer(request);
+		savedInk = await database.getFirstAsync<StoredInk>('SELECT balance FROM userInk;');
+
+		expect(award.ink).toBe(0);
+		expect(savedInk?.balance).toBe(3);
 	});
 });
