@@ -19,6 +19,7 @@ import colors from '../colors';
 interface PassageSetting {
 	key: BooleanSettingKey;
 	label: string;
+	description?: string;
 }
 
 interface PronunciationOption {
@@ -27,6 +28,11 @@ interface PronunciationOption {
 }
 
 const passageSettings: PassageSetting[] = [
+	{
+		key: 'showUnseenWords',
+		label: 'Show new words in paragraphs',
+		description: 'Enable to show new words in the paragraph.',
+	},
 	{ key: 'useLearningLevelColors', label: 'Use learning level colors' },
 	{ key: 'useLevelOpacity', label: 'Use level opacity' },
 ];
@@ -170,14 +176,18 @@ export default function Settings() {
 			</View>
 			<View style={styles.section}>
 				<Text style={styles.heading}>Passage display</Text>
-				{passageSettings.map(({ key, label }) => (
+				{passageSettings.map(({ key, label, description }) => (
 					<View
 						key={key}
 						style={styles.settingRow}
 					>
-						<Text style={styles.settingLabel}>{label}</Text>
+						<View style={styles.settingText}>
+							<Text style={styles.settingLabel}>{label}</Text>
+							{description && <Text style={styles.settingDescription}>{description}</Text>}
+						</View>
 						<Switch
 							accessibilityLabel={label}
+							accessibilityHint={description}
 							ios_backgroundColor={colors.dark.border}
 							onValueChange={enabled => setSetting(key, enabled)}
 							trackColor={{ false: colors.dark.border, true: colors.dark.primaryActive }}
@@ -295,6 +305,16 @@ const styles = StyleSheet.create({
 		flex: 1,
 		fontFamily: 'lexend-400',
 		fontSize: 14,
+	},
+	settingText: {
+		flex: 1,
+		gap: 4,
+	},
+	settingDescription: {
+		color: colors.light.background,
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		lineHeight: 18,
 	},
 	heading: {
 		color: colors.light.text,

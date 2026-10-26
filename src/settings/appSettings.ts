@@ -10,6 +10,7 @@ interface BooleanSettings {
 	ttsOnCorrectEnabled: boolean;
 	useLearningLevelColors: boolean;
 	useLevelOpacity: boolean;
+	showUnseenWords: boolean;
 	showDebugOptions: boolean;
 	showSkipWordLink: boolean;
 }
@@ -28,6 +29,7 @@ const booleanSettingKeys: BooleanSettingKey[] = [
 	'ttsOnCorrectEnabled',
 	'useLearningLevelColors',
 	'useLevelOpacity',
+	'showUnseenWords',
 	'showDebugOptions',
 	'showSkipWordLink',
 ];
@@ -56,6 +58,7 @@ export const defaultAppSettings: AppSettings = {
 	ttsVolume: maxAudioVolume,
 	useLearningLevelColors: false,
 	useLevelOpacity: false,
+	showUnseenWords: false,
 	showDebugOptions: false,
 	showSkipWordLink: true,
 	cardsPerDeck: null,
