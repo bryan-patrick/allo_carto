@@ -38,7 +38,7 @@ const postcardBackground = require('@/src/app/assets/images/postcard-parts/backg
  */
 export default function DeckResultsView() {
 	const router = useRouter();
-	const { experience, isUpdatingProgress, progressById } = useUserProgress();
+	const { experience, inkBalance, isUpdatingProgress, progressById } = useUserProgress();
 	const { cardDeckState, cardDeckDispatch } = useCardDeck();
 	const { id: userId } = useUserContext() ?? {};
 	const { settings } = useAppSettings();
@@ -206,6 +206,7 @@ export default function DeckResultsView() {
 								<CompletionRewards
 									session={session}
 									color={storyColor}
+									inkBalance={inkBalance}
 								/>
 								{unlockItems.length > 0 && (
 									<View style={styles.unlocks}>

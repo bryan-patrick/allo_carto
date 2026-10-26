@@ -48,7 +48,13 @@ describe('cardDeckReducer', () => {
 
 		const nextState = cardDeckReducer(state, {
 			type: 'ADD_CORRECT_WORD',
-			award: { xp: 10, learningBonusXP: 0, previousProgress: 'mastered', nextProgress: 'mastered' },
+			award: {
+				xp: 10,
+				ink: 1,
+				learningBonusXP: 0,
+				previousProgress: 'mastered',
+				nextProgress: 'mastered',
+			},
 		});
 
 		expect(nextState.correctWords).toEqual([secondWord, firstWord]);

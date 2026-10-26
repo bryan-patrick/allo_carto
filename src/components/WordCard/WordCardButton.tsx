@@ -43,7 +43,8 @@ export default function WordCardButton({
 	...props
 }: WordCardButtonProps) {
 	const { cardState, wordCardUIDispatch } = useWordCardUI();
-	const { cardDeckDispatch, currentCard } = useCardDeck();
+	const { cardDeckState, cardDeckDispatch, currentCard } = useCardDeck();
+	const sessionId = cardDeckState.session?.id;
 	const { isUpdatingProgress, writeCorrectAnswer: recordCorrectAnswer } = useUserProgress();
 	const { settings } = useAppSettings();
 	const playIncorrect = useSoundEffect('incorrect');
@@ -72,10 +73,12 @@ export default function WordCardButton({
 	const pressInFlight = useRef(false);
 	const persistedCorrectAnswer = useRef<string | null>(null);
 	const isSavingAnswer = useRef(false);
-	const isRevealDisabled = cardState.stage !== 'READY' || isAnswerPending || isUpdatingProgress;
+	const isRevealDisabled =
+		!sessionId || cardState.stage !== 'READY' || isAnswerPending || isUpdatingProgress;
 
 	const isDisabled = useMemo(() => {
 		if (
+			!sessionId ||
 			cardState.progress === 'WARNING' ||
 			isAnswerPending ||
 			isUpdatingProgress ||
@@ -92,6 +95,7 @@ export default function WordCardButton({
 		cardState.selectedWord,
 		isAnswerPending,
 		isUpdatingProgress,
+		sessionId,
 	]);
 	let buttonContent = children;
 
@@ -131,14 +135,14 @@ export default function WordCardButton({
 	const persistCorrectAnswer = useCallback(() => {
 		const answerId = `${currentCard.id}:${cardState.attempts}`;
 
-		if (persistedCorrectAnswer.current === answerId || isSavingAnswer.current) {
+		if (!sessionId || persistedCorrectAnswer.current === answerId || isSavingAnswer.current) {
 			return;
 		}
 
 		persistedCorrectAnswer.current = answerId;
 		isSavingAnswer.current = true;
 
-		return recordCorrectAnswer(currentCard.id)
+		return recordCorrectAnswer({ wordId: currentCard.id, sessionId })
 			.then(
 				award => {
 					if (award) {
@@ -158,7 +162,7 @@ export default function WordCardButton({
 				pressInFlight.current = false;
 				setIsAnswerPending(false);
 			});
-	}, [currentCard.id, cardState.attempts, cardDeckDispatch, recordCorrectAnswer]);
+	}, [currentCard.id, cardState.attempts, cardDeckDispatch, recordCorrectAnswer, sessionId]);
 
 	/**
 	 * Sound effects
@@ -313,7 +317,9 @@ export default function WordCardButton({
 	 */
 	return (
 		<View style={styles.actions}>
-			{hasSaveError && <Text style={styles.saveError}>Could not save your XP. Tap to retry.</Text>}
+			{hasSaveError && (
+				<Text style={styles.saveError}>Could not save your rewards. Tap to retry.</Text>
+			)}
 			{settings.showSkipWordLink && (
 				<Pressable
 					accessibilityRole="link"
@@ -321,7 +327,7 @@ export default function WordCardButton({
 					onPress={handleRevealAnswer}
 					style={[styles.revealLink, isRevealDisabled && styles.disabledRevealLink]}
 				>
-					<Text style={styles.revealText}>I don&apos;t know (will not award XP)</Text>
+					<Text style={styles.revealText}>I don&apos;t know (no XP or Ink)</Text>
 				</Pressable>
 			)}
 			<Animated.View style={animatedContainerStyle}>

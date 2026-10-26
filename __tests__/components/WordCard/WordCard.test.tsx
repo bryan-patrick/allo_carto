@@ -44,8 +44,10 @@ async function renderWithAFakeDispatchSoWeCanDoActions(
 					session: {
 						id: 'completed-session',
 						xpBefore: 0,
-						results: [{ wordId: initialCardDeckState.currentId, outcome: 'correct', xp: 10 }],
-						completion: { bonuses: [], totalXP: 10 },
+						results: [
+							{ wordId: initialCardDeckState.currentId, outcome: 'correct', xp: 10, ink: 1 },
+						],
+						completion: { bonuses: [], totalXP: 10, earnedInk: 1 },
 					},
 				},
 				cardDeckDispatch,

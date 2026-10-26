@@ -62,6 +62,7 @@ function mockDeckState(cardDeckDispatch = jest.fn()) {
 
 	mockUseCardDeck.mockReturnValue({
 		cardDeckState: makeMockCardDeckState({
+			session: { id: 'test-session', xpBefore: 0, results: [] },
 			currentIndex: 0,
 			currentId: currentCard.id,
 			cardDeck: makeMockCardDeck({ words: [currentCard] }),
@@ -82,6 +83,7 @@ describe('<WordCardButton />', () => {
 		});
 		mockRecordCorrectAnswer.mockReset();
 		mockRecordCorrectAnswer.mockResolvedValue({
+			ink: 1,
 			xp: 10,
 			learningBonusXP: 0,
 			previousProgress: 'mastered',
@@ -89,6 +91,7 @@ describe('<WordCardButton />', () => {
 		});
 		mockUseUserProgress.mockReturnValue({
 			experience: getUserExperience(0),
+			inkBalance: 0,
 			isUpdatingProgress: false,
 			progressById: {},
 			writeCorrectAnswer: mockRecordCorrectAnswer,
@@ -174,6 +177,7 @@ describe('<WordCardButton />', () => {
 		mockDeckState();
 		mockUseUserProgress.mockReturnValue({
 			experience: getUserExperience(0),
+			inkBalance: 0,
 			isUpdatingProgress: true,
 			progressById: {},
 			writeCorrectAnswer: mockRecordCorrectAnswer,
@@ -223,7 +227,10 @@ describe('<WordCardButton />', () => {
 			await render(<WordCardButton>Next card</WordCardButton>);
 
 			await waitFor(() => {
-				expect(mockRecordCorrectAnswer).toHaveBeenCalledWith('word_noun_cafe');
+				expect(mockRecordCorrectAnswer).toHaveBeenCalledWith({
+					wordId: 'word_noun_cafe',
+					sessionId: 'test-session',
+				});
 				expect(cardDeckDispatch).toHaveBeenCalledWith({
 					type: 'INCREMENT_WORD_SCORE',
 				});

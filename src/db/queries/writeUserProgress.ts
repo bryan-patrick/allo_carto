@@ -5,6 +5,7 @@ import type {
 	XPBonusProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
+import { inkConfig } from '@/src/util/ink';
 import { getCompletionPercentage } from '@/src/util/progression';
 import {
 	correctAnswerXPByRarity,
@@ -18,11 +19,53 @@ import { incrementCorrectCount } from './incrementCorrectCount';
 import { incrementSeenCount } from './incrementSeenCount';
 import updateUserProgress from './updateUserProgress';
 
+/**
+ * Typing
+ */
 export interface DeckCompletionRequest {
 	deckId: string;
 	sessionId: string;
 	correctCount: number;
 	isPerfect: boolean;
+}
+
+export interface CorrectAnswerRequest {
+	wordId: string;
+	sessionId: string;
+}
+
+interface WriteCorrectAnswerOptions extends CorrectAnswerRequest {
+	database: SQLiteDatabase;
+	userId: string;
+}
+
+interface WriteDeckCompletionOptions extends DeckCompletionRequest {
+	database: SQLiteDatabase;
+	userId: string;
+}
+
+interface WordProgressForAward {
+	correctCount: number;
+	seenCount: number;
+	rarity: CardRarity;
+	CEFR: CEFR;
+}
+
+interface SessionInkRow {
+	earnedInk: number;
+}
+
+interface UserXPRow {
+	totalXP: number;
+}
+
+interface SavedDeckCompletionRow extends UserXPRow {
+	deckId: string;
+	bonuses: string;
+}
+
+interface SavedDeckSessionRow {
+	sessionId: string;
 }
 
 /**
@@ -88,39 +131,99 @@ async function updateUserProgressTableItems({
 }
 
 /**
- * Increment a word's correctCount, award XP, and save any
- * changed deck, chapter, and story percentages
+ * Calculate the awards for a correct answer on a flashcard
+ */
+function getCorrectAnswerAward(previousProgress: WordProgressForAward): WordAnswerAwardProps {
+	const rarityXP = correctAnswerXPByRarity[previousProgress.rarity];
+	const cefrMultiplier = correctAnswerXPMultiplierByCEFR[previousProgress.CEFR];
+	const wordXP = rarityXP * cefrMultiplier;
+	const nextCorrectCount = previousProgress.correctCount + 1;
+	const previousWordProgress = getWordProgressKeyFromCounts(previousProgress);
+	const nextWordProgress = getWordProgressKeyFromCounts({
+		correctCount: nextCorrectCount,
+		seenCount: previousProgress.seenCount,
+	});
+	const hasLeveledUp = previousWordProgress !== nextWordProgress;
+	let learningBonusXP = 0;
+	let xp: number;
+
+	if (hasLeveledUp) {
+		learningBonusXP = wordXP * userExperienceConfig.learningLevelBonusMultiplier;
+	}
+
+	xp = wordXP + learningBonusXP;
+
+	return {
+		ink: inkConfig.correctFlashcard,
+		xp,
+		learningBonusXP,
+		previousProgress: previousWordProgress,
+		nextProgress: nextWordProgress,
+	};
+}
+
+/**
+ * We save the word's progress, XP, and Ink together
  */
 export async function writeCorrectAnswer({
 	database: sqliteDatabase,
 	userId,
 	wordId,
-}: {
-	database: SQLiteDatabase;
-	userId: string;
-	wordId: string;
-}): Promise<WordAnswerAwardProps> {
-	let award: WordAnswerAwardProps | undefined;
-
-	/**
-	 * Keep the whole write together
-	 */
-	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
-		/**
-		 * Get the count before it changes
-		 */
-		const previousProgress = await database.getFirstAsync<{
-			correctCount: number;
-			seenCount: number;
-			rarity: CardRarity;
-			CEFR: CEFR;
-		}>(
-			`SELECT w.rarity, w.CEFR,
+	sessionId,
+}: WriteCorrectAnswerOptions): Promise<WordAnswerAwardProps> {
+	const statements = {
+		getSavedAward: `
+			SELECT xp, learningBonusXP, previousProgress, nextProgress, ink
+			FROM flashcardAwards
+			WHERE userId = ? AND sessionId = ? AND wordId = ?;
+		`,
+		getWordProgress: `
+			SELECT w.rarity, w.CEFR,
 				COALESCE(uw.correctCount, 0) AS correctCount,
 				COALESCE(uw.seenCount, 0) AS seenCount
 			FROM words AS w
 			LEFT JOIN userWords AS uw ON uw.wordId = w.id AND uw.userId = ?
-			WHERE w.id = ?;`,
+			WHERE w.id = ?;
+		`,
+		addInk: `
+			INSERT INTO userInk (userId, balance)
+			VALUES (?, ?)
+			ON CONFLICT(userId)
+			DO UPDATE SET balance = balance + excluded.balance;
+		`,
+		saveAward: `
+			INSERT INTO flashcardAwards (
+				userId, sessionId, wordId, xp, learningBonusXP,
+				previousProgress, nextProgress, ink
+			)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+		`,
+	};
+
+	let award: WordAnswerAwardProps | undefined;
+
+	if (!sessionId || !wordId) {
+		throw new Error('A correct answer needs a session and word.');
+	}
+
+	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
+		const savedAward = await database.getFirstAsync<WordAnswerAwardProps>(
+			statements.getSavedAward,
+			userId,
+			sessionId,
+			wordId,
+		);
+
+		let previousProgress: WordProgressForAward | null;
+		let nextAward: WordAnswerAwardProps;
+
+		if (savedAward) {
+			award = savedAward;
+			return;
+		}
+
+		previousProgress = await database.getFirstAsync<WordProgressForAward>(
+			statements.getWordProgress,
 			userId,
 			wordId,
 		);
@@ -129,65 +232,39 @@ export async function writeCorrectAnswer({
 			throw new Error(`Could not load word ${wordId}.`);
 		}
 
-		/**
-		 * Start with XP for the word's rarity, then multiply it by its language level.
-		 * For example, a Common A2 word earns 10 times 2, which is 20 XP.
-		 */
-		const rarityXP = correctAnswerXPByRarity[previousProgress.rarity];
-		const cefrMultiplier = correctAnswerXPMultiplierByCEFR[previousProgress.CEFR];
-		const wordXP = rarityXP * cefrMultiplier;
-		const previousCorrectCount = previousProgress.correctCount;
-		const previousSeenCount = previousProgress.seenCount;
-		const previousWordProgress = getWordProgressKeyFromCounts({
-			correctCount: previousCorrectCount,
-			seenCount: previousSeenCount,
-		});
-		const nextWordProgress = getWordProgressKeyFromCounts({
-			correctCount: previousCorrectCount + 1,
-			seenCount: previousSeenCount,
-		});
-		const hasLeveledUp = previousWordProgress !== nextWordProgress;
-		let learningBonusXP = 0;
+		nextAward = getCorrectAnswerAward(previousProgress);
 
 		/**
-		 * Raising the word's learning level gives an extra 300% of its word XP.
-		 * This uses the XP after the rarity and language level have been counted.
-		 */
-		if (hasLeveledUp) {
-			learningBonusXP = wordXP * userExperienceConfig.learningLevelBonusMultiplier;
-		}
-
-		const xp = wordXP + learningBonusXP;
-
-		/**
-		 * Save the correct answer
+		 * We save all parts of the answer before returning its rewards.
+		 * If any part fails we rolls everything back.
 		 */
 		await incrementCorrectCount(userId, wordId, database);
+		await incrementUserXP(database, userId, nextAward.xp);
+		await database.runAsync(statements.addInk, userId, nextAward.ink);
 
-		/**
-		 * Save XP with word progress so a failed write rolls back both
-		 */
-		await incrementUserXP(database, userId, xp);
-
-		if (hasLeveledUp) {
-			await updateUserProgressTableItems({
-				database,
-				userId,
-				wordId,
-			});
+		if (nextAward.previousProgress !== nextAward.nextProgress) {
+			await updateUserProgressTableItems({ database, userId, wordId });
 		}
 
-		award = {
-			xp,
-			learningBonusXP,
-			previousProgress: previousWordProgress,
-			nextProgress: nextWordProgress,
-		};
+		await database.runAsync(
+			statements.saveAward,
+			userId,
+			sessionId,
+			wordId,
+			nextAward.xp,
+			nextAward.learningBonusXP,
+			nextAward.previousProgress,
+			nextAward.nextProgress,
+			nextAward.ink,
+		);
+
+		award = nextAward;
 	});
 
 	if (!award) {
 		throw new Error('Could not save the word award.');
 	}
+
 	return award;
 }
 
@@ -202,10 +279,13 @@ export async function writeDeckCompletion({
 	sessionId,
 	correctCount,
 	isPerfect,
-}: DeckCompletionRequest & {
-	database: SQLiteDatabase;
-	userId: string;
-}): Promise<DeckCompletionReceiptProps> {
+}: WriteDeckCompletionOptions): Promise<DeckCompletionReceiptProps> {
+	const sessionInkStatement = `
+		SELECT COALESCE(SUM(ink), 0) AS earnedInk
+		FROM flashcardAwards
+		WHERE userId = ? AND sessionId = ?;
+	`;
+
 	let receipt: DeckCompletionReceiptProps | undefined;
 
 	/**
@@ -213,13 +293,18 @@ export async function writeDeckCompletion({
 	 * Note the receipt (above) being updated throughout the function
 	 */
 	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
+		const sessionInk = await database.getFirstAsync<SessionInkRow>(
+			sessionInkStatement,
+			userId,
+			sessionId,
+		);
+		const earnedInk = sessionInk?.earnedInk ?? 0;
+
 		/**
-		 * No correct answers means the deck does not count as complete.
-		 * Return the user's current XP without adding bonuses or saving a completion.
-		 * The first completion bonus stays available for a different deck completion.
+		 * No correct answers means there are no completion bonuses.
 		 */
 		if (!correctCount) {
-			const user = await database.getFirstAsync<{ totalXP: number }>(
+			const user = await database.getFirstAsync<UserXPRow>(
 				'SELECT totalXP FROM users WHERE id = ?;',
 				userId,
 			);
@@ -228,7 +313,7 @@ export async function writeDeckCompletion({
 				throw new Error(`Could not load XP for user ${userId}.`);
 			}
 
-			receipt = { bonuses: [], totalXP: user.totalXP };
+			receipt = { bonuses: [], totalXP: user.totalXP, earnedInk };
 
 			return;
 		}
@@ -237,11 +322,7 @@ export async function writeDeckCompletion({
 		 * Check if we already saved this deck completion. Use the deck completion's
 		 * ID so we don't give the same bonuses twice.
 		 */
-		const savedReceipt = await database.getFirstAsync<{
-			deckId: string;
-			bonuses: string;
-			totalXP: number;
-		}>(
+		const savedReceipt = await database.getFirstAsync<SavedDeckCompletionRow>(
 			'SELECT deckId, bonuses, totalXP FROM deckCompletions WHERE userId = ? AND sessionId = ?;',
 			userId,
 			sessionId,
@@ -258,7 +339,11 @@ export async function writeDeckCompletion({
 			/**
 			 * Return the saved bonuses and XP total.
 			 */
-			receipt = { bonuses: JSON.parse(savedReceipt.bonuses), totalXP: savedReceipt.totalXP };
+			receipt = {
+				bonuses: JSON.parse(savedReceipt.bonuses),
+				totalXP: savedReceipt.totalXP,
+				earnedInk,
+			};
 
 			return;
 		}
@@ -266,7 +351,7 @@ export async function writeDeckCompletion({
 		/**
 		 * Check if the user has completed this deck before.
 		 */
-		const previousCompletion = await database.getFirstAsync<{ sessionId: string }>(
+		const previousCompletion = await database.getFirstAsync<SavedDeckSessionRow>(
 			'SELECT sessionId FROM deckCompletions WHERE userId = ? AND deckId = ? LIMIT 1;',
 			userId,
 			deckId,
@@ -308,7 +393,7 @@ export async function writeDeckCompletion({
 		/**
 		 * Read the user's new XP total so the rewards screen shows the saved amount.
 		 */
-		const user = await database.getFirstAsync<{ totalXP: number }>(
+		const user = await database.getFirstAsync<UserXPRow>(
 			'SELECT totalXP FROM users WHERE id = ?;',
 			userId,
 		);
@@ -329,7 +414,7 @@ export async function writeDeckCompletion({
 			JSON.stringify(bonuses),
 			user.totalXP,
 		);
-		receipt = { bonuses, totalXP: user.totalXP };
+		receipt = { bonuses, totalXP: user.totalXP, earnedInk };
 	});
 
 	/**

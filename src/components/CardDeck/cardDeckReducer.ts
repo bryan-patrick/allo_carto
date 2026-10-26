@@ -91,7 +91,7 @@ export function cardDeckReducer(
 					...session,
 					results: [
 						...session.results.filter(result => result.wordId !== currentWord.id),
-						{ wordId: currentWord.id, outcome, xp: 0 },
+						{ wordId: currentWord.id, outcome, xp: 0, ink: 0 },
 					],
 				};
 			}

@@ -124,6 +124,8 @@ export default function AppLayout() {
 
 		if (resetDB) {
 			await database.execAsync(`
+        DROP TABLE IF EXISTS flashcardAwards;
+        DROP TABLE IF EXISTS userInk;
         DROP TABLE IF EXISTS deckPassageFeedback;
         DROP TABLE IF EXISTS deckCompletions;
         DROP TABLE IF EXISTS userProgress;

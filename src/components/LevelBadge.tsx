@@ -5,22 +5,24 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import ProgressBar from './ProgressBar';
 import UserProgressModal from './UserProgressModal';
+import MaterialSymbol from './MaterialSymbol';
 
 /**
  * Player level and XP bar for headers
  */
 export default function LevelBadge() {
-	const { experience, status } = useUserProgress();
+	const { experience, inkBalance, status } = useUserProgress();
 	const [isProgressVisible, setIsProgressVisible] = useState(false);
 	const { level, isMaxLevel, xpIntoLevel, xpForNextLevel, progressPercentage } = experience;
 	const levelLabel = `Lvl. ${level}`;
+	const inkLabel = inkBalance.toLocaleString();
 	let progressDescription = `${xpIntoLevel} of ${xpForNextLevel} XP toward level ${level + 1}`;
 
 	if (isMaxLevel) {
 		progressDescription = 'Maximum level reached';
 	}
 
-	const accessibilityLabel = `Level ${level}. ${progressDescription}`;
+	const accessibilityLabel = `Level ${level}. ${progressDescription}. ${inkLabel} Ink.`;
 
 	if (status !== 'ready') {
 		return null;
@@ -46,12 +48,27 @@ export default function LevelBadge() {
 					onPress={() => setIsProgressVisible(true)}
 					style={({ pressed }) => [styles.badge, pressed && styles.pressedBadge]}
 				>
-					<Text
-						numberOfLines={1}
-						style={styles.levelText}
-					>
-						{levelLabel}
-					</Text>
+					<View style={styles.balanceRow}>
+						<Text
+							numberOfLines={1}
+							style={styles.levelText}
+						>
+							{levelLabel}
+						</Text>
+						<View style={styles.inkBalance}>
+							<MaterialSymbol
+								name="water_drop"
+								size={14}
+								color={colors.light.goldenBorder}
+							/>
+							<Text
+								numberOfLines={1}
+								style={styles.levelText}
+							>
+								{inkLabel}
+							</Text>
+						</View>
+					</View>
 					<ProgressBar
 						color={colors.light.goldenBorder}
 						percent={progressPercentage}
@@ -97,6 +114,8 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		lineHeight: 16,
 	},
+	balanceRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+	inkBalance: { flexDirection: 'row', alignItems: 'center', gap: 2 },
 	progressBarContainer: {
 		borderColor: colors.light.border,
 		borderRadius: 8,

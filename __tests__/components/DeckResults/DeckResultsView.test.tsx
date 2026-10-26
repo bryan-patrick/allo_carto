@@ -67,7 +67,7 @@ describe('<DeckResultsView />', () => {
 					unlockedIdsBefore: [],
 					readyToUnlockIdsBefore: [],
 					results: [],
-					completion: { bonuses: [{ kind: 'completion', xp: 50 }], totalXP: 50 },
+					completion: { bonuses: [{ kind: 'completion', xp: 50 }], totalXP: 50, earnedInk: 0 },
 				},
 			}),
 			cardDeckDispatch: jest.fn(),
