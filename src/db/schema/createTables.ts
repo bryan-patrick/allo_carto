@@ -122,6 +122,7 @@ export default async function createTables(): Promise<void> {
 	await createUserWordsTable();
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
+	await createInkTables();
 	await ensureFlashcardsStartedColumn();
 	await ensureUnlockedColumn();
 	await ensureParagraphProgressType();
@@ -267,4 +268,39 @@ async function createDeckCompletionsTable(): Promise<void> {
 		CREATE INDEX IF NOT EXISTS deckCompletionsByDeck
 			ON deckCompletions (userId, deckId);
 	`);
+}
+
+/**
+ * Handles creating the ink table, we include a session ID so we don't get duplicates
+ * No cheating!
+ */
+async function createInkTables(): Promise<void> {
+	const statements = {
+		createBalance: `
+			CREATE TABLE IF NOT EXISTS userInk (
+				userId TEXT PRIMARY KEY NOT NULL,
+				balance INTEGER NOT NULL DEFAULT 0 CHECK (balance >= 0),
+				FOREIGN KEY (userId) REFERENCES users(id)
+			);
+		`,
+		createAwards: `
+			CREATE TABLE IF NOT EXISTS flashcardAwards (
+				userId TEXT NOT NULL,
+				sessionId TEXT NOT NULL,
+				wordId TEXT NOT NULL,
+				xp INTEGER NOT NULL CHECK (xp >= 0),
+				learningBonusXP INTEGER NOT NULL CHECK (learningBonusXP >= 0),
+				previousProgress TEXT NOT NULL,
+				nextProgress TEXT NOT NULL,
+				ink INTEGER NOT NULL CHECK (ink >= 0),
+				PRIMARY KEY (userId, sessionId, wordId),
+				FOREIGN KEY (userId) REFERENCES users(id),
+				FOREIGN KEY (wordId) REFERENCES words(id)
+			);
+		`,
+	};
+	const database = await getDB();
+
+	await database.execAsync(statements.createBalance);
+	await database.execAsync(statements.createAwards);
 }

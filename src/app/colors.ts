@@ -51,6 +51,9 @@ const colors = {
 		known: '#1A1A1A',
 		mastered: '#0e6162',
 	},
+	ink: {
+		full: '#C7A6F4',
+	},
 	category: {
 		Travel: '#454A36',
 		History: '#653e1b',

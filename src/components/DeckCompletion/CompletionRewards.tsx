@@ -1,19 +1,24 @@
 import colors from '@/src/app/colors';
 import type { DeckSessionProps } from '@/src/components/CardDeck/deckSessionTypes';
 import CountUp from '@/src/components/CountUp';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
+import { inkConfig } from '@/src/util/ink';
 import { StyleSheet, Text, View } from 'react-native';
 import CompletionXPProgress from './CompletionXPProgress';
 
+/**
+ * Typing
+ */
 interface CompletionRewardsProps {
 	session: DeckSessionProps;
 	color: string;
+	inkBalance: number;
 }
 
 /**
- * We show the saved session totals here. Opening results does not award more XP.
- * The short count-up runs while the player is free to study again or leave.
+ * Shows the current flashcard study session totals
  */
-export default function CompletionRewards({ session, color }: CompletionRewardsProps) {
+export default function CompletionRewards({ session, color, inkBalance }: CompletionRewardsProps) {
 	const { completion, results } = session;
 	const correctResults = results.filter(result => result.outcome === 'correct');
 	const skippedResults = results.filter(result => result.outcome === 'skipped');
@@ -24,6 +29,15 @@ export default function CompletionRewards({ session, color }: CompletionRewardsP
 	const bonusXP = completion?.bonuses.reduce((total, bonus) => total + bonus.xp, 0) ?? 0;
 	const earnedXP = wordXP + bonusXP;
 	const accentStyle = { color };
+	const earnedInk = completion?.earnedInk ?? 0;
+	const isInkFull = inkBalance >= inkConfig.maxBalance;
+	let balanceLabel = `Balance: ${inkBalance.toLocaleString()} / ${inkConfig.maxBalance}`;
+	let inkDescription = `Earned ${earnedInk} Ink. ${balanceLabel} Ink.`;
+
+	if (isInkFull) {
+		balanceLabel += ' · Full';
+		inkDescription += ' Ink is full. Correct answers still earn XP.';
+	}
 
 	if (!completion) {
 		return null;
@@ -31,6 +45,27 @@ export default function CompletionRewards({ session, color }: CompletionRewardsP
 
 	return (
 		<View style={styles.container}>
+			<View
+				accessible
+				accessibilityLabel={inkDescription}
+				style={styles.inkReward}
+			>
+				<MaterialSymbol
+					name="water_drop"
+					size={32}
+					color={color}
+				/>
+				<View style={styles.inkAmount}>
+					<CountUp
+						value={earnedInk}
+						duration={500}
+						prefix="+"
+						style={[styles.amount, accentStyle]}
+					/>
+					<Text style={styles.label}>Ink earned</Text>
+				</View>
+				<Text style={[styles.label, isInkFull && styles.fullInkBalance]}>{balanceLabel}</Text>
+			</View>
 			<View style={styles.totals}>
 				<View style={styles.total}>
 					<Text style={[styles.amount, accentStyle]}>
@@ -60,8 +95,28 @@ export default function CompletionRewards({ session, color }: CompletionRewardsP
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	container: { gap: 16 },
+	inkReward: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+		padding: 12,
+		borderWidth: 1,
+		borderColor: colors.light.goldenBorder,
+		borderRadius: 8,
+		backgroundColor: `${colors.light.secondary}55`,
+	},
+	inkAmount: { flex: 1, gap: 4 },
+	fullInkBalance: {
+		backgroundColor: colors.ink.full,
+		paddingHorizontal: 8,
+		paddingVertical: 6,
+		borderRadius: 6,
+	},
 	totals: { flexDirection: 'row', gap: 12 },
 	total: {
 		flex: 1,

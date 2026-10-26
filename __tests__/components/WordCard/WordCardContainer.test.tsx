@@ -55,6 +55,7 @@ describe('<WordCardContainer />', () => {
 		mockRecordWordSeen.mockResolvedValue(true);
 		mockUseUserProgress.mockReturnValue({
 			experience: getUserExperience(0),
+			inkBalance: 0,
 			isUpdatingProgress: false,
 			progressById: {},
 			writeCorrectAnswer: jest.fn(),
