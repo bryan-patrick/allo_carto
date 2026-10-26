@@ -1,18 +1,16 @@
-import { storyAtlas } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
-import CompletionPassage from '@/src/components/DeckCompletion/CompletionPassage';
+import type { DeckSessionProps } from '@/src/components/CardDeck/deckSessionTypes';
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
-import CompletionStepIndicator from '@/src/components/DeckCompletion/CompletionStepIndicator';
 import CompletionUnlocks from '@/src/components/DeckCompletion/CompletionUnlocks';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
-import { getCompletionEntry } from '@/src/components/DeckCompletion/completionAnimations';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import { getDeck, saveDeckPassageFeedback } from '@/src/db/interface';
+import { getDeck } from '@/src/db/interface';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { getUnlockScreenItems } from '@/src/util/atlasCompletion';
+import type { AtlasItem } from '@/src/util/atlasCompletion';
+import { findCompletionPath, getUnlockScreenItems } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
@@ -23,556 +21,162 @@ import {
 	Alert,
 	BackHandler,
 	ImageBackground,
+	Pressable,
 	ScrollView,
 	StyleSheet,
 	Text,
 	View,
-	type ViewStyle,
 } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import LinkButton from '../LinkButton';
 
-/**
- * Use the postcard background and make the heading appear before the other items.
- */
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
-const headerEntry = getCompletionEntry(0);
-/**
- * Names, icons, and messages for the review steps, in order.
- */
-const completionSteps = [
-	{ title: 'Session complete!', icon: 'task_alt', description: '' },
-	{ title: 'Word results', icon: 'cards_star', description: 'Here’s how you did on each word.' },
-	{ title: 'XP & rewards', icon: 'trophy', description: 'Great work! Here’s what you earned.' },
-	{
-		title: 'Ready to unlock!',
-		icon: 'lock_open',
-		description: 'Choose what you’d like to unlock.',
-	},
-];
 
 /**
- * The story and chapter IDs needed to return to the deck list.
- */
-interface DeckAtlasLocation {
-	chapterId: string;
-	storyId: string;
-}
-
-/**
- * Find the story and chapter that contain this deck.
- * The Finish button uses their IDs to return to the right chapter.
- */
-function findDeckAtlasLocation(cardDeck: CardDeck): DeckAtlasLocation | undefined {
-	for (const story of storyAtlas.stories) {
-		for (const chapter of story.chapters) {
-			const deck = chapter.decks.find(deck => {
-				/**
-				 * Look for a matching deck ID first.
-				 */
-				if (deck.id === cardDeck.id) {
-					return true;
-				}
-
-				/**
-				 * If the ID does not match, check the title and words.
-				 * The word count and every word ID must match too.
-				 */
-				const isSameTitle = deck.title === cardDeck.title;
-				const hasSameWordCount = deck.wordIds.length === cardDeck.wordIds.length;
-				const hasSameWords = deck.wordIds.every(wordId => {
-					return cardDeck.wordIds.includes(wordId);
-				});
-
-				return isSameTitle && hasSameWordCount && hasSameWords;
-			});
-
-			if (deck) {
-				return { chapterId: chapter.id, storyId: story.id };
-			}
-		}
-	}
-}
-
-/**
- * Show the passage, word results, rewards, and any new unlocks.
+ * We use this to show rewards after flashcards.
  */
 export default function DeckResultsView() {
 	const router = useRouter();
-	/**
-	 * Get the deck, saved results, user, XP, and settings from the app.
-	 */
 	const { experience, isUpdatingProgress, progressById } = useUserProgress();
 	const { cardDeckState, cardDeckDispatch } = useCardDeck();
 	const { id: userId } = useUserContext() ?? {};
 	const { settings } = useAppSettings();
-	const { cardDeck, session } = cardDeckState;
-
-	/**
-	 * step picks the review page: passage, words, rewards, then optional unlocks.
-	 * isRepeating shows that we are loading the deck again.
-	 */
-	const [step, setStep] = useState(0);
-	const [isRepeating, setIsRepeating] = useState(false);
-	const [isPassageReady, setIsPassageReady] = useState(false);
-	const [pendingFeedback, setPendingFeedback] = useState<boolean | null>(null);
-
-	/**
-	 * Block another Repeat press right away while the deck is loading.
-	 */
-	const isStartingDeck = useRef(false);
-	const isSavingPassageFeedback = useRef(false);
-
-	/**
-	 * Leave room for the phone's controls at the bottom of the screen.
-	 */
 	const { bottom } = useSafeAreaInsets();
+	const { cardDeck, session } = cardDeckState;
+	const [showWordResults, setShowWordResults] = useState(false);
+	const [isRepeating, setIsRepeating] = useState(false);
+	const isStartingDeck = useRef(false);
+	const completionPath = findCompletionPath({ id: cardDeck.id });
+	const chapter = completionPath[1];
+	const storyColor = getDeckStoryColor(cardDeck.id);
+	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
+	const hasReview = Boolean(session?.completion);
+	const repeatDisabled = !userId || isUpdatingProgress || isRepeating;
+	const containerStyle = { paddingBottom: Math.max(bottom, 8) };
+	const headingStyle = { color: storyColor };
+	let title = 'Session complete!';
+	let description = cardDeck.title;
+	let studyLabel = 'Study again';
+	let wordResultsLabel = 'Show word results';
+	let wordResultsIcon = 'expand_more';
 
 	/**
-	 * Compare access at the start of the session with saved progress after all XP bonuses.
-	 * A missing starting snapshot cannot reliably identify new unlocks.
+	 * Show unlocked items
 	 */
-	const unlockScreenItems = useMemo(() => {
+	const unlockItems = useMemo(() => {
+		const previouslyAvailableIds = new Set(session?.unlockedIdsBefore);
+		const previouslyReadyIds = session?.readyToUnlockIdsBefore ?? [];
+		let userLevel = 1;
+		let availableItems: AtlasItem[];
+		let newUnlockItems: AtlasItem[];
+
 		if (!session?.completion || !session.unlockedIdsBefore) {
 			return [];
 		}
 
-		const previouslyAvailable = new Set([
-			...session.unlockedIdsBefore,
-			...(session.readyToUnlockIdsBefore ?? []),
-		]);
-		const userLevel = getUserExperience(session.completion.totalXP).level;
-
-		return getUnlockScreenItems({ progressById, userLevel }).filter(
-			item => !previouslyAvailable.has(item.id),
-		);
-	}, [progressById, session]);
-	let totalSteps = completionSteps.length - 1;
-
-	if (unlockScreenItems.length > 0) {
-		totalSteps = completionSteps.length;
-	}
-
-	const isLastStep = step === totalSteps - 1;
-
-	/**
-	 * Find the chapter to return to when the user finishes the review.
-	 */
-	const atlasLocation = findDeckAtlasLocation(cardDeck);
-
-	/**
-	 * Use the story's color and the current step's heading text and icon.
-	 */
-	const storyColor = getDeckStoryColor(cardDeck.id);
-	const metadata = completionSteps[step];
-
-	/**
-	 * Results are ready to review once the reward summary has been saved.
-	 */
-	const hasReview = Boolean(session?.completion);
-
-	/**
-	 * Offer Repeat deck only on the last review step.
-	 */
-	const showRepeat = hasReview && isLastStep;
-
-	/**
-	 * Choose how many cards to repeat using the user's level and settings.
-	 */
-	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
-
-	/**
-	 * Block Repeat while the user is unknown, progress is saving, or a deck is loading.
-	 */
-	const repeatDisabled = !userId || isUpdatingProgress || isRepeating;
-	const feedbackDisabled = !userId || !isPassageReady || pendingFeedback !== null;
-
-	/**
-	 * Start with the normal heading and button labels for this step.
-	 * Change them below when the review needs a different message.
-	 */
-	let description = metadata.description;
-	let repeatLabel = 'Repeat paragraph';
-	let nextLabel = 'Next';
-	let content;
-	let title = metadata.title;
-	let icon = metadata.icon;
-
-	if (isLastStep) {
-		nextLabel = 'Finish';
-	}
-
-	/**
-	 * Repeat shows Starting while the deck loads.
-	 */
-	if (isRepeating) {
-		repeatLabel = 'Starting…';
-	}
-
-	/**
-	 * Show the passage, words, rewards, and optional unlock list in order.
-	 * If there are no saved results, show a message and let the user leave.
-	 */
-	if (hasReview && session) {
-		switch (step) {
-			case 0:
-				/**
-				 * Show the deck title and passage on the first step.
-				 * If no words were correct, call it a review instead of a completed deck.
-				 */
-				description = cardDeck.title;
-
-				if (!cardDeckState.isComplete) {
-					title = 'Session review';
-					icon = 'menu_book';
-				}
-
-				content = (
-					<CompletionPassage
-						deck={cardDeck}
-						results={session.results}
-						onReadyChange={setIsPassageReady}
-					/>
-				);
-
-				break;
-			case 1:
-				/**
-				 * Show each word's result on the second step.
-				 */
-				content = (
-					<CompletionWordResults
-						words={cardDeck.words}
-						results={session.results}
-						color={storyColor}
-					/>
-				);
-
-				break;
-			case 2:
-				/**
-				 * Show rewards before any unlocks.
-				 * Encourage another review attempt if the deck did not count as complete.
-				 */
-				if (!cardDeckState.isComplete) {
-					description = 'Keep practicing, you can start another session.';
-				}
-
-				content = (
-					<CompletionRewards
-						session={session}
-						color={storyColor}
-					/>
-				);
-
-				break;
-			case 3:
-				content = (
-					<CompletionUnlocks
-						items={unlockScreenItems}
-						color={storyColor}
-					/>
-				);
-				break;
+		for (const itemId of previouslyReadyIds) {
+			previouslyAvailableIds.add(itemId);
 		}
-	} else {
+
+		userLevel = getUserExperience(session.completion.totalXP).level;
+		availableItems = getUnlockScreenItems({ progressById, userLevel });
+		newUnlockItems = availableItems.filter(item => !previouslyAvailableIds.has(item.id));
+
+		return newUnlockItems;
+	}, [progressById, session]);
+
+	if (!hasReview) {
 		title = 'No session results to review';
-		icon = 'menu_book';
-		description = 'Finish a review attempt to see your results and rewards.';
-		nextLabel = 'Finish';
+		description = 'Finish a flashcard session to see your results and rewards.';
+	}
+
+	if (isRepeating) {
+		studyLabel = 'Starting…';
+	}
+
+	if (showWordResults) {
+		wordResultsLabel = 'Hide word results';
+		wordResultsIcon = 'expand_less';
 	}
 
 	/**
-	 * Return to the chapter postcard after reviewing its flashcards.
-	 * If we cannot find the chapter, return to the home screen.
+	 * Return to the chapter we were studying, or Home if that chapter is missing.
 	 */
 	const handleFinish = useCallback(() => {
-		if (atlasLocation) {
+		if (isStartingDeck.current) {
+			return;
+		}
+
+		if (chapter) {
 			router.dismissTo({
 				pathname: '/ChapterDetail',
-				params: { chapterId: atlasLocation.chapterId },
+				params: { chapterId: chapter.id },
 			});
 			return;
 		}
 
 		router.replace('/(tabs)');
-	}, [atlasLocation, router]);
+	}, [chapter, router]);
 
 	/**
-	 * Load the deck again using saved word progress and the user's settings.
-	 * Start a new review attempt with its own results and rewards.
+	 * Do more flashcards using the latest saved word progress.
+	 * The ref blocks extra presses before the Starting label appears.
 	 */
 	async function handleRepeat() {
+		let selectedDeck: CardDeck | undefined;
+		let nextSession: DeckSessionProps;
+
 		if (repeatDisabled || isStartingDeck.current || !hasReview || !userId) {
 			return;
 		}
 
-		/**
-		 * Block more Repeat presses and show Starting while the deck loads.
-		 */
 		isStartingDeck.current = true;
 		setIsRepeating(true);
 
 		try {
-			/**
-			 * Load the cards with the user's latest word progress and deck size.
-			 */
-			const selectedDeck = await getDeck({ deck: cardDeck, amount: cardsPerDeck, userId });
+			selectedDeck = await getDeck({ deck: cardDeck, amount: cardsPerDeck, userId });
 
-			/**
-			 * Stay on this screen if the deck is missing or has no cards.
-			 */
 			if (!selectedDeck || selectedDeck.words.length === 0) {
 				Alert.alert('Could not start session', 'Please try again.');
 				return;
 			}
 
-			/**
-			 * Use the loaded cards for a new review attempt.
-			 * Remember the user's starting XP so we can show how much they earn.
-			 */
+			nextSession = createDeckSession(experience.totalXP, progressById);
+
 			cardDeckDispatch({
 				type: 'SET_DECK',
 				payload: selectedDeck,
-				session: createDeckSession(experience.totalXP, progressById),
+				session: nextSession,
 			});
-
 			router.replace('/CardDeck');
 		} catch (error) {
 			console.error('Could not repeat deck:', error);
 			Alert.alert('Could not start session', 'Please try again.');
 		} finally {
-			/**
-			 * Allow another Repeat press after this loading attempt ends.
-			 */
 			isStartingDeck.current = false;
 			setIsRepeating(false);
 		}
 	}
 
-	/**
-	 * Move to the next review step, or finish if this is the last step.
-	 * Also finish if there are no results to review.
-	 */
-	function handleNext() {
-		if (!hasReview || isLastStep) {
-			handleFinish();
-			return;
-		}
-
-		setStep(step + 1);
+	function handleToggleWordResults() {
+		setShowWordResults(!showWordResults);
 	}
 
 	/**
-	 * Save the response before advancing. A ref also blocks presses that
-	 * arrive before React has disabled both buttons for the pending write.
-	 */
-	async function handlePassageFeedback(isEasierToRead: boolean) {
-		if (
-			feedbackDisabled ||
-			!userId ||
-			!session ||
-			!hasReview ||
-			step !== 0 ||
-			isSavingPassageFeedback.current
-		) {
-			return;
-		}
-
-		isSavingPassageFeedback.current = true;
-		setPendingFeedback(isEasierToRead);
-
-		try {
-			await saveDeckPassageFeedback({
-				userId,
-				sessionId: session.id,
-				deckId: cardDeck.id,
-				isEasierToRead,
-				results: session.results,
-			});
-			setStep(1);
-		} catch (error) {
-			console.error('Could not save passage feedback:', error);
-			Alert.alert('Could not save your answer', 'Please try again.');
-		} finally {
-			isSavingPassageFeedback.current = false;
-			setPendingFeedback(null);
-		}
-	}
-
-	/**
-	 * Go to the previous review step, or leave if this is the first step.
+	 * Android Back leaves results directly now that there are no review steps.
 	 */
 	useFocusEffect(
 		useCallback(() => {
 			const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-				if (isStartingDeck.current || isSavingPassageFeedback.current) {
-					return true;
-				}
-
-				if (step > 0) {
-					setStep(step - 1);
-				} else {
-					handleFinish();
-				}
-
+				handleFinish();
 				return true;
 			});
+
 			return () => subscription.remove();
-		}, [step, handleFinish]),
+		}, [handleFinish]),
 	);
 
-	/**
-	 * Keep the content above the phone's bottom controls and use the story color for headings.
-	 */
-	const containerStyle = { paddingBottom: Math.max(bottom, 8) };
-	const headingColor = { color: storyColor };
-	const repeatButtonStyle: ViewStyle[] = [styles.backButton];
-
-	if (repeatDisabled) {
-		repeatButtonStyle.push(styles.disabledButton);
-	}
-
-	/**
-	 * Show Back only after the first review step.
-	 */
-	let backButton;
-
-	if (step > 0) {
-		backButton = (
-			<LinkButton
-				handler={() => setStep(step - 1)}
-				disabled={isRepeating || isUpdatingProgress}
-				useArrow={false}
-				type="outline"
-				showShadow={false}
-				showInnerBorder={false}
-				color={storyColor}
-				style={styles.backButton}
-			>
-				← Back
-			</LinkButton>
-		);
-	}
-
-	/**
-	 * Use the same button for Next and Finish, with the label chosen above.
-	 */
-	const nextButton = (
-		<LinkButton
-			handler={handleNext}
-			disabled={isRepeating || isUpdatingProgress}
-			color={storyColor}
-			fullwidth
-			style={styles.nextButton}
-		>
-			{nextLabel}
-		</LinkButton>
-	);
-
-	/**
-	 * Change the footer content depending on step
-	 */
-	let footerContent = (
-		<View style={styles.footerRow}>
-			{backButton}
-			<View style={styles.footerActions}>{nextButton}</View>
-		</View>
-	);
-
-	if (hasReview && step === 0) {
-		let noLabel = 'No';
-		let yesLabel = 'Yes';
-		const feedbackButtonStyle: ViewStyle[] = [styles.feedbackButton];
-		const feedbackAccessibilityState = {
-			disabled: feedbackDisabled,
-			busy: pendingFeedback !== null,
-		};
-
-		if (pendingFeedback === false) {
-			noLabel = 'Saving…';
-		}
-		if (pendingFeedback === true) {
-			yesLabel = 'Saving…';
-		}
-		if (feedbackDisabled) {
-			feedbackButtonStyle.push(styles.disabledButton);
-		}
-
-		footerContent = (
-			<View style={styles.footerRow}>
-				<LinkButton
-					handler={() => handlePassageFeedback(false)}
-					disabled={feedbackDisabled}
-					accessibilityRole="button"
-					accessibilityLabel="No, the passage is not easier to read"
-					accessibilityState={feedbackAccessibilityState}
-					useArrow={false}
-					color={storyColor}
-					style={feedbackButtonStyle}
-				>
-					{noLabel}
-				</LinkButton>
-				<LinkButton
-					handler={() => handlePassageFeedback(true)}
-					disabled={feedbackDisabled}
-					accessibilityRole="button"
-					accessibilityLabel="Yes, the passage is easier to read"
-					accessibilityState={feedbackAccessibilityState}
-					useArrow={false}
-					color={storyColor}
-					style={feedbackButtonStyle}
-				>
-					{yesLabel}
-				</LinkButton>
-			</View>
-		);
-	}
-
-	if (showRepeat) {
-		footerContent = (
-			<>
-				<View style={styles.footerRow}>
-					{backButton}
-					<LinkButton
-						handler={handleRepeat}
-						disabled={repeatDisabled}
-						color={storyColor}
-						useArrow={false}
-						type="outline"
-						showShadow={false}
-						showInnerBorder={false}
-						style={repeatButtonStyle}
-					>
-						{repeatLabel}
-					</LinkButton>
-				</View>
-				{nextButton}
-			</>
-		);
-	}
-
-	/**
-	 * The shared passage view owns its scroll area. Other review pages scroll as a whole.
-	 */
-	let pageContent = content;
-
-	if (!hasReview || step !== 0) {
-		pageContent = (
-			<ScrollView
-				contentContainerStyle={styles.scrollContent}
-				showsVerticalScrollIndicator
-			>
-				{content}
-			</ScrollView>
-		);
-	}
-
-	/**
-	 * Render it
-	 */
 	return (
 		<View style={[styles.container, containerStyle]}>
 			<ImageBackground
@@ -580,43 +184,91 @@ export default function DeckResultsView() {
 				style={styles.postcard}
 			>
 				<View style={styles.postcardBorder}>
-					<Animated.View
-						key={`header-${step}`}
-						entering={headerEntry}
-						style={styles.header}
-					>
-						<View style={[styles.headingRow, step === 3 && styles.unlockHeading]}>
-							<MaterialSymbol
-								name={icon}
-								size={step === 3 ? 72 : 28}
-								color={storyColor}
-							/>
-							<View style={[styles.headingText, step === 3 && styles.unlockHeadingText]}>
-								<Text
-									accessibilityRole="header"
-									style={[styles.title, headingColor, step === 3 && styles.centeredText]}
-								>
-									{title}
-								</Text>
-								<Text style={[styles.description, step === 3 && styles.centeredText]}>
-									{description}
-								</Text>
-							</View>
+					<View style={styles.header}>
+						<MaterialSymbol
+							name="task_alt"
+							size={28}
+							color={storyColor}
+						/>
+						<View style={styles.headingText}>
+							<Text
+								accessibilityRole="header"
+								style={[styles.title, headingStyle]}
+							>
+								{title}
+							</Text>
+							<Text style={styles.description}>{description}</Text>
 						</View>
-						{hasReview && (
-							<CompletionStepIndicator
-								step={step}
-								total={totalSteps}
-							/>
-						)}
-					</Animated.View>
-					<View
-						key={step}
-						style={styles.content}
-					>
-						{pageContent}
 					</View>
-					<View style={styles.footer}>{footerContent}</View>
+					<ScrollView contentContainerStyle={styles.scrollContent}>
+						{hasReview && session && (
+							<>
+								<CompletionRewards
+									session={session}
+									color={storyColor}
+								/>
+								{unlockItems.length > 0 && (
+									<View style={styles.unlocks}>
+										<Text
+											accessibilityRole="header"
+											style={[styles.sectionTitle, headingStyle]}
+										>
+											Ready to unlock
+										</Text>
+										<CompletionUnlocks
+											items={unlockItems}
+											color={storyColor}
+										/>
+									</View>
+								)}
+								<Pressable
+									accessibilityRole="button"
+									accessibilityLabel={wordResultsLabel}
+									accessibilityState={{ expanded: showWordResults }}
+									onPress={handleToggleWordResults}
+									style={styles.wordResultsToggle}
+								>
+									<Text style={[styles.sectionTitle, headingStyle]}>{wordResultsLabel}</Text>
+									<MaterialSymbol
+										name={wordResultsIcon}
+										size={24}
+										color={storyColor}
+									/>
+								</Pressable>
+								{showWordResults && (
+									<CompletionWordResults
+										words={cardDeck.words}
+										results={session.results}
+										color={storyColor}
+									/>
+								)}
+							</>
+						)}
+					</ScrollView>
+					<View style={styles.footer}>
+						{hasReview && (
+							<LinkButton
+								handler={handleRepeat}
+								disabled={repeatDisabled}
+								color={storyColor}
+								fullwidth
+							>
+								{studyLabel}
+							</LinkButton>
+						)}
+						<LinkButton
+							handler={handleFinish}
+							disabled={isRepeating || isUpdatingProgress}
+							color={storyColor}
+							type="outline"
+							useArrow={false}
+							showShadow={false}
+							showInnerBorder={false}
+							fullwidth
+						>
+							Back to chapter
+						</LinkButton>
+					</View>
 				</View>
 			</ImageBackground>
 		</View>
@@ -627,9 +279,6 @@ export default function DeckResultsView() {
  * Styles
  */
 const styles = StyleSheet.create({
-	unlockHeading: { flexDirection: 'column', alignItems: 'center', gap: 12 },
-	unlockHeadingText: { flex: 0, alignSelf: 'stretch' },
-	centeredText: { textAlign: 'center' },
 	container: {
 		flex: 1,
 		paddingTop: 8,
@@ -656,15 +305,12 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 	},
 	header: {
-		padding: 12,
-		gap: 10,
-		borderBottomWidth: 1,
-		borderBottomColor: colors.light.goldenBorder,
-	},
-	headingRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		padding: 12,
 		gap: 8,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.light.goldenBorder,
 	},
 	headingText: { flex: 1, gap: 3 },
 	title: {
@@ -677,18 +323,22 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
-	content: { flex: 1, minHeight: 0 },
-	scrollContent: { padding: 12, paddingTop: 10, paddingBottom: 16 },
+	scrollContent: { padding: 12, gap: 12 },
+	sectionTitle: { fontSize: 14, fontFamily: 'lexend-600' },
+	unlocks: { gap: 8 },
+	wordResultsToggle: {
+		minHeight: 44,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: 8,
+		borderTopWidth: 1,
+		borderTopColor: colors.light.goldenBorder,
+	},
 	footer: {
 		gap: 8,
 		padding: 10,
 		borderTopWidth: 1,
 		borderTopColor: colors.light.goldenBorder,
 	},
-	backButton: { flex: 1, minHeight: 44 },
-	footerRow: { flexDirection: 'row', gap: 8 },
-	footerActions: { flex: 1 },
-	nextButton: { minHeight: 44 },
-	feedbackButton: { flex: 1, flexBasis: 0, minWidth: 0, minHeight: 44 },
-	disabledButton: { opacity: 0.5 },
 });

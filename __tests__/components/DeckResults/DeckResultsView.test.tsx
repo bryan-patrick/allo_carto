@@ -3,8 +3,7 @@ import { initialWordState } from '@/src/components/CardDeck/cardDeckTypes';
 import { makeMockCardDeckState } from '@/src/components/CardDeck/mockCardDeck';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckResultsView from '@/src/components/Views/DeckResultsView';
-import { saveDeckPassageFeedback } from '@/src/db/interface';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 
 const mockRouter = {
 	dismissTo: jest.fn(),
@@ -15,9 +14,6 @@ jest.mock('@/src/components/CardDeck/useCardDeck');
 
 jest.mock('@/src/db/interface', () => ({
 	getDeck: jest.fn(),
-	getDB: jest.fn(async () => ({ getFirstAsync: jest.fn(async () => null) })),
-	getWordProgressById: jest.fn(async () => ({})),
-	saveDeckPassageFeedback: jest.fn(async () => {}),
 }));
 
 jest.mock('@/src/db/useUserContext', () => ({
@@ -58,7 +54,6 @@ const chapter = story.chapters.find(chapter => chapter.decks.length > 0)!;
 describe('<DeckResultsView />', () => {
 	beforeEach(() => {
 		mockRouter.dismissTo.mockClear();
-		jest.mocked(saveDeckPassageFeedback).mockClear();
 		mockUseCardDeck.mockReturnValue({
 			cardDeckState: makeMockCardDeckState({
 				cardDeck: chapter.decks[0],
@@ -66,7 +61,9 @@ describe('<DeckResultsView />', () => {
 				session: {
 					id: 'completed-session',
 					xpBefore: 0,
-					// Real sessions keep these lists so the results screen can check for new unlocks.
+					/**
+					 * Real sessions keep these lists to find newly available unlocks.
+					 */
 					unlockedIdsBefore: [],
 					readyToUnlockIdsBefore: [],
 					results: [],
@@ -78,22 +75,13 @@ describe('<DeckResultsView />', () => {
 		});
 	});
 
-	test('saves passage feedback and dismisses results back to the selected chapter', async () => {
-		const { getByText, getByLabelText } = await render(<DeckResultsView />);
+	test('returns to the selected chapter directly from the session summary', async () => {
+		const { getByText, queryByText } = await render(<DeckResultsView />);
 
-		const yesLabel = 'Yes, the passage is easier to read';
-		await waitFor(() => expect(getByLabelText(yesLabel)).toBeEnabled());
-		await fireEvent.press(getByLabelText(yesLabel));
-		await waitFor(() => expect(getByText('Word results')).toBeTruthy());
-		expect(saveDeckPassageFeedback).toHaveBeenCalledWith({
-			userId: 'user_one',
-			sessionId: 'completed-session',
-			deckId: chapter.decks[0].id,
-			isEasierToRead: true,
-			results: [],
-		});
-		await fireEvent.press(getByText('Next'));
-		await fireEvent.press(getByText('Finish'));
+		expect(getByText('Session complete!')).toBeTruthy();
+		expect(getByText('XP earned')).toBeTruthy();
+		expect(queryByText('Next')).toBeNull();
+		await fireEvent.press(getByText('Back to chapter'));
 		expect(mockRouter.dismissTo).toHaveBeenCalledWith({
 			pathname: '/ChapterDetail',
 			params: {

@@ -1,6 +1,5 @@
 import colors from '@/src/app/colors';
 import type { PassageSegment, ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
-import type { DeckWordResultProps } from '@/src/components/CardDeck/deckSessionTypes';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import PassageHighlightLayer from '@/src/components/PassageHighlightLayer';
 import ProgressBar from '@/src/components/ProgressBar';
@@ -10,7 +9,7 @@ import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 /**
@@ -21,8 +20,6 @@ interface DeckPassageViewProps {
 	deck: ReadingPassage;
 	minimumPassageHeight?: number;
 	onContentHeightChange?: (contentHeight: number) => void;
-	results?: DeckWordResultProps[];
-	sessionLegendHeader?: (speechButton: ReactNode) => ReactNode;
 	showLearningControls?: boolean;
 	showProgress?: boolean;
 	showTitle?: boolean;
@@ -139,8 +136,6 @@ export default function DeckPassageView({
 	deck,
 	minimumPassageHeight = 300,
 	onContentHeightChange,
-	results,
-	sessionLegendHeader,
 	showLearningControls = true,
 	showProgress = true,
 	showTitle = true,
@@ -173,8 +168,6 @@ export default function DeckPassageView({
 		passage: 0,
 	});
 	const hasReportedContentHeight = useRef(false);
-	const resultsByWordId = new Map((results ?? []).map(result => [result.wordId, result]));
-	const hasSessionResults = results !== undefined;
 	const hasPassageHeader = showTitle || showProgress || showLearningControls;
 	const passageTextContainerStyle = { minHeight: minimumPassageHeight };
 
@@ -191,8 +184,6 @@ export default function DeckPassageView({
 			spokenCharacterIndex < range.end;
 		const trailingText = getPassageTrailingText(after);
 		const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
-		const result = resultsByWordId.get(wordId ?? '');
-		const isHidden = !unlockExempt && progress === 'unseen';
 		let displayProgress = progress;
 		let displayText = text;
 		let opacity = wordProgressOpacityByKey[progress];
@@ -207,16 +198,6 @@ export default function DeckPassageView({
 		const wordColor = getLearningLevelColor(displayProgress, useLearningLevelColors);
 		let backgroundColor: string | undefined;
 		let displayOpacity: number | Animated.Value = opacity;
-		let accessibilityLabel = displayText;
-
-		if (result && !unlockExempt && !isHidden) {
-			accessibilityLabel = `${displayText}, ${result.outcome}`;
-			backgroundColor = `${colors.light.danger}33`;
-
-			if (result.outcome === 'correct') {
-				backgroundColor = colors.light.success;
-			}
-		}
 
 		if (isCurrentWord) {
 			backgroundColor = '#FFFFAAFF';
@@ -234,7 +215,7 @@ export default function DeckPassageView({
 		};
 		return {
 			key,
-			accessibilityLabel,
+			accessibilityLabel: displayText,
 			displayText,
 			trailingText,
 			textStyle: progressStyle,
@@ -579,18 +560,6 @@ export default function DeckPassageView({
 						})}
 					</View>
 				)}
-				{hasSessionResults && (
-					<View style={styles.sessionLegend}>
-						{sessionLegendHeader?.(speechButton)}
-						<Text style={styles.sessionDescription}>Highlighted words are from this session.</Text>
-						<View style={styles.sessionLegendItems}>
-							<Text style={[styles.sessionLegendLabel, styles.sessionCorrect]}>Correct</Text>
-							<Text style={[styles.sessionLegendLabel, styles.sessionIncorrect]}>
-								Incorrect / skipped
-							</Text>
-						</View>
-					</View>
-				)}
 			</View>
 		</View>
 	);
@@ -736,21 +705,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 8,
 		paddingTop: 8,
 	},
-	sessionLegend: { gap: 6, paddingVertical: 8 },
-	sessionDescription: {
-		fontFamily: 'lexend-400',
-		fontSize: 12,
-		color: colors.dark.text,
-	},
-	sessionLegendItems: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-	sessionLegendLabel: {
-		fontFamily: 'lexend-400',
-		fontSize: 12,
-		color: colors.dark.text,
-		padding: 4,
-	},
-	sessionCorrect: { backgroundColor: colors.light.success },
-	sessionIncorrect: { backgroundColor: `${colors.light.danger}33` },
 	progressLegend: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
