@@ -23,7 +23,7 @@ interface ChapterPolaroidProps {
 }
 
 /**
- * We use this to frame chapter photos in polaroid paper that repeats as the frame grows.
+ * We use this to show chapter photos in a small stack of polaroids, with one tilted behind the photo.
  * The bottom border can hold chapter details, and an optional noise image covers just the photo.
  */
 export default function ChapterPolaroid({
@@ -43,45 +43,58 @@ export default function ChapterPolaroid({
 	};
 
 	return (
-		<View style={[styles.frame, style]}>
-			<ImageBackground
+		<View style={[styles.stack, style]}>
+			<Image
 				accessible={false}
+				pointerEvents="none"
 				source={polaroidBackground}
 				resizeMode="stretch"
-				style={[styles.paper, Boolean(footer) && styles.paperWithFooter]}
-			>
-				<View style={[styles.photo, photoStyle]}>
-					<Image
-						accessible={false}
-						source={source}
-						resizeMode="stretch"
-						style={styles.photoLayer}
-					/>
-					{photoNoiseSource && (
+				style={[styles.frame, styles.backPolaroid]}
+			/>
+			<View style={styles.frame}>
+				<ImageBackground
+					accessible={false}
+					source={polaroidBackground}
+					resizeMode="stretch"
+					style={[styles.paper, Boolean(footer) && styles.paperWithFooter]}
+				>
+					<View style={[styles.photo, photoStyle]}>
 						<Image
 							accessible={false}
-							pointerEvents="none"
-							source={photoNoiseSource}
-							resizeMode="repeat"
-							style={[styles.photoLayer, noiseStyle]}
+							source={source}
+							resizeMode="stretch"
+							style={styles.photoLayer}
 						/>
-					)}
-				</View>
-				{Boolean(footer) && <View style={styles.footer}>{footer}</View>}
-			</ImageBackground>
-			{Boolean(badge) && (
-				<View
-					pointerEvents="none"
-					style={styles.cornerBadge}
-				>
-					{badge}
-				</View>
-			)}
+						{photoNoiseSource && (
+							<Image
+								accessible={false}
+								pointerEvents="none"
+								source={photoNoiseSource}
+								resizeMode="repeat"
+								style={[styles.photoLayer, noiseStyle]}
+							/>
+						)}
+					</View>
+					{Boolean(footer) && <View style={styles.footer}>{footer}</View>}
+				</ImageBackground>
+				{Boolean(badge) && (
+					<View
+						pointerEvents="none"
+						style={styles.cornerBadge}
+					>
+						{badge}
+					</View>
+				)}
+			</View>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	stack: {
+		width: '100%',
+		position: 'relative',
+	},
 	frame: {
 		width: '100%',
 		backgroundColor: '#eee9df',
@@ -94,6 +107,20 @@ const styles = StyleSheet.create({
 		},
 		shadowRadius: 4,
 		shadowOpacity: 0.6,
+	},
+	backPolaroid: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		height: '100%',
+		borderWidth: 1,
+		borderColor: colors.dark.border,
+		overflow: 'hidden',
+		transform: [
+			{
+				rotate: '-4deg',
+			},
+		],
 	},
 	cornerBadge: {
 		position: 'absolute',
