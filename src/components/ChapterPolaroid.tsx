@@ -62,7 +62,7 @@ export default function ChapterPolaroid({
 						<Image
 							accessible={false}
 							source={source}
-							resizeMode="stretch"
+							resizeMode="cover"
 							style={styles.photoLayer}
 						/>
 						{photoNoiseSource && (
