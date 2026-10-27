@@ -1,14 +1,16 @@
-import type { DeckChapter, DeckStory } from '@/data/french/storyAtlas';
+import type { DeckChapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
 import { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, View, type LayoutRectangle } from 'react-native';
+import { StyleSheet, Text, View, type LayoutRectangle } from 'react-native';
+import ChapterPolaroid from './ChapterPolaroid';
 import CollectionGems from './CollectionGems';
 import LinkButton from './LinkButton';
 import LockedSection from './LockedSection';
 
 const defaultCharacterImage = require('@/src/app/assets/images/chapters/what-is-allo-carto.png');
+const photoGrainOverlay = require('@/src/app/assets/images/chapter-images/photo-grain-overlay.png');
 export const chapterMapDotSize = 20;
 
 export interface ChapterMapAnchor {
@@ -23,7 +25,6 @@ export interface ChapterMapAnchor {
  */
 interface ChapterSelectRowProps {
 	chapter: DeckChapter;
-	story: DeckStory;
 	index: number;
 	progressById: ProgressById;
 	onMapAnchorChange: (anchor: ChapterMapAnchor) => void;
@@ -35,7 +36,6 @@ interface ChapterSelectRowProps {
  */
 export default function ChapterSelectRow({
 	chapter,
-	story,
 	index,
 	progressById,
 	onMapAnchorChange,
@@ -44,14 +44,10 @@ export default function ChapterSelectRow({
 	const [columnLayout, setColumnLayout] = useState<LayoutRectangle | null>(null);
 	const [anchorLayout, setAnchorLayout] = useState<LayoutRectangle | null>(null);
 	const isReversed = index % 2 === 1;
-	const chapterColor = colors.categoryLight[story.category];
 	const isLocked = !isItemUnlocked({
 		id: chapter.id,
 		progressById,
 	});
-	const chapterTextColor = {
-		color: isLocked ? colors.light.goldenBorder : chapterColor,
-	};
 	const unlockCriteria = getUnlockCriteria(chapter, progressById);
 	const hasStartedChapter = chapter.decks.some(deck =>
 		Boolean(progressById[deck.id]?.hasStartedFlashcards),
@@ -98,11 +94,24 @@ export default function ChapterSelectRow({
 						onLayout={event => setAnchorLayout(event.nativeEvent.layout)}
 						style={[styles.characterFrame]}
 					>
-						<Image
-							accessible={false}
+						<ChapterPolaroid
 							source={chapter.characterImage ?? defaultCharacterImage}
-							resizeMode="contain"
-							style={styles.characterImage}
+							photoNoiseSource={photoGrainOverlay}
+							photoNoiseOpacity={0.2}
+							style={styles.polaroid}
+							badge={isNew ? <Text style={styles.newLabel}>New</Text> : undefined}
+							footer={
+								<View style={styles.polaroidMetadata}>
+									<Text style={[styles.label, styles.polaroidLabel]}>{chapter.label}</Text>
+									{hasParagraphs && (
+										<CollectionGems
+											title={chapter.name}
+											progress={chapterProgress}
+											size={16}
+										/>
+									)}
+								</View>
+							}
 						/>
 					</View>
 				)}
@@ -110,19 +119,7 @@ export default function ChapterSelectRow({
 					onLayout={isLocked ? event => setAnchorLayout(event.nativeEvent.layout) : undefined}
 					style={styles.chapterInfo}
 				>
-					<View style={styles.labelRow}>
-						<Text style={[styles.label, chapterTextColor]}>{chapter.label}</Text>
-						{hasParagraphs && !isLocked && (
-							<View style={styles.metadataRow}>
-								<CollectionGems
-									title={chapter.name}
-									progress={chapterProgress}
-									size={16}
-								/>
-							</View>
-						)}
-						{isNew && <Text style={styles.newLabel}>New</Text>}
-					</View>
+					{isLocked && <Text style={[styles.label, styles.lockedLabel]}>{chapter.label}</Text>}
 					{!isLocked && (
 						<>
 							<Text
@@ -191,63 +188,60 @@ const styles = StyleSheet.create({
 	characterFrame: {
 		alignItems: 'center',
 		width: '100%',
-		aspectRatio: 1.5,
-		marginBottom: 4,
-		elevation: 4,
-		shadowColor: '#000000',
-		shadowOffset: { width: 0, height: 0 },
-		shadowRadius: 4,
-		shadowOpacity: 1,
+		marginBottom: 12,
 	},
-	characterImage: {
-		width: '100%',
-		height: '100%',
+	polaroid: {
 		maxWidth: 225,
 	},
 	chapterInfo: {
 		alignItems: 'center',
 	},
-	labelRow: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: 12,
-	},
 	label: {
 		fontFamily: 'lexend-600',
-		fontSize: 14,
+		fontSize: 12,
 		textTransform: 'uppercase',
+		color: colors.dark.text,
+	},
+	polaroidLabel: {
+		fontFamily: 'shadows-400',
+		fontSize: 18,
+		textTransform: 'none',
+	},
+	lockedLabel: {
+		color: colors.light.goldenBorder,
 	},
 	newLabel: {
 		fontFamily: 'lexend-600',
 		fontSize: 10,
-		color: colors.dark.text,
-		backgroundColor: colors.light.goldenBorder,
+		color: colors.light.text,
+		backgroundColor: colors.dark.success,
+		borderWidth: 1,
+		borderColor: colors.light.success,
 		borderRadius: 4,
-		paddingHorizontal: 5,
-		paddingVertical: 2,
+		paddingHorizontal: 8,
+		paddingVertical: 3,
 	},
 	title: {
 		fontFamily: 'lexend-600',
 		fontSize: 20,
 		textAlign: 'center',
-		marginBottom: 8,
+		marginBottom: 4,
 		color: colors.light.secondary,
 	},
-	metadataRow: {
+	polaroidMetadata: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		justifyContent: 'center',
+		justifyContent: 'space-between',
 		alignItems: 'center',
 		gap: 8,
 	},
 	progress: {
 		fontFamily: 'lexend-400',
 		fontSize: 12,
+		lineHeight: 12,
 		textAlign: 'center',
 		color: colors.light.secondary,
-		marginBottom: 8,
+		marginBottom: 12,
 	},
 	level: {
 		fontFamily: 'lexend-400',

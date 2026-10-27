@@ -132,7 +132,6 @@ export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 					<ChapterSelectRow
 						key={chapter.id}
 						chapter={chapter}
-						story={story}
 						index={index}
 						progressById={progressById}
 						onMapAnchorChange={handleAnchorChange}
