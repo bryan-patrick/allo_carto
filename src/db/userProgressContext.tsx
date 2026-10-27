@@ -2,6 +2,11 @@ import type {
 	DeckCompletionReceiptProps,
 	WordAnswerAwardProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
+import type {
+	SolveAttemptRequest,
+	SolveAttemptResult,
+	SolveCardRequest,
+} from '@/src/components/Solve/solveTypes';
 import type { ProgressById } from '@/src/util/progression';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -18,6 +23,8 @@ import loadUserXP from './queries/getUserExperience';
 import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
 import unlockAtlasItem from './queries/unlockAtlasItem';
+import unlockSolveCard from './queries/unlockSolveCard';
+import writeSolveAttempt from './queries/writeSolveAttempt';
 import {
 	writeCorrectAnswer,
 	writeDeckCompletion,
@@ -47,6 +54,8 @@ interface UserProgressContextProps {
 		request: DeckCompletionRequest,
 	) => Promise<DeckCompletionReceiptProps | false>;
 	writeWordSeen: (wordId: string, deckId?: string) => Promise<boolean>;
+	writeSolveAttempt: (request: SolveAttemptRequest) => Promise<SolveAttemptResult | false>;
+	unlockSolveCard: (request: SolveCardRequest) => Promise<SolveAttemptResult | false>;
 	unlockItem: (id: string) => Promise<boolean>;
 	reloadProgress: () => Promise<void>;
 }
@@ -63,6 +72,8 @@ const initialValue: UserProgressContextProps = {
 	writeCorrectAnswer: async () => false,
 	writeDeckCompletion: async () => false,
 	writeWordSeen: async () => false,
+	writeSolveAttempt: async () => false,
+	unlockSolveCard: async () => false,
 	unlockItem: async () => false,
 	reloadProgress: async () => {},
 };
@@ -204,6 +215,32 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	);
 
 	/**
+	 * Write the solve attempt to the db
+	 */
+	const recordSolveAttempt = useCallback(
+		async (request: SolveAttemptRequest): Promise<SolveAttemptResult | false> => {
+			return runProgressWrite(() => writeSolveAttempt({ database, userId: userId!, ...request }));
+		},
+		[database, runProgressWrite, userId],
+	);
+
+	/**
+	 * Unlocking a puzzle card updates the shared Ink balance after it saves.
+	 */
+	const recordSolveUnlock = useCallback(
+		async (request: SolveCardRequest): Promise<SolveAttemptResult | false> => {
+			return runProgressWrite(() =>
+				unlockSolveCard({
+					database,
+					userId: userId!,
+					...request,
+				}),
+			);
+		},
+		[database, runProgressWrite, userId],
+	);
+
+	/**
 	 * Context value
 	 */
 	const value = useMemo<UserProgressContextProps>(
@@ -215,6 +252,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			writeCorrectAnswer: recordCorrectAnswer,
 			writeDeckCompletion: recordDeckCompletion,
 			writeWordSeen: recordWordSeen,
+			writeSolveAttempt: recordSolveAttempt,
+			unlockSolveCard: recordSolveUnlock,
 			unlockItem,
 			reloadProgress: refreshProgress,
 			status,
@@ -227,6 +266,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			recordCorrectAnswer,
 			recordDeckCompletion,
 			recordWordSeen,
+			recordSolveAttempt,
+			recordSolveUnlock,
 			unlockItem,
 			refreshProgress,
 			status,

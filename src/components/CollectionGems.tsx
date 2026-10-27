@@ -124,7 +124,7 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 const styles = StyleSheet.create({
 	filled: {
 		textShadowOffset: { width: 0, height: 0 },
-		textShadowRadius: 8,
+		textShadowRadius: 2,
 		textShadowColor: '#ffffff',
 	},
 	unfilled: {
@@ -134,6 +134,5 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 3,
-		minHeight: 24,
 	},
 });

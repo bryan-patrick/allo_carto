@@ -11,6 +11,9 @@ export default async function resetDB(): Promise<void> {
 	const database = await getDB();
 
 	await database.execAsync(`
+		DROP TABLE IF EXISTS solveAttempts;
+		DROP TABLE IF EXISTS solveUnlocks;
+		DROP TABLE IF EXISTS solvePositions;
 		DROP TABLE IF EXISTS flashcardAwards;
 		DROP TABLE IF EXISTS userInk;
 		DROP TABLE IF EXISTS deckPassageFeedback;

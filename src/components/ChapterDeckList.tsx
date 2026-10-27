@@ -8,6 +8,8 @@ import DeckHeader from '@/src/components/DeckHeader';
 import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import SolveButton from '@/src/components/Solve/SolveButton';
+import SolveEligibilityHint from '@/src/components/Solve/SolveEligibilityHint';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
@@ -23,7 +25,7 @@ import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 /**
  * Typing
@@ -140,7 +142,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 				let actionLabel = 'Flash Cards';
 
 				if (completionPercent > 0) {
-					actionLabel = 'Study Cards';
+					actionLabel = 'Flashcards';
 				}
 
 				return (
@@ -151,6 +153,27 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 						{!isLocked && (
 							<DeckHeader
 								subtitle={`Paragraph ${index + 1}`}
+								subtitleAction={
+									<Pressable
+										accessibilityRole="button"
+										accessibilityLabel={`Read paragraph: ${deck.title}`}
+										accessibilityState={{
+											disabled: Boolean(loadingPassageId),
+											busy: isLoadingPassage,
+										}}
+										disabled={Boolean(loadingPassageId)}
+										onPress={() => handleShowPassage(deck)}
+										hitSlop={8}
+										style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
+									>
+										<Text style={[styles.readLinkText, { color: storyColor }]}>Read</Text>
+										<MaterialSymbol
+											name="menu_book"
+											size={16}
+											color={storyColor}
+										/>
+									</Pressable>
+								}
 								title={deck.title}
 								progress={progressById[deck.id]}
 								wordCount={new Set(deck.wordIds).size}
@@ -159,50 +182,26 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 						)}
 
 						{isLocked && (
-							<>
-								<Text style={styles.paragraphLabel}>{`Paragraph ${index + 1}`}</Text>
-								<LockedSection
-									itemId={deck.id}
-									color={storyColor}
-									unlockCriteria={unlockCriteria}
-									fontSizeOffset={2}
-								/>
-							</>
+							<LockedSection
+								itemId={deck.id}
+								color={storyColor}
+								unlockCriteria={unlockCriteria}
+								fontSizeOffset={2}
+							/>
 						)}
+						{!isLocked && <SolveEligibilityHint deck={deck} />}
 						{!isLocked && (
 							<View style={styles.actions}>
-								<LinkButton
-									accessibilityLabel={`Read paragraph: ${deck.title}`}
+								<SolveButton
+									deckId={deck.id}
 									color={storyColor}
-									contentPaddingHorizontal={4}
-									contentPaddingVertical={4}
-									disabled={Boolean(loadingPassageId)}
-									handler={() => handleShowPassage(deck)}
-									showInnerBorder={false}
-									showShadow={false}
-									style={[
-										styles.actionButton,
-										styles.secondaryButton,
-										isLoadingPassage && styles.loadingButton,
-									]}
-									type="outline"
-									useArrow={false}
-									SVGElement={
-										<MaterialSymbol
-											color={storyColor}
-											name="menu_book"
-											size={18}
-										/>
-									}
-								>
-									<Text style={styles.actionText}>Read</Text>
-								</LinkButton>
+								/>
 								<LinkButton
 									accessibilityLabel={`${actionLabel} for paragraph: ${deck.title}`}
 									arrowColor={colors.light.text}
 									color={storyColor}
-									contentPaddingHorizontal={8}
-									contentPaddingVertical={4}
+									contentPaddingHorizontal={6}
+									contentPaddingVertical={6}
 									handler={() => handleSelectDeck(deck)}
 									disabled={isUpdatingProgress}
 									showInnerBorder={false}
@@ -244,9 +243,9 @@ const styles = StyleSheet.create({
 		borderRightWidth: 0,
 		borderBottomWidth: 0,
 		paddingHorizontal: 12,
-		paddingVertical: 8,
-		marginLeft: 8,
-		gap: 8,
+		paddingVertical: 12,
+		marginLeft: 12,
+		gap: 12,
 	},
 	firstDeckRow: {
 		borderTopLeftRadius: 8,
@@ -258,6 +257,7 @@ const styles = StyleSheet.create({
 	},
 	actions: {
 		flexDirection: 'row',
+		alignItems: 'flex-start',
 		gap: 8,
 	},
 	actionButton: {
@@ -266,14 +266,18 @@ const styles = StyleSheet.create({
 	actionText: {
 		fontSize: 16,
 	},
-	secondaryButton: {
-		flex: 1,
-		borderWidth: 1,
-		borderBottomWidth: 2,
+	readLink: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
+	readLinkText: {
+		fontFamily: 'lexend-400',
+		fontSize: 16,
+		textDecorationLine: 'underline',
 	},
 	primaryActionButton: {
 		flex: 2,
-		borderWidth: 1,
 	},
 	loadingButton: {
 		opacity: 0.5,

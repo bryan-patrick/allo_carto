@@ -3,6 +3,9 @@ import type { UserProgressRow } from '@/src/util/progression';
 import { StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
+/**
+ * Typing
+ */
 interface CollectionProgressProps {
 	progress?: UserProgressRow;
 	wordCount?: number;
@@ -10,7 +13,9 @@ interface CollectionProgressProps {
 	fontSize?: number;
 }
 
-/** We show words seen and learned progress beside chapter and paragraph numbers. */
+/**
+ * Shows cards seen and how well the users "knows" the deck
+ */
 export default function CollectionProgress({
 	progress,
 	wordCount = 0,
@@ -31,7 +36,7 @@ export default function CollectionProgress({
 			<View style={styles.stat}>
 				<MaterialSymbol
 					name="visibility"
-					size={fontSize + 2}
+					size={fontSize}
 					color={color}
 				/>
 				<Text style={[styles.value, textStyle]}>
@@ -41,7 +46,7 @@ export default function CollectionProgress({
 			<View style={styles.stat}>
 				<MaterialSymbol
 					name="cognition_2"
-					size={fontSize + 2}
+					size={fontSize}
 					color={color}
 				/>
 				<Text style={[styles.value, textStyle]}>{learnedPercent}%</Text>
@@ -50,6 +55,9 @@ export default function CollectionProgress({
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',

@@ -78,7 +78,7 @@ describe('<DeckResultsView />', () => {
 	test('returns to the selected chapter directly from the session summary', async () => {
 		const { getByText, queryByText } = await render(<DeckResultsView />);
 
-		expect(getByText('Session complete!')).toBeTruthy();
+		expect(getByText('You finished the deck!')).toBeTruthy();
 		expect(getByText('XP earned')).toBeTruthy();
 		expect(queryByText('Next')).toBeNull();
 		await fireEvent.press(getByText('Back to chapter'));

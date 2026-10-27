@@ -1,6 +1,10 @@
 import { findCompletionPath } from '@/src/util/atlasCompletion';
 import { getDB, logThisIfItFails } from '../connection';
 
+interface DatabaseColumn {
+	name: string;
+}
+
 const createUserProgressTableSQL = `
 	CREATE TABLE IF NOT EXISTS userProgress (
 		userId TEXT NOT NULL,
@@ -123,9 +127,53 @@ export default async function createTables(): Promise<void> {
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
 	await createInkTables();
+	await createSolveTables();
 	await ensureFlashcardsStartedColumn();
 	await ensureUnlockedColumn();
 	await ensureParagraphProgressType();
+}
+
+/**
+ * Tables for saving the solve puzzles
+ */
+async function createSolveTables(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS solveUnlocks (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			position INTEGER NOT NULL CHECK (position >= 0),
+			wordId TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId, position),
+			FOREIGN KEY (userId) REFERENCES users(id),
+			FOREIGN KEY (wordId) REFERENCES words(id)
+		);
+
+		CREATE TABLE IF NOT EXISTS solvePositions (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			position INTEGER NOT NULL CHECK (position >= 0),
+			wordId TEXT NOT NULL,
+			acceptedAnswer TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId, position),
+			FOREIGN KEY (userId) REFERENCES users(id),
+			FOREIGN KEY (wordId) REFERENCES words(id)
+		);
+		
+		CREATE TABLE IF NOT EXISTS solveAttempts (
+			userId TEXT NOT NULL,
+			attemptId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			position INTEGER NOT NULL,
+			status TEXT NOT NULL CHECK (status IN ('exact', 'close', 'incorrect')),
+			acceptedAnswer TEXT,
+			inkSpent INTEGER NOT NULL CHECK (inkSpent >= 0),
+			PRIMARY KEY (userId, attemptId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+	`;
+
+	await database.execAsync(statement);
 }
 
 /**
@@ -262,12 +310,27 @@ async function createDeckCompletionsTable(): Promise<void> {
 			deckId TEXT NOT NULL,
 			bonuses TEXT NOT NULL,
 			totalXP INTEGER NOT NULL CHECK (totalXP >= 0),
+			earnedInk INTEGER NOT NULL DEFAULT 0 CHECK (earnedInk >= 0),
 			PRIMARY KEY (userId, sessionId),
 			FOREIGN KEY (userId) REFERENCES users(id)
 		);
 		CREATE INDEX IF NOT EXISTS deckCompletionsByDeck
 			ON deckCompletions (userId, deckId);
 	`);
+
+	/**
+	 * We keep the actual Ink payout on the completion receipt.
+	 * Add its field when reopening a development database made before this change.
+	 */
+	const columns = await database.getAllAsync<DatabaseColumn>('PRAGMA table_info(deckCompletions);');
+	const hasEarnedInkColumn = columns.some(column => column.name === 'earnedInk');
+
+	if (!hasEarnedInkColumn) {
+		await database.execAsync(`
+			ALTER TABLE deckCompletions
+			ADD COLUMN earnedInk INTEGER NOT NULL DEFAULT 0 CHECK (earnedInk >= 0);
+		`);
+	}
 }
 
 /**
