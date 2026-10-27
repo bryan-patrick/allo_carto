@@ -1,6 +1,7 @@
 import type { DeckChapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import ReadingLink from '@/src/components/ReadingLink';
+import { useUserProgress } from '@/src/db/useUserProgress';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-postmark.png');
@@ -18,6 +19,10 @@ interface ChapterHeaderProps {
  */
 export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 	const { label, name, description } = chapter;
+	const { progressById } = useUserProgress();
+	const progress = progressById[chapter.id];
+	const completedParagraphCount = progress?.completedParagraphCount ?? 0;
+	const paragraphCount = progress?.paragraphCount ?? 0;
 
 	return (
 		<View style={styles.header}>
@@ -48,6 +53,11 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 				/>
 			</View>
 			{description && <Text style={styles.description}>{description}</Text>}
+			{paragraphCount > 0 && (
+				<Text style={styles.progress}>
+					{completedParagraphCount} of {paragraphCount} paragraphs solved
+				</Text>
+			)}
 		</View>
 	);
 }
@@ -87,6 +97,11 @@ const styles = StyleSheet.create({
 	readLink: {
 		fontFamily: 'lexend-400',
 		fontSize: 16,
+	},
+	progress: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		color: colors.dark.text,
 	},
 	title: {
 		color: colors.dark.text,

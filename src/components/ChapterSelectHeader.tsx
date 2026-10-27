@@ -18,13 +18,12 @@ import StorySelector from './StorySelector';
 export default function ChapterSelectHeader() {
 	const insets = useSafeAreaInsets();
 	const user = useUserContext();
-	const { experience, progressById, status } = useUserProgress();
+	const { progressById, status } = useUserProgress();
 	const [isStoryModalVisible, setIsStoryModalVisible] = useState(false);
 	const [isSelectingStory, setIsSelectingStory] = useState(false);
 	const selectedStory = getSelectedStory({
 		selectedStoryId: user?.selectedStoryId,
 		progressById,
-		userLevel: experience.level,
 	});
 	const insetStyle = {
 		paddingTop: insets.top + 8,
@@ -37,7 +36,10 @@ export default function ChapterSelectHeader() {
 		if (
 			!user ||
 			isSelectingStory ||
-			!isItemUnlocked({ id: story.id, progressById, userLevel: experience.level })
+			!isItemUnlocked({
+				id: story.id,
+				progressById,
+			})
 		) {
 			return;
 		}
@@ -77,9 +79,7 @@ export default function ChapterSelectHeader() {
 						showDescription={false}
 					/>
 					<View style={styles.progressRow}>
-						<Text style={styles.category}>
-							{selectedStory.category} - Lvl. {selectedStory.requiredLevel}
-						</Text>
+						<Text style={styles.category}>{selectedStory.category}</Text>
 					</View>
 				</View>
 			)}

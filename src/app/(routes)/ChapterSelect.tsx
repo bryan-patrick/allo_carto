@@ -13,7 +13,7 @@ import { Alert, Text } from 'react-native';
 export default function ChapterSelect() {
 	const { storyId } = useLocalSearchParams<{ storyId?: string }>();
 	const { selectStory } = useUserContext() ?? {};
-	const { experience, progressById, status } = useUserProgress();
+	const { progressById, status } = useUserProgress();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -27,7 +27,10 @@ export default function ChapterSelect() {
 			if (
 				story &&
 				hasStoryContent(story) &&
-				isItemUnlocked({ id: story.id, progressById, userLevel: experience.level })
+				isItemUnlocked({
+					id: story.id,
+					progressById,
+				})
 			) {
 				const didSave = await saveStoryChoice(story.id);
 
@@ -40,7 +43,7 @@ export default function ChapterSelect() {
 		}
 
 		openHome(selectStory);
-	}, [storyId, selectStory, experience.level, progressById, status, router]);
+	}, [storyId, selectStory, progressById, status, router]);
 
 	if (status === 'error') {
 		return <Text>Could not load story progress.</Text>;

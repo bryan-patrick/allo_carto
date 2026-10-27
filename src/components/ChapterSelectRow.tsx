@@ -26,7 +26,6 @@ interface ChapterSelectRowProps {
 	story: DeckStory;
 	index: number;
 	progressById: ProgressById;
-	userLevel: number;
 	onMapAnchorChange: (anchor: ChapterMapAnchor) => void;
 }
 
@@ -39,7 +38,6 @@ export default function ChapterSelectRow({
 	story,
 	index,
 	progressById,
-	userLevel,
 	onMapAnchorChange,
 }: ChapterSelectRowProps) {
 	const [rowLayout, setRowLayout] = useState<LayoutRectangle | null>(null);
@@ -47,17 +45,24 @@ export default function ChapterSelectRow({
 	const [anchorLayout, setAnchorLayout] = useState<LayoutRectangle | null>(null);
 	const isReversed = index % 2 === 1;
 	const chapterColor = colors.light.goldenBorder;
-	const isLocked = !isItemUnlocked({ id: chapter.id, progressById, userLevel });
-	const unlockCriteria = getUnlockCriteria(chapter, progressById, userLevel);
+	const isLocked = !isItemUnlocked({
+		id: chapter.id,
+		progressById,
+	});
+	const unlockCriteria = getUnlockCriteria(chapter, progressById);
 	const hasStartedChapter = chapter.decks.some(deck =>
 		Boolean(progressById[deck.id]?.hasStartedFlashcards),
 	);
 	const hasParagraphs = chapter.decks.length > 0;
 	const chapterProgress = progressById[chapter.id];
-	const chapterWordCount =
-		chapterProgress?.wordCount ?? new Set(chapter.decks.flatMap(deck => deck.wordIds)).size;
-	const actionLabel = hasStartedChapter ? 'Continue' : 'Start Chapter';
+	const completedParagraphCount = chapterProgress?.completedParagraphCount ?? 0;
+	const paragraphCount = chapterProgress?.paragraphCount ?? 0;
 	const isNew = !isLocked && !hasStartedChapter && hasParagraphs;
+	let actionLabel = hasStartedChapter ? 'Continue' : 'Start Chapter';
+
+	if (chapterProgress?.hasFirstGem) {
+		actionLabel = 'Revisit chapter';
+	}
 
 	// We anchor the trail beside the illustration, or the lock when the chapter is locked.
 	useEffect(() => {
@@ -123,12 +128,15 @@ export default function ChapterSelectRow({
 							>
 								{chapter.name}
 							</Text>
+							<Text style={styles.progress}>
+								{completedParagraphCount} of {paragraphCount} paragraphs solved
+							</Text>
 						</>
 					)}
 					{isLocked && (
 						<LockedSection
 							circular
-							itemId={chapter.id}
+
 							color={chapterColor}
 							unlockCriteria={unlockCriteria}
 							style={styles.locked}
@@ -228,6 +236,13 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		gap: 8,
+	},
+	progress: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		textAlign: 'center',
+		color: colors.light.secondary,
+		marginBottom: 8,
 	},
 	level: {
 		fontFamily: 'lexend-400',

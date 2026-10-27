@@ -31,6 +31,7 @@ export default async function unlockSolveCard({
 		status: 'unavailable',
 		acceptedAnswer: null,
 		inkSpent: 0,
+		firstGemEarned: false,
 	};
 
 	await database.withExclusiveTransactionAsync(async transaction => {

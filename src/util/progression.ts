@@ -29,7 +29,9 @@ export interface UserProgressRow {
 	seenWordCount?: number;
 	wordCount?: number;
 	hasStartedFlashcards?: number;
-	isUnlocked?: number;
+	hasFirstGem?: boolean;
+	completedParagraphCount?: number;
+	paragraphCount?: number;
 	wordProgressCounts?: DeckWordProgressCounts;
 }
 

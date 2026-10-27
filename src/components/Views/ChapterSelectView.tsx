@@ -9,12 +9,11 @@ import colors from '../../app/colors';
 
 /** Home shows the chapters for the story chosen in its fixed header. */
 export default function ChapterSelectView() {
-	const { experience, progressById, status } = useUserProgress();
+	const { progressById, status } = useUserProgress();
 	const user = useUserContext();
 	const selectedStory = getSelectedStory({
 		selectedStoryId: user?.selectedStoryId,
 		progressById,
-		userLevel: experience.level,
 	});
 
 	if (status === 'loading') {
@@ -43,7 +42,6 @@ export default function ChapterSelectView() {
 					key={selectedStory.id}
 					story={selectedStory}
 					progressById={progressById}
-					userLevel={experience.level}
 				/>
 			</ScrollView>
 		</ImageBackground>

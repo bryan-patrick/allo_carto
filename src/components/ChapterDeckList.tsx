@@ -68,7 +68,12 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 		if (!userId || isUpdatingProgress || isStartingDeck.current) {
 			return;
 		}
-		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) {
+		if (
+			!isItemUnlocked({
+				id: deck.id,
+				progressById,
+			})
+		) {
 			return;
 		}
 
@@ -85,7 +90,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 			cardDeckDispatch({
 				type: 'SET_DECK',
 				payload: selectedDeck,
-				session: createDeckSession(experience.totalXP, progressById),
+				session: createDeckSession(experience.totalXP),
 			});
 			router.push('/CardDeck');
 		} catch (error) {
@@ -103,7 +108,12 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 		if (!userId || loadingPassageId) {
 			return;
 		}
-		if (!isItemUnlocked({ id: deck.id, progressById, userLevel })) {
+		if (
+			!isItemUnlocked({
+				id: deck.id,
+				progressById,
+			})
+		) {
 			return;
 		}
 
@@ -135,9 +145,12 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 			/>
 			{chapter.decks.filter(hasParagraphContent).map((deck, index) => {
 				const isFirstDeck = index === 0;
-				const isLocked = !isItemUnlocked({ id: deck.id, progressById, userLevel });
+				const isLocked = !isItemUnlocked({
+					id: deck.id,
+					progressById,
+				});
 				const completionPercent = Math.floor(progressById[deck.id]?.completionPercentage ?? 0);
-				const unlockCriteria = getUnlockCriteria(deck, progressById, userLevel);
+				const unlockCriteria = getUnlockCriteria(deck, progressById);
 				const isLoadingPassage = loadingPassageId === deck.id;
 				let actionLabel = 'Flash Cards';
 
@@ -183,7 +196,6 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 
 						{isLocked && (
 							<LockedSection
-								itemId={deck.id}
 								color={storyColor}
 								unlockCriteria={unlockCriteria}
 								fontSizeOffset={2}

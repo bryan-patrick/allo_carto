@@ -6,7 +6,7 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { hasStoryContent } from '@/src/util/atlasContent';
 import { getSelectedStory } from '@/src/util/getSelectedStory';
-import { formatAreaLevelRange, getStoriesForArea } from '@/src/util/storyAreas';
+import { getStoriesForArea } from '@/src/util/storyAreas';
 import { StyleSheet, Text, View } from 'react-native';
 import Story from './Story';
 
@@ -22,13 +22,12 @@ interface StorySelectViewProps {
  * Show all of the awesome stories we have!
  */
 export default function StorySelectView({ onSelect, isSelecting }: StorySelectViewProps) {
-	const { experience, progressById } = useUserProgress();
+	const { progressById } = useUserProgress();
 	const user = useUserContext();
 
 	const selectedStory = getSelectedStory({
 		selectedStoryId: user?.selectedStoryId,
 		progressById,
-		userLevel: experience.level,
 	});
 
 	const groups = storyAtlas.areas.map(area => ({
@@ -56,7 +55,6 @@ export default function StorySelectView({ onSelect, isSelecting }: StorySelectVi
 							>
 								{area.name}
 							</Text>
-							<Text style={styles.areaLevels}>{formatAreaLevelRange(area)}</Text>
 							<Text style={styles.areaDescription}>{area.description}</Text>
 						</View>
 					</View>
@@ -67,11 +65,12 @@ export default function StorySelectView({ onSelect, isSelecting }: StorySelectVi
 							isSelected={story.id === selectedStory?.id}
 							isLocked={
 								!hasStoryContent(story) ||
-								!isItemUnlocked({ id: story.id, progressById, userLevel: experience.level })
+								!isItemUnlocked({
+									id: story.id,
+									progressById,
+								})
 							}
 							progressById={progressById}
-							progressPercent={progressById[story.id]?.completionPercentage ?? 0}
-							userLevel={experience.level}
 							onSelect={onSelect}
 							isSelecting={isSelecting}
 						/>

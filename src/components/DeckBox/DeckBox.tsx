@@ -167,7 +167,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 			cardDeckDispatch({
 				type: 'SET_DECK',
 				payload: selectedDeck,
-				session: createDeckSession(experience.totalXP, progressById),
+				session: createDeckSession(experience.totalXP),
 			});
 			router.push('/CardDeck');
 		} catch (error) {
@@ -256,7 +256,6 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 							{isLocked && (
 								<View style={styles.lockedInner}>
 									<LockedSection
-										itemId={deck.id}
 										color={storyColor}
 										unlockCriteria={unlockCriteria}
 									/>

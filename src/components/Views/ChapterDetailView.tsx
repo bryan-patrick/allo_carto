@@ -15,7 +15,7 @@ import MaterialSymbol from '../MaterialSymbol';
  */
 export default function ChapterDetailView() {
 	const { chapterId } = useLocalSearchParams<{ chapterId?: string }>();
-	const { experience, progressById, status } = useUserProgress();
+	const { progressById, status } = useUserProgress();
 	const headerHeight = useHeaderHeight();
 	const scrollContentStyle = { paddingTop: headerHeight + 16 };
 	const location = findAtlasLocationByChapterId(chapterId);
@@ -60,7 +60,6 @@ export default function ChapterDetailView() {
 					chapter={chapter}
 					story={story}
 					progressById={progressById}
-					userLevel={experience.level}
 				/>
 			</ScrollView>
 		</ImageBackground>

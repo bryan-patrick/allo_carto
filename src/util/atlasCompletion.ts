@@ -2,17 +2,13 @@ import type { DeckChapter, DeckStory, StoryAtlas } from '@/data/french/storyAtla
 import { storyAtlas } from '@/data/french/storyAtlas';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { hasChapterContent, hasParagraphContent, hasStoryContent } from './atlasContent';
-import { getWordsAtLevel, hasCollectionLevel } from './collectionProgress';
 import type { ProgressById, Progression, ProgressType } from './progression';
-import { getWordProgressDefinitionByKey, type WordProgressKey } from './wordProgress';
 
-/**
- * Typing
- */
 interface AtlasCompletionItem {
 	id: string;
 	type: ProgressType;
 	wordIds: string[];
+	paragraphIds: string[];
 }
 
 interface GetAtlasItemsContainingWordProps {
@@ -27,41 +23,30 @@ interface FindCompletionPathProps {
 
 interface IsItemUnlockedProps extends FindCompletionPathProps {
 	progressById: ProgressById;
-	userLevel: number;
 }
 
-export type UnlockCriteria =
-	| {
-			isUnlocked: boolean;
-			requiredWordProgress: WordProgressKey;
-			title: string;
-			qualifiedWordCount: number;
-			wordCount: number;
-	  }
-	| { isUnlocked: boolean; requiredUnlock: string }
-	| { isUnlocked: boolean; requiredLevel: number };
+export interface UnlockCriteria {
+	isUnlocked: boolean;
+	type: 'chapter' | 'paragraph';
+	title: string;
+	completedParagraphCount: number;
+	paragraphCount: number;
+}
 
 export interface AtlasChapterLocation {
 	story: DeckStory;
 	chapter: DeckChapter;
 }
 
-export interface AtlasItem {
-	id: string;
-	type: ProgressType;
-	title: string;
-	context?: string;
-	requiresChoice: boolean;
+export interface NextParagraphLocation extends AtlasChapterLocation {
+	paragraph: CardDeck;
 }
 
-/**
- * Get the unique word ids from a group of decks.
- */
-function getUniqueWordIds(decks: CardDeck[]): string[] {
+function getUniqueWordIds(paragraphs: CardDeck[]): string[] {
 	const uniqueWordIds = new Set<string>();
 
-	for (const deck of decks) {
-		for (const wordId of deck.wordIds) {
+	for (const paragraph of paragraphs) {
+		for (const wordId of paragraph.wordIds) {
 			uniqueWordIds.add(wordId);
 		}
 	}
@@ -70,43 +55,41 @@ function getUniqueWordIds(decks: CardDeck[]): string[] {
 }
 
 /**
- * Get every deck from every chapter in a story.
- */
-function getStoryDecks(story: DeckStory): CardDeck[] {
-	const storyDecks: CardDeck[] = [];
-
-	for (const chapter of story.chapters) {
-		storyDecks.push(...chapter.decks);
-	}
-
-	return storyDecks;
-}
-
-/**
- * Get every story, chapter, and deck with the words used to calculate its completion.
+ * We keep vocabulary totals and solved-paragraph totals separate for each atlas item.
+ * Empty chapters and paragraphs do not count toward finishing a story.
  */
 export function getAtlasCompletionItems(atlas: StoryAtlas = storyAtlas): AtlasCompletionItem[] {
 	const completionItems: AtlasCompletionItem[] = [];
 
 	for (const story of atlas.stories) {
+		const chapters = story.chapters.filter(hasChapterContent);
+		const storyParagraphs = chapters.flatMap(chapter => chapter.decks.filter(hasParagraphContent));
+		const storyParagraphIds = storyParagraphs.map(paragraph => paragraph.id);
+
 		completionItems.push({
 			id: story.id,
 			type: 'story',
-			wordIds: getUniqueWordIds(getStoryDecks(story)),
+			wordIds: getUniqueWordIds(storyParagraphs),
+			paragraphIds: storyParagraphIds,
 		});
 
-		for (const chapter of story.chapters) {
+		for (const chapter of chapters) {
+			const paragraphs = chapter.decks.filter(hasParagraphContent);
+			const paragraphIds = paragraphs.map(paragraph => paragraph.id);
+
 			completionItems.push({
 				id: chapter.id,
 				type: 'chapter',
-				wordIds: getUniqueWordIds(chapter.decks),
+				wordIds: getUniqueWordIds(paragraphs),
+				paragraphIds,
 			});
 
-			for (const deck of chapter.decks) {
+			for (const paragraph of paragraphs) {
 				completionItems.push({
-					id: deck.id,
+					id: paragraph.id,
 					type: 'paragraph',
-					wordIds: getUniqueWordIds([deck]),
+					wordIds: getUniqueWordIds([paragraph]),
+					paragraphIds: [paragraph.id],
 				});
 			}
 		}
@@ -115,28 +98,17 @@ export function getAtlasCompletionItems(atlas: StoryAtlas = storyAtlas): AtlasCo
 	return completionItems;
 }
 
-/**
- * Get every story, chapter, and deck that contains a word.
- */
 export function getAtlasItemsContainingWord({
 	atlas = storyAtlas,
 	wordId,
 }: GetAtlasItemsContainingWordProps): AtlasCompletionItem[] {
-	const matchingItems: AtlasCompletionItem[] = [];
+	const completionItems = getAtlasCompletionItems(atlas);
 
-	for (const completionItem of getAtlasCompletionItems(atlas)) {
-		if (completionItem.wordIds.includes(wordId)) {
-			matchingItems.push(completionItem);
-		}
-	}
-
-	return matchingItems;
+	return completionItems.filter(item => item.wordIds.includes(wordId));
 }
 
 /**
- * Get the path from a story (top level) to an item (story/chapter/deck).
- *
- * A story returns [story], a chapter returns [story, chapter], and a deck returns [story, chapter, deck].
+ * A paragraph's path contains its story, chapter, and paragraph, in that order.
  */
 export function findCompletionPath({
 	atlas = storyAtlas,
@@ -152,9 +124,9 @@ export function findCompletionPath({
 				return [story, chapter];
 			}
 
-			for (const deck of chapter.decks) {
-				if (deck.id === id) {
-					return [story, chapter, deck];
+			for (const paragraph of chapter.decks) {
+				if (paragraph.id === id) {
+					return [story, chapter, paragraph];
 				}
 			}
 		}
@@ -163,214 +135,125 @@ export function findCompletionPath({
 	return [];
 }
 
-function requiresUnlockChoice(item: Progression): boolean {
-	return (item.requiredLevel ?? 1) > 1 || (item.unlockRequirements?.length ?? 0) > 0;
-}
-
 /**
- * Check if the item is available
+ * Every published story starts open. Within a story, earlier paragraphs and chapters
+ * need their first gems before the player moves forward. XP never blocks this path.
  */
 export function isItemUnlocked({
 	atlas = storyAtlas,
 	id,
 	progressById,
 }: IsItemUnlockedProps): boolean {
-	const path = findCompletionPath({ atlas, id });
-
-	if (path.length === 0) {
-		return false;
-	}
-
-	return path.every(
-		item => !requiresUnlockChoice(item) || Boolean(progressById[item.id]?.isUnlocked),
-	);
-}
-
-/** Meeting the requirements offers a choice; it never grants access by itself. */
-export function isItemReadyToUnlock(props: IsItemUnlockedProps): boolean {
-	const path = findCompletionPath(props);
+	const path = findCompletionPath({
+		atlas,
+		id,
+	});
+	const story = findStoryById(path[0]?.id, atlas);
+	const chapter = findChapterById(path[1]?.id, atlas);
+	const paragraph = path.length === 3 ? findParagraphById(id, atlas) : undefined;
 	const item = path[path.length - 1];
-	const parent = path[path.length - 2];
 
-	if (!item || !requiresUnlockChoice(item) || props.progressById[item.id]?.isUnlocked) {
+	if (!story || !hasStoryContent(story) || !item) {
 		return false;
 	}
 
-	if (parent && !isItemUnlocked({ ...props, id: parent.id })) {
+	if (path.length > 1 && (!chapter || !hasChapterContent(chapter))) {
 		return false;
 	}
 
-	return getItemUnlockCriteria(item, props.progressById, props.userLevel, props.atlas).every(
-		criterion => criterion.isUnlocked,
-	);
+	if (path.length === 3 && (!paragraph || !hasParagraphContent(paragraph))) {
+		return false;
+	}
+
+	return getUnlockCriteria(item, progressById, atlas).every(criterion => criterion.isUnlocked);
 }
 
 /**
- * Find the next locked story group, chapter, or paragraph.
+ * We use these same requirements for access checks and the messages on locked content.
+ * A chapter is finished only when every playable paragraph has its saved first gem.
  */
-export function isItemNextToUnlock(props: IsItemUnlockedProps): boolean {
-	const atlas = props.atlas ?? storyAtlas;
-	const path = findCompletionPath({ atlas, id: props.id });
-	const story = atlas.stories.find(story => story.id === path[0]?.id);
-	let lockedStories: DeckStory[];
-	let nextLevel: number;
-	let nextChapter: DeckChapter | undefined;
-	let chapter: DeckChapter | undefined;
-	let nextParagraph: CardDeck | undefined;
-	let isNextToUnlock = false;
+export function getUnlockCriteria(
+	item: Progression,
+	progressById: ProgressById,
+	atlas: StoryAtlas = storyAtlas,
+): UnlockCriteria[] {
+	const path = findCompletionPath({
+		atlas,
+		id: item.id,
+	});
+	const story = findStoryById(path[0]?.id, atlas);
+	const criteria: UnlockCriteria[] = [];
 
-	if (story && hasStoryContent(story)) {
-		if (path.length === 1) {
-			lockedStories = atlas.stories.filter(
-				story => hasStoryContent(story) && !isItemUnlocked({ ...props, id: story.id }),
-			);
-
-			nextLevel = Math.min(...lockedStories.map(story => story.requiredLevel));
-
-			isNextToUnlock = lockedStories.some(
-				story => story.id === props.id && story.requiredLevel === nextLevel,
-			);
-		} else if (isItemUnlocked({ ...props, id: story.id })) {
-			if (path.length === 2) {
-				nextChapter = story.chapters
-					.filter(hasChapterContent)
-					.find(chapter => !isItemUnlocked({ ...props, id: chapter.id }));
-
-				isNextToUnlock = nextChapter?.id === props.id;
-			} else {
-				chapter = story.chapters.find(chapter => chapter.id === path[1]?.id);
-
-				if (chapter && isItemUnlocked({ ...props, id: chapter.id })) {
-					nextParagraph = chapter.decks
-						.filter(hasParagraphContent)
-						.find(paragraph => !isItemUnlocked({ ...props, id: paragraph.id }));
-
-					isNextToUnlock = nextParagraph?.id === props.id;
-				}
-			}
-		}
+	if (!story || path.length < 2) {
+		return criteria;
 	}
 
-	return isNextToUnlock;
-}
+	for (const chapter of story.chapters.filter(hasChapterContent)) {
+		const paragraphs = chapter.decks.filter(hasParagraphContent);
+		const solvedParagraphs = paragraphs.filter(
+			paragraph => progressById[paragraph.id]?.hasFirstGem,
+		);
 
-/**
- * Determine if to show the unlock requirements (deprecating...)
- */
-export function shouldShowUnlockRequirements(props: IsItemUnlockedProps): boolean {
-	if (!isItemNextToUnlock(props)) {
-		return false;
-	}
-
-	const path = findCompletionPath(props);
-	const item = path[path.length - 1];
-
-	return getItemUnlockCriteria(item, props.progressById, props.userLevel, props.atlas).some(
-		criterion => criterion.isUnlocked,
-	);
-}
-
-function getAtlasItems(atlas: StoryAtlas): AtlasItem[] {
-	const items: AtlasItem[] = [];
-
-	for (const story of atlas.stories) {
-		if (!hasStoryContent(story)) {
+		if (chapter.id !== path[1]?.id) {
+			criteria.push({
+				isUnlocked: solvedParagraphs.length === paragraphs.length,
+				type: 'chapter',
+				title: chapter.name,
+				completedParagraphCount: solvedParagraphs.length,
+				paragraphCount: paragraphs.length,
+			});
 			continue;
 		}
 
-		items.push({
-			id: story.id,
-			type: 'story',
-			title: story.name,
-			requiresChoice: requiresUnlockChoice(story),
-		});
+		if (path.length === 3) {
+			for (const [paragraphIndex, paragraph] of paragraphs.entries()) {
+				const hasFirstGem = Boolean(progressById[paragraph.id]?.hasFirstGem);
+				const paragraphNumber = paragraphIndex + 1;
+				let paragraphLabel = `paragraph ${paragraphNumber}`;
 
-		for (const chapter of story.chapters) {
-			if (!hasChapterContent(chapter)) {
-				continue;
-			}
-
-			items.push({
-				id: chapter.id,
-				type: 'chapter',
-				title: chapter.name,
-				context: `${story.name} · ${chapter.label}`,
-				requiresChoice: requiresUnlockChoice(chapter),
-			});
-
-			for (const deck of chapter.decks) {
-				if (!hasParagraphContent(deck)) {
-					continue;
+				if (paragraphIndex === 0) {
+					paragraphLabel = 'the first paragraph';
 				}
 
-				items.push({
-					id: deck.id,
+				if (paragraph.id === item.id) {
+					break;
+				}
+
+				criteria.push({
+					isUnlocked: hasFirstGem,
 					type: 'paragraph',
-					title: deck.title,
-					context: `${story.name} · ${chapter.name}`,
-					requiresChoice: requiresUnlockChoice(deck),
+					title: paragraphLabel,
+					completedParagraphCount: hasFirstGem ? 1 : 0,
+					paragraphCount: 1,
 				});
 			}
 		}
+
+		break;
 	}
 
-	return items;
+	return criteria;
 }
 
-export function getUnlockedAtlasItems(props: Omit<IsItemUnlockedProps, 'id'>): AtlasItem[] {
-	return getAtlasItems(props.atlas ?? storyAtlas).filter(item =>
-		isItemUnlocked({ ...props, id: item.id }),
-	);
+export function formatUnlockCriterion(criterion: UnlockCriteria): string {
+	if (criterion.type === 'chapter') {
+		return `Solve every paragraph in “${criterion.title}” to continue (${criterion.completedParagraphCount} of ${criterion.paragraphCount} solved).`;
+	}
+
+	return `Solve ${criterion.title} to continue.`;
 }
 
-export function getReadyToUnlockAtlasItems(props: Omit<IsItemUnlockedProps, 'id'>): AtlasItem[] {
-	return getAtlasItems(props.atlas ?? storyAtlas).filter(
-		item =>
-			shouldShowUnlockRequirements({ ...props, id: item.id }) &&
-			isItemReadyToUnlock({ ...props, id: item.id }),
-	);
-}
-
-/**
- * We use this to build the list for the screen where we ask the user what to unlock.
- * We keep an item in the list after it is unlocked so the screen can show "Unlocked!".
- */
-export function getUnlockScreenItems(props: Omit<IsItemUnlockedProps, 'id'>): AtlasItem[] {
-	return getAtlasItems(props.atlas ?? storyAtlas).filter(item => {
-		return (
-			item.requiresChoice &&
-			(isItemUnlocked({ ...props, id: item.id }) ||
-				(shouldShowUnlockRequirements({ ...props, id: item.id }) &&
-					isItemReadyToUnlock({ ...props, id: item.id })))
-		);
-	});
-}
-
-/**
- * Find a story by its progress id.
- */
 export function findStoryById(
 	id: string | undefined,
 	atlas: StoryAtlas = storyAtlas,
 ): DeckStory | undefined {
-	for (const story of atlas.stories) {
-		if (story.id === id) {
-			return story;
-		}
-	}
+	return atlas.stories.find(story => story.id === id);
 }
 
-/**
- * Find a chapter and its parent story by the chapter's progress id.
- */
 export function findAtlasLocationByChapterId(
 	chapterId: string | undefined,
 	atlas: StoryAtlas = storyAtlas,
 ): AtlasChapterLocation | undefined {
-	if (!chapterId) {
-		return;
-	}
-
 	for (const story of atlas.stories) {
 		const chapter = story.chapters.find(chapter => chapter.id === chapterId);
 
@@ -383,9 +266,6 @@ export function findAtlasLocationByChapterId(
 	}
 }
 
-/**
- * Find a chapter by its progress id.
- */
 export function findChapterById(
 	id: string | undefined,
 	atlas: StoryAtlas = storyAtlas,
@@ -393,16 +273,13 @@ export function findChapterById(
 	return findAtlasLocationByChapterId(id, atlas)?.chapter;
 }
 
-/**
- * We use the paragraph ID to reopen Solve without needing a flashcard session.
- */
 export function findParagraphById(
 	id: string,
 	atlas: StoryAtlas = storyAtlas,
 ): CardDeck | undefined {
 	for (const story of atlas.stories) {
 		for (const chapter of story.chapters) {
-			const paragraph = chapter.decks.find(deck => deck.id === id);
+			const paragraph = chapter.decks.find(paragraph => paragraph.id === id);
 
 			if (paragraph) {
 				return paragraph;
@@ -412,114 +289,33 @@ export function findParagraphById(
 }
 
 /**
- * Get the display name for any item.
+ * The next reading action stays within this story and skips unwritten content.
  */
-function getItemName(id: string, atlas: StoryAtlas = storyAtlas): string {
+export function findNextParagraph(
+	deckId: string,
+	atlas: StoryAtlas = storyAtlas,
+): NextParagraphLocation | undefined {
+	let foundCurrentParagraph = false;
+
 	for (const story of atlas.stories) {
-		if (story.id === id) {
-			return story.name;
-		}
+		for (const chapter of story.chapters.filter(hasChapterContent)) {
+			for (const paragraph of chapter.decks.filter(hasParagraphContent)) {
+				if (foundCurrentParagraph) {
+					return {
+						story,
+						chapter,
+						paragraph,
+					};
+				}
 
-		for (const chapter of story.chapters) {
-			if (chapter.id === id) {
-				return chapter.name;
-			}
-
-			for (const deck of chapter.decks) {
-				if (deck.id === id) {
-					return deck.title;
+				if (paragraph.id === deckId) {
+					foundCurrentParagraph = true;
 				}
 			}
 		}
-	}
 
-	return id;
-}
-
-/**
- * Explain the item's own requirements using the same word counts as its gems.
- */
-function getItemUnlockCriteria(
-	item: Progression,
-	progressById: ProgressById,
-	userLevel: number,
-	atlas: StoryAtlas = storyAtlas,
-): UnlockCriteria[] {
-	const criteria: UnlockCriteria[] = [];
-
-	if (item.requiredLevel !== undefined && item.requiredLevel > 1) {
-		criteria.push({
-			isUnlocked: userLevel >= item.requiredLevel,
-			requiredLevel: item.requiredLevel,
-		});
-	}
-
-	for (const requirement of item.unlockRequirements ?? []) {
-		const progress = progressById[requirement.id];
-
-		criteria.push({
-			isUnlocked: hasCollectionLevel(progress, requirement.requiredWordProgress),
-			requiredWordProgress: requirement.requiredWordProgress,
-			title: getItemName(requirement.id, atlas),
-			qualifiedWordCount: getWordsAtLevel(progress, requirement.requiredWordProgress),
-			wordCount: progress?.wordCount ?? 0,
-		});
-	}
-
-	return criteria;
-}
-
-/**
- * Gets what's needed to unlock a chapter, story, or deck
- */
-export function getUnlockCriteria(
-	item: Progression,
-	progressById: ProgressById,
-	userLevel: number,
-	atlas: StoryAtlas = storyAtlas,
-): UnlockCriteria[] {
-	const path = findCompletionPath({ atlas, id: item.id });
-	const criteria: UnlockCriteria[] = [];
-
-	for (const ancestor of path) {
-		if (progressById[ancestor.id]?.isUnlocked) {
-			continue;
-		}
-
-		const requirements = getItemUnlockCriteria(ancestor, progressById, userLevel, atlas);
-
-		criteria.push(...requirements);
-
-		if (ancestor.id !== item.id && requiresUnlockChoice(ancestor)) {
-			criteria.push({ isUnlocked: false, requiredUnlock: getItemName(ancestor.id, atlas) });
-		}
-	}
-
-	return criteria;
-}
-
-export function formatUnlockCriterion(criterion: UnlockCriteria): string {
-	switch (true) {
-		case 'requiredLevel' in criterion:
-			return `Reach Lvl. ${criterion.requiredLevel} to unlock.`;
-
-		case 'requiredUnlock' in criterion:
-			return `Unlock “${criterion.requiredUnlock}” first.`;
-
-		case criterion.isUnlocked: {
-			const level = getWordProgressDefinitionByKey(criterion.requiredWordProgress);
-
-			return `Every word in “${criterion.title}” is at least ${level.name}.`;
-		}
-
-		case 'requiredWordProgress' in criterion && criterion.requiredWordProgress === 'new': {
-			return `See every word in “${criterion.title}” to unlock. (${criterion.qualifiedWordCount}/${criterion.wordCount} seen).`;
-		}
-
-		default: {
-			const level = getWordProgressDefinitionByKey(criterion.requiredWordProgress);
-
-			return `Bring every word in “${criterion.title}” to ${level.name} to unlock.\n${criterion.qualifiedWordCount}/${criterion.wordCount} words ready.`;
+		if (foundCurrentParagraph) {
+			return;
 		}
 	}
 }
