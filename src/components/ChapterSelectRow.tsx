@@ -44,11 +44,14 @@ export default function ChapterSelectRow({
 	const [columnLayout, setColumnLayout] = useState<LayoutRectangle | null>(null);
 	const [anchorLayout, setAnchorLayout] = useState<LayoutRectangle | null>(null);
 	const isReversed = index % 2 === 1;
-	const chapterColor = colors.light.goldenBorder;
+	const chapterColor = colors.categoryLight[story.category];
 	const isLocked = !isItemUnlocked({
 		id: chapter.id,
 		progressById,
 	});
+	const chapterTextColor = {
+		color: isLocked ? colors.light.goldenBorder : chapterColor,
+	};
 	const unlockCriteria = getUnlockCriteria(chapter, progressById);
 	const hasStartedChapter = chapter.decks.some(deck =>
 		Boolean(progressById[deck.id]?.hasStartedFlashcards),
@@ -108,7 +111,7 @@ export default function ChapterSelectRow({
 					style={styles.chapterInfo}
 				>
 					<View style={styles.labelRow}>
-						<Text style={[styles.label, { color: chapterColor }]}>{chapter.label}</Text>
+						<Text style={[styles.label, chapterTextColor]}>{chapter.label}</Text>
 						{hasParagraphs && !isLocked && (
 							<View style={styles.metadataRow}>
 								<CollectionGems
@@ -118,7 +121,7 @@ export default function ChapterSelectRow({
 								/>
 							</View>
 						)}
-						{isNew && <Text style={[styles.newLabel, { backgroundColor: chapterColor }]}>New</Text>}
+						{isNew && <Text style={styles.newLabel}>New</Text>}
 					</View>
 					{!isLocked && (
 						<>
@@ -136,8 +139,7 @@ export default function ChapterSelectRow({
 					{isLocked && (
 						<LockedSection
 							circular
-
-							color={chapterColor}
+							color={colors.light.goldenBorder}
 							unlockCriteria={unlockCriteria}
 							style={styles.locked}
 						/>
@@ -147,7 +149,7 @@ export default function ChapterSelectRow({
 							accessibilityLabel={`${actionLabel}: ${chapter.name}`}
 							screen="/(routes)/ChapterDetail"
 							params={{ chapterId: chapter.id }}
-							color={chapterColor}
+							color={colors.light.goldenBorder}
 							arrowColor={colors.dark.text}
 							style={styles.actionButton}
 						>
@@ -221,6 +223,7 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-600',
 		fontSize: 10,
 		color: colors.dark.text,
+		backgroundColor: colors.light.goldenBorder,
 		borderRadius: 4,
 		paddingHorizontal: 5,
 		paddingVertical: 2,
@@ -255,7 +258,7 @@ const styles = StyleSheet.create({
 	actionButton: {
 		width: '100%',
 		maxWidth: 200,
-		borderColor: colors.dark.border,
+		borderColor: colors.light.border,
 		shadowColor: colors.light.goldenBorder,
 	},
 	actionText: {

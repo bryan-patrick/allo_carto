@@ -15,6 +15,8 @@ interface GemResponse {
 	description: string;
 }
 
+const gemColors = [colors.gems.first, colors.gems.second, colors.gems.third];
+
 /**
  * First gems come from saved puzzles, rather than vocabulary levels.
  * Chapter and story gems need every paragraph's first gem. Gems two and three come later.
@@ -50,7 +52,6 @@ function getGemResponses(
 export default function CollectionGems({ title, progress, size = 18 }: CollectionGemsProps) {
 	const responses = getGemResponses(progress);
 	const response = progress?.hasFirstGem ? responses.complete : responses.incomplete;
-	const gemColor = colors.rarity.Legendary;
 
 	function showProgress() {
 		Alert.alert(`${title} (${response.label})`, response.description);
@@ -65,7 +66,7 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 			onPress={showProgress}
 			style={styles.row}
 		>
-			{[0, 1, 2].map(index => {
+			{gemColors.map((gemColor, index) => {
 				const filled = index < response.filledCount;
 
 				return (
@@ -74,8 +75,8 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 						name="diamond"
 						size={size}
 						filled={filled}
-						color={filled ? gemColor : colors.light.border}
-						style={filled ? styles.filled : styles.unfilled}
+						color={filled ? gemColor : colors.gems.unsolved}
+						style={filled ? styles.gem : styles.unfilled}
 					/>
 				);
 			})}
@@ -84,13 +85,13 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 }
 
 const styles = StyleSheet.create({
-	filled: {
+	gem: {
 		textShadowOffset: {
 			width: 0,
 			height: 0,
 		},
-		textShadowRadius: 2,
-		textShadowColor: '#ffffff',
+		textShadowRadius: 1,
+		textShadowColor: colors.gems.glow,
 	},
 	unfilled: {
 		opacity: 0.4,

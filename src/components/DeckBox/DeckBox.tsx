@@ -183,7 +183,6 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		cardsPerDeck,
 		cardDeckDispatch,
 		experience.totalXP,
-		progressById,
 		router,
 	]);
 

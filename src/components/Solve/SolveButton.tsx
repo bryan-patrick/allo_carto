@@ -48,7 +48,7 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 	let label = 'Solve';
 
 	if (isComplete) {
-		label = 'View solved paragraph';
+		label = 'View';
 	}
 
 	function handleOpen() {
