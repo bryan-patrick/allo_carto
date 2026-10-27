@@ -1,5 +1,8 @@
-import { findCompletionPath } from '@/src/util/atlasCompletion';
 import { getDB, logThisIfItFails } from '../connection';
+
+interface DatabaseColumn {
+	name: string;
+}
 
 const createUserProgressTableSQL = `
 	CREATE TABLE IF NOT EXISTS userProgress (
@@ -9,7 +12,6 @@ const createUserProgressTableSQL = `
 		completionPercentage REAL NOT NULL DEFAULT 0
 			CHECK (completionPercentage >= 0 AND completionPercentage <= 100),
 		hasStartedFlashcards INTEGER NOT NULL DEFAULT 0,
-		isUnlocked INTEGER NOT NULL DEFAULT 0,
 		PRIMARY KEY (userId, id),
 		FOREIGN KEY (userId) REFERENCES users(id)
 	);
@@ -122,10 +124,62 @@ export default async function createTables(): Promise<void> {
 	await createUserWordsTable();
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
+	await createInkTables();
+	await createSolveTables();
 	await ensureFlashcardsStartedColumn();
-	await ensureUnlockedColumn();
 	await ensureParagraphProgressType();
-	await createDeckPassageFeedbackTable();
+}
+
+/**
+ * Tables for saving the solve puzzles
+ */
+async function createSolveTables(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS solveCompletions (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			completedAt INTEGER NOT NULL,
+			PRIMARY KEY (userId, deckId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+
+		CREATE TABLE IF NOT EXISTS solveUnlocks (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			position INTEGER NOT NULL CHECK (position >= 0),
+			wordId TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId, position),
+			FOREIGN KEY (userId) REFERENCES users(id),
+			FOREIGN KEY (wordId) REFERENCES words(id)
+		);
+
+		CREATE TABLE IF NOT EXISTS solvePositions (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			position INTEGER NOT NULL CHECK (position >= 0),
+			wordId TEXT NOT NULL,
+			acceptedAnswer TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId, position),
+			FOREIGN KEY (userId) REFERENCES users(id),
+			FOREIGN KEY (wordId) REFERENCES words(id)
+		);
+		
+		CREATE TABLE IF NOT EXISTS solveAttempts (
+			userId TEXT NOT NULL,
+			attemptId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			position INTEGER NOT NULL,
+			status TEXT NOT NULL CHECK (status IN ('exact', 'close', 'incorrect')),
+			acceptedAnswer TEXT,
+			inkSpent INTEGER NOT NULL CHECK (inkSpent >= 0),
+			firstGemEarned INTEGER NOT NULL DEFAULT 0,
+			PRIMARY KEY (userId, attemptId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+	`;
+
+	await database.execAsync(statement);
 }
 
 /**
@@ -142,7 +196,7 @@ async function ensureSelectedStoryColumn(): Promise<void> {
 }
 
 /**
- * We rename the saved deck progress to paragraph progress without changing IDs or unlocks.
+ * We call saved vocabulary progress "paragraph" progress instead of "deck" progress.
  * SQLite needs a new table because the old table only allows the name "deck".
  */
 async function ensureParagraphProgressType(): Promise<void> {
@@ -151,15 +205,14 @@ async function ensureParagraphProgressType(): Promise<void> {
 		renameOldTable: 'ALTER TABLE userProgress RENAME TO userProgressWithDeckTypes;',
 		copyProgress: `
 			INSERT INTO userProgress (
-				userId, id, type, completionPercentage, hasStartedFlashcards, isUnlocked
+				userId, id, type, completionPercentage, hasStartedFlashcards
 			)
 			SELECT
 				userId,
 				id,
 				CASE WHEN type = 'deck' THEN 'paragraph' ELSE type END,
 				completionPercentage,
-				hasStartedFlashcards,
-				isUnlocked
+				hasStartedFlashcards
 			FROM userProgressWithDeckTypes;
 		`,
 		removeOldTable: 'DROP TABLE userProgressWithDeckTypes;',
@@ -174,55 +227,6 @@ async function ensureParagraphProgressType(): Promise<void> {
 			await transaction.execAsync(createUserProgressTableSQL);
 			await transaction.execAsync(statements.copyProgress);
 			await transaction.execAsync(statements.removeOldTable);
-		});
-	}
-}
-
-/**
- * Keep previously studied decks and their parents accessible after the upgrade.
- */
-async function ensureUnlockedColumn(): Promise<void> {
-	const statements = {
-		getColumns: 'PRAGMA table_info(userProgress);',
-		addUnlockedColumn: `
-			ALTER TABLE userProgress
-			ADD COLUMN isUnlocked INTEGER NOT NULL DEFAULT 0;
-		`,
-		getStudiedDecks: `
-			SELECT userId, id
-			FROM userProgress
-			WHERE hasStartedFlashcards = 1;
-		`,
-		saveUnlockedProgress: `
-			INSERT INTO userProgress (userId, id, type, completionPercentage, isUnlocked)
-			VALUES (?, ?, ?, 0, 1)
-			ON CONFLICT(userId, id)
-			DO UPDATE SET isUnlocked = 1;
-		`,
-	};
-
-	const progressTypes = ['story', 'chapter', 'deck'] as const;
-	const database = await getDB();
-	const columns = await database.getAllAsync<{ name: string }>(statements.getColumns);
-	const hasUnlockedColumn = columns.some(column => column.name === 'isUnlocked');
-
-	if (!hasUnlockedColumn) {
-		await database.withExclusiveTransactionAsync(async transaction => {
-			await transaction.execAsync(statements.addUnlockedColumn);
-
-			const studiedDecks = await transaction.getAllAsync<{ userId: string; id: string }>(
-				statements.getStudiedDecks,
-			);
-
-			for (const deck of studiedDecks) {
-				const path = findCompletionPath({ id: deck.id });
-
-				for (const [index, item] of path.entries()) {
-					const type = progressTypes[index];
-
-					await transaction.runAsync(statements.saveUnlockedProgress, deck.userId, item.id, type);
-				}
-			}
 		});
 	}
 }
@@ -262,35 +266,60 @@ async function createDeckCompletionsTable(): Promise<void> {
 			deckId TEXT NOT NULL,
 			bonuses TEXT NOT NULL,
 			totalXP INTEGER NOT NULL CHECK (totalXP >= 0),
+			earnedInk INTEGER NOT NULL DEFAULT 0 CHECK (earnedInk >= 0),
 			PRIMARY KEY (userId, sessionId),
 			FOREIGN KEY (userId) REFERENCES users(id)
 		);
 		CREATE INDEX IF NOT EXISTS deckCompletionsByDeck
 			ON deckCompletions (userId, deckId);
 	`);
+
+	/**
+	 * We keep the actual Ink payout on the completion receipt.
+	 * Add its field when reopening a development database made before this change.
+	 */
+	const columns = await database.getAllAsync<DatabaseColumn>('PRAGMA table_info(deckCompletions);');
+	const hasEarnedInkColumn = columns.some(column => column.name === 'earnedInk');
+
+	if (!hasEarnedInkColumn) {
+		await database.execAsync(`
+			ALTER TABLE deckCompletions
+			ADD COLUMN earnedInk INTEGER NOT NULL DEFAULT 0 CHECK (earnedInk >= 0);
+		`);
+	}
 }
 
 /**
- * Save one Yes or No answer each time the user tries a deck
- * This one is actually pretty easy
+ * Handles creating the ink table, we include a session ID so we don't get duplicates
+ * No cheating!
  */
-async function createDeckPassageFeedbackTable(): Promise<void> {
+async function createInkTables(): Promise<void> {
+	const statements = {
+		createBalance: `
+			CREATE TABLE IF NOT EXISTS userInk (
+				userId TEXT PRIMARY KEY NOT NULL,
+				balance INTEGER NOT NULL DEFAULT 0 CHECK (balance >= 0),
+				FOREIGN KEY (userId) REFERENCES users(id)
+			);
+		`,
+		createAwards: `
+			CREATE TABLE IF NOT EXISTS flashcardAwards (
+				userId TEXT NOT NULL,
+				sessionId TEXT NOT NULL,
+				wordId TEXT NOT NULL,
+				xp INTEGER NOT NULL CHECK (xp >= 0),
+				learningBonusXP INTEGER NOT NULL CHECK (learningBonusXP >= 0),
+				previousProgress TEXT NOT NULL,
+				nextProgress TEXT NOT NULL,
+				ink INTEGER NOT NULL CHECK (ink >= 0),
+				PRIMARY KEY (userId, sessionId, wordId),
+				FOREIGN KEY (userId) REFERENCES users(id),
+				FOREIGN KEY (wordId) REFERENCES words(id)
+			);
+		`,
+	};
 	const database = await getDB();
 
-	await database.execAsync(`
-		CREATE TABLE IF NOT EXISTS deckPassageFeedback (
-			userId TEXT NOT NULL,
-			sessionId TEXT NOT NULL,
-			deckId TEXT NOT NULL,
-			isEasierToRead INTEGER NOT NULL CHECK (isEasierToRead IN (0, 1)),
-			correctCount INTEGER NOT NULL CHECK (correctCount >= 0),
-			incorrectCount INTEGER NOT NULL CHECK (incorrectCount >= 0),
-			skippedCount INTEGER NOT NULL CHECK (skippedCount >= 0),
-			answeredAt TEXT NOT NULL,
-			PRIMARY KEY (userId, sessionId),
-			FOREIGN KEY (userId) REFERENCES users(id)
-		);
-		CREATE INDEX IF NOT EXISTS deckPassageFeedbackByDeck
-			ON deckPassageFeedback (userId, deckId);
-	`);
+	await database.execAsync(statements.createBalance);
+	await database.execAsync(statements.createAwards);
 }

@@ -18,14 +18,21 @@ import StorySelector from './StorySelector';
 export default function ChapterSelectHeader() {
 	const insets = useSafeAreaInsets();
 	const user = useUserContext();
-	const { experience, progressById, status } = useUserProgress();
+	const { progressById, status } = useUserProgress();
 	const [isStoryModalVisible, setIsStoryModalVisible] = useState(false);
 	const [isSelectingStory, setIsSelectingStory] = useState(false);
 	const selectedStory = getSelectedStory({
 		selectedStoryId: user?.selectedStoryId,
 		progressById,
-		userLevel: experience.level,
 	});
+	const storyColor =
+		selectedStory ? colors.categoryLight[selectedStory.category] : colors.light.primary;
+	const categoryTextStyle = {
+		color: storyColor,
+	};
+	const headerBorderStyle = {
+		borderBottomColor: `${storyColor}30`,
+	};
 	const insetStyle = {
 		paddingTop: insets.top + 8,
 		paddingLeft: Math.max(insets.left, 12),
@@ -37,7 +44,10 @@ export default function ChapterSelectHeader() {
 		if (
 			!user ||
 			isSelectingStory ||
-			!isItemUnlocked({ id: story.id, progressById, userLevel: experience.level })
+			!isItemUnlocked({
+				id: story.id,
+				progressById,
+			})
 		) {
 			return;
 		}
@@ -55,7 +65,7 @@ export default function ChapterSelectHeader() {
 	}
 
 	return (
-		<View style={[styles.header, insetStyle]}>
+		<View style={[styles.header, insetStyle, headerBorderStyle]}>
 			<View style={styles.topRow}>
 				<View style={styles.storySelector}>
 					{isReady && (
@@ -72,15 +82,12 @@ export default function ChapterSelectHeader() {
 				<View style={styles.detailsRow}>
 					<ReadingDescription
 						item={selectedStory}
-						color={colors.light.goldenBorder}
+						color={storyColor}
 						style={styles.readStoryLink}
 						showDescription={false}
-						linkLabel="Read Story"
 					/>
 					<View style={styles.progressRow}>
-						<Text style={styles.category}>
-							{selectedStory.category} - Lvl. {selectedStory.requiredLevel}
-						</Text>
+						<Text style={[styles.category, categoryTextStyle]}>{selectedStory.category}</Text>
 					</View>
 				</View>
 			)}
@@ -101,7 +108,6 @@ const styles = StyleSheet.create({
 	header: {
 		backgroundColor: colors.dark.background,
 		borderBottomWidth: 1,
-		borderBottomColor: `${colors.light.goldenBorder}30`,
 		paddingBottom: 12,
 		gap: 4,
 	},
@@ -128,11 +134,9 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-600',
 		fontSize: 12,
 		textTransform: 'uppercase',
-		color: colors.light.goldenBorder,
 	},
 	readStoryLink: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
-		color: colors.light.goldenBorder,
+		fontSize: 16,
 	},
 });

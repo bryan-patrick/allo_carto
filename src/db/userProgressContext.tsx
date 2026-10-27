@@ -2,6 +2,11 @@ import type {
 	DeckCompletionReceiptProps,
 	WordAnswerAwardProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
+import type {
+	SolveAttemptRequest,
+	SolveAttemptResult,
+	SolveCardRequest,
+} from '@/src/components/Solve/solveTypes';
 import type { ProgressById } from '@/src/util/progression';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -15,12 +20,15 @@ import {
 	type ReactNode,
 } from 'react';
 import loadUserXP from './queries/getUserExperience';
+import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
-import unlockAtlasItem from './queries/unlockAtlasItem';
+import unlockSolveCard from './queries/unlockSolveCard';
+import writeSolveAttempt from './queries/writeSolveAttempt';
 import {
 	writeCorrectAnswer,
 	writeDeckCompletion,
 	writeWordSeen,
+	type CorrectAnswerRequest,
 	type DeckCompletionRequest,
 } from './queries/writeUserProgress';
 
@@ -35,16 +43,18 @@ interface UserProgressProviderProps {
 }
 
 interface UserProgressContextProps {
+	inkBalance: number;
 	experience: UserExperience;
 	isUpdatingProgress: boolean;
 	progressById: ProgressById;
 	status: ProgressStatus;
-	writeCorrectAnswer: (wordId: string) => Promise<WordAnswerAwardProps | false>;
+	writeCorrectAnswer: (request: CorrectAnswerRequest) => Promise<WordAnswerAwardProps | false>;
 	writeDeckCompletion: (
 		request: DeckCompletionRequest,
 	) => Promise<DeckCompletionReceiptProps | false>;
 	writeWordSeen: (wordId: string, deckId?: string) => Promise<boolean>;
-	unlockItem: (id: string) => Promise<boolean>;
+	writeSolveAttempt: (request: SolveAttemptRequest) => Promise<SolveAttemptResult | false>;
+	unlockSolveCard: (request: SolveCardRequest) => Promise<SolveAttemptResult | false>;
 	reloadProgress: () => Promise<void>;
 }
 
@@ -52,6 +62,7 @@ interface UserProgressContextProps {
  * Initial progress state
  */
 const initialValue: UserProgressContextProps = {
+	inkBalance: 0,
 	experience: getUserExperience(0),
 	isUpdatingProgress: false,
 	progressById: {},
@@ -59,7 +70,8 @@ const initialValue: UserProgressContextProps = {
 	writeCorrectAnswer: async () => false,
 	writeDeckCompletion: async () => false,
 	writeWordSeen: async () => false,
-	unlockItem: async () => false,
+	writeSolveAttempt: async () => false,
+	unlockSolveCard: async () => false,
 	reloadProgress: async () => {},
 };
 
@@ -91,20 +103,27 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 	const [progressById, setProgressById] = useState<ProgressById>({});
 	const [experience, setExperience] = useState<UserExperience>(() => getUserExperience(0));
+	const [inkBalance, setInkBalance] = useState(0);
 	const [status, setStatus] = useState<ProgressStatus>('loading');
 	const isSavingProgress = useRef(false);
 
 	/**
-	 * Reload content progress and player experience from the database. State
-	 * changes only in the database promise's completion callbacks.
+	 * Reload vocabulary progress, XP, and Ink after saving an answer.
 	 */
 	const refreshProgress = useCallback(async () => {
-		if (!userId) return;
+		if (!userId) {
+			return;
+		}
 
-		return Promise.all([getUserProgress({ database, userId }), loadUserXP({ database, userId })])
-			.then(([nextProgress, nextExperience]) => {
+		return Promise.all([
+			getUserProgress({ database, userId }),
+			loadUserXP({ database, userId }),
+			getUserInk({ database, userId }),
+		])
+			.then(([nextProgress, nextExperience, nextInkBalance]) => {
 				setProgressById(nextProgress);
 				setExperience(nextExperience);
+				setInkBalance(nextInkBalance);
 				setStatus('ready');
 			})
 			.catch(error => {
@@ -125,7 +144,9 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const runProgressWrite = useCallback(
 		async function saveProgress<T>(write: () => Promise<T>): Promise<T | false> {
-			if (!userId || isSavingProgress.current) return false;
+			if (!userId || isSavingProgress.current) {
+				return false;
+			}
 
 			isSavingProgress.current = true;
 			setIsUpdatingProgress(true);
@@ -150,9 +171,9 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 * Save a correct answer
 	 */
 	const recordCorrectAnswer = useCallback(
-		async (wordId: string): Promise<WordAnswerAwardProps | false> => {
+		async (request: CorrectAnswerRequest): Promise<WordAnswerAwardProps | false> => {
 			return runProgressWrite(async () => {
-				return writeCorrectAnswer({ database, userId: userId!, wordId });
+				return writeCorrectAnswer({ database, userId: userId!, ...request });
 			});
 		},
 		[database, runProgressWrite, userId],
@@ -183,11 +204,30 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	const unlockItem = useCallback(
-		async (id: string): Promise<boolean> => {
-			return runProgressWrite(() => unlockAtlasItem({ database, userId: userId!, id }));
+	/**
+	 * Write the solve attempt to the db
+	 */
+	const recordSolveAttempt = useCallback(
+		async (request: SolveAttemptRequest): Promise<SolveAttemptResult | false> => {
+			return runProgressWrite(() => writeSolveAttempt({ database, userId: userId!, ...request }));
 		},
-		[database, userId, runProgressWrite],
+		[database, runProgressWrite, userId],
+	);
+
+	/**
+	 * Unlocking a puzzle card updates the shared Ink balance after it saves.
+	 */
+	const recordSolveUnlock = useCallback(
+		async (request: SolveCardRequest): Promise<SolveAttemptResult | false> => {
+			return runProgressWrite(() =>
+				unlockSolveCard({
+					database,
+					userId: userId!,
+					...request,
+				}),
+			);
+		},
+		[database, runProgressWrite, userId],
 	);
 
 	/**
@@ -195,24 +235,28 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const value = useMemo<UserProgressContextProps>(
 		() => ({
+			inkBalance,
 			experience,
 			isUpdatingProgress,
 			progressById,
 			writeCorrectAnswer: recordCorrectAnswer,
 			writeDeckCompletion: recordDeckCompletion,
 			writeWordSeen: recordWordSeen,
-			unlockItem,
+			writeSolveAttempt: recordSolveAttempt,
+			unlockSolveCard: recordSolveUnlock,
 			reloadProgress: refreshProgress,
 			status,
 		}),
 		[
+			inkBalance,
 			experience,
 			isUpdatingProgress,
 			progressById,
 			recordCorrectAnswer,
 			recordDeckCompletion,
 			recordWordSeen,
-			unlockItem,
+			recordSolveAttempt,
+			recordSolveUnlock,
 			refreshProgress,
 			status,
 		],

@@ -4,6 +4,7 @@ import type { WordProgressKey } from '@/src/util/wordProgress';
  * Typing
  */
 export interface WordAnswerAwardProps {
+	ink: number;
 	xp: number;
 	learningBonusXP: number;
 	previousProgress: WordProgressKey;
@@ -11,6 +12,7 @@ export interface WordAnswerAwardProps {
 }
 
 export interface DeckWordResultProps {
+	ink: number;
 	wordId: string;
 	outcome: 'correct' | 'incorrect' | 'skipped';
 	xp: number;
@@ -25,6 +27,7 @@ export interface XPBonusProps {
 }
 
 export interface DeckCompletionReceiptProps {
+	earnedInk: number;
 	bonuses: XPBonusProps[];
 	totalXP: number;
 }
@@ -32,8 +35,6 @@ export interface DeckCompletionReceiptProps {
 export interface DeckSessionProps {
 	id: string;
 	xpBefore: number;
-	unlockedIdsBefore?: string[];
-	readyToUnlockIdsBefore?: string[];
 	results: DeckWordResultProps[];
 	completion?: DeckCompletionReceiptProps;
 }

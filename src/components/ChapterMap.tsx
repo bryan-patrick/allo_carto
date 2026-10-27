@@ -13,7 +13,6 @@ import ChapterSelectRow, { chapterMapDotSize, type ChapterMapAnchor } from './Ch
 interface ChapterMapProps {
 	story: DeckStory;
 	progressById: ProgressById;
-	userLevel: number;
 }
 
 interface ChapterMapCurveProps {
@@ -35,7 +34,7 @@ function getChapterMapCurve({ start, end, width }: ChapterMapCurveProps): string
 /**
  * This draws the map trail
  */
-export default function ChapterMap({ story, progressById, userLevel }: ChapterMapProps) {
+export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 	const [size, setSize] = useState({ width: 0, height: 0 });
 	const [anchors, setAnchors] = useState<Record<string, ChapterMapAnchor>>({});
 	const chapters = story.chapters.filter(hasChapterContent);
@@ -136,7 +135,6 @@ export default function ChapterMap({ story, progressById, userLevel }: ChapterMa
 						story={story}
 						index={index}
 						progressById={progressById}
-						userLevel={userLevel}
 						onMapAnchorChange={handleAnchorChange}
 					/>
 				);

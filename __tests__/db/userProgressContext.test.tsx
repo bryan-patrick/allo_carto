@@ -1,5 +1,6 @@
 import type { WordAnswerAwardProps } from '@/src/components/CardDeck/deckSessionTypes';
 import loadUserXP from '@/src/db/queries/getUserExperience';
+import getUserInk from '@/src/db/queries/getUserInk';
 import getUserProgress from '@/src/db/queries/getUserProgress';
 import { writeCorrectAnswer } from '@/src/db/queries/writeUserProgress';
 import { useUserProgress } from '@/src/db/useUserProgress';
@@ -9,6 +10,7 @@ import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 
 jest.mock('@/src/db/queries/getUserExperience');
+jest.mock('@/src/db/queries/getUserInk');
 jest.mock('@/src/db/queries/getUserProgress');
 jest.mock('@/src/db/queries/writeUserProgress', () => ({
 	writeCorrectAnswer: jest.fn(),
@@ -24,6 +26,7 @@ const mockGetUserProgress = jest.mocked(getUserProgress);
 const mockLoadUserExperience = jest.mocked(loadUserXP);
 const mockWriteCorrectAnswer = jest.mocked(writeCorrectAnswer);
 const savedAward: WordAnswerAwardProps = {
+	ink: 1,
 	xp: 10,
 	learningBonusXP: 0,
 	previousProgress: 'learning',
@@ -50,6 +53,7 @@ describe('<UserProgressProvider />', () => {
 		jest.clearAllMocks();
 		mockLoadUserExperience.mockResolvedValue(getUserExperience(0));
 		mockGetUserProgress.mockResolvedValue({});
+		jest.mocked(getUserInk).mockResolvedValue(0);
 	});
 
 	test('starts only one write when input is repeated before React rerenders', async () => {
@@ -68,8 +72,14 @@ describe('<UserProgressProvider />', () => {
 		let firstWrite!: Promise<WordAnswerAwardProps | false>;
 		let secondWrite!: Promise<WordAnswerAwardProps | false>;
 		await act(() => {
-			firstWrite = result.current.writeCorrectAnswer('word_one');
-			secondWrite = result.current.writeCorrectAnswer('word_one');
+			firstWrite = result.current.writeCorrectAnswer({
+				wordId: 'word_one',
+				sessionId: 'session_one',
+			});
+			secondWrite = result.current.writeCorrectAnswer({
+				wordId: 'word_one',
+				sessionId: 'session_one',
+			});
 		});
 
 		await expect(secondWrite).resolves.toBe(false);
@@ -100,12 +110,17 @@ describe('<UserProgressProvider />', () => {
 
 		let firstWrite!: Promise<WordAnswerAwardProps | false>;
 		await act(() => {
-			firstWrite = result.current.writeCorrectAnswer('word_one');
+			firstWrite = result.current.writeCorrectAnswer({
+				wordId: 'word_one',
+				sessionId: 'session_one',
+			});
 		});
 		await waitFor(() => expect(mockGetUserProgress).toHaveBeenCalledTimes(2));
 
 		expect(result.current.isUpdatingProgress).toBe(true);
-		await expect(result.current.writeCorrectAnswer('word_two')).resolves.toBe(false);
+		await expect(
+			result.current.writeCorrectAnswer({ wordId: 'word_two', sessionId: 'session_one' }),
+		).resolves.toBe(false);
 
 		pendingRefresh.resolve({});
 		await act(async () => {
@@ -129,12 +144,16 @@ describe('<UserProgressProvider />', () => {
 		await waitFor(() => expect(result.current.status).toBe('ready'));
 
 		await act(async () => {
-			await expect(result.current.writeCorrectAnswer('word_one')).resolves.toBe(false);
+			await expect(
+				result.current.writeCorrectAnswer({ wordId: 'word_one', sessionId: 'session_one' }),
+			).resolves.toBe(false);
 		});
 		expect(result.current.isUpdatingProgress).toBe(false);
 
 		await act(async () => {
-			await expect(result.current.writeCorrectAnswer('word_two')).resolves.toEqual(savedAward);
+			await expect(
+				result.current.writeCorrectAnswer({ wordId: 'word_two', sessionId: 'session_one' }),
+			).resolves.toEqual(savedAward);
 		});
 		expect(mockWriteCorrectAnswer).toHaveBeenCalledTimes(2);
 		consoleError.mockRestore();

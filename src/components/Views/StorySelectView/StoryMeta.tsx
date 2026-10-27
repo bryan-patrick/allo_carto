@@ -2,12 +2,10 @@ import colors from '@/src/app/colors';
 import ProgressBar from '@/src/components/ProgressBar';
 import { StyleSheet, Text, View } from 'react-native';
 
-/**
- * Typing
- */
 interface StoryMetaProps {
-	progressPercent: number;
 	progressColor: string;
+	completedParagraphCount: number;
+	paragraphCount: number;
 	seenWordCount: number;
 	wordCount: number;
 }
@@ -19,11 +17,10 @@ interface StoryProgressProps {
 	value: string;
 }
 
-/**
- * A progress label and its progress bar
- */
 function StoryProgress({ color, label, percent, value }: StoryProgressProps) {
-	const trackStyle = { backgroundColor: `${color}20` };
+	const trackStyle = {
+		backgroundColor: `${color}20`,
+	};
 
 	return (
 		<View style={styles.progressColumn}>
@@ -40,19 +37,25 @@ function StoryProgress({ color, label, percent, value }: StoryProgressProps) {
 }
 
 /**
- * Story knowledge and distinct words encountered.
+ * Solved paragraphs show how far the player has moved through the story.
+ * Words seen are still useful, but they do not count as completed puzzles.
  */
 export default function StoryMeta({
-	progressPercent,
-	progressColor = '#08433f',
+	progressColor,
+	completedParagraphCount,
+	paragraphCount,
 	seenWordCount,
 	wordCount,
 }: StoryMetaProps) {
-	const displayProgressPercent = Math.floor(progressPercent);
-	const knownValue = `${displayProgressPercent}%`;
+	const solvedValue = `${completedParagraphCount}/${paragraphCount}`;
 	const seenValue = `${seenWordCount}/${wordCount}`;
-	const accessibilityLabel = `${seenWordCount} of ${wordCount} words seen, ${displayProgressPercent} percent learned`;
+	const accessibilityLabel = `${completedParagraphCount} of ${paragraphCount} paragraphs solved, ${seenWordCount} of ${wordCount} words seen`;
+	let solvedPercent = 0;
 	let seenPercent = 0;
+
+	if (paragraphCount > 0) {
+		solvedPercent = (completedParagraphCount / paragraphCount) * 100;
+	}
 
 	if (wordCount > 0) {
 		seenPercent = (seenWordCount / wordCount) * 100;
@@ -66,24 +69,21 @@ export default function StoryMeta({
 		>
 			<StoryProgress
 				color={progressColor}
-				label="words seen"
-				percent={seenPercent}
-				value={seenValue}
+				label="paragraphs solved"
+				percent={solvedPercent}
+				value={solvedValue}
 			/>
 			<View style={styles.metaDivider} />
 			<StoryProgress
 				color={progressColor}
-				label="learned"
-				percent={displayProgressPercent}
-				value={knownValue}
+				label="words seen"
+				percent={seenPercent}
+				value={seenValue}
 			/>
 		</View>
 	);
 }
 
-/**
- * Styles
- */
 const styles = StyleSheet.create({
 	metaRow: {
 		flexDirection: 'row',

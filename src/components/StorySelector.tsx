@@ -31,6 +31,7 @@ interface StorySelectorProps {
  */
 export default function StorySelector({ story, isExpanded, onPress }: StorySelectorProps) {
 	const accessibilityLabel = `Selected story: ${story.name}`;
+	const storyColor = colors.categoryLight[story.category];
 
 	return (
 		<View style={styles.selector}>
@@ -52,7 +53,7 @@ export default function StorySelector({ story, isExpanded, onPress }: StorySelec
 						matchContents
 						ignoreSafeArea="all"
 						colorScheme="dark"
-						seedColor={colors.light.goldenBorder}
+						seedColor={storyColor}
 					>
 						<Button
 							onPress={onPress}

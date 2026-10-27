@@ -26,7 +26,6 @@ interface ChapterSelectRowProps {
 	story: DeckStory;
 	index: number;
 	progressById: ProgressById;
-	userLevel: number;
 	onMapAnchorChange: (anchor: ChapterMapAnchor) => void;
 }
 
@@ -39,25 +38,34 @@ export default function ChapterSelectRow({
 	story,
 	index,
 	progressById,
-	userLevel,
 	onMapAnchorChange,
 }: ChapterSelectRowProps) {
 	const [rowLayout, setRowLayout] = useState<LayoutRectangle | null>(null);
 	const [columnLayout, setColumnLayout] = useState<LayoutRectangle | null>(null);
 	const [anchorLayout, setAnchorLayout] = useState<LayoutRectangle | null>(null);
 	const isReversed = index % 2 === 1;
-	const chapterColor = colors.light.goldenBorder;
-	const isLocked = !isItemUnlocked({ id: chapter.id, progressById, userLevel });
-	const unlockCriteria = getUnlockCriteria(chapter, progressById, userLevel);
+	const chapterColor = colors.categoryLight[story.category];
+	const isLocked = !isItemUnlocked({
+		id: chapter.id,
+		progressById,
+	});
+	const chapterTextColor = {
+		color: isLocked ? colors.light.goldenBorder : chapterColor,
+	};
+	const unlockCriteria = getUnlockCriteria(chapter, progressById);
 	const hasStartedChapter = chapter.decks.some(deck =>
 		Boolean(progressById[deck.id]?.hasStartedFlashcards),
 	);
 	const hasParagraphs = chapter.decks.length > 0;
 	const chapterProgress = progressById[chapter.id];
-	const chapterWordCount =
-		chapterProgress?.wordCount ?? new Set(chapter.decks.flatMap(deck => deck.wordIds)).size;
-	const actionLabel = hasStartedChapter ? 'Continue' : 'Start Chapter';
+	const completedParagraphCount = chapterProgress?.completedParagraphCount ?? 0;
+	const paragraphCount = chapterProgress?.paragraphCount ?? 0;
 	const isNew = !isLocked && !hasStartedChapter && hasParagraphs;
+	let actionLabel = hasStartedChapter ? 'Continue' : 'Start Chapter';
+
+	if (chapterProgress?.hasFirstGem) {
+		actionLabel = 'Revisit chapter';
+	}
 
 	// We anchor the trail beside the illustration, or the lock when the chapter is locked.
 	useEffect(() => {
@@ -103,7 +111,7 @@ export default function ChapterSelectRow({
 					style={styles.chapterInfo}
 				>
 					<View style={styles.labelRow}>
-						<Text style={[styles.label, { color: chapterColor }]}>{chapter.label}</Text>
+						<Text style={[styles.label, chapterTextColor]}>{chapter.label}</Text>
 						{hasParagraphs && !isLocked && (
 							<View style={styles.metadataRow}>
 								<CollectionGems
@@ -113,7 +121,7 @@ export default function ChapterSelectRow({
 								/>
 							</View>
 						)}
-						{isNew && <Text style={[styles.newLabel, { backgroundColor: chapterColor }]}>New</Text>}
+						{isNew && <Text style={styles.newLabel}>New</Text>}
 					</View>
 					{!isLocked && (
 						<>
@@ -123,13 +131,15 @@ export default function ChapterSelectRow({
 							>
 								{chapter.name}
 							</Text>
+							<Text style={styles.progress}>
+								{completedParagraphCount} of {paragraphCount} paragraphs solved
+							</Text>
 						</>
 					)}
 					{isLocked && (
 						<LockedSection
 							circular
-							itemId={chapter.id}
-							color={chapterColor}
+							color={colors.light.goldenBorder}
 							unlockCriteria={unlockCriteria}
 							style={styles.locked}
 						/>
@@ -139,7 +149,7 @@ export default function ChapterSelectRow({
 							accessibilityLabel={`${actionLabel}: ${chapter.name}`}
 							screen="/(routes)/ChapterDetail"
 							params={{ chapterId: chapter.id }}
-							color={chapterColor}
+							color={colors.light.goldenBorder}
 							arrowColor={colors.dark.text}
 							style={styles.actionButton}
 						>
@@ -168,17 +178,18 @@ const styles = StyleSheet.create({
 		flexDirection: 'row-reverse',
 	},
 	chapterColumn: {
-		width: '60%',
-		paddingHorizontal: 4,
-		marginHorizontal: 16,
+		width: '65%',
+		paddingHorizontal: 12,
+		marginHorizontal: 12,
 	},
 	pathColumn: {
-		width: '30%',
+		width: '35%',
 	},
 	locked: {
 		marginTop: 8,
 	},
 	characterFrame: {
+		alignItems: 'center',
 		width: '100%',
 		aspectRatio: 1.5,
 		marginBottom: 4,
@@ -191,6 +202,7 @@ const styles = StyleSheet.create({
 	characterImage: {
 		width: '100%',
 		height: '100%',
+		maxWidth: 225,
 	},
 	chapterInfo: {
 		alignItems: 'center',
@@ -211,6 +223,7 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-600',
 		fontSize: 10,
 		color: colors.dark.text,
+		backgroundColor: colors.light.goldenBorder,
 		borderRadius: 4,
 		paddingHorizontal: 5,
 		paddingVertical: 2,
@@ -229,6 +242,13 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 8,
 	},
+	progress: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		textAlign: 'center',
+		color: colors.light.secondary,
+		marginBottom: 8,
+	},
 	level: {
 		fontFamily: 'lexend-400',
 		fontSize: 12,
@@ -238,7 +258,7 @@ const styles = StyleSheet.create({
 	actionButton: {
 		width: '100%',
 		maxWidth: 200,
-		borderColor: colors.dark.border,
+		borderColor: colors.light.border,
 		shadowColor: colors.light.goldenBorder,
 	},
 	actionText: {

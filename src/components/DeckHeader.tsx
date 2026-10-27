@@ -3,7 +3,6 @@ import type { UserProgressRow } from '@/src/util/progression';
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View, type StyleProp, type TextStyle } from 'react-native';
 import CollectionGems from './CollectionGems';
-import CollectionProgress from './CollectionProgress';
 
 /**
  * Typing
@@ -11,6 +10,7 @@ import CollectionProgress from './CollectionProgress';
 interface DeckHeaderProps {
 	title: string;
 	subtitle?: string;
+	subtitleAction?: ReactNode;
 	progress?: UserProgressRow;
 	wordCount?: number;
 	children?: ReactNode;
@@ -24,6 +24,7 @@ interface DeckHeaderProps {
 export default function DeckHeader({
 	title,
 	subtitle,
+	subtitleAction,
 	progress,
 	wordCount,
 	children,
@@ -39,28 +40,23 @@ export default function DeckHeader({
 		<View style={styles.container}>
 			{(subtitle || showNewBadge) && (
 				<View style={styles.labelRow}>
-					{subtitle && <Text style={[styles.subtitle, subtitleTextSize]}>{subtitle}</Text>}
-					{subtitle && (
-						<CollectionProgress
+					<View style={styles.labelDetails}>
+						{subtitle && <Text style={[styles.subtitle, subtitleTextSize]}>{subtitle}</Text>}
+						{subtitleAction}
+						{showNewBadge && (
+							<View style={styles.newBadge}>
+								<Text style={[styles.newBadgeText, badgeTextSize]}>New!</Text>
+							</View>
+						)}
+					</View>
+					<View>
+						<CollectionGems
+							title={title}
 							progress={progress}
-							wordCount={wordCount}
-							fontSize={12 + fontSizeOffset}
 						/>
-					)}
-					{showNewBadge && (
-						<View style={styles.newBadge}>
-							<Text style={[styles.newBadgeText, badgeTextSize]}>New!</Text>
-						</View>
-					)}
+					</View>
 				</View>
 			)}
-			<View style={styles.headerRow}>
-				<Text style={[styles.title, titleTextSize, titleStyle]}>{title}</Text>
-				<CollectionGems
-					title={title}
-					progress={progress}
-				/>
-			</View>
 			{children}
 		</View>
 	);
@@ -71,9 +67,16 @@ export default function DeckHeader({
  */
 const styles = StyleSheet.create({
 	container: {
-		gap: 6,
+		gap: 2,
 	},
 	labelRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		gap: 8,
+	},
+	labelDetails: {
+		flex: 1,
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		alignItems: 'center',
@@ -88,7 +91,6 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		gap: 8,
 	},
 	title: {
 		flex: 1,

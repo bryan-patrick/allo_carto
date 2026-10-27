@@ -1,6 +1,5 @@
 import colors from '@/src/app/colors';
 import type { PassageSegment, ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
-import type { DeckWordResultProps } from '@/src/components/CardDeck/deckSessionTypes';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import PassageHighlightLayer from '@/src/components/PassageHighlightLayer';
 import ProgressBar from '@/src/components/ProgressBar';
@@ -10,7 +9,7 @@ import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 /**
@@ -21,8 +20,6 @@ interface DeckPassageViewProps {
 	deck: ReadingPassage;
 	minimumPassageHeight?: number;
 	onContentHeightChange?: (contentHeight: number) => void;
-	results?: DeckWordResultProps[];
-	sessionLegendHeader?: (speechButton: ReactNode) => ReactNode;
 	showLearningControls?: boolean;
 	showProgress?: boolean;
 	showTitle?: boolean;
@@ -39,6 +36,16 @@ interface PassageHeightMeasurements {
 	footer: number;
 	header: number;
 	passage: number;
+}
+
+interface PassageWordRange {
+	start: number;
+	end: number;
+}
+
+interface PassageSpeech {
+	text: string;
+	wordRanges: PassageWordRange[];
 }
 
 /**
@@ -63,14 +70,24 @@ function getPassageWordOpacity(
 	progress: WordProgressKey,
 	filter: WordProgressKey | null,
 	useLevelOpacity: boolean,
+	showUnseenWords: boolean,
 ): number {
 	if (filter) {
-		if (progress === filter) return 1;
+		if (progress === filter) {
+			return 1;
+		}
+
 		return filteredOutWordOpacity;
 	}
 
-	if (progress === 'unseen') return learningLevelOpacity.unseen;
-	if (useLevelOpacity) return learningLevelOpacity[progress];
+	if (progress === 'unseen' && !showUnseenWords) {
+		return learningLevelOpacity.unseen;
+	}
+
+	if (useLevelOpacity) {
+		return learningLevelOpacity[progress];
+	}
+
 	return 1;
 }
 
@@ -81,14 +98,22 @@ function getLearningLevelColor(progress: WordProgressKey, useLearningLevelColors
 
 function createWordProgressOpacityValues(
 	useLevelOpacity: boolean,
+	showUnseenWords: boolean,
 ): Record<WordProgressKey, Animated.Value> {
+	const unseenOpacity = getPassageWordOpacity('unseen', null, useLevelOpacity, showUnseenWords);
+	const newOpacity = getPassageWordOpacity('new', null, useLevelOpacity, showUnseenWords);
+	const learningOpacity = getPassageWordOpacity('learning', null, useLevelOpacity, showUnseenWords);
+	const familiarOpacity = getPassageWordOpacity('familiar', null, useLevelOpacity, showUnseenWords);
+	const knownOpacity = getPassageWordOpacity('known', null, useLevelOpacity, showUnseenWords);
+	const masteredOpacity = getPassageWordOpacity('mastered', null, useLevelOpacity, showUnseenWords);
+
 	return {
-		unseen: new Animated.Value(getPassageWordOpacity('unseen', null, useLevelOpacity)),
-		new: new Animated.Value(getPassageWordOpacity('new', null, useLevelOpacity)),
-		learning: new Animated.Value(getPassageWordOpacity('learning', null, useLevelOpacity)),
-		familiar: new Animated.Value(getPassageWordOpacity('familiar', null, useLevelOpacity)),
-		known: new Animated.Value(getPassageWordOpacity('known', null, useLevelOpacity)),
-		mastered: new Animated.Value(getPassageWordOpacity('mastered', null, useLevelOpacity)),
+		unseen: new Animated.Value(unseenOpacity),
+		new: new Animated.Value(newOpacity),
+		learning: new Animated.Value(learningOpacity),
+		familiar: new Animated.Value(familiarOpacity),
+		known: new Animated.Value(knownOpacity),
+		mastered: new Animated.Value(masteredOpacity),
 	};
 }
 
@@ -96,7 +121,7 @@ function getPassageTrailingText(after?: string): string {
 	const trailingText = after ?? ' ';
 
 	/**
-	 * Add a thin space after word gaps but leave punctuation alone.
+	 * Add a thin space after word gaps
 	 */
 	if (trailingText.endsWith(' ')) {
 		return `${trailingText}\u2009`;
@@ -106,23 +131,42 @@ function getPassageTrailingText(after?: string): string {
 }
 
 /**
- * We read only the visible words.
+ * Check if the current word should be visible
+ */
+function isPassageWordVisible(
+	progress: WordProgressKey,
+	unlockExempt: boolean | undefined,
+	showUnseenWords: boolean,
+): boolean {
+	if (unlockExempt || showUnseenWords) {
+		return true;
+	}
+
+	return progress !== 'unseen';
+}
+
+/**
+ * Each word keeps its place in that text so the highlight follows the voice.
+ * We return an object, because we're insane.
  */
 function getPassageSpeech(
 	passage: PassageSegment[],
 	wordProgressKeyByWordId: Record<string, WordProgressKey>,
-) {
+	showUnseenWords: boolean,
+): PassageSpeech {
 	let text = '';
 
 	const wordRanges = passage.map(segment => {
 		const progress = wordProgressKeyByWordId[segment.wordId ?? ''] ?? 'unseen';
+		const isVisible = isPassageWordVisible(progress, segment.unlockExempt, showUnseenWords);
 		const start = text.length;
+		let end = start;
 
-		if (segment.unlockExempt || progress !== 'unseen') {
+		if (isVisible) {
 			text += segment.text;
 		}
 
-		const end = text.length;
+		end = text.length;
 		text += segment.after ?? ' ';
 
 		return { start, end };
@@ -139,8 +183,6 @@ export default function DeckPassageView({
 	deck,
 	minimumPassageHeight = 300,
 	onContentHeightChange,
-	results,
-	sessionLegendHeader,
 	showLearningControls = true,
 	showProgress = true,
 	showTitle = true,
@@ -148,7 +190,7 @@ export default function DeckPassageView({
 	wordProgressKeyByWordId,
 }: DeckPassageViewProps) {
 	const {
-		settings: { useLearningLevelColors, useLevelOpacity },
+		settings: { useLearningLevelColors, useLevelOpacity, showUnseenWords },
 		setSetting,
 	} = useAppSettings();
 	/**
@@ -157,14 +199,14 @@ export default function DeckPassageView({
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
 	const [spokenCharacterIndex, setSpokenCharacterIndex] = useState<number | null>(null);
 	const passageSpeech = useMemo(
-		() => getPassageSpeech(deck.passage, wordProgressKeyByWordId),
-		[deck.passage, wordProgressKeyByWordId],
+		() => getPassageSpeech(deck.passage, wordProgressKeyByWordId, showUnseenWords),
+		[deck.passage, wordProgressKeyByWordId, showUnseenWords],
 	);
 	const [activeWordProgressFilter, setActiveWordProgressFilter] = useState<WordProgressKey | null>(
 		null,
 	);
 	const [wordProgressOpacityByKey] = useState(() =>
-		createWordProgressOpacityValues(useLevelOpacity),
+		createWordProgressOpacityValues(useLevelOpacity, showUnseenWords),
 	);
 	const [exemptWordOpacity] = useState(() => new Animated.Value(1));
 	const passageHeightMeasurements = useRef<PassageHeightMeasurements>({
@@ -173,8 +215,6 @@ export default function DeckPassageView({
 		passage: 0,
 	});
 	const hasReportedContentHeight = useRef(false);
-	const resultsByWordId = new Map((results ?? []).map(result => [result.wordId, result]));
-	const hasSessionResults = results !== undefined;
 	const hasPassageHeader = showTitle || showProgress || showLearningControls;
 	const passageTextContainerStyle = { minHeight: minimumPassageHeight };
 
@@ -191,32 +231,23 @@ export default function DeckPassageView({
 			spokenCharacterIndex < range.end;
 		const trailingText = getPassageTrailingText(after);
 		const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
-		const result = resultsByWordId.get(wordId ?? '');
-		const isHidden = !unlockExempt && progress === 'unseen';
+		const isVisible = isPassageWordVisible(progress, unlockExempt, showUnseenWords);
 		let displayProgress = progress;
 		let displayText = text;
 		let opacity = wordProgressOpacityByKey[progress];
+		let wordColor: string;
+		let backgroundColor: string | undefined;
+		let displayOpacity: number | Animated.Value;
 
 		if (unlockExempt) {
 			displayProgress = 'known';
 			opacity = exemptWordOpacity;
-		} else if (progress === 'unseen') {
+		} else if (!isVisible) {
 			displayText = '?';
 		}
 
-		const wordColor = getLearningLevelColor(displayProgress, useLearningLevelColors);
-		let backgroundColor: string | undefined;
-		let displayOpacity: number | Animated.Value = opacity;
-		let accessibilityLabel = displayText;
-
-		if (result && !unlockExempt && !isHidden) {
-			accessibilityLabel = `${displayText}, ${result.outcome}`;
-			backgroundColor = `${colors.light.danger}33`;
-
-			if (result.outcome === 'correct') {
-				backgroundColor = colors.light.success;
-			}
-		}
+		wordColor = getLearningLevelColor(displayProgress, useLearningLevelColors);
+		displayOpacity = opacity;
 
 		if (isCurrentWord) {
 			backgroundColor = '#FFFFAAFF';
@@ -228,22 +259,20 @@ export default function DeckPassageView({
 			displayOpacity = 1;
 		}
 
-		const progressStyle = {
-			color: wordColor,
-			opacity: displayOpacity,
-		};
 		return {
 			key,
-			accessibilityLabel,
+			accessibilityLabel: displayText,
 			displayText,
 			trailingText,
-			textStyle: progressStyle,
+			textStyle: { color: wordColor, opacity: displayOpacity },
 			highlightStyle: { backgroundColor, opacity: displayOpacity },
 		};
 	});
+
 	const hasPassageHighlights = passageSegments.some(
 		segment => segment.highlightStyle.backgroundColor,
 	);
+
 	const speechButton = (
 		<TTSButton
 			accessibilityLabel="Read story aloud"
@@ -329,7 +358,12 @@ export default function DeckPassageView({
 			[
 				...wordProgressDefinitions.map(({ key }) =>
 					Animated.timing(wordProgressOpacityByKey[key], {
-						toValue: getPassageWordOpacity(key, activeWordProgressFilter, useLevelOpacity),
+						toValue: getPassageWordOpacity(
+							key,
+							activeWordProgressFilter,
+							useLevelOpacity,
+							showUnseenWords,
+						),
 						duration: 120,
 						useNativeDriver: true,
 					}),
@@ -344,7 +378,13 @@ export default function DeckPassageView({
 		);
 		animation.start();
 		return () => animation.stop();
-	}, [activeWordProgressFilter, useLevelOpacity, wordProgressOpacityByKey, exemptWordOpacity]);
+	}, [
+		activeWordProgressFilter,
+		useLevelOpacity,
+		showUnseenWords,
+		wordProgressOpacityByKey,
+		exemptWordOpacity,
+	]);
 
 	/**
 	 * Render the passage
@@ -579,18 +619,6 @@ export default function DeckPassageView({
 						})}
 					</View>
 				)}
-				{hasSessionResults && (
-					<View style={styles.sessionLegend}>
-						{sessionLegendHeader?.(speechButton)}
-						<Text style={styles.sessionDescription}>Highlighted words are from this session.</Text>
-						<View style={styles.sessionLegendItems}>
-							<Text style={[styles.sessionLegendLabel, styles.sessionCorrect]}>Correct</Text>
-							<Text style={[styles.sessionLegendLabel, styles.sessionIncorrect]}>
-								Incorrect / skipped
-							</Text>
-						</View>
-					</View>
-				)}
 			</View>
 		</View>
 	);
@@ -736,21 +764,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 8,
 		paddingTop: 8,
 	},
-	sessionLegend: { gap: 6, paddingVertical: 8 },
-	sessionDescription: {
-		fontFamily: 'lexend-400',
-		fontSize: 12,
-		color: colors.dark.text,
-	},
-	sessionLegendItems: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-	sessionLegendLabel: {
-		fontFamily: 'lexend-400',
-		fontSize: 12,
-		color: colors.dark.text,
-		padding: 4,
-	},
-	sessionCorrect: { backgroundColor: colors.light.success },
-	sessionIncorrect: { backgroundColor: `${colors.light.danger}33` },
 	progressLegend: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',

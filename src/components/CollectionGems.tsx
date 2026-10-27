@@ -1,13 +1,8 @@
 import colors from '@/src/app/colors';
-import { getCollectionLevel, getWordsAtLevel } from '@/src/util/collectionProgress';
-import type { UserProgressRow } from '@/src/util/progression';
-import type { WordProgressKey } from '@/src/util/wordProgress';
+import type { ProgressType, UserProgressRow } from '@/src/util/progression';
 import { Alert, Pressable, StyleSheet } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
-/**
- * Typing
- */
 interface CollectionGemsProps {
 	title: string;
 	progress?: UserProgressRow;
@@ -20,88 +15,59 @@ interface GemResponse {
 	description: string;
 }
 
+const gemColors = [colors.gems.first, colors.gems.second, colors.gems.third];
+
 /**
- * Builds the strings for the gem information
+ * First gems come from saved puzzles, rather than vocabulary levels.
+ * Chapter and story gems need every paragraph's first gem. Gems two and three come later.
  */
-function getGemInfo(
+function getGemResponses(
 	progress?: UserProgressRow,
-): Record<WordProgressKey | 'inProgress', GemResponse> {
-	const wordCount = progress?.wordCount ?? 0;
+): Record<'incomplete' | 'complete', GemResponse> {
+	const type = progress?.type ?? 'paragraph';
+	const completedParagraphCount = progress?.completedParagraphCount ?? 0;
+	const paragraphCount = progress?.paragraphCount ?? 0;
 	const seenWordCount = progress?.seenWordCount ?? 0;
+	const wordCount = progress?.wordCount ?? 0;
+	const requirements: Record<ProgressType, string> = {
+		paragraph: `${seenWordCount} of ${wordCount} words seen. See every word in flashcards, then unlock and solve every puzzle card to earn the first gem.`,
+		chapter: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Solve every paragraph in this chapter to earn its first gem.`,
+		story: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Solve every paragraph in this story to earn its first gem.`,
+	};
 
 	return {
-		unseen: {
+		incomplete: {
 			label: '0/3 Gems',
 			filledCount: 0,
-			description: `${seenWordCount}/${wordCount} words seen. See every word to earn your first gem.`,
+			description: requirements[type],
 		},
-		inProgress: {
-			label: '0/3 Gems',
-			filledCount: 0,
-			description: `${seenWordCount}/${wordCount} words seen. See every word to earn your first gem.`,
-		},
-		new: {
+		complete: {
 			label: '1/3 Gems',
 			filledCount: 1,
-			description: `Every word is at least level "New".\n\n${getWordsAtLevel(progress, 'learning')}/${wordCount} words are at least Learning. Bring every word to Learning to earn your next gem.`,
-		},
-		learning: {
-			label: '2/3 Gems',
-			filledCount: 2,
-			description: `Every word is at least level "Learning".\n\n${getWordsAtLevel(progress, 'familiar')}/${wordCount} words are at least Familiar. Bring every word to Familiar to earn your next gem.`,
-		},
-		familiar: {
-			label: '3/3 Gems',
-			filledCount: 3,
-			description: 'Every word is at least level "Familiar".\n\nAll three gems earned!',
-		},
-		known: {
-			label: '💠💠💠',
-			filledCount: 3,
-			description: 'Every word is at least Known.',
-		},
-		mastered: {
-			label: '💎💎💎💯',
-			filledCount: 3,
-			description: 'Every word is mastered.',
+			description: 'First gem earned! Every puzzle card is solved. Gems 2 and 3 are coming later.',
 		},
 	};
 }
 
-/**
- * The collection gems component on decks, chapters, and stories
- */
 export default function CollectionGems({ title, progress, size = 18 }: CollectionGemsProps) {
-	const gemResponses = getGemInfo(progress);
-	const level = getCollectionLevel(progress);
-	const gemColor = colors.wordProgress[level];
-
-	let situation: WordProgressKey | 'inProgress' = level;
-
-	if (level === 'unseen' && progress?.seenWordCount) {
-		situation = 'inProgress';
-	}
-
-	const { label, filledCount, description } = gemResponses[situation];
+	const responses = getGemResponses(progress);
+	const response = progress?.hasFirstGem ? responses.complete : responses.incomplete;
 
 	function showProgress() {
-		Alert.alert(`${title} (${label})`, description);
+		Alert.alert(`${title} (${response.label})`, response.description);
 	}
 
-	/**
-	 * Render the component
-	 */
 	return (
 		<Pressable
 			accessibilityRole="button"
-			accessibilityLabel={`${title}: ${label}, ${filledCount} of 3 gems.`}
-			accessibilityHint="Show learning progress and gem requirements."
+			accessibilityLabel={`${title}: ${response.filledCount} of 3 gems.`}
+			accessibilityHint="Show puzzle progress and gem requirements."
 			hitSlop={8}
 			onPress={showProgress}
 			style={styles.row}
 		>
-			{[0, 1, 2].map(index => {
-				const filled = index < filledCount;
+			{gemColors.map((gemColor, index) => {
+				const filled = index < response.filledCount;
 
 				return (
 					<MaterialSymbol
@@ -109,8 +75,8 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 						name="diamond"
 						size={size}
 						filled={filled}
-						color={filled ? gemColor : colors.light.border}
-						style={filled ? styles.filled : styles.unfilled}
+						color={filled ? gemColor : colors.gems.unsolved}
+						style={filled ? styles.gem : styles.unfilled}
 					/>
 				);
 			})}
@@ -118,14 +84,14 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 	);
 }
 
-/**
- * Styles
- */
 const styles = StyleSheet.create({
-	filled: {
-		textShadowOffset: { width: 0, height: 0 },
-		textShadowRadius: 8,
-		textShadowColor: '#ffffff',
+	gem: {
+		textShadowOffset: {
+			width: 0,
+			height: 0,
+		},
+		textShadowRadius: 1,
+		textShadowColor: colors.gems.glow,
 	},
 	unfilled: {
 		opacity: 0.4,
@@ -134,6 +100,5 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 3,
-		minHeight: 24,
 	},
 });

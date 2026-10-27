@@ -10,7 +10,7 @@ const colors = {
 		background: '#121212',
 		border: '#1d2427',
 		secondaryBorder: '#382326',
-		success: '#3B3D33',
+		success: '#35473d',
 		warning: '#332105',
 		danger: '#3E0E14',
 		CEFR: {
@@ -51,6 +51,11 @@ const colors = {
 		known: '#1A1A1A',
 		mastered: '#0e6162',
 	},
+	ink: {
+		full: '#C7A6F4',
+		available: '#285D3B',
+		insufficient: '#39151b',
+	},
 	category: {
 		Travel: '#454A36',
 		History: '#653e1b',
@@ -61,6 +66,24 @@ const colors = {
 		Shopping: '#713E53',
 		Beginner: '#433e45',
 		'Leo the Cat': '#424536',
+	},
+	categoryLight: {
+		Travel: '#D2D8B8',
+		History: '#E4BD92',
+		Dining: '#E4B9B1',
+		Social: '#B8CDD4',
+		Health: '#ADD8CA',
+		Directions: '#AECBE4',
+		Shopping: '#E6B8CD',
+		Beginner: '#cfd0d1',
+		'Leo the Cat': '#D0D5B3',
+	},
+	gems: {
+		unsolved: '#90846F',
+		first: '#a13e46',
+		second: '#469a93',
+		third: '#b052ca',
+		glow: '#FFFFFF',
 	},
 	rarity: {
 		Common: '#f0d2a1',

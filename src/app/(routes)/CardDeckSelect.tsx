@@ -17,8 +17,7 @@ const deckSelectBackgroundImage = require('@/src/app/assets/images/decks/deck-se
  */
 export default function CardDeckSelect() {
 	const { chapterId } = useLocalSearchParams<{ chapterId?: string }>();
-	const { experience, progressById, status } = useUserProgress();
-	const userLevel = experience.level;
+	const { progressById, status } = useUserProgress();
 	const headerHeight = useHeaderHeight();
 	const scrollContentStyle = { paddingTop: headerHeight + 16 };
 	const scrollIndicatorInsets = { top: headerHeight };
@@ -33,7 +32,10 @@ export default function CardDeckSelect() {
 	 * Check a deck's lock
 	 */
 	function getIsDeckLocked(deck: CardDeck): boolean {
-		return !isItemUnlocked({ id: deck.id, progressById, userLevel });
+		return !isItemUnlocked({
+			id: deck.id,
+			progressById,
+		});
 	}
 
 	/**
@@ -45,7 +47,13 @@ export default function CardDeckSelect() {
 	/**
 	 * Block locked chapters
 	 */
-	if (chapter && !isItemUnlocked({ id: chapter.id, progressById, userLevel })) {
+	if (
+		chapter &&
+		!isItemUnlocked({
+			id: chapter.id,
+			progressById,
+		})
+	) {
 		return (
 			<View style={styles.noDecksContainer}>
 				<Text style={styles.noDecksText}>This chapter is locked.</Text>
@@ -85,7 +93,7 @@ export default function CardDeckSelect() {
 								<DeckBox
 									deck={deck}
 									isLocked={getIsDeckLocked(deck)}
-									unlockCriteria={getUnlockCriteria(deck, progressById, userLevel)}
+									unlockCriteria={getUnlockCriteria(deck, progressById)}
 								/>
 							</View>
 						))}

@@ -11,7 +11,7 @@ export function getCompletionDelay(index: number) {
 }
 
 /**
- * A short slide shared by the header, passage, result rows, and receipt
+ * We use this short slide when word details or unlock choices appear.
  */
 export function getCompletionEntry(index: number) {
 	return FadeInLeft.duration(completionEntryDuration)
