@@ -1,7 +1,6 @@
 import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import ReadingLink from '@/src/components/ReadingLink';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import type {
@@ -13,7 +12,7 @@ import { getDB } from '@/src/db/interface';
 import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findCompletionPath, findNextParagraph, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { findCompletionPath, findNextParagraph } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { inkConfig } from '@/src/util/ink';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -21,18 +20,21 @@ import { useCallback, useRef, useState } from 'react';
 import {
 	ImageBackground,
 	KeyboardAvoidingView,
-	type NativeSyntheticEvent,
 	Platform,
 	Pressable,
 	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
-	type TextInputSelectionChangeEventData,
+	type TextInputInstance,
+	type TextInputSelectionChangeEvent,
 	View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+/**
+ * Typing
+ */
 interface SolveViewProps {
 	deckId: string;
 }
@@ -108,8 +110,7 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	const router = useRouter();
 	const { bottom, top } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
-	const { inkBalance, isUpdatingProgress, progressById, writeSolveAttempt, unlockSolveCard } =
-		useUserProgress();
+	const { inkBalance, isUpdatingProgress, writeSolveAttempt, unlockSolveCard } = useUserProgress();
 	const [puzzle, setPuzzle] = useState<SolvePuzzle>();
 	const [loadError, setLoadError] = useState('');
 	const [selectedPosition, setSelectedPosition] = useState<number>();
@@ -122,7 +123,7 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	const [isSaving, setIsSaving] = useState(false);
 	const [needsRetry, setNeedsRetry] = useState(false);
 	const isBusy = useRef(false);
-	const answerInput = useRef<TextInput>(null);
+	const answerInput = useRef<TextInputInstance>(null);
 	const pendingAttempt = useRef<SolveAttemptRequest | null>(null);
 	const selectedCard = puzzle?.positions.find(card => card.position === selectedPosition);
 	const cards = puzzle?.positions.filter(card => card.wordId) ?? [];
@@ -148,13 +149,6 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	})[1];
 	const nextParagraph = findNextParagraph(deckId);
 	const isChapterComplete = nextParagraph?.chapter.id !== chapter?.id;
-	const canReadNextParagraph = Boolean(
-		nextParagraph &&
-		isItemUnlocked({
-			id: nextParagraph.paragraph.id,
-			progressById,
-		}),
-	);
 	const isLoading = !puzzle && !loadError;
 	const wordColor = {
 		color: storyColor,
@@ -271,7 +265,7 @@ export default function SolveView({ deckId }: SolveViewProps) {
 		setFeedback(null);
 	}
 
-	function handleAnswerSelection(event: NativeSyntheticEvent<TextInputSelectionChangeEventData>) {
+	function handleAnswerSelection(event: TextInputSelectionChangeEvent) {
 		setAnswerSelection(event.nativeEvent.selection);
 	}
 
@@ -497,17 +491,11 @@ export default function SolveView({ deckId }: SolveViewProps) {
 										name="diamond"
 										filled
 										size={32}
-										color={colors.rarity.Legendary}
+										color={colors.gems.first}
+										style={styles.gem}
 									/>
 									<Text style={styles.word}>First gem earned!</Text>
 									<Text style={styles.text}>{completionMessage}</Text>
-									{nextParagraph && canReadNextParagraph && (
-										<ReadingLink
-											item={nextParagraph.paragraph}
-											label="Read next paragraph"
-											color={storyColor}
-										/>
-									)}
 								</View>
 							:	<>
 									<Text style={styles.text}>{prompt}</Text>
@@ -684,6 +672,14 @@ const styles = StyleSheet.create({
 	completion: {
 		alignItems: 'center',
 		gap: 8,
+	},
+	gem: {
+		textShadowOffset: {
+			width: 0,
+			height: 0,
+		},
+		textShadowRadius: 1,
+		textShadowColor: colors.gems.glow,
 	},
 	input: {
 		minHeight: 44,

@@ -80,7 +80,7 @@ export default function StorySelectModal({
 						</Pressable>
 					</View>
 					<Text style={styles.introduction}>Choose a story to explore its chapters.</Text>
-					<ScrollView>
+					<ScrollView style={styles.storyList}>
 						<StorySelectView
 							onSelect={onSelect}
 							isSelecting={isSelecting}
@@ -134,5 +134,10 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		paddingHorizontal: 20,
 		paddingBottom: 12,
+	},
+	storyList: {
+		borderTopWidth: 1,
+		borderBottomWidth: 1,
+		borderColor: colors.light.border,
 	},
 });

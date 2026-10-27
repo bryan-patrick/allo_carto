@@ -57,11 +57,19 @@ interface ButtonIconProps {
 }
 
 /**
- * LinkButton Component
- * A button that looks like a link
+ * This displays a button that opens a screen or runs an action.
+ * Screen links need their styles combined into one object because Expo Router rejects style arrays.
  */
 export default function LinkButton({ screen, params, href, ...props }: LinkButtonProps) {
-	const destination = href ?? (screen ? { pathname: screen, params } : undefined);
+	const screenDestination =
+		screen ?
+			{
+				pathname: screen,
+				params,
+			}
+		:	undefined;
+	const destination = href ?? screenDestination;
+	const linkedButtonStyle = StyleSheet.flatten(props.style);
 
 	if (destination) {
 		return (
@@ -69,7 +77,10 @@ export default function LinkButton({ screen, params, href, ...props }: LinkButto
 				href={destination}
 				asChild
 			>
-				<Button {...props} />
+				<Button
+					{...props}
+					style={linkedButtonStyle}
+				/>
 			</Link>
 		);
 	}

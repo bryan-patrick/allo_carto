@@ -61,11 +61,6 @@ describe('<DeckResultsView />', () => {
 				session: {
 					id: 'completed-session',
 					xpBefore: 0,
-					/**
-					 * Real sessions keep these lists to find newly available unlocks.
-					 */
-					unlockedIdsBefore: [],
-					readyToUnlockIdsBefore: [],
 					results: [],
 					completion: { bonuses: [{ kind: 'completion', xp: 50 }], totalXP: 50, earnedInk: 0 },
 				},

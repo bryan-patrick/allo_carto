@@ -25,6 +25,14 @@ export default function ChapterSelectHeader() {
 		selectedStoryId: user?.selectedStoryId,
 		progressById,
 	});
+	const storyColor =
+		selectedStory ? colors.categoryLight[selectedStory.category] : colors.light.primary;
+	const categoryTextStyle = {
+		color: storyColor,
+	};
+	const headerBorderStyle = {
+		borderBottomColor: `${storyColor}30`,
+	};
 	const insetStyle = {
 		paddingTop: insets.top + 8,
 		paddingLeft: Math.max(insets.left, 12),
@@ -57,7 +65,7 @@ export default function ChapterSelectHeader() {
 	}
 
 	return (
-		<View style={[styles.header, insetStyle]}>
+		<View style={[styles.header, insetStyle, headerBorderStyle]}>
 			<View style={styles.topRow}>
 				<View style={styles.storySelector}>
 					{isReady && (
@@ -74,12 +82,12 @@ export default function ChapterSelectHeader() {
 				<View style={styles.detailsRow}>
 					<ReadingDescription
 						item={selectedStory}
-						color={colors.light.goldenBorder}
+						color={storyColor}
 						style={styles.readStoryLink}
 						showDescription={false}
 					/>
 					<View style={styles.progressRow}>
-						<Text style={styles.category}>{selectedStory.category}</Text>
+						<Text style={[styles.category, categoryTextStyle]}>{selectedStory.category}</Text>
 					</View>
 				</View>
 			)}
@@ -100,7 +108,6 @@ const styles = StyleSheet.create({
 	header: {
 		backgroundColor: colors.dark.background,
 		borderBottomWidth: 1,
-		borderBottomColor: `${colors.light.goldenBorder}30`,
 		paddingBottom: 12,
 		gap: 4,
 	},
@@ -127,11 +134,9 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-600',
 		fontSize: 12,
 		textTransform: 'uppercase',
-		color: colors.light.goldenBorder,
 	},
 	readStoryLink: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
-		color: colors.light.goldenBorder,
+		fontSize: 16,
 	},
 });
