@@ -17,21 +17,18 @@ interface ChapterPostcardProps {
 	chapter: DeckChapter;
 	story: DeckStory;
 	progressById: ProgressById;
-	userLevel: number;
 }
 
 /**
  * The chapter component. It shows chapter info and the different paragraphs in that chapter.
  */
-export default function ChapterPostcard({
-	chapter,
-	story,
-	progressById,
-	userLevel,
-}: ChapterPostcardProps) {
+export default function ChapterPostcard({ chapter, story, progressById }: ChapterPostcardProps) {
 	const color = colors.category[story.category];
-	const isLocked = !isItemUnlocked({ id: chapter.id, progressById, userLevel });
-	const unlockCriteria = getUnlockCriteria(chapter, progressById, userLevel);
+	const isLocked = !isItemUnlocked({
+		id: chapter.id,
+		progressById,
+	});
+	const unlockCriteria = getUnlockCriteria(chapter, progressById);
 	const hasDecks = chapter.decks.length > 0;
 
 	return (
@@ -55,7 +52,6 @@ export default function ChapterPostcard({
 					{isLocked && (
 						<View style={styles.lockedInner}>
 							<LockedSection
-								itemId={chapter.id}
 								color={color}
 								unlockCriteria={unlockCriteria}
 								fontSizeOffset={2}

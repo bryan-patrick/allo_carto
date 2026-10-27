@@ -22,7 +22,6 @@ import {
 import loadUserXP from './queries/getUserExperience';
 import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
-import unlockAtlasItem from './queries/unlockAtlasItem';
 import unlockSolveCard from './queries/unlockSolveCard';
 import writeSolveAttempt from './queries/writeSolveAttempt';
 import {
@@ -56,7 +55,6 @@ interface UserProgressContextProps {
 	writeWordSeen: (wordId: string, deckId?: string) => Promise<boolean>;
 	writeSolveAttempt: (request: SolveAttemptRequest) => Promise<SolveAttemptResult | false>;
 	unlockSolveCard: (request: SolveCardRequest) => Promise<SolveAttemptResult | false>;
-	unlockItem: (id: string) => Promise<boolean>;
 	reloadProgress: () => Promise<void>;
 }
 
@@ -74,7 +72,6 @@ const initialValue: UserProgressContextProps = {
 	writeWordSeen: async () => false,
 	writeSolveAttempt: async () => false,
 	unlockSolveCard: async () => false,
-	unlockItem: async () => false,
 	reloadProgress: async () => {},
 };
 
@@ -207,13 +204,6 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	const unlockItem = useCallback(
-		async (id: string): Promise<boolean> => {
-			return runProgressWrite(() => unlockAtlasItem({ database, userId: userId!, id }));
-		},
-		[database, userId, runProgressWrite],
-	);
-
 	/**
 	 * Write the solve attempt to the db
 	 */
@@ -254,7 +244,6 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			writeWordSeen: recordWordSeen,
 			writeSolveAttempt: recordSolveAttempt,
 			unlockSolveCard: recordSolveUnlock,
-			unlockItem,
 			reloadProgress: refreshProgress,
 			status,
 		}),
@@ -268,7 +257,6 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			recordWordSeen,
 			recordSolveAttempt,
 			recordSolveUnlock,
-			unlockItem,
 			refreshProgress,
 			status,
 		],

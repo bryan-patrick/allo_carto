@@ -23,8 +23,9 @@ import { Pressable, type StyleProp, StyleSheet, Text, type TextStyle, View } fro
  * Typing
  */
 export interface ReadingLinkProps {
-	item: DeckChapter | DeckStory;
+	item: CardDeck | DeckChapter | DeckStory;
 	color: string;
+	label?: string;
 	style?: StyleProp<TextStyle>;
 	showDescription?: boolean;
 }
@@ -41,30 +42,42 @@ interface PassageState {
 export default function ReadingLink({
 	item,
 	color,
+	label: readLabel = 'Read',
 	style,
 	showDescription = false,
 }: ReadingLinkProps) {
 	const { id: userId } = useUserContext() ?? {};
-	const { experience, progressById } = useUserProgress();
+	const { progressById } = useUserProgress();
 	const [loading, setLoading] = useState(false);
 	const [passageState, setPassageState] = useState<PassageState>();
+	const title = 'name' in item ? item.name : item.title;
 	let decks: CardDeck[];
-	const readLabel = 'Read';
 
 	if ('chapters' in item) {
 		decks = item.chapters
 			.filter(hasChapterContent)
 			.flatMap(chapter => chapter.decks.filter(hasParagraphContent));
-	} else {
+	} else if ('decks' in item) {
 		decks = item.decks.filter(hasParagraphContent);
+	} else {
+		decks = [item];
 	}
+
+	/**
+	 * Reading a chapter or story only includes paragraphs the player can already open.
+	 */
+	decks = decks.filter(deck => {
+		return isItemUnlocked({
+			id: deck.id,
+			progressById,
+		});
+	});
 
 	const canRead =
 		decks.length > 0 &&
 		isItemUnlocked({
 			id: item.id,
 			progressById,
-			userLevel: experience.level,
 		});
 
 	async function handleRead() {
@@ -106,7 +119,7 @@ export default function ReadingLink({
 			setPassageState({
 				deck: {
 					id: item.id,
-					title: item.name,
+					title,
 					passage,
 					wordIds,
 				},
@@ -124,7 +137,7 @@ export default function ReadingLink({
 		<>
 			<Pressable
 				accessible={canRead}
-				accessibilityLabel={canRead ? `${readLabel} ${item.name}` : undefined}
+				accessibilityLabel={canRead ? `${readLabel}: ${title}` : undefined}
 				accessibilityHint={showDescription ? item.description : undefined}
 				accessibilityRole={canRead ? 'button' : undefined}
 				accessibilityState={{

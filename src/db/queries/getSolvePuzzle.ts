@@ -4,7 +4,6 @@ import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
 import type { SQLiteDatabase } from 'expo-sqlite';
-import loadUserXP from './getUserExperience';
 import getUserProgress from './getUserProgress';
 
 /**
@@ -54,15 +53,10 @@ export default async function getSolvePuzzle({
 		database,
 		userId,
 	});
-	const experience = await loadUserXP({
-		database,
-		userId,
-	});
 	const progress = progressById[deckId];
 	const isUnlocked = isItemUnlocked({
 		id: deckId,
 		progressById,
-		userLevel: experience.level,
 	});
 	const allWordsSeen = deck.wordIds.length > 0 && progress?.seenWordCount === deck.wordIds.length;
 	const unlockedPositions = await database.getAllAsync<UnlockedPositionRow>(
@@ -124,5 +118,6 @@ export default async function getSolvePuzzle({
 		positions,
 		isUnlocked,
 		allWordsSeen,
+		hasFirstGem: Boolean(progress?.hasFirstGem),
 	};
 }

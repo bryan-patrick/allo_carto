@@ -21,8 +21,6 @@ interface StoryProps {
 	isLocked: boolean;
 	isSelected: boolean;
 	progressById: ProgressById;
-	progressPercent: number;
-	userLevel: number;
 	onSelect: (story: DeckStory) => void;
 	isSelecting: boolean;
 }
@@ -33,15 +31,19 @@ interface StoryProps {
 export default function Story({
 	story,
 	progressById,
-	progressPercent,
 	isLocked,
 	isSelected,
-	userLevel,
 	onSelect,
 	isSelecting,
 }: StoryProps) {
-	const { category, name, materialSymbolName, requiredLevel } = story;
+	const { category, name, materialSymbolName } = story;
 	const color = colors.category[category];
+	const storyProgress = progressById[story.id];
+	const seenWordCount = storyProgress?.seenWordCount ?? 0;
+	const wordCount = storyProgress?.wordCount ?? 0;
+	const completedParagraphCount = storyProgress?.completedParagraphCount ?? 0;
+	const paragraphCount = storyProgress?.paragraphCount ?? 0;
+	const hasStarted = seenWordCount > 0 || completedParagraphCount > 0;
 
 	if (isLocked) {
 		return (
@@ -55,21 +57,15 @@ export default function Story({
 				<Cover>
 					<View style={styles.lockedStory}>
 						<LockedSection
-							itemId={story.id}
 							color={color}
 							style={styles.lockedSection}
-							unlockCriteria={getUnlockCriteria(story, progressById, userLevel)}
+							unlockCriteria={getUnlockCriteria(story, progressById)}
 						/>
 					</View>
 				</Cover>
 			</Book>
 		);
 	}
-
-	const seenWordCount = progressById[story.id]?.seenWordCount ?? 0;
-	const wordCount =
-		progressById[story.id]?.wordCount ??
-		new Set(story.chapters.flatMap(chapter => chapter.decks.flatMap(deck => deck.wordIds))).size;
 
 	/**
 	 * Render the component
@@ -94,7 +90,6 @@ export default function Story({
 									size={16}
 								/>
 							</View>
-							<Text style={[styles.category, { color }]}>Lvl. {requiredLevel}</Text>
 						</View>
 						<Text style={styles.storyTitle}>{name}</Text>
 						<View style={styles.separatorContainer}>
@@ -109,7 +104,8 @@ export default function Story({
 					</View>
 					<View style={styles.storyImageContainer} />
 					<StoryMeta
-						progressPercent={progressPercent}
+						completedParagraphCount={completedParagraphCount}
+						paragraphCount={paragraphCount}
 						progressColor={color}
 						seenWordCount={seenWordCount}
 						wordCount={wordCount}
@@ -118,7 +114,7 @@ export default function Story({
 						story={story}
 						isSelected={isSelected}
 						disabled={isSelecting}
-						progressPercent={progressPercent}
+						hasStarted={hasStarted}
 						onSelect={onSelect}
 					/>
 				</View>

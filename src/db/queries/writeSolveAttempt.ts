@@ -10,9 +10,10 @@ interface WriteSolveAttemptOptions extends SolveAttemptRequest {
 	userId: string;
 }
 
-interface SavedSolveAttempt extends SolveAttemptResult {
+interface SavedSolveAttempt extends Omit<SolveAttemptResult, 'firstGemEarned'> {
 	deckId: string;
 	position: number;
+	firstGemEarned: number;
 }
 
 /**
@@ -29,7 +30,7 @@ export default async function writeSolveAttempt({
 }: WriteSolveAttemptOptions): Promise<SolveAttemptResult> {
 	const statements = {
 		getReceipt: `
-			SELECT deckId, position, status, acceptedAnswer, inkSpent
+			SELECT deckId, position, status, acceptedAnswer, inkSpent, firstGemEarned
 			FROM solveAttempts WHERE userId = ? AND attemptId = ?;
 		`,
 		spendInk: 'UPDATE userInk SET balance = ? WHERE userId = ? AND balance >= ?;',
@@ -41,14 +42,20 @@ export default async function writeSolveAttempt({
 		`,
 		saveReceipt: `
 			INSERT INTO solveAttempts (
-				userId, attemptId, deckId, position, status, acceptedAnswer, inkSpent
-			) VALUES (?, ?, ?, ?, ?, ?, ?);
+				userId, attemptId, deckId, position, status, acceptedAnswer, inkSpent, firstGemEarned
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+		`,
+		saveFirstGem: `
+			INSERT INTO solveCompletions (userId, deckId, completedAt)
+			VALUES (?, ?, ?)
+			ON CONFLICT(userId, deckId) DO NOTHING;
 		`,
 	};
 	let result: SolveAttemptResult = {
 		status: 'unavailable',
 		acceptedAnswer: null,
 		inkSpent: 0,
+		firstGemEarned: false,
 	};
 
 	if (!attemptId) {
@@ -61,6 +68,7 @@ export default async function writeSolveAttempt({
 			userId,
 			attemptId,
 		);
+		let firstGemEarned = false;
 
 		if (receipt) {
 			if (receipt.deckId !== deckId || receipt.position !== position) {
@@ -71,6 +79,7 @@ export default async function writeSolveAttempt({
 				status: receipt.status,
 				acceptedAnswer: receipt.acceptedAnswer,
 				inkSpent: receipt.inkSpent,
+				firstGemEarned: Boolean(receipt.firstGemEarned),
 			};
 			return;
 		}
@@ -81,6 +90,9 @@ export default async function writeSolveAttempt({
 			deckId,
 		});
 		const card = puzzle.positions.find(card => card.position === position);
+		const remainingCards = puzzle.positions.filter(card => {
+			return card.wordId && card.position !== position && card.acceptedAnswer === null;
+		});
 
 		if (!puzzle.isUnlocked || !puzzle.allWordsSeen || !card?.wordId) {
 			return;
@@ -139,6 +151,21 @@ export default async function writeSolveAttempt({
 				card.wordId,
 				checkedAnswer.acceptedAnswer,
 			);
+
+			/**
+			 * The last correct card earns the first gem in this same save.
+			 * Story access follows that saved gem, so a failed save cannot open the next paragraph.
+			 */
+			if (remainingCards.length === 0 && !puzzle.hasFirstGem) {
+				const completion = await transaction.runAsync(
+					statements.saveFirstGem,
+					userId,
+					deckId,
+					Date.now(),
+				);
+
+				firstGemEarned = completion.changes === 1;
+			}
 		}
 
 		await transaction.runAsync(
@@ -150,11 +177,13 @@ export default async function writeSolveAttempt({
 			checkedAnswer.status,
 			checkedAnswer.acceptedAnswer,
 			inkSpent,
+			firstGemEarned ? 1 : 0,
 		);
 
 		result = {
 			...checkedAnswer,
 			inkSpent,
+			firstGemEarned,
 		};
 	});
 

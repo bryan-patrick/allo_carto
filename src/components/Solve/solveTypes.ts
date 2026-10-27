@@ -16,6 +16,7 @@ export interface SolvePuzzle {
 	positions: SolvePosition[];
 	isUnlocked: boolean;
 	allWordsSeen: boolean;
+	hasFirstGem: boolean;
 }
 
 export interface SolveCardRequest {
@@ -39,4 +40,5 @@ export interface SolveAttemptResult {
 		| 'alreadyUnlocked';
 	acceptedAnswer: string | null;
 	inkSpent: number;
+	firstGemEarned: boolean;
 }

@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import ReadingLink from '@/src/components/ReadingLink';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import type {
 	SolveAttemptRequest,
@@ -11,7 +12,7 @@ import { getDB } from '@/src/db/interface';
 import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findCompletionPath } from '@/src/util/atlasCompletion';
+import { findCompletionPath, findNextParagraph, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { inkConfig } from '@/src/util/ink';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -63,7 +64,8 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	const router = useRouter();
 	const { bottom, top } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
-	const { inkBalance, isUpdatingProgress, writeSolveAttempt, unlockSolveCard } = useUserProgress();
+	const { inkBalance, isUpdatingProgress, progressById, writeSolveAttempt, unlockSolveCard } =
+		useUserProgress();
 	const [puzzle, setPuzzle] = useState<SolvePuzzle>();
 	const [loadError, setLoadError] = useState('');
 	const [selectedPosition, setSelectedPosition] = useState<number>();
@@ -95,6 +97,15 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
+	const nextParagraph = findNextParagraph(deckId);
+	const isChapterComplete = nextParagraph?.chapter.id !== chapter?.id;
+	const canReadNextParagraph = Boolean(
+		nextParagraph &&
+		isItemUnlocked({
+			id: nextParagraph.paragraph.id,
+			progressById,
+		}),
+	);
 	const isLoading = !puzzle && !loadError;
 	const wordColor = {
 		color: storyColor,
@@ -111,6 +122,15 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	const action = isUnlocking ? 'Unlock' : 'Solve';
 	let submitLabel = selectedCard ? `${action} (${cardCost} Ink)` : 'Select a card';
 	let prompt = 'Select a card to unlock or solve.';
+	let completionMessage = 'All cards solved. The next paragraph is ready.';
+
+	if (isChapterComplete) {
+		completionMessage = 'Chapter complete! The next chapter is ready.';
+	}
+
+	if (!nextParagraph) {
+		completionMessage = 'All paragraphs solved. Story complete!';
+	}
 
 	if (selectedCard) {
 		prompt =
@@ -210,6 +230,7 @@ export default function SolveView({ deckId }: SolveViewProps) {
 			return {
 				...current,
 				positions,
+				hasFirstGem: current.hasFirstGem || result.firstGemEarned,
 			};
 		});
 	}
@@ -371,8 +392,24 @@ export default function SolveView({ deckId }: SolveViewProps) {
 							))}
 						</ScrollView>
 						<View style={styles.editor}>
-							{isComplete ?
-								<Text style={styles.word}>All cards solved!</Text>
+							{isComplete && puzzle?.hasFirstGem ?
+								<View style={styles.completion}>
+									<MaterialSymbol
+										name="diamond"
+										filled
+										size={32}
+										color={colors.rarity.Legendary}
+									/>
+									<Text style={styles.word}>First gem earned!</Text>
+									<Text style={styles.text}>{completionMessage}</Text>
+									{nextParagraph && canReadNextParagraph && (
+										<ReadingLink
+											item={nextParagraph.paragraph}
+											label="Read next paragraph"
+											color={storyColor}
+										/>
+									)}
+								</View>
 							:	<>
 									<Text style={styles.text}>{prompt}</Text>
 									{!isUnlocking && (
@@ -526,6 +563,10 @@ const styles = StyleSheet.create({
 		gap: 8,
 		borderTopWidth: 1,
 		borderColor: colors.light.goldenBorder,
+	},
+	completion: {
+		alignItems: 'center',
+		gap: 8,
 	},
 	input: {
 		minHeight: 44,

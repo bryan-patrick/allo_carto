@@ -1,13 +1,10 @@
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
-import { getDB } from '@/src/db/interface';
-import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
-import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 /**
@@ -35,14 +32,17 @@ interface SolveButtonProps {
 export default function SolveButton({ deckId, color }: SolveButtonProps) {
 	const router = useRouter();
 	const { id: userId } = useUserContext() ?? {};
-	const { progressById, experience, status, isUpdatingProgress } = useUserProgress();
-	const [isComplete, setIsComplete] = useState(false);
+	const { progressById, status, isUpdatingProgress } = useUserProgress();
 	const deck = findParagraphById(deckId);
 	const progress = progressById[deckId];
+	const isComplete = Boolean(progress?.hasFirstGem);
 	const isEligible = Boolean(
 		deck?.wordIds.length &&
 		progress?.seenWordCount === deck.wordIds.length &&
-		isItemUnlocked({ id: deckId, progressById, userLevel: experience.level }),
+		isItemUnlocked({
+			id: deckId,
+			progressById,
+		}),
 	);
 	const isDisabled = !isEligible || status !== 'ready' || !userId || isUpdatingProgress;
 	let label = 'Solve';
@@ -51,39 +51,13 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 		label = 'View solved paragraph';
 	}
 
-	useFocusEffect(
-		useCallback(() => {
-			let isActive = true;
-
-			async function loadSolvedCount() {
-				if (!userId || !isEligible) {
-					return;
-				}
-
-				try {
-					const database = await getDB();
-					const puzzle = await getSolvePuzzle({ database, userId, deckId });
-					const cards = puzzle.positions.filter(card => card.wordId);
-					const solvedCards = cards.filter(card => card.acceptedAnswer !== null);
-
-					if (isActive) {
-						setIsComplete(cards.length > 0 && solvedCards.length === cards.length);
-					}
-				} catch (error) {
-					console.error('Could not load Solve progress:', error);
-				}
-			}
-
-			loadSolvedCount();
-
-			return () => {
-				isActive = false;
-			};
-		}, [userId, deckId, isEligible]),
-	);
-
 	function handleOpen() {
-		router.push({ pathname: '/Solve', params: { deckId } });
+		router.push({
+			pathname: '/Solve',
+			params: {
+				deckId,
+			},
+		});
 	}
 
 	if (!deck || deck.wordIds.length === 0) {
@@ -99,19 +73,21 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 				disabled={isDisabled}
 				style={[styles.button, isDisabled && styles.disabledButton]}
 				background={
-					<LinearGradient
-						colors={solveGradientColors}
-						start={{
-							x: 0,
-							y: 1,
-						}}
-						end={{
-							x: 1,
-							y: 0.1,
-						}}
-						pointerEvents="none"
-						style={styles.gradient}
-					/>
+					isEligible && (
+						<LinearGradient
+							colors={solveGradientColors}
+							start={{
+								x: 0,
+								y: 1,
+							}}
+							end={{
+								x: 1,
+								y: 0.1,
+							}}
+							pointerEvents="none"
+							style={styles.gradient}
+						/>
+					)
 				}
 				accessibilityHint={
 					isEligible ?

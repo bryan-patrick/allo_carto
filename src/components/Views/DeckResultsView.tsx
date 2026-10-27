@@ -2,21 +2,18 @@ import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { DeckSessionProps } from '@/src/components/CardDeck/deckSessionTypes';
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
-import CompletionUnlocks from '@/src/components/DeckCompletion/CompletionUnlocks';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { getDeck } from '@/src/db/interface';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import type { AtlasItem } from '@/src/util/atlasCompletion';
-import { findCompletionPath, getUnlockScreenItems } from '@/src/util/atlasCompletion';
+import { findCompletionPath } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
-import { getUserExperience } from '@/src/util/userExperience';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
 	Alert,
 	BackHandler,
@@ -78,31 +75,6 @@ export default function DeckResultsView() {
 		newlySeenLabel = '1 new card seen this session';
 	}
 
-	/**
-	 * Show unlocked items
-	 */
-	const unlockItems = useMemo(() => {
-		const previouslyAvailableIds = new Set(session?.unlockedIdsBefore);
-		const previouslyReadyIds = session?.readyToUnlockIdsBefore ?? [];
-		let userLevel = 1;
-		let availableItems: AtlasItem[];
-		let newUnlockItems: AtlasItem[];
-
-		if (!session?.completion || !session.unlockedIdsBefore) {
-			return [];
-		}
-
-		for (const itemId of previouslyReadyIds) {
-			previouslyAvailableIds.add(itemId);
-		}
-
-		userLevel = getUserExperience(session.completion.totalXP).level;
-		availableItems = getUnlockScreenItems({ progressById, userLevel });
-		newUnlockItems = availableItems.filter(item => !previouslyAvailableIds.has(item.id));
-
-		return newUnlockItems;
-	}, [progressById, session]);
-
 	if (!hasReview) {
 		title = 'No session results to review';
 		description = 'Finish a flashcard session to see your results and rewards.';
@@ -159,7 +131,7 @@ export default function DeckResultsView() {
 				return;
 			}
 
-			nextSession = createDeckSession(experience.totalXP, progressById);
+			nextSession = createDeckSession(experience.totalXP);
 
 			cardDeckDispatch({
 				type: 'SET_DECK',
@@ -240,20 +212,6 @@ export default function DeckResultsView() {
 									</View>
 									<Text style={styles.cardProgressText}>{newlySeenLabel}</Text>
 								</View>
-								{unlockItems.length > 0 && (
-									<View style={styles.unlocks}>
-										<Text
-											accessibilityRole="header"
-											style={[styles.sectionTitle, headingStyle]}
-										>
-											Ready to unlock
-										</Text>
-										<CompletionUnlocks
-											items={unlockItems}
-											color={storyColor}
-										/>
-									</View>
-								)}
 								<Pressable
 									accessibilityRole="button"
 									accessibilityLabel={wordResultsLabel}

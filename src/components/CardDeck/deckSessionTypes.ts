@@ -35,8 +35,6 @@ export interface DeckCompletionReceiptProps {
 export interface DeckSessionProps {
 	id: string;
 	xpBefore: number;
-	unlockedIdsBefore?: string[];
-	readyToUnlockIdsBefore?: string[];
 	results: DeckWordResultProps[];
 	completion?: DeckCompletionReceiptProps;
 }

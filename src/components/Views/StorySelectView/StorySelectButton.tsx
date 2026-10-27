@@ -10,7 +10,7 @@ interface StorySelectButtonProps {
 	story: DeckStory;
 	isSelected: boolean;
 	disabled?: boolean;
-	progressPercent?: number;
+	hasStarted?: boolean;
 	onSelect: (story: DeckStory) => void;
 }
 
@@ -21,12 +21,12 @@ export default function StorySelectButton({
 	story,
 	isSelected,
 	disabled = false,
-	progressPercent = 0,
+	hasStarted = false,
 	onSelect,
 }: StorySelectButtonProps) {
 	const { category } = story;
 	const color = colors.category[category];
-	const selectText = progressPercent > 0 ? 'Continue Story' : 'Start Story';
+	const selectText = hasStarted ? 'Continue Story' : 'Start Story';
 
 	if (isSelected) {
 		return (
