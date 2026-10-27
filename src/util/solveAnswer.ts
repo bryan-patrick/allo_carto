@@ -28,15 +28,31 @@ export interface SolveAnswerResult {
  */
 export const solveAnswerConfig: SolveAnswerConfig = {
 	typoAllowances: [
-		{ minLength: 0, maxTypos: 0 },
-		{ minLength: 4, maxTypos: 1 },
-		{ minLength: 6, maxTypos: 2 },
-		{ minLength: 10, maxTypos: 3 },
+		{
+			minLength: 0,
+			maxTypos: 0,
+		},
+		{
+			minLength: 4,
+			maxTypos: 1,
+		},
+		{
+			minLength: 6,
+			maxTypos: 2,
+		},
+		{
+			minLength: 10,
+			maxTypos: 3,
+		},
 	],
 };
 
+const optionalArticles = ['a', 'an', 'the'];
+
 /**
- * Normalize the user's answer.
+ * This does a few things to the answer that users submit for solving puzzle words.
+ * We make sure to remove any articles (they're allowed but aren't needed), then
+ * we convert to lowercase, then remove any spaces or weird characters
  */
 function normalizeSolveAnswer(answer: string): string {
 	const compatibleText = answer.normalize('NFKC');
@@ -44,8 +60,13 @@ function normalizeSolveAnswer(answer: string): string {
 	const textWithoutApostrophes = lowerCaseText.replace(/['’‘ʼ]/gu, '');
 	const textWithWordGaps = textWithoutApostrophes.replace(/[^\p{L}\p{N}\s]/gu, ' ');
 	const textWithSingleSpaces = textWithWordGaps.replace(/\s+/gu, ' ');
+	const trimmedText = textWithSingleSpaces.trim();
+	const words = trimmedText.split(' ');
+	const wordsWithoutArticles = words.filter(word => !optionalArticles.includes(word));
+	const textWithoutArticles = wordsWithoutArticles.join(' ');
+	const textWithoutInfinitiveTo = textWithoutArticles.replace(/^to\s+/u, '');
 
-	return textWithSingleSpaces.trim();
+	return textWithoutInfinitiveTo || trimmedText;
 }
 
 /**
@@ -89,11 +110,17 @@ export function checkSolveAnswer({
 	const answerWords = normalizedAnswer.split(' ');
 
 	if (!normalizedAnswer) {
-		return { status: 'empty', acceptedAnswer: null };
+		return {
+			status: 'empty',
+			acceptedAnswer: null,
+		};
 	}
 
 	if (exactIndex !== -1) {
-		return { status: 'exact', acceptedAnswer: englishWords[exactIndex].trim() };
+		return {
+			status: 'exact',
+			acceptedAnswer: englishWords[exactIndex].trim(),
+		};
 	}
 
 	for (let i = 0; i < definitions.length; i++) {
@@ -105,9 +132,15 @@ export function checkSolveAnswer({
 		}
 
 		if (matches) {
-			return { status: 'close', acceptedAnswer: englishWords[i].trim() };
+			return {
+				status: 'close',
+				acceptedAnswer: englishWords[i].trim(),
+			};
 		}
 	}
 
-	return { status: 'incorrect', acceptedAnswer: null };
+	return {
+		status: 'incorrect',
+		acceptedAnswer: null,
+	};
 }

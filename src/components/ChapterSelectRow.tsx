@@ -176,17 +176,18 @@ const styles = StyleSheet.create({
 		flexDirection: 'row-reverse',
 	},
 	chapterColumn: {
-		width: '60%',
-		paddingHorizontal: 4,
-		marginHorizontal: 16,
+		width: '65%',
+		paddingHorizontal: 12,
+		marginHorizontal: 12,
 	},
 	pathColumn: {
-		width: '30%',
+		width: '35%',
 	},
 	locked: {
 		marginTop: 8,
 	},
 	characterFrame: {
+		alignItems: 'center',
 		width: '100%',
 		aspectRatio: 1.5,
 		marginBottom: 4,
@@ -199,6 +200,7 @@ const styles = StyleSheet.create({
 	characterImage: {
 		width: '100%',
 		height: '100%',
+		maxWidth: 225,
 	},
 	chapterInfo: {
 		alignItems: 'center',

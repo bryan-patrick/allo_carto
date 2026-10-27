@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
 	},
 	solvedBorder: {
 		backgroundColor: colors.light.success,
-		borderColor: colors.dark.primary,
+		borderColor: colors.dark.success,
 	},
 	word: {
 		fontSize: 14,

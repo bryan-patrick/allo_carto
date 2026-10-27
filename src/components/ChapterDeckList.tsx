@@ -152,7 +152,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 				const completionPercent = Math.floor(progressById[deck.id]?.completionPercentage ?? 0);
 				const unlockCriteria = getUnlockCriteria(deck, progressById);
 				const isLoadingPassage = loadingPassageId === deck.id;
-				let actionLabel = 'Flash Cards';
+				let actionLabel = 'Flashcards';
 
 				if (completionPercent > 0) {
 					actionLabel = 'Flashcards';

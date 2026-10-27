@@ -22,8 +22,7 @@ export default function SolveEligibilityHint({ deck }: SolveEligibilityHintProps
 
 	return (
 		<Text style={styles.hint}>
-			To unlock Solve, see every word in this paragraph’s flashcards ({seenWordCount} of {wordCount}{' '}
-			seen).
+			Solve unlocks when you have seen every flashcard ({seenWordCount} of {wordCount} seen).
 		</Text>
 	);
 }
@@ -31,7 +30,7 @@ export default function SolveEligibilityHint({ deck }: SolveEligibilityHintProps
 const styles = StyleSheet.create({
 	hint: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 13,
 		color: colors.dark.text,
 	},
 });
