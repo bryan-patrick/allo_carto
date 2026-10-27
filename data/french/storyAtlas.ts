@@ -42,9 +42,9 @@ const aTableForOne = require('@/src/app/assets/images/chapters/a-table-for-one.p
 const whatIsAlloCarto = require('@/src/app/assets/images/chapters/what-is-allo-carto.png');
 const howItWorks = require('@/src/app/assets/images/chapters/how-it-works.png');
 const additionalInformation = require('@/src/app/assets/images/chapters/additional-information.png');
-const welcomeChapterOne = require('@/src/app/assets/images/chapter_illustrations/S01CH01.png');
-const welcomeChapterTwo = require('@/src/app/assets/images/chapter_illustrations/S01CH02.png');
-const welcomeChapterThree = require('@/src/app/assets/images/chapter_illustrations/S01CH03.png');
+const welcomeChapterOne = require('@/src/app/assets/images/chapter-images/welcome-to-allo-carto/CH01.jpg');
+const welcomeChapterTwo = require('@/src/app/assets/images/chapter-images/welcome-to-allo-carto/CH02.jpg');
+const welcomeChapterThree = require('@/src/app/assets/images/chapter-images/welcome-to-allo-carto/CH03.jpg');
 const welcomeStoryBackground = require('@/src/app/assets/images/story_backgrounds/S01.jpg');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
