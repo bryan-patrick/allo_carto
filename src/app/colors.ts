@@ -53,6 +53,8 @@ const colors = {
 	},
 	ink: {
 		full: '#C7A6F4',
+		available: '#285D3B',
+		insufficient: '#39151b',
 	},
 	category: {
 		Travel: '#454A36',

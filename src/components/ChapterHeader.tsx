@@ -1,8 +1,6 @@
 import type { DeckChapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
-import CollectionProgress from '@/src/components/CollectionProgress';
-import ReadingDescription from '@/src/components/ReadingDescription';
-import { useUserProgress } from '@/src/db/useUserProgress';
+import ReadingLink from '@/src/components/ReadingLink';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-postmark.png');
@@ -20,26 +18,27 @@ interface ChapterHeaderProps {
  */
 export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 	const { label, name, description } = chapter;
-	const { progressById } = useUserProgress();
-	const progress = progressById[chapter.id];
-	const wordCount =
-		progress?.wordCount ?? new Set(chapter.decks.flatMap(deck => deck.wordIds)).size;
-	const hasWords = wordCount > 0;
 
 	return (
 		<View style={styles.header}>
 			<View style={styles.headingRow}>
 				<View style={styles.heading}>
 					<View style={styles.labelRow}>
-						<Text style={[styles.label, { color }]}>{label}</Text>
-						{hasWords && (
-							<CollectionProgress
-								progress={progress}
-								wordCount={wordCount}
-								color={color}
-								fontSize={14}
-							/>
-						)}
+						<Text
+							style={[
+								styles.label,
+								{
+									color,
+								},
+							]}
+						>
+							{label}
+						</Text>
+						<ReadingLink
+							item={chapter}
+							color={color}
+							style={styles.readLink}
+						/>
 					</View>
 					<Text style={styles.title}>{name}</Text>
 				</View>
@@ -48,13 +47,7 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 					style={styles.postmark}
 				/>
 			</View>
-			{description && (
-				<ReadingDescription
-					item={chapter}
-					color={color}
-					style={styles.description}
-				/>
-			)}
+			{description && <Text style={styles.description}>{description}</Text>}
 		</View>
 	);
 }
@@ -64,20 +57,20 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
  */
 const styles = StyleSheet.create({
 	header: {
-		marginHorizontal: 8,
-		paddingBottom: 4,
+		marginHorizontal: 12,
+		paddingBottom: 12,
 	},
 	headingRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		paddingVertical: 4,
+		paddingVertical: 6,
 		gap: 2,
 	},
 	heading: {
 		flex: 2,
 		minWidth: 0,
-		gap: 4,
+		gap: 6,
 	},
 	labelRow: {
 		flexDirection: 'row',
@@ -90,6 +83,10 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-700',
 		fontSize: 14,
 		textTransform: 'uppercase',
+	},
+	readLink: {
+		fontFamily: 'lexend-400',
+		fontSize: 16,
 	},
 	title: {
 		color: colors.dark.text,

@@ -57,7 +57,7 @@ export default function DeckResultsView() {
 	const headingStyle = { color: storyColor };
 	let title = 'Session complete!';
 	let description = cardDeck.title;
-	let studyLabel = 'Study again';
+	let studyLabel = 'Repeat';
 	let wordResultsLabel = 'Show word results';
 	let wordResultsIcon = 'expand_more';
 

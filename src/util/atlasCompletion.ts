@@ -255,7 +255,7 @@ export function isItemNextToUnlock(props: IsItemUnlockedProps): boolean {
 }
 
 /**
- * We don't always show requirements to unlock, this determines when we should
+ * Determine if to show the unlock requirements (deprecating...)
  */
 export function shouldShowUnlockRequirements(props: IsItemUnlockedProps): boolean {
 	if (!isItemNextToUnlock(props)) {
@@ -391,6 +391,24 @@ export function findChapterById(
 	atlas: StoryAtlas = storyAtlas,
 ): DeckChapter | undefined {
 	return findAtlasLocationByChapterId(id, atlas)?.chapter;
+}
+
+/**
+ * We use the paragraph ID to reopen Solve without needing a flashcard session.
+ */
+export function findParagraphById(
+	id: string,
+	atlas: StoryAtlas = storyAtlas,
+): CardDeck | undefined {
+	for (const story of atlas.stories) {
+		for (const chapter of story.chapters) {
+			const paragraph = chapter.decks.find(deck => deck.id === id);
+
+			if (paragraph) {
+				return paragraph;
+			}
+		}
+	}
 }
 
 /**

@@ -61,6 +61,7 @@ describe('<WordCardContainer />', () => {
 			writeCorrectAnswer: jest.fn(),
 			writeDeckCompletion: jest.fn(),
 			writeWordSeen: mockRecordWordSeen,
+			writeSolveAttempt: jest.fn(),
 			unlockItem: jest.fn(),
 			reloadProgress: jest.fn(),
 			status: 'ready',

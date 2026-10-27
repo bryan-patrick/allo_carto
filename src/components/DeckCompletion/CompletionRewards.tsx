@@ -31,11 +31,11 @@ export default function CompletionRewards({ session, color, inkBalance }: Comple
 	const accentStyle = { color };
 	const earnedInk = completion?.earnedInk ?? 0;
 	const isInkFull = inkBalance >= inkConfig.maxBalance;
-	let balanceLabel = `Balance: ${inkBalance.toLocaleString()} / ${inkConfig.maxBalance}`;
+	let balanceLabel = `You have: ${inkBalance.toLocaleString()} / ${inkConfig.maxBalance}`;
 	let inkDescription = `Earned ${earnedInk} Ink. ${balanceLabel} Ink.`;
 
 	if (isInkFull) {
-		balanceLabel += ' · Full';
+		balanceLabel += ' - Full';
 		inkDescription += ' Ink is full. Correct answers still earn XP.';
 	}
 

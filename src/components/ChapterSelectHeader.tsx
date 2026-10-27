@@ -75,7 +75,6 @@ export default function ChapterSelectHeader() {
 						color={colors.light.goldenBorder}
 						style={styles.readStoryLink}
 						showDescription={false}
-						linkLabel="Read Story"
 					/>
 					<View style={styles.progressRow}>
 						<Text style={styles.category}>

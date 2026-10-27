@@ -124,6 +124,8 @@ export default function AppLayout() {
 
 		if (resetDB) {
 			await database.execAsync(`
+        DROP TABLE IF EXISTS solveAttempts;
+        DROP TABLE IF EXISTS solvePositions;
         DROP TABLE IF EXISTS flashcardAwards;
         DROP TABLE IF EXISTS userInk;
         DROP TABLE IF EXISTS deckPassageFeedback;
@@ -264,6 +266,13 @@ export default function AppLayout() {
 												headerTitle: '',
 												headerBackVisible: false,
 												gestureEnabled: false,
+											}}
+										/>
+										<Stack.Screen
+											name="(routes)/Solve"
+											options={{
+												presentation: 'fullScreenModal',
+												headerShown: false,
 											}}
 										/>
 									</Stack>
