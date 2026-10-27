@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import SolveCard from '@/src/components/Solve/SolveCard';
 import type {
 	SolveAttemptRequest,
 	SolveAttemptResult,
@@ -35,31 +36,34 @@ interface SolveViewProps {
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /**
- * Gets the feedback for the solve attempts
+ * We show the saved result so the feedback matches what happened to the player's Ink.
  */
 function getSolveFeedback(result: SolveAttemptResult): string {
 	const messages: Record<SolveAttemptResult['status'], string> = {
 		exact: `Correct! ${result.acceptedAnswer}.`,
 		close: `Accepted! The spelling is “${result.acceptedAnswer}”.`,
-		incorrect: 'Not quite. Try again when you are ready.',
+		incorrect: `Not quite. That attempt cost ${result.inkSpent} Ink.`,
 		empty: 'Type an English answer first.',
 		notEnoughInk: 'Study flashcards to earn more Ink.',
 		alreadySolved: `Already solved: ${result.acceptedAnswer}.`,
 		unavailable: 'Study every word in this paragraph before solving.',
+		locked: 'Unlock this card before solving it.',
+		unlocked: 'Card unlocked. Now type its English meaning.',
+		alreadyUnlocked: 'This card is unlocked. Type its English meaning.',
 	};
 
 	return messages[result.status];
 }
 
 /**
- * We keep the answer box above the keyboard while the paragraph's cards scroll.
- * Leaving this screen keeps every answer that has already been saved.
+ * Players unlock a card to reveal its word, then spend Ink to solve it.
+ * Leaving this screen keeps both unlocked cards and correct answers saved.
  */
 export default function SolveView({ deckId }: SolveViewProps) {
 	const router = useRouter();
 	const { bottom, top } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
-	const { inkBalance, isUpdatingProgress, writeSolveAttempt } = useUserProgress();
+	const { inkBalance, isUpdatingProgress, writeSolveAttempt, unlockSolveCard } = useUserProgress();
 	const [puzzle, setPuzzle] = useState<SolvePuzzle>();
 	const [loadError, setLoadError] = useState('');
 	const [selectedPosition, setSelectedPosition] = useState<number>();
@@ -74,21 +78,49 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	const solvedCount = cards.filter(card => card.acceptedAnswer !== null).length;
 	const isComplete = cards.length > 0 && solvedCount === cards.length;
 	const isEligible = Boolean(puzzle?.isUnlocked && puzzle.allWordsSeen);
-	const hasEnoughInk = inkBalance >= inkConfig.firstSolveAttempt;
+	const cardCost = selectedCard ? inkConfig.cardCostByRarity[selectedCard.rarity] : 0;
+	const hasEnoughInk = selectedCard ? inkBalance >= cardCost : inkBalance > 0;
+	const isUnlocking = selectedCard?.isUnlocked === false;
+	const hasUnsolvedCard = Boolean(selectedCard?.wordId && selectedCard.acceptedAnswer === null);
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
 	const disabled = isSaving || isUpdatingProgress;
 	const isInputDisabled =
-		disabled || needsRetry || !isEligible || !hasEnoughInk || selectedCard?.acceptedAnswer !== null;
-	const canSubmit = !isInputDisabled && Boolean(answer.trim());
+		disabled || needsRetry || !isEligible || !hasEnoughInk || !hasUnsolvedCard || isUnlocking;
+	const canSubmit =
+		isEligible && hasUnsolvedCard && hasEnoughInk && (isUnlocking || Boolean(answer.trim()));
 	const isSubmitDisabled = disabled || (!needsRetry && !canSubmit);
-	const needsInk = !hasEnoughInk && !isComplete && !needsRetry;
+	const submitColor = isSubmitDisabled ? colors.dark.border : inkColor;
+	const needsInk = hasUnsolvedCard && !hasEnoughInk && !needsRetry;
 	const storyColor = getDeckStoryColor(deckId);
-	const chapter = findCompletionPath({ id: deckId })[1];
+	const chapter = findCompletionPath({
+		id: deckId,
+	})[1];
 	const isLoading = !puzzle && !loadError;
-	let submitLabel = `Solve · ${inkConfig.firstSolveAttempt} Ink`;
+	const wordColor = {
+		color: storyColor,
+	};
+	const balanceColor = {
+		color: inkColor,
+	};
+	const containerInsets = {
+		paddingTop: top + 8,
+	};
+	const postcardInsets = {
+		marginBottom: Math.max(bottom, 8),
+	};
+	const action = isUnlocking ? 'Unlock' : 'Solve';
+	let submitLabel = selectedCard ? `${action} (${cardCost} Ink)` : 'Select a card';
+	let prompt = 'Select a card to unlock or solve.';
+
+	if (selectedCard) {
+		prompt =
+			isUnlocking ?
+				`${selectedCard.rarity} card. Unlock it to reveal the word.`
+			:	`English meaning of “${selectedCard.text}”`;
+	}
 
 	if (needsInk) {
-		submitLabel = `Need ${inkConfig.firstSolveAttempt} Ink to solve`;
+		submitLabel = `Need ${cardCost} Ink to ${action.toLowerCase()}`;
 	}
 
 	if (needsRetry) {
@@ -114,7 +146,11 @@ export default function SolveView({ deckId }: SolveViewProps) {
 
 				try {
 					const database = await getDB();
-					const savedPuzzle = await getSolvePuzzle({ database, userId, deckId });
+					const savedPuzzle = await getSolvePuzzle({
+						database,
+						userId,
+						deckId,
+					});
 
 					if (isActive) {
 						setPuzzle(savedPuzzle);
@@ -141,8 +177,46 @@ export default function SolveView({ deckId }: SolveViewProps) {
 		}, [deckId, userId]),
 	);
 
+	function handleSelectCard(position: number) {
+		setSelectedPosition(position);
+		setAnswer('');
+		setFeedback('');
+	}
+
+	function updateSavedCard(position: number, result: SolveAttemptResult) {
+		const wasUnlocked = result.status === 'unlocked' || result.status === 'alreadyUnlocked';
+
+		if (!wasUnlocked && result.acceptedAnswer === null) {
+			return;
+		}
+
+		setPuzzle(current => {
+			if (!current) {
+				return current;
+			}
+
+			const positions = current.positions.map(card => {
+				if (card.position !== position) {
+					return card;
+				}
+
+				return {
+					...card,
+					isUnlocked: true,
+					acceptedAnswer: result.acceptedAnswer ?? card.acceptedAnswer,
+				};
+			});
+
+			return {
+				...current,
+				positions,
+			};
+		});
+	}
+
 	/**
-	 * We keep the same attempt ID after a failed save so retrying cannot charge twice.
+	 * We keep the answer's ID after a failed save so retrying cannot charge twice.
+	 * Unlock retries are safe because a card can only be unlocked once.
 	 */
 	async function handleSubmit() {
 		let result: SolveAttemptResult | false;
@@ -154,54 +228,42 @@ export default function SolveView({ deckId }: SolveViewProps) {
 		isBusy.current = true;
 		setIsSaving(true);
 
-		if (!pendingAttempt.current) {
-			pendingAttempt.current = {
-				deckId,
-				position: selectedCard.position,
-				answer,
-				attemptId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-			};
-		}
-
 		try {
-			result = await writeSolveAttempt(pendingAttempt.current);
+			if (isUnlocking) {
+				result = await unlockSolveCard({
+					deckId,
+					position: selectedCard.position,
+				});
+			} else {
+				if (!pendingAttempt.current) {
+					pendingAttempt.current = {
+						deckId,
+						position: selectedCard.position,
+						answer,
+						attemptId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+					};
+				}
+
+				result = await writeSolveAttempt(pendingAttempt.current);
+			}
 
 			if (result === false) {
 				setNeedsRetry(true);
-				setFeedback('Could not save your answer. Tap Retry save.');
+				setFeedback('Could not save this card. Tap Retry save.');
 				return;
 			}
 
 			pendingAttempt.current = null;
 			setNeedsRetry(false);
 			setFeedback(getSolveFeedback(result));
+			updateSavedCard(selectedCard.position, result);
 
 			/**
 			 * A wrong answer needs fresh input before another paid attempt.
-			 * This keeps a second quick tap from spending more Ink on the same submission.
+			 * A second quick tap should not spend more Ink on the same answer.
 			 */
 			if (result.status === 'incorrect') {
 				setAnswer('');
-			}
-
-			if (result.acceptedAnswer !== null) {
-				const acceptedAnswer = result.acceptedAnswer;
-
-				setPuzzle(current => {
-					if (!current) {
-						return current;
-					}
-
-					const positions = current.positions.map(card => {
-						if (card.position === selectedCard.position) {
-							return { ...card, acceptedAnswer };
-						}
-
-						return card;
-					});
-
-					return { ...current, positions };
-				});
 			}
 		} finally {
 			isBusy.current = false;
@@ -220,7 +282,12 @@ export default function SolveView({ deckId }: SolveViewProps) {
 		}
 
 		if (chapter) {
-			router.replace({ pathname: '/ChapterDetail', params: { chapterId: chapter.id } });
+			router.replace({
+				pathname: '/ChapterDetail',
+				params: {
+					chapterId: chapter.id,
+				},
+			});
 			return;
 		}
 
@@ -229,24 +296,24 @@ export default function SolveView({ deckId }: SolveViewProps) {
 
 	return (
 		<KeyboardAvoidingView
-			style={[styles.container, { paddingTop: top + 8 }]}
+			style={[styles.container, containerInsets]}
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 		>
 			<ImageBackground
 				source={postcardBackground}
-				style={[styles.postcard, { marginBottom: Math.max(bottom, 8) }]}
+				style={[styles.postcard, postcardInsets]}
 			>
 				<View style={styles.header}>
 					<Text
 						accessibilityRole="header"
-						style={[styles.title, { color: storyColor }]}
+						style={[styles.title, wordColor]}
 					>
 						Solve this paragraph
 					</Text>
 					<Pressable
 						accessibilityRole="button"
 						accessibilityLabel="Close Solve"
-						accessibilityHint="Return to paragraph selection. Your solved cards are saved."
+						accessibilityHint="Return to paragraph selection. Your unlocked and solved cards are saved."
 						disabled={disabled}
 						onPress={handleClose}
 						style={styles.closeButton}
@@ -266,7 +333,7 @@ export default function SolveView({ deckId }: SolveViewProps) {
 							size={18}
 							color={inkColor}
 						/>
-						<Text style={[styles.text, { color: inkColor }]}>
+						<Text style={[styles.text, balanceColor]}>
 							{inkBalance} / {inkConfig.maxBalance}
 						</Text>
 					</View>
@@ -292,77 +359,40 @@ export default function SolveView({ deckId }: SolveViewProps) {
 							contentContainerStyle={styles.grid}
 							keyboardShouldPersistTaps="handled"
 						>
-							{puzzle?.positions.map(card => {
-								const isSolved = card.acceptedAnswer !== null;
-								const isSelected = card.position === selectedPosition;
-
-								if (!card.wordId) {
-									return (
-										<View
-											key={card.position}
-											style={[styles.card, styles.exemptCard]}
-										>
-											<Text style={[styles.word, { color: storyColor }]}>
-												{card.text}
-												{card.after}
-											</Text>
-										</View>
-									);
-								}
-
-								return (
-									<Pressable
-										key={card.position}
-										accessibilityRole="button"
-										accessibilityLabel={`${card.text}, card ${card.position + 1}${isSolved ? `, solved: ${card.acceptedAnswer}` : ''}`}
-										accessibilityState={{
-											selected: isSelected,
-											disabled: isSolved || disabled || needsRetry,
-										}}
-										disabled={isSolved || disabled || needsRetry}
-										onPress={() => {
-											setSelectedPosition(card.position);
-											setAnswer('');
-											setFeedback('');
-										}}
-										style={[
-											styles.card,
-											isSolved && styles.solvedCard,
-											isSelected && !isSolved && { borderColor: storyColor, borderWidth: 2 },
-										]}
-									>
-										<Text style={[styles.word, { color: storyColor }]}>
-											{card.text}
-											{card.after}
-										</Text>
-										{isSolved && <Text style={styles.translation}>✓ {card.acceptedAnswer}</Text>}
-									</Pressable>
-								);
-							})}
+							{puzzle?.positions.map(card => (
+								<SolveCard
+									key={card.position}
+									card={card}
+									isSelected={card.position === selectedPosition}
+									disabled={disabled || needsRetry}
+									storyColor={storyColor}
+									onSelect={handleSelectCard}
+								/>
+							))}
 						</ScrollView>
 						<View style={styles.editor}>
 							{isComplete ?
 								<Text style={styles.word}>All cards solved!</Text>
 							:	<>
-									<Text style={styles.text}>
-										{selectedCard ?
-											`English meaning of “${selectedCard.text}”`
-										:	'Select a card to solve.'}
-									</Text>
-									<TextInput
-										accessibilityLabel="English answer"
-										accessibilityState={{ disabled: isInputDisabled }}
-										placeholder="Type the English meaning"
-										placeholderTextColor={colors.light.border}
-										value={answer}
-										onChangeText={setAnswer}
-										editable={!isInputDisabled}
-										autoCorrect={false}
-										autoCapitalize="none"
-										returnKeyType="done"
-										onSubmitEditing={handleSubmit}
-										style={[styles.input, isInputDisabled && styles.disabledInput]}
-									/>
+									<Text style={styles.text}>{prompt}</Text>
+									{!isUnlocking && (
+										<TextInput
+											accessibilityLabel="English answer"
+											accessibilityState={{
+												disabled: isInputDisabled,
+											}}
+											placeholder="Type the English meaning"
+											placeholderTextColor={colors.light.border}
+											value={answer}
+											onChangeText={setAnswer}
+											editable={!isInputDisabled}
+											autoCorrect={false}
+											autoCapitalize="none"
+											returnKeyType="done"
+											onSubmitEditing={handleSubmit}
+											style={[styles.input, isInputDisabled && styles.disabledInput]}
+										/>
+									)}
 								</>
 							}
 							{Boolean(feedback) && (
@@ -378,18 +408,12 @@ export default function SolveView({ deckId }: SolveViewProps) {
 									handler={handleSubmit}
 									disabled={isSubmitDisabled}
 									accessibilityLabel={submitLabel}
-									accessibilityState={{ disabled: isSubmitDisabled, busy: isSaving }}
+									accessibilityState={{
+										disabled: isSubmitDisabled,
+										busy: isSaving,
+									}}
 									style={isSubmitDisabled && styles.disabledSubmit}
-									SVGElement={
-										needsInk ?
-											<MaterialSymbol
-												name="lock"
-												size={18}
-												color={colors.light.text}
-											/>
-										:	undefined
-									}
-									color={inkColor}
+									color={submitColor}
 									useArrow={false}
 									fullwidth
 								>
@@ -467,8 +491,7 @@ const styles = StyleSheet.create({
 	text: {
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
-		fontSize: 13,
-		lineHeight: 19,
+		fontSize: 14,
 	},
 	notice: {
 		flex: 1,
@@ -481,7 +504,8 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 12,
 		paddingBottom: 12,
 		fontFamily: 'lexend-400',
-		fontSize: 13,
+		fontSize: 14,
+		alignSelf: 'flex-end',
 	},
 	scroll: {
 		flex: 1,
@@ -492,36 +516,9 @@ const styles = StyleSheet.create({
 		gap: 8,
 		padding: 12,
 	},
-	card: {
-		width: '30%',
-		flexGrow: 1,
-		minHeight: 72,
-		padding: 8,
-		justifyContent: 'center',
-		alignItems: 'center',
-		gap: 4,
-		backgroundColor: colors.light.secondary,
-		borderColor: colors.light.goldenBorder,
-		borderWidth: 1,
-		borderRadius: 8,
-	},
-	solvedCard: {
-		backgroundColor: colors.light.success,
-		borderColor: 'transparent',
-	},
-	exemptCard: {
-		backgroundColor: 'transparent',
-		borderColor: 'transparent',
-	},
 	word: {
-		fontSize: 16,
+		fontSize: 14,
 		fontFamily: 'lexend-600',
-		textAlign: 'center',
-	},
-	translation: {
-		fontSize: 12,
-		fontFamily: 'lexend-400',
-		color: colors.dark.success,
 		textAlign: 'center',
 	},
 	editor: {

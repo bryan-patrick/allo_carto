@@ -2,7 +2,11 @@ import type {
 	DeckCompletionReceiptProps,
 	WordAnswerAwardProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
-import type { SolveAttemptRequest, SolveAttemptResult } from '@/src/components/Solve/solveTypes';
+import type {
+	SolveAttemptRequest,
+	SolveAttemptResult,
+	SolveCardRequest,
+} from '@/src/components/Solve/solveTypes';
 import type { ProgressById } from '@/src/util/progression';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -19,6 +23,7 @@ import loadUserXP from './queries/getUserExperience';
 import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
 import unlockAtlasItem from './queries/unlockAtlasItem';
+import unlockSolveCard from './queries/unlockSolveCard';
 import writeSolveAttempt from './queries/writeSolveAttempt';
 import {
 	writeCorrectAnswer,
@@ -50,6 +55,7 @@ interface UserProgressContextProps {
 	) => Promise<DeckCompletionReceiptProps | false>;
 	writeWordSeen: (wordId: string, deckId?: string) => Promise<boolean>;
 	writeSolveAttempt: (request: SolveAttemptRequest) => Promise<SolveAttemptResult | false>;
+	unlockSolveCard: (request: SolveCardRequest) => Promise<SolveAttemptResult | false>;
 	unlockItem: (id: string) => Promise<boolean>;
 	reloadProgress: () => Promise<void>;
 }
@@ -67,6 +73,7 @@ const initialValue: UserProgressContextProps = {
 	writeDeckCompletion: async () => false,
 	writeWordSeen: async () => false,
 	writeSolveAttempt: async () => false,
+	unlockSolveCard: async () => false,
 	unlockItem: async () => false,
 	reloadProgress: async () => {},
 };
@@ -218,6 +225,22 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	);
 
 	/**
+	 * Unlocking a puzzle card updates the shared Ink balance after it saves.
+	 */
+	const recordSolveUnlock = useCallback(
+		async (request: SolveCardRequest): Promise<SolveAttemptResult | false> => {
+			return runProgressWrite(() =>
+				unlockSolveCard({
+					database,
+					userId: userId!,
+					...request,
+				}),
+			);
+		},
+		[database, runProgressWrite, userId],
+	);
+
+	/**
 	 * Context value
 	 */
 	const value = useMemo<UserProgressContextProps>(
@@ -230,6 +253,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			writeDeckCompletion: recordDeckCompletion,
 			writeWordSeen: recordWordSeen,
 			writeSolveAttempt: recordSolveAttempt,
+			unlockSolveCard: recordSolveUnlock,
 			unlockItem,
 			reloadProgress: refreshProgress,
 			status,
@@ -243,6 +267,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			recordDeckCompletion,
 			recordWordSeen,
 			recordSolveAttempt,
+			recordSolveUnlock,
 			unlockItem,
 			refreshProgress,
 			status,

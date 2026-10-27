@@ -5,9 +5,6 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolvePuzzle from './getSolvePuzzle';
 import getUserInk from './getUserInk';
 
-/**
- * Typing
- */
 interface WriteSolveAttemptOptions extends SolveAttemptRequest {
 	database: SQLiteDatabase;
 	userId: string;
@@ -19,7 +16,8 @@ interface SavedSolveAttempt extends SolveAttemptResult {
 }
 
 /**
- * Save the Ink charge, solved card, and receipt together.
+ * We save the answer and its Ink charge together so neither can be saved alone.
+ * Retrying the same answer uses its saved receipt without charging again.
  */
 export default async function writeSolveAttempt({
 	database,
@@ -47,7 +45,11 @@ export default async function writeSolveAttempt({
 			) VALUES (?, ?, ?, ?, ?, ?, ?);
 		`,
 	};
-	let result: SolveAttemptResult = { status: 'unavailable', acceptedAnswer: null, inkSpent: 0 };
+	let result: SolveAttemptResult = {
+		status: 'unavailable',
+		acceptedAnswer: null,
+		inkSpent: 0,
+	};
 
 	if (!attemptId) {
 		throw new Error('A Solve attempt needs an ID before it can be saved.');
@@ -73,42 +75,56 @@ export default async function writeSolveAttempt({
 			return;
 		}
 
-		const puzzle = await getSolvePuzzle({ database: transaction, userId, deckId });
+		const puzzle = await getSolvePuzzle({
+			database: transaction,
+			userId,
+			deckId,
+		});
 		const card = puzzle.positions.find(card => card.position === position);
 
-		if (!puzzle.isUnlocked || !puzzle.allWordsSeen) {
+		if (!puzzle.isUnlocked || !puzzle.allWordsSeen || !card?.wordId) {
 			return;
-		}
-
-		if (!card?.wordId) {
-			throw new Error('Select a vocabulary card before submitting an answer.');
 		}
 
 		if (card.acceptedAnswer !== null) {
-			result = { status: 'alreadySolved', acceptedAnswer: card.acceptedAnswer, inkSpent: 0 };
+			result.status = 'alreadySolved';
+			result.acceptedAnswer = card.acceptedAnswer;
 			return;
 		}
 
-		const checkedAnswer = checkSolveAnswer({ answer, englishWords: card.englishWords });
-		const inkBalance = await getUserInk({ database: transaction, userId });
-		const nextBalance = inkBalance - inkConfig.firstSolveAttempt;
+		if (!card.isUnlocked) {
+			result.status = 'locked';
+			return;
+		}
+
+		const checkedAnswer = checkSolveAnswer({
+			answer,
+			englishWords: card.englishWords,
+		});
+		const cardCost = inkConfig.cardCostByRarity[card.rarity];
+		const inkBalance = await getUserInk({
+			database: transaction,
+			userId,
+		});
+		const inkSpent =
+			checkedAnswer.status === 'incorrect' ? inkConfig.incorrectSolveAttempt : cardCost;
+		const nextBalance = inkBalance - inkSpent;
 
 		if (checkedAnswer.status === 'empty') {
-			result = { ...checkedAnswer, inkSpent: 0 };
+			result.status = 'empty';
 			return;
 		}
 
-		if (nextBalance < 0) {
-			result = { status: 'notEnoughInk', acceptedAnswer: null, inkSpent: 0 };
+		/**
+		 * The player needs enough Ink for a correct answer before trying.
+		 * Takes the smaller price if their answer is wrong.
+		 */
+		if (inkBalance < cardCost) {
+			result.status = 'notEnoughInk';
 			return;
 		}
 
-		const charge = await transaction.runAsync(
-			statements.spendInk,
-			nextBalance,
-			userId,
-			inkConfig.firstSolveAttempt,
-		);
+		const charge = await transaction.runAsync(statements.spendInk, nextBalance, userId, cardCost);
 
 		if (charge.changes !== 1) {
 			throw new Error('Could not save the Ink charge.');
@@ -133,10 +149,13 @@ export default async function writeSolveAttempt({
 			position,
 			checkedAnswer.status,
 			checkedAnswer.acceptedAnswer,
-			inkConfig.firstSolveAttempt,
+			inkSpent,
 		);
 
-		result = { ...checkedAnswer, inkSpent: inkConfig.firstSolveAttempt };
+		result = {
+			...checkedAnswer,
+			inkSpent,
+		};
 	});
 
 	return result;

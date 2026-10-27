@@ -1,4 +1,3 @@
-import colors from '@/src/app/colors';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
 import { getDB } from '@/src/db/interface';
@@ -6,9 +5,21 @@ import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+/**
+ * Change these colors to adjust the Solve button's background.
+ * The first color starts at the top left, and the last ends at the bottom right.
+ */
+const solveGradientColors: LinearGradientProps['colors'] = [
+	'rgb(248, 200, 8, 0.1)',
+	'rgb(6, 164, 255, 0.1)',
+	'rgba(255, 139, 6, 0.1)',
+	'rgb(251, 6, 186, 0.1)',
+];
 
 /**
  * Typing
@@ -87,6 +98,21 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 				type="outline"
 				disabled={isDisabled}
 				style={[styles.button, isDisabled && styles.disabledButton]}
+				background={
+					<LinearGradient
+						colors={solveGradientColors}
+						start={{
+							x: 0,
+							y: 1,
+						}}
+						end={{
+							x: 1,
+							y: 0.1,
+						}}
+						pointerEvents="none"
+						style={styles.gradient}
+					/>
+				}
 				accessibilityHint={
 					isEligible ?
 						'Open this paragraph’s puzzle.'
@@ -94,7 +120,7 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 				}
 				SVGElement={
 					<MaterialSymbol
-						name="extension"
+						name={isEligible ? 'extension' : 'lock'}
 						size={18}
 						color={color}
 					/>
@@ -103,11 +129,6 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 			>
 				{label}
 			</SecondaryButton>
-			{!isEligible && (
-				<Text style={styles.hint}>
-					Study every word to unlock · {progress?.seenWordCount ?? 0} / {deck.wordIds.length} seen
-				</Text>
-			)}
 		</View>
 	);
 }
@@ -118,7 +139,6 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		gap: 6,
 	},
 	button: {
 		paddingVertical: 6,
@@ -126,13 +146,11 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0,
 		borderRadius: 8,
 	},
+	gradient: {
+		...StyleSheet.absoluteFill,
+		borderRadius: 7,
+	},
 	disabledButton: {
 		opacity: 0.6,
-	},
-	hint: {
-		fontFamily: 'lexend-400',
-		fontSize: 12,
-		color: colors.dark.text,
-		textAlign: 'center',
 	},
 });

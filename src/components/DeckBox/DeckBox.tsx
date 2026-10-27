@@ -6,6 +6,7 @@ import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SolveButton from '@/src/components/Solve/SolveButton';
+import SolveEligibilityHint from '@/src/components/Solve/SolveEligibilityHint';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
 	emptyDeckWordProgressCounts,
@@ -308,6 +309,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 									</View>
 								</View>
 							)}
+							{!isLocked && <SolveEligibilityHint deck={deck} />}
 							{!isLocked && (
 								<View style={styles.selectDeckButtonContainer}>
 									<Pressable

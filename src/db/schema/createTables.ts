@@ -139,6 +139,16 @@ export default async function createTables(): Promise<void> {
 async function createSolveTables(): Promise<void> {
 	const database = await getDB();
 	const statement = `
+		CREATE TABLE IF NOT EXISTS solveUnlocks (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			position INTEGER NOT NULL CHECK (position >= 0),
+			wordId TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId, position),
+			FOREIGN KEY (userId) REFERENCES users(id),
+			FOREIGN KEY (wordId) REFERENCES words(id)
+		);
+
 		CREATE TABLE IF NOT EXISTS solvePositions (
 			userId TEXT NOT NULL,
 			deckId TEXT NOT NULL,

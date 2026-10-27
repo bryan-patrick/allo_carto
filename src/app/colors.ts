@@ -10,7 +10,7 @@ const colors = {
 		background: '#121212',
 		border: '#1d2427',
 		secondaryBorder: '#382326',
-		success: '#3B3D33',
+		success: '#35473d',
 		warning: '#332105',
 		danger: '#3E0E14',
 		CEFR: {

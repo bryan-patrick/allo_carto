@@ -54,12 +54,29 @@ export default function DeckResultsView() {
 	const hasReview = Boolean(session?.completion);
 	const repeatDisabled = !userId || isUpdatingProgress || isRepeating;
 	const containerStyle = { paddingBottom: Math.max(bottom, 8) };
-	const headingStyle = { color: storyColor };
-	let title = 'Session complete!';
+	const paragraphCardCount = cardDeck.wordIds.length;
+	const seenCardCount = progressById[cardDeck.id]?.seenWordCount ?? 0;
+	const unseenCardCount = paragraphCardCount - seenCardCount;
+	const newlySeenCards = cardDeck.words.filter(word => {
+		const previousSeenCount = word.seenCount ?? 0;
+		const hasSessionResult = session?.results.some(result => result.wordId === word.id) ?? false;
+
+		return previousSeenCount === 0 && hasSessionResult;
+	});
+	const newlySeenCardCount = newlySeenCards.length;
+	const headingStyle = {
+		color: storyColor,
+	};
+	let newlySeenLabel = `${newlySeenCardCount} new cards seen this session`;
+	let title = 'You finished the deck!';
 	let description = cardDeck.title;
 	let studyLabel = 'Repeat';
 	let wordResultsLabel = 'Show word results';
 	let wordResultsIcon = 'expand_more';
+
+	if (newlySeenCardCount === 1) {
+		newlySeenLabel = '1 new card seen this session';
+	}
 
 	/**
 	 * Show unlocked items
@@ -208,6 +225,21 @@ export default function DeckResultsView() {
 									color={storyColor}
 									inkBalance={inkBalance}
 								/>
+								<View style={styles.cardProgress}>
+									<Text
+										accessibilityRole="header"
+										style={[styles.sectionTitle, headingStyle]}
+									>
+										Cards seen
+									</Text>
+									<View style={styles.cardCounts}>
+										<Text style={styles.cardProgressText}>
+											Seen: {seenCardCount} / {paragraphCardCount}
+										</Text>
+										<Text style={styles.cardProgressText}>Not seen: {unseenCardCount}</Text>
+									</View>
+									<Text style={styles.cardProgressText}>{newlySeenLabel}</Text>
+								</View>
 								{unlockItems.length > 0 && (
 									<View style={styles.unlocks}>
 										<Text
@@ -324,9 +356,36 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
-	scrollContent: { padding: 12, gap: 12 },
-	sectionTitle: { fontSize: 14, fontFamily: 'lexend-600' },
-	unlocks: { gap: 8 },
+	scrollContent: {
+		padding: 12,
+		gap: 12,
+	},
+	cardProgress: {
+		gap: 8,
+		padding: 12,
+		borderWidth: 1,
+		borderColor: colors.light.goldenBorder,
+		borderRadius: 8,
+		backgroundColor: `${colors.light.secondary}55`,
+	},
+	cardCounts: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'space-between',
+		gap: 8,
+	},
+	cardProgressText: {
+		fontFamily: 'lexend-400',
+		fontSize: 14,
+		color: colors.dark.text,
+	},
+	sectionTitle: {
+		fontSize: 14,
+		fontFamily: 'lexend-600',
+	},
+	unlocks: {
+		gap: 8,
+	},
 	wordResultsToggle: {
 		minHeight: 44,
 		flexDirection: 'row',

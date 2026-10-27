@@ -1,11 +1,12 @@
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { CardDeck, CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveAnswerResult } from '@/src/util/solveAnswer';
 
 export interface SolvePosition {
 	position: number;
 	text: string;
-	after?: string;
 	wordId?: string;
+	rarity: CardRarity;
+	isUnlocked: boolean;
 	englishWords: string[];
 	acceptedAnswer: string | null;
 }
@@ -17,15 +18,25 @@ export interface SolvePuzzle {
 	allWordsSeen: boolean;
 }
 
-export interface SolveAttemptRequest {
+export interface SolveCardRequest {
 	deckId: string;
 	position: number;
+}
+
+export interface SolveAttemptRequest extends SolveCardRequest {
 	answer: string;
 	attemptId: string;
 }
 
 export interface SolveAttemptResult {
-	status: SolveAnswerResult['status'] | 'notEnoughInk' | 'alreadySolved' | 'unavailable';
+	status:
+		| SolveAnswerResult['status']
+		| 'notEnoughInk'
+		| 'alreadySolved'
+		| 'unavailable'
+		| 'locked'
+		| 'unlocked'
+		| 'alreadyUnlocked';
 	acceptedAnswer: string | null;
 	inkSpent: number;
 }

@@ -23,6 +23,7 @@ const secondaryButtonShadowHeight = 2;
 
 interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'> {
 	SVGElement?: ReactNode;
+	background?: ReactNode;
 	children?: ReactNode;
 	color?: string;
 	fullwidth?: boolean;
@@ -36,6 +37,7 @@ interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'
  */
 export default function SecondaryButton({
 	SVGElement,
+	background,
 	children,
 	color,
 	fullwidth = false,
@@ -133,6 +135,7 @@ export default function SecondaryButton({
 			onPressOut={handleOnPressOut}
 			hitSlop={4}
 		>
+			{background}
 			<View style={styles.buttonTextRow}>
 				<Text style={[styles.buttonText, textStyle, outlineTextStyle]}>{children}</Text>
 				{iconElement}

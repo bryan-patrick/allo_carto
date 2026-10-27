@@ -99,12 +99,14 @@ export default function CompletionRewards({ session, color, inkBalance }: Comple
  * Styles
  */
 const styles = StyleSheet.create({
-	container: { gap: 16 },
+	container: {
+		gap: 12,
+	},
 	inkReward: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 12,
-		padding: 12,
+		gap: 8,
+		padding: 8,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
@@ -117,17 +119,33 @@ const styles = StyleSheet.create({
 		paddingVertical: 6,
 		borderRadius: 6,
 	},
-	totals: { flexDirection: 'row', gap: 12 },
+	totals: {
+		flexDirection: 'row',
+		gap: 8,
+	},
 	total: {
 		flex: 1,
 		gap: 4,
-		padding: 12,
+		padding: 8,
 		borderWidth: 1,
-		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
+		borderColor: colors.light.goldenBorder,
 		backgroundColor: `${colors.light.secondary}55`,
 	},
-	amount: { fontFamily: 'lexend-600', fontSize: 26, color: colors.dark.text },
-	label: { fontFamily: 'lexend-400', fontSize: 12, color: colors.dark.text },
-	note: { fontFamily: 'lexend-400', fontSize: 11, lineHeight: 16, color: colors.dark.text },
+	amount: {
+		fontFamily: 'lexend-600',
+		fontSize: 26,
+		color: colors.dark.text,
+	},
+	label: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		color: colors.dark.text,
+	},
+	note: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		lineHeight: 16,
+		color: colors.dark.text,
+	},
 });

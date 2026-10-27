@@ -1,31 +1,15 @@
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useRouter } from 'expo-router';
 import { type ReactNode, useContext, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import {
-	Alert,
-	ImageSourcePropType,
-	type LayoutChangeEvent,
-	StyleSheet,
-	TextStyle,
-	View,
-} from 'react-native';
+import { Alert, type LayoutChangeEvent, StyleSheet, TextStyle, View } from 'react-native';
 import { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { CardDeckContext } from '../CardDeck/cardDeckContext';
 import { useCardDeck } from '../CardDeck/useCardDeck';
+import { cardBackgrounds } from './cardBackgrounds';
 import { sharedWordCardStyles } from './sharedWordCardStyles';
 import { useWordCardUI } from './useWordCardUI';
 import WordCardBack from './WordCardBack';
 import WordCardFront from './WordCardFront';
-
-/**
- * Card backgrounds (by rarity)
- */
-const cardBgs: Record<string, ImageSourcePropType> = {
-	Common: require('@/src/app/assets/images/card-bgs/card-bg-common.jpg'),
-	Rare: require('@/src/app/assets/images/card-bgs/card-bg-rare.jpg'),
-	Epic: require('@/src/app/assets/images/card-bgs/card-bg-epic.jpg'),
-	Legendary: require('@/src/app/assets/images/card-bgs/card-bg-legendary.jpg'),
-};
 
 /**
  * Typing
@@ -246,7 +230,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 				feedbackStyle={feedbackStyle}
 				articleSlotStyle={articleSlotStyle}
 				wordSlotStyle={wordSlotStyle}
-				background={cardBgs[currentCard.rarity]}
+				background={cardBackgrounds[currentCard.rarity]}
 			/>
 			<WordCardBack
 				wordActions={wordActions}
@@ -256,7 +240,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 				feedbackStyle={feedbackStyle}
 				articleSlotStyle={articleSlotStyle}
 				wordSlotStyle={wordSlotStyle}
-				background={cardBgs[currentCard.rarity]}
+				background={cardBackgrounds[currentCard.rarity]}
 			/>
 		</View>
 	);

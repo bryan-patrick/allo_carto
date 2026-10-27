@@ -9,6 +9,7 @@ import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SolveButton from '@/src/components/Solve/SolveButton';
+import SolveEligibilityHint from '@/src/components/Solve/SolveEligibilityHint';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
@@ -188,6 +189,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 								fontSizeOffset={2}
 							/>
 						)}
+						{!isLocked && <SolveEligibilityHint deck={deck} />}
 						{!isLocked && (
 							<View style={styles.actions}>
 								<SolveButton
