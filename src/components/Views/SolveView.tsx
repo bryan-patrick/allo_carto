@@ -1,6 +1,8 @@
 import colors from '@/src/app/colors';
+import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import ReadingLink from '@/src/components/ReadingLink';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import type {
@@ -8,16 +10,20 @@ import type {
 	SolveAttemptResult,
 	SolvePuzzle,
 } from '@/src/components/Solve/solveTypes';
-import { getDB } from '@/src/db/interface';
+import { getDB, getDeck } from '@/src/db/interface';
 import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import { findCompletionPath, findNextParagraph } from '@/src/util/atlasCompletion';
+import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
+import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { inkConfig } from '@/src/util/ink';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import {
+	Alert,
 	ImageBackground,
 	KeyboardAvoidingView,
 	Platform,
@@ -47,6 +53,7 @@ interface SolveAnswerSelection {
 interface SolveFeedback {
 	text: string;
 	backgroundColor: string;
+	needsInk?: boolean;
 }
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
@@ -76,6 +83,7 @@ function getSolveFeedback(result: SolveAttemptResult): SolveFeedback {
 		notEnoughInk: {
 			text: 'Not enough Ink.',
 			backgroundColor: colors.light.warning,
+			needsInk: true,
 		},
 		alreadySolved: {
 			text: `Already solved: ${result.acceptedAnswer}.`,
@@ -110,7 +118,10 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	const router = useRouter();
 	const { bottom, top } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
-	const { inkBalance, isUpdatingProgress, writeSolveAttempt, unlockSolveCard } = useUserProgress();
+	const { experience, inkBalance, isUpdatingProgress, writeSolveAttempt, unlockSolveCard } =
+		useUserProgress();
+	const { cardDeckDispatch } = useCardDeck();
+	const { settings } = useAppSettings();
 	const [puzzle, setPuzzle] = useState<SolvePuzzle>();
 	const [loadError, setLoadError] = useState('');
 	const [selectedPosition, setSelectedPosition] = useState<number>();
@@ -121,6 +132,7 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	});
 	const [feedback, setFeedback] = useState<SolveFeedback | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
+	const [isStartingFlashcards, setIsStartingFlashcards] = useState(false);
 	const [needsRetry, setNeedsRetry] = useState(false);
 	const isBusy = useRef(false);
 	const answerInput = useRef<TextInputInstance>(null);
@@ -135,7 +147,7 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	const isUnlocking = selectedCard?.isUnlocked === false;
 	const hasUnsolvedCard = Boolean(selectedCard?.wordId && selectedCard.acceptedAnswer === null);
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
-	const disabled = isSaving || isUpdatingProgress;
+	const disabled = isSaving || isUpdatingProgress || isStartingFlashcards;
 	const isInputDisabled =
 		disabled || needsRetry || !isEligible || !hasEnoughInk || !hasUnsolvedCard || isUnlocking;
 	const canSubmit =
@@ -143,6 +155,8 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	const isSubmitDisabled = disabled || (!needsRetry && !canSubmit);
 	const submitColor = isSubmitDisabled ? colors.dark.border : inkColor;
 	const needsInk = hasUnsolvedCard && !hasEnoughInk && !needsRetry;
+	const showFlashcards = needsInk || Boolean(feedback?.needsInk);
+	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
 	const storyColor = getDeckStoryColor(deckId);
 	const chapter = findCompletionPath({
 		id: deckId,
@@ -201,7 +215,7 @@ export default function SolveView({ deckId }: SolveViewProps) {
 	}
 
 	if (disabled) {
-		statusMessage = 'Saving…';
+		statusMessage = isStartingFlashcards ? 'Opening flashcards…' : 'Saving…';
 		statusTextStyle.backgroundColor = 'transparent';
 	}
 
@@ -385,6 +399,46 @@ export default function SolveView({ deckId }: SolveViewProps) {
 		}
 	}
 
+	/**
+	 * We open fresh flashcards for this paragraph so the player can earn more Ink.
+	 * Replacing Solve closes the puzzle while keeping its saved cards and answers.
+	 */
+	async function handleOpenFlashcards() {
+		if (!userId || !puzzle || !isEligible || disabled || needsRetry || isBusy.current) {
+			return;
+		}
+
+		isBusy.current = true;
+		setIsStartingFlashcards(true);
+
+		try {
+			const selectedDeck = await getDeck({
+				deck: puzzle.deck,
+				amount: cardsPerDeck,
+				userId,
+			});
+			const nextSession = createDeckSession(experience.totalXP);
+
+			if (!selectedDeck || selectedDeck.words.length === 0) {
+				Alert.alert('Could not start session', 'Please try again.');
+				return;
+			}
+
+			cardDeckDispatch({
+				type: 'SET_DECK',
+				payload: selectedDeck,
+				session: nextSession,
+			});
+			router.replace('/CardDeck');
+		} catch (error) {
+			console.error('Could not start flashcards from Solve:', error);
+			Alert.alert('Could not start session', 'Please try again.');
+		} finally {
+			isBusy.current = false;
+			setIsStartingFlashcards(false);
+		}
+	}
+
 	function handleClose() {
 		if (disabled || isBusy.current) {
 			return;
@@ -440,7 +494,17 @@ export default function SolveView({ deckId }: SolveViewProps) {
 					</Pressable>
 				</View>
 				<View style={styles.details}>
-					<Text style={styles.paragraphTitle}>{puzzle?.deck.title}</Text>
+					<View style={styles.paragraphDetails}>
+						<Text style={styles.paragraphTitle}>{puzzle?.deck.title}</Text>
+						{puzzle?.isUnlocked && (
+							<ReadingLink
+								item={puzzle.deck}
+								color={storyColor}
+								label="Read paragraph"
+								style={styles.readLink}
+							/>
+						)}
+					</View>
 					<View style={styles.ink}>
 						<MaterialSymbol
 							name="water_drop"
@@ -496,6 +560,15 @@ export default function SolveView({ deckId }: SolveViewProps) {
 									/>
 									<Text style={styles.word}>First gem earned!</Text>
 									<Text style={styles.text}>{completionMessage}</Text>
+									<LinkButton
+										handler={handleClose}
+										disabled={disabled}
+										color={storyColor}
+										useArrow={false}
+										fullwidth
+									>
+										Close
+									</LinkButton>
 								</View>
 							:	<>
 									<Text style={styles.text}>{prompt}</Text>
@@ -545,6 +618,16 @@ export default function SolveView({ deckId }: SolveViewProps) {
 									)}
 								</>
 							}
+							{showFlashcards && !isComplete && (
+								<LinkButton
+									handler={handleOpenFlashcards}
+									disabled={disabled || needsRetry}
+									color={storyColor}
+									fullwidth
+								>
+									Flashcards
+								</LinkButton>
+							)}
 							{!isComplete && (
 								<LinkButton
 									handler={handleSubmit}
@@ -617,11 +700,18 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-600',
 		fontSize: 18,
 	},
-	paragraphTitle: {
+	paragraphDetails: {
 		flex: 1,
+		gap: 4,
+	},
+	paragraphTitle: {
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 		color: colors.dark.text,
+	},
+	readLink: {
+		fontFamily: 'lexend-400',
+		fontSize: 14,
 	},
 	ink: {
 		flexDirection: 'row',

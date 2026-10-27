@@ -237,16 +237,6 @@ export default function DeckResultsView() {
 						)}
 					</ScrollView>
 					<View style={styles.footer}>
-						{hasReview && (
-							<LinkButton
-								handler={handleRepeat}
-								disabled={repeatDisabled}
-								color={storyColor}
-								fullwidth
-							>
-								{studyLabel}
-							</LinkButton>
-						)}
 						<LinkButton
 							handler={handleFinish}
 							disabled={isRepeating || isUpdatingProgress}
@@ -255,10 +245,20 @@ export default function DeckResultsView() {
 							useArrow={false}
 							showShadow={false}
 							showInnerBorder={false}
-							fullwidth
+							style={styles.footerButton}
 						>
-							Back to chapter
+							Finish
 						</LinkButton>
+						{hasReview && (
+							<LinkButton
+								handler={handleRepeat}
+								disabled={repeatDisabled}
+								color={storyColor}
+								style={styles.footerButton}
+							>
+								{studyLabel}
+							</LinkButton>
+						)}
 					</View>
 				</View>
 			</ImageBackground>
@@ -354,9 +354,13 @@ const styles = StyleSheet.create({
 		borderTopColor: colors.light.goldenBorder,
 	},
 	footer: {
+		flexDirection: 'row',
 		gap: 8,
 		padding: 10,
 		borderTopWidth: 1,
 		borderTopColor: colors.light.goldenBorder,
+	},
+	footerButton: {
+		flex: 1,
 	},
 });

@@ -252,7 +252,8 @@ const styles = StyleSheet.create({
 	actionButton: {
 		width: '100%',
 		maxWidth: 200,
-		borderColor: colors.light.border,
+		borderWidth: 1,
+		borderColor: colors.dark.border,
 		shadowColor: colors.light.goldenBorder,
 	},
 	actionText: {
