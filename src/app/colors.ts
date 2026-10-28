@@ -80,9 +80,16 @@ const colors = {
 	},
 	gems: {
 		unsolved: '#90846F',
-		first: '#a13e46',
-		second: '#469a93',
+		first: '#a13e53',
+		second: '#467d9a',
 		third: '#b052ca',
+		glow: '#FFFFFF',
+	},
+	glowGems: {
+		unsolved: '#90846F',
+		first: '#ff0000',
+		second: '#0f00ff',
+		third: '#ff00ff',
 		glow: '#FFFFFF',
 	},
 	rarity: {

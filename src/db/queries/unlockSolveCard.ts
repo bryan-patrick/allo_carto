@@ -1,5 +1,5 @@
 import type { SolveAttemptResult, SolveCardRequest } from '@/src/components/Solve/solveTypes';
-import { inkConfig } from '@/src/util/ink';
+import { getSolveCardInkCost } from '@/src/util/solveProgression';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolvePuzzle from './getSolvePuzzle';
 import getUserInk from './getUserInk';
@@ -7,20 +7,32 @@ import getUserInk from './getUserInk';
 interface UnlockSolveCardOptions extends SolveCardRequest {
 	database: SQLiteDatabase;
 	userId: string;
+	fastSolveUnlocks?: boolean;
 }
 
 /**
- * Saves the unlock and its ink cost.
+ * We use this to spend Ink and reveal a card's prompt in Solve or Solve+.
+ * Each puzzle saves its own unlocks, so opening a Solve card does not open its Solve+ card.
  */
 export default async function unlockSolveCard({
 	database,
 	userId,
 	deckId,
 	position,
+	stage = 1,
+	fastSolveUnlocks = true,
 }: UnlockSolveCardOptions): Promise<SolveAttemptResult> {
 	const statements = {
 		spendInk: 'UPDATE userInk SET balance = ? WHERE userId = ? AND balance >= ?;',
-		saveUnlock: `
+		saveUnlock:
+			stage === 2 ?
+				`
+			INSERT INTO solveStageUnlocks (userId, deckId, stage, position, wordId)
+			VALUES (?, ?, 2, ?, ?)
+			ON CONFLICT(userId, deckId, stage, position)
+			DO UPDATE SET wordId = excluded.wordId;
+		`
+			:	`
 			INSERT INTO solveUnlocks (userId, deckId, position, wordId)
 			VALUES (?, ?, ?, ?)
 			ON CONFLICT(userId, deckId, position)
@@ -39,12 +51,15 @@ export default async function unlockSolveCard({
 			database: transaction,
 			userId,
 			deckId,
+			stage,
+			fastSolveUnlocks,
 		});
 		const card = puzzle.positions.find(card => card.position === position);
+		const canUnlock = stage === 1 ? puzzle.allWordsSeen : puzzle.isEligible;
 		let inkBalance: number;
 		let cardCost: number;
 
-		if (!puzzle.isUnlocked || !puzzle.allWordsSeen || !card?.wordId) {
+		if (!puzzle.isUnlocked || !canUnlock || !card?.wordId) {
 			return;
 		}
 
@@ -53,7 +68,7 @@ export default async function unlockSolveCard({
 			return;
 		}
 
-		cardCost = inkConfig.cardCostByRarity[card.rarity];
+		cardCost = getSolveCardInkCost(stage, card.rarity);
 		inkBalance = await getUserInk({
 			database: transaction,
 			userId,

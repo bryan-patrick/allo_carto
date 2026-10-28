@@ -4,10 +4,12 @@ import { checkSolveAnswer } from '@/src/util/solveAnswer';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolvePuzzle from './getSolvePuzzle';
 import getUserInk from './getUserInk';
+import writeSolvePlusAttempt from './writeSolvePlusAttempt';
 
 interface WriteSolveAttemptOptions extends SolveAttemptRequest {
 	database: SQLiteDatabase;
 	userId: string;
+	fastSolveUnlocks?: boolean;
 }
 
 interface SavedSolveAttempt extends Omit<SolveAttemptResult, 'firstGemEarned'> {
@@ -27,6 +29,8 @@ export default async function writeSolveAttempt({
 	position,
 	answer,
 	attemptId,
+	stage = 1,
+	fastSolveUnlocks = true,
 }: WriteSolveAttemptOptions): Promise<SolveAttemptResult> {
 	const statements = {
 		getReceipt: `
@@ -57,6 +61,18 @@ export default async function writeSolveAttempt({
 		inkSpent: 0,
 		firstGemEarned: false,
 	};
+
+	if (stage === 2) {
+		return writeSolvePlusAttempt({
+			database,
+			userId,
+			deckId,
+			position,
+			answer,
+			attemptId,
+			fastSolveUnlocks,
+		});
+	}
 
 	if (!attemptId) {
 		throw new Error('A Solve attempt needs an ID before it can be saved.');

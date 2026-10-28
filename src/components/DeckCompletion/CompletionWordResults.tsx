@@ -262,15 +262,15 @@ const styles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
-		paddingVertical: 8,
+		paddingVertical: 6,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
-		gap: 8,
+		gap: 6,
 	},
 	icon: {
-		width: 24,
-		height: 24,
-		borderRadius: 12,
+		width: 20,
+		height: 20,
+		borderRadius: 10,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
@@ -280,18 +280,18 @@ const styles = StyleSheet.create({
 	},
 	french: {
 		fontFamily: 'lexend-600',
-		fontSize: 14,
+		fontSize: 13,
 		color: colors.dark.text,
 	},
 	translation: {
 		fontFamily: 'lexend-400',
-		fontSize: 13,
-		lineHeight: 13,
+		fontSize: 12,
+		lineHeight: 16,
 		color: colors.dark.text,
 	},
 	metadata: {
 		alignItems: 'flex-end',
-		gap: 4,
+		gap: 3,
 	},
 	badges: {
 		flexDirection: 'row',
@@ -300,15 +300,15 @@ const styles = StyleSheet.create({
 	},
 	xp: {
 		fontFamily: 'lexend-600',
-		fontSize: 13,
+		fontSize: 12,
 	},
 	badge: {
 		fontFamily: 'azeret-mono-400',
-		fontSize: 10,
+		fontSize: 9,
 		color: colors.dark.text,
 		borderRadius: 3,
-		paddingHorizontal: 4,
-		paddingVertical: 2,
+		paddingHorizontal: 3,
+		paddingVertical: 1,
 	},
 	learningChange: {
 		alignSelf: 'flex-start',
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
 		backgroundColor: `${colors.light.success}88`,
 		borderRadius: 4,
 		paddingVertical: 2,
-		marginVertical: 4,
+		marginVertical: 2,
 		gap: 4,
 	},
 	learningLevel: {
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
 	learningChangeText: {
 		flexShrink: 1,
 		fontFamily: 'lexend-600',
-		fontSize: 12,
+		fontSize: 11,
 		color: colors.dark.success,
 	},
 });

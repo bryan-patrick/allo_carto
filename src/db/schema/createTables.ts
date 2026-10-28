@@ -21,7 +21,7 @@ async function createWordsTable(): Promise<void> {
 	const database = await getDB();
 
 	/**
-	 * Check/Create word table
+	 * Stores the French words, English meanings, and card details used in flashcards and Solve.
 	 */
 	await logThisIfItFails('Oops we messed up creating the words table somehows', async () => {
 		await database.execAsync(`
@@ -65,7 +65,7 @@ async function createUsersTable(): Promise<void> {
 	const database = await getDB();
 
 	/**
-	 * Create users table
+	 * Stores local player profiles, their selected story, and earned XP.
 	 */
 	await logThisIfItFails('Oops we messed up the users table somehows mon homme', async () => {
 		await database.execAsync(`
@@ -84,11 +84,7 @@ async function createUserWordsTable(): Promise<void> {
 	const database = await getDB();
 
 	/**
-	 * Create user word score join table - many (users) to many (words).
-	 * The table to store progress for a specific word per user.
-	 *
-	 * A user can only have one record for a given word
-	 * so I made the primary key userId and wordId...should work...
+	 * Stores how often each player has seen or correctly answered each word.
 	 */
 	await logThisIfItFails('Oops our join table messed up', async () => {
 		await database.execAsync(`
@@ -106,7 +102,7 @@ async function createUserWordsTable(): Promise<void> {
 }
 
 /**
- * Create the user progress table
+ * Stores learning progress for paragraphs, chapters, and stories, including whether flashcard practice has started.
  */
 async function createUserProgressTable(): Promise<void> {
 	const database = await getDB();
@@ -131,7 +127,8 @@ export default async function createTables(): Promise<void> {
 }
 
 /**
- * Tables for saving the solve puzzles
+ * Creates storage for the first Solve puzzle's unlocked cards, answers, paid attempts, and earned gem.
+ * Also prepares saved progress for the later Solve puzzles.
  */
 async function createSolveTables(): Promise<void> {
 	const database = await getDB();
@@ -140,6 +137,8 @@ async function createSolveTables(): Promise<void> {
 			userId TEXT NOT NULL,
 			deckId TEXT NOT NULL,
 			completedAt INTEGER NOT NULL,
+			completedSolveStages INTEGER NOT NULL DEFAULT 1
+				CHECK (completedSolveStages BETWEEN 1 AND 5),
 			PRIMARY KEY (userId, deckId),
 			FOREIGN KEY (userId) REFERENCES users(id)
 		);
@@ -180,10 +179,88 @@ async function createSolveTables(): Promise<void> {
 	`;
 
 	await database.execAsync(statement);
+	await ensureCompletedSolveStagesColumn();
+	await createSolveStageTables();
 }
 
 /**
- * Save the selected story!
+ * Adds a completed puzzle count when opening an older save.
+ */
+async function ensureCompletedSolveStagesColumn(): Promise<void> {
+	const database = await getDB();
+	const columns = await database.getAllAsync<DatabaseColumn>(
+		'PRAGMA table_info(solveCompletions);',
+	);
+	const hasCompletedStagesColumn = columns.some(column => column.name === 'completedSolveStages');
+	const addColumnStatement = `
+		ALTER TABLE solveCompletions
+		ADD COLUMN completedSolveStages INTEGER NOT NULL DEFAULT 1
+			CHECK (completedSolveStages BETWEEN 1 AND 5);
+	`;
+
+	if (!hasCompletedStagesColumn) {
+		await database.execAsync(addColumnStatement);
+	}
+}
+
+/**
+ * Creates storage for later Solve puzzles' unlocked cards, correct answers, paid attempts, and unfinished Word Order arrangements.
+ */
+async function createSolveStageTables(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS solveWordOrderDrafts (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			positions TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+
+		CREATE TABLE IF NOT EXISTS solveStageUnlocks (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			stage INTEGER NOT NULL CHECK (stage = 2),
+			position INTEGER NOT NULL CHECK (position >= 0),
+			wordId TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId, stage, position),
+			FOREIGN KEY (userId) REFERENCES users(id),
+			FOREIGN KEY (wordId) REFERENCES words(id)
+		);
+
+		CREATE TABLE IF NOT EXISTS solveStagePositions (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			stage INTEGER NOT NULL CHECK (stage BETWEEN 2 AND 5),
+			position INTEGER NOT NULL CHECK (position >= 0),
+			wordId TEXT,
+			acceptedAnswer TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId, stage, position),
+			FOREIGN KEY (userId) REFERENCES users(id),
+			FOREIGN KEY (wordId) REFERENCES words(id)
+		);
+
+		CREATE TABLE IF NOT EXISTS solveStageAttempts (
+			userId TEXT NOT NULL,
+			attemptId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			stage INTEGER NOT NULL CHECK (stage BETWEEN 2 AND 5),
+			position INTEGER NOT NULL CHECK (position >= 0),
+			answer TEXT NOT NULL,
+			status TEXT NOT NULL CHECK (status IN ('exact', 'close', 'incorrect')),
+			acceptedAnswer TEXT,
+			inkSpent INTEGER NOT NULL CHECK (inkSpent >= 0),
+			stageCompleted INTEGER NOT NULL DEFAULT 0 CHECK (stageCompleted IN (0, 1)),
+			PRIMARY KEY (userId, attemptId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+	`;
+
+	await database.execAsync(statement);
+}
+
+/**
+ * Adds a saved story selection to older databases when needed.
  */
 async function ensureSelectedStoryColumn(): Promise<void> {
 	const database = await getDB();
@@ -196,8 +273,7 @@ async function ensureSelectedStoryColumn(): Promise<void> {
 }
 
 /**
- * We call saved vocabulary progress "paragraph" progress instead of "deck" progress.
- * SQLite needs a new table because the old table only allows the name "deck".
+ * Updates older saves to call paragraph progress "paragraph" instead of "deck".
  */
 async function ensureParagraphProgressType(): Promise<void> {
 	const statements = {
@@ -232,7 +308,7 @@ async function ensureParagraphProgressType(): Promise<void> {
 }
 
 /**
- * Preserve completed flashcard decks when upgrading existing databases.
+ * Keeps the New badge accurate when opening an older save.
  */
 async function ensureFlashcardsStartedColumn(): Promise<void> {
 	const database = await getDB();
@@ -253,8 +329,7 @@ async function ensureFlashcardsStartedColumn(): Promise<void> {
 }
 
 /**
- * Saves a record with a unique session ID when a deck is completed.
- * The session key is to prevent duplicate rewards or XP
+ * Remembers finished flashcard sessions and the rewards already paid for them.
  */
 async function createDeckCompletionsTable(): Promise<void> {
 	const database = await getDB();
@@ -275,8 +350,7 @@ async function createDeckCompletionsTable(): Promise<void> {
 	`);
 
 	/**
-	 * We keep the actual Ink payout on the completion receipt.
-	 * Add its field when reopening a development database made before this change.
+	 * Adds the saved Ink payout to older databases.
 	 */
 	const columns = await database.getAllAsync<DatabaseColumn>('PRAGMA table_info(deckCompletions);');
 	const hasEarnedInkColumn = columns.some(column => column.name === 'earnedInk');
@@ -290,8 +364,7 @@ async function createDeckCompletionsTable(): Promise<void> {
 }
 
 /**
- * Handles creating the ink table, we include a session ID so we don't get duplicates
- * No cheating!
+ * Stores the player's Ink balance and the Ink earned by correct flashcard answers.
  */
 async function createInkTables(): Promise<void> {
 	const statements = {
@@ -318,6 +391,7 @@ async function createInkTables(): Promise<void> {
 			);
 		`,
 	};
+
 	const database = await getDB();
 
 	await database.execAsync(statements.createBalance);

@@ -13,6 +13,7 @@ interface BooleanSettings {
 	showUnseenWords: boolean;
 	showDebugOptions: boolean;
 	showSkipWordLink: boolean;
+	fastSolveUnlocks: boolean;
 }
 
 export interface AppSettings extends BooleanSettings {
@@ -32,13 +33,14 @@ const booleanSettingKeys: BooleanSettingKey[] = [
 	'showUnseenWords',
 	'showDebugOptions',
 	'showSkipWordLink',
+	'fastSolveUnlocks',
 ];
 
 const volumeSettingKeys: ('soundEffectsVolume' | 'ttsVolume')[] = [
 	'soundEffectsVolume',
 	'ttsVolume',
 ];
-export const maxAudioVolume = 0.5;
+export const maxAudioVolume = 1;
 
 export function clampAudioVolume(volume: number): number {
 	if (!Number.isFinite(volume)) {
@@ -54,13 +56,14 @@ export function clampAudioVolume(volume: number): number {
 export const defaultAppSettings: AppSettings = {
 	soundEffectsEnabled: true,
 	ttsOnCorrectEnabled: true,
-	soundEffectsVolume: 0.4,
-	ttsVolume: maxAudioVolume,
+	soundEffectsVolume: 0.5,
+	ttsVolume: 0.5,
 	useLearningLevelColors: false,
 	useLevelOpacity: false,
 	showUnseenWords: false,
 	showDebugOptions: false,
 	showSkipWordLink: true,
+	fastSolveUnlocks: true,
 	cardsPerDeck: null,
 	pronunciationFormat: 'readable',
 };

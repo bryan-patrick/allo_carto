@@ -15,6 +15,11 @@ export interface CheckSolveAnswerOptions {
 	englishWords: readonly string[];
 }
 
+export interface CheckFrenchSolveAnswerOptions {
+	answer: string;
+	frenchWords: readonly string[];
+}
+
 export type SolveAnswerStatus = 'exact' | 'close' | 'incorrect' | 'empty';
 
 export interface SolveAnswerResult {
@@ -23,8 +28,7 @@ export interface SolveAnswerResult {
 }
 
 /**
- * These define tolerances for correct answers.
- * They're forgiving. We don't want to count something wrong because of a small typo.
+ * Set how many spelling mistakes an English word answer can have.
  */
 export const solveAnswerConfig: SolveAnswerConfig = {
 	typoAllowances: [
@@ -50,11 +54,9 @@ export const solveAnswerConfig: SolveAnswerConfig = {
 const optionalArticles = ['a', 'an', 'the'];
 
 /**
- * This does a few things to the answer that users submit for solving puzzle words.
- * We make sure to remove any articles (they're allowed but aren't needed), then
- * we convert to lowercase, then remove any spaces or weird characters
+ * Clean up an English answer so small writing differences do not count as mistakes.
  */
-function normalizeSolveAnswer(answer: string): string {
+export function normalizeSolveAnswer(answer: string): string {
 	const compatibleText = answer.normalize('NFKC');
 	const lowerCaseText = compatibleText.toLowerCase();
 	const textWithoutApostrophes = lowerCaseText.replace(/['’‘ʼ]/gu, '');
@@ -70,8 +72,7 @@ function normalizeSolveAnswer(answer: string): string {
 }
 
 /**
- * We look for the typed letters in the definition, in order rather than at fixed positions.
- * Missing, extra, or different letters are okay within this word's allowance.
+ * Check a word's letters in order while allowing a few spelling mistakes.
  */
 function matchesSolveWord(answer: string, definition: string): boolean {
 	let allowedTypos = 0;
@@ -98,7 +99,7 @@ function matchesSolveWord(answer: string, definition: string): boolean {
 }
 
 /**
- * Check the user's answer with allowed tolerances. It doesn't have to be an exact match.
+ * Check a typed English meaning against the card's saved answers.
  */
 export function checkSolveAnswer({
 	answer,
@@ -142,5 +143,49 @@ export function checkSolveAnswer({
 	return {
 		status: 'incorrect',
 		acceptedAnswer: null,
+	};
+}
+
+/**
+ * Clean up a French answer while keeping its accents.
+ */
+export function normalizeFrenchSolveAnswer(answer: string): string {
+	const compatibleText = answer.normalize('NFKC');
+	const lowerCaseText = compatibleText.toLowerCase();
+	const textWithoutApostrophes = lowerCaseText.replace(/['’‘ʼ]/gu, '');
+	const textWithWordGaps = textWithoutApostrophes.replace(/[^\p{L}\p{M}\p{N}\s]/gu, ' ');
+	const textWithSingleSpaces = textWithWordGaps.replace(/\s+/gu, ' ');
+
+	return textWithSingleSpaces.trim();
+}
+
+/**
+ * Check the typed French word against the card's saved word forms.
+ */
+export function checkFrenchSolveAnswer({
+	answer,
+	frenchWords,
+}: CheckFrenchSolveAnswerOptions): SolveAnswerResult {
+	const normalizedAnswer = normalizeFrenchSolveAnswer(answer);
+	const normalizedWords = frenchWords.map(normalizeFrenchSolveAnswer);
+	const acceptedIndex = normalizedWords.indexOf(normalizedAnswer);
+
+	if (!normalizedAnswer) {
+		return {
+			status: 'empty',
+			acceptedAnswer: null,
+		};
+	}
+
+	if (acceptedIndex === -1) {
+		return {
+			status: 'incorrect',
+			acceptedAnswer: null,
+		};
+	}
+
+	return {
+		status: 'exact',
+		acceptedAnswer: frenchWords[acceptedIndex].trim(),
 	};
 }

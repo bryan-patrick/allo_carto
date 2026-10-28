@@ -26,7 +26,6 @@ export interface DeckWordChoice {
 export interface PassageSegment {
 	text: string;
 	wordId?: string;
-	/** Always readable; excluded from practice cards and completion (e.g. names). */
 	unlockExempt?: boolean;
 	after?: string;
 }
@@ -40,8 +39,13 @@ export interface CardDeckDefinition extends Progression {
 	wordChoices: DeckWordChoice[];
 	chapter: string;
 	passage: PassageSegment[];
-	/** Original English passage, when available. */
+	// Original English passage, when available.
 	englishPassage?: string;
+	/**
+	 * Allows a paragraph to accept more than one correct order in Solve++.
+	 * Each answer lists the cards' passage positions in the accepted order.
+	 */
+	acceptedWordOrders?: number[][];
 }
 
 export interface CardDeck extends CardDeckDefinition {

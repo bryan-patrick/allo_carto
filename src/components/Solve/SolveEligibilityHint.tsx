@@ -1,30 +1,23 @@
 import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
-import { useUserProgress } from '@/src/db/useUserProgress';
 import { StyleSheet, Text } from 'react-native';
+import { useSolveProgress } from './useSolveProgress';
 
 interface SolveEligibilityHintProps {
 	deck: CardDeck;
 }
 
 /**
- * This is there to let the user know what they need to do to
- * be able to used the disabled solve button (they need to see all cards)
+ * We show this beside a locked Solve button to explain how the player can open its puzzle.
  */
 export default function SolveEligibilityHint({ deck }: SolveEligibilityHintProps) {
-	const { progressById } = useUserProgress();
-	const seenWordCount = progressById[deck.id]?.seenWordCount ?? 0;
-	const wordCount = deck.wordIds.length;
+	const { unlockMessage } = useSolveProgress(deck.id);
 
-	if (wordCount === 0 || seenWordCount >= wordCount) {
+	if (!unlockMessage) {
 		return null;
 	}
 
-	return (
-		<Text style={styles.hint}>
-			Solve unlocks when you have seen every flashcard ({seenWordCount} of {wordCount} seen).
-		</Text>
-	);
+	return <Text style={styles.hint}>{unlockMessage}</Text>;
 }
 
 const styles = StyleSheet.create({

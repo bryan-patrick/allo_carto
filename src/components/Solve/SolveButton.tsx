@@ -1,22 +1,13 @@
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
+import { useSolveProgress } from '@/src/components/Solve/useSolveProgress';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
-import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
+import { findParagraphById } from '@/src/util/atlasCompletion';
+import { solveStages } from '@/src/util/solveProgression';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-
-/**
- * Change these colors to adjust the Solve button's background.
- * The first color starts at the top left, and the last ends at the bottom right.
- */
-const solveGradientColors: LinearGradientProps['colors'] = [
-	'rgb(248, 200, 8, 0.1)',
-	'rgb(6, 164, 255, 0.1)',
-	'rgba(255, 139, 6, 0.1)',
-	'rgb(251, 6, 186, 0.1)',
-];
 
 /**
  * Typing
@@ -24,38 +15,44 @@ const solveGradientColors: LinearGradientProps['colors'] = [
 interface SolveButtonProps {
 	deckId: string;
 	color: string;
+	disabled?: boolean;
 }
 
 /**
- * Button component used to open the puzzle modal
+ * Opens the next unfinished Solve puzzle for a paragraph.
  */
-export default function SolveButton({ deckId, color }: SolveButtonProps) {
+export default function SolveButton({ deckId, color, disabled = false }: SolveButtonProps) {
 	const router = useRouter();
 	const { id: userId } = useUserContext() ?? {};
-	const { progressById, status, isUpdatingProgress } = useUserProgress();
+	const { status, isUpdatingProgress } = useUserProgress();
+	const { nextStage, definition, isEligible, unlockMessage } = useSolveProgress(deckId);
 	const deck = findParagraphById(deckId);
-	const progress = progressById[deckId];
-	const isComplete = Boolean(progress?.hasFirstGem);
-	const isEligible = Boolean(
-		deck?.wordIds.length &&
-		progress?.seenWordCount === deck.wordIds.length &&
-		isItemUnlocked({
-			id: deckId,
-			progressById,
-		}),
-	);
-	const isDisabled = !isEligible || status !== 'ready' || !userId || isUpdatingProgress;
-	let label = 'Solve';
-
-	if (isComplete) {
-		label = 'View';
-	}
+	const isDisabled =
+		disabled ||
+		!isEligible ||
+		!definition?.isImplemented ||
+		status !== 'ready' ||
+		!userId ||
+		isUpdatingProgress;
+	const label = definition?.label ?? 'Mastered';
+	const isMastered = nextStage === null;
+	const gradientColors = definition?.buttonGradient ?? solveStages[5].buttonGradient;
+	const accessibilityHint =
+		unlockMessage ||
+		(nextStage === null ?
+			'All five Solve puzzles are complete.'
+		:	`Open this paragraph’s ${label} puzzle.`);
 
 	function handleOpen() {
+		if (isDisabled || nextStage === null) {
+			return;
+		}
+
 		router.push({
 			pathname: '/Solve',
 			params: {
 				deckId,
+				stage: String(nextStage),
 			},
 		});
 	}
@@ -71,11 +68,11 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 				color={color}
 				type="outline"
 				disabled={isDisabled}
-				style={[styles.button, isDisabled && styles.disabledButton]}
+				style={[styles.button, isDisabled && !isMastered && styles.disabledButton]}
 				background={
-					isEligible && (
+					(!isDisabled || isMastered) && (
 						<LinearGradient
-							colors={solveGradientColors}
+							colors={gradientColors}
 							start={{
 								x: 0,
 								y: 1,
@@ -89,14 +86,18 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 						/>
 					)
 				}
-				accessibilityHint={
-					isEligible ?
-						'Open this paragraph’s puzzle.'
-					:	'Study every word in this paragraph to unlock Solve.'
-				}
+				accessibilityHint={accessibilityHint}
+				accessibilityState={{
+					disabled: isDisabled,
+				}}
 				SVGElement={
 					<MaterialSymbol
-						name={isEligible ? 'extension' : 'lock'}
+						name={
+							nextStage === null ? 'check'
+							: isDisabled ?
+								'lock'
+							:	'extension'
+						}
 						size={18}
 						color={color}
 					/>
@@ -114,10 +115,11 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
  */
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		minWidth: 110,
 	},
 	button: {
 		paddingVertical: 6,
+		paddingHorizontal: 6,
 		borderBottomWidth: 2,
 		shadowOpacity: 0,
 		borderRadius: 8,

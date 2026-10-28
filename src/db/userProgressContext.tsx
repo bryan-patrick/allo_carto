@@ -3,10 +3,13 @@ import type {
 	WordAnswerAwardProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
 import type {
+	SentenceAttemptRequest,
 	SolveAttemptRequest,
 	SolveAttemptResult,
 	SolveCardRequest,
+	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { ProgressById } from '@/src/util/progression';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -23,6 +26,7 @@ import loadUserXP from './queries/getUserExperience';
 import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
 import unlockSolveCard from './queries/unlockSolveCard';
+import writeSentenceAttempt from './queries/writeSentenceAttempt';
 import writeSolveAttempt from './queries/writeSolveAttempt';
 import {
 	writeCorrectAnswer,
@@ -31,6 +35,7 @@ import {
 	type CorrectAnswerRequest,
 	type DeckCompletionRequest,
 } from './queries/writeUserProgress';
+import writeWordOrderAttempt from './queries/writeWordOrderAttempt';
 
 /**
  * Typing
@@ -55,6 +60,8 @@ interface UserProgressContextProps {
 	writeWordSeen: (wordId: string, deckId?: string) => Promise<boolean>;
 	writeSolveAttempt: (request: SolveAttemptRequest) => Promise<SolveAttemptResult | false>;
 	unlockSolveCard: (request: SolveCardRequest) => Promise<SolveAttemptResult | false>;
+	writeWordOrderAttempt: (request: WordOrderAttemptRequest) => Promise<SolveAttemptResult | false>;
+	writeSentenceAttempt: (request: SentenceAttemptRequest) => Promise<SolveAttemptResult | false>;
 	reloadProgress: () => Promise<void>;
 }
 
@@ -72,6 +79,8 @@ const initialValue: UserProgressContextProps = {
 	writeWordSeen: async () => false,
 	writeSolveAttempt: async () => false,
 	unlockSolveCard: async () => false,
+	writeWordOrderAttempt: async () => false,
+	writeSentenceAttempt: async () => false,
 	reloadProgress: async () => {},
 };
 
@@ -96,6 +105,8 @@ export function UserProgressProvider({ children, userId }: UserProgressProviderP
  */
 function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const database = useSQLiteContext();
+	const { settings } = useAppSettings();
+	const fastSolveUnlocks = settings.fastSolveUnlocks;
 
 	/**
 	 * State
@@ -209,13 +220,20 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const recordSolveAttempt = useCallback(
 		async (request: SolveAttemptRequest): Promise<SolveAttemptResult | false> => {
-			return runProgressWrite(() => writeSolveAttempt({ database, userId: userId!, ...request }));
+			return runProgressWrite(() =>
+				writeSolveAttempt({
+					database,
+					userId: userId!,
+					...request,
+					fastSolveUnlocks,
+				}),
+			);
 		},
-		[database, runProgressWrite, userId],
+		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
 	/**
-	 * Unlocking a puzzle card updates the shared Ink balance after it saves.
+	 * Unlocking a puzzle card updates the ink after it saves.
 	 */
 	const recordSolveUnlock = useCallback(
 		async (request: SolveCardRequest): Promise<SolveAttemptResult | false> => {
@@ -224,10 +242,45 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 					database,
 					userId: userId!,
 					...request,
+					fastSolveUnlocks,
 				}),
 			);
 		},
-		[database, runProgressWrite, userId],
+		[database, runProgressWrite, userId, fastSolveUnlocks],
+	);
+
+	/**
+	 * Submits the Solve++ answer using the current unlock setting, then reloads the player's Ink and gems.
+	 */
+	const recordWordOrderAttempt = useCallback(
+		async (request: WordOrderAttemptRequest): Promise<SolveAttemptResult | false> => {
+			return runProgressWrite(() =>
+				writeWordOrderAttempt({
+					database,
+					userId: userId!,
+					...request,
+					fastSolveUnlocks,
+				}),
+			);
+		},
+		[database, runProgressWrite, userId, fastSolveUnlocks],
+	);
+
+	/**
+	 * Submit a sentence answer and reload the player's ink and gems.
+	 */
+	const recordSentenceAttempt = useCallback(
+		async (request: SentenceAttemptRequest): Promise<SolveAttemptResult | false> => {
+			return runProgressWrite(() =>
+				writeSentenceAttempt({
+					database,
+					userId: userId!,
+					...request,
+					fastSolveUnlocks,
+				}),
+			);
+		},
+		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
 	/**
@@ -244,6 +297,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			writeWordSeen: recordWordSeen,
 			writeSolveAttempt: recordSolveAttempt,
 			unlockSolveCard: recordSolveUnlock,
+			writeWordOrderAttempt: recordWordOrderAttempt,
+			writeSentenceAttempt: recordSentenceAttempt,
 			reloadProgress: refreshProgress,
 			status,
 		}),
@@ -257,6 +312,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			recordWordSeen,
 			recordSolveAttempt,
 			recordSolveUnlock,
+			recordWordOrderAttempt,
+			recordSentenceAttempt,
 			refreshProgress,
 			status,
 		],

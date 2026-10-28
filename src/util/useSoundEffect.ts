@@ -10,9 +10,7 @@ const sounds: Record<string, AudioSource> = {
 };
 
 /**
- * This hook is used to play sounds in the application
- * The played sound is the key of sounds
- * Sound effects are used during flash cards and when leveling up
+ * Play the selected sound effect at the player's saved volume.
  */
 export function useSoundEffect(sound: keyof typeof sounds) {
 	const { settings } = useAppSettings();
@@ -24,7 +22,7 @@ export function useSoundEffect(sound: keyof typeof sounds) {
 
 	useEffect(() => {
 		activePlayer.current = player;
-		activePlayer.current.volume = sound === 'tap' ? volume * 0.375 : volume;
+		activePlayer.current.volume = volume;
 
 		function finishPlayback(completed: boolean) {
 			const resolve = playbackFinished.current;

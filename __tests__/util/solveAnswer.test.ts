@@ -12,6 +12,7 @@ describe('Solve answer checking', () => {
 		['don’t', "don't"],
 		['dont', "don't"],
 		['cafe\u0301', 'café'],
+		['the croissant', 'croissant'],
 	])('accepts formatting differences in %s', (answer, acceptedAnswer) => {
 		const result = checkSolveAnswer({ answer, englishWords: [acceptedAnswer] });
 
@@ -51,7 +52,6 @@ describe('Solve answer checking', () => {
 		['as reading', 'is reading'],
 		['reading is', 'is reading'],
 		['reading', 'is reading'],
-		['the croissant', 'croissant'],
 		['ishungry', 'is hungry'],
 	])('rejects %s for %s', (answer, acceptedAnswer) => {
 		const result = checkSolveAnswer({ answer, englishWords: [acceptedAnswer] });
