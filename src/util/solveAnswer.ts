@@ -15,6 +15,11 @@ export interface CheckSolveAnswerOptions {
 	englishWords: readonly string[];
 }
 
+export interface CheckFrenchSolveAnswerOptions {
+	answer: string;
+	frenchWords: readonly string[];
+}
+
 export type SolveAnswerStatus = 'exact' | 'close' | 'incorrect' | 'empty';
 
 export interface SolveAnswerResult {
@@ -142,5 +147,52 @@ export function checkSolveAnswer({
 	return {
 		status: 'incorrect',
 		acceptedAnswer: null,
+	};
+}
+
+/**
+ * We clean up French answers before checking a Solve+ card.
+ * Ignores capital letters, extra spaces, and punctuation while keeping accents.
+ * We are not forgiving about accents, learners need to know them.
+ */
+function normalizeFrenchSolveAnswer(answer: string): string {
+	const compatibleText = answer.normalize('NFKC');
+	const lowerCaseText = compatibleText.toLowerCase();
+	const textWithoutApostrophes = lowerCaseText.replace(/['’‘ʼ]/gu, '');
+	const textWithWordGaps = textWithoutApostrophes.replace(/[^\p{L}\p{M}\p{N}\s]/gu, ' ');
+	const textWithSingleSpaces = textWithWordGaps.replace(/\s+/gu, ' ');
+
+	return textWithSingleSpaces.trim();
+}
+
+/**
+ * We use this to check the French word typed in Solve+ against the existing word data.
+ * A correct answer returns the saved (actual) spelling so the card can show it.
+ */
+export function checkFrenchSolveAnswer({
+	answer,
+	frenchWords,
+}: CheckFrenchSolveAnswerOptions): SolveAnswerResult {
+	const normalizedAnswer = normalizeFrenchSolveAnswer(answer);
+	const normalizedWords = frenchWords.map(normalizeFrenchSolveAnswer);
+	const acceptedIndex = normalizedWords.indexOf(normalizedAnswer);
+
+	if (!normalizedAnswer) {
+		return {
+			status: 'empty',
+			acceptedAnswer: null,
+		};
+	}
+
+	if (acceptedIndex === -1) {
+		return {
+			status: 'incorrect',
+			acceptedAnswer: null,
+		};
+	}
+
+	return {
+		status: 'exact',
+		acceptedAnswer: frenchWords[acceptedIndex].trim(),
 	};
 }

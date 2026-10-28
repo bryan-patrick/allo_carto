@@ -5,6 +5,7 @@ import {
 	getCompletedSolveStages,
 	getNextSolveStage,
 	getSolveStageEligibility,
+	getSolveUnlockMessage,
 	solveStages,
 	type CompletedSolveStages,
 	type SolveStage,
@@ -16,6 +17,7 @@ export interface SolveProgress extends SolveStageEligibility {
 	completedStages: CompletedSolveStages;
 	nextStage: SolveStage | null;
 	definition: SolveStageDefinition | null;
+	unlockMessage: string;
 }
 
 /**
@@ -43,6 +45,7 @@ export function useSolveProgress(deckId: string): SolveProgress {
 			completedStages,
 			nextStage,
 			definition: null,
+			unlockMessage: '',
 			isEligible: false,
 			lockReason: 'completed',
 			requiredPlayerLevel: 0,
@@ -64,5 +67,11 @@ export function useSolveProgress(deckId: string): SolveProgress {
 		completedStages,
 		nextStage,
 		definition: solveStages[nextStage],
+		unlockMessage: getSolveUnlockMessage({
+			stage: nextStage,
+			eligibility,
+			wordCount: deck?.wordIds.length ?? 0,
+			seenWordCount: progress?.seenWordCount ?? 0,
+		}),
 	};
 }

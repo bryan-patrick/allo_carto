@@ -1,8 +1,9 @@
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
+import { useSolveProgress } from '@/src/components/Solve/useSolveProgress';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { findParagraphById } from '@/src/util/atlasCompletion';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
@@ -27,35 +28,39 @@ interface SolveButtonProps {
 }
 
 /**
- * Button component used to open the puzzle modal
+ * We use this to open the paragraph's next unfinished Solve puzzle.
+ * The button shows that puzzle's name and stays disabled until its requirements are met.
  */
 export default function SolveButton({ deckId, color }: SolveButtonProps) {
 	const router = useRouter();
 	const { id: userId } = useUserContext() ?? {};
-	const { progressById, status, isUpdatingProgress } = useUserProgress();
+	const { status, isUpdatingProgress } = useUserProgress();
+	const { nextStage, definition, isEligible, unlockMessage } = useSolveProgress(deckId);
 	const deck = findParagraphById(deckId);
-	const progress = progressById[deckId];
-	const isComplete = Boolean(progress?.hasFirstGem);
-	const isEligible = Boolean(
-		deck?.wordIds.length &&
-		progress?.seenWordCount === deck.wordIds.length &&
-		isItemUnlocked({
-			id: deckId,
-			progressById,
-		}),
-	);
-	const isDisabled = !isEligible || status !== 'ready' || !userId || isUpdatingProgress;
-	let label = 'Solve';
-
-	if (isComplete) {
-		label = 'View';
-	}
+	const isDisabled =
+		!isEligible ||
+		!definition?.isImplemented ||
+		status !== 'ready' ||
+		!userId ||
+		isUpdatingProgress;
+	const label = definition?.label ?? 'Mastered';
+	const gradientColors = definition?.buttonGradient ?? solveGradientColors;
+	const accessibilityHint =
+		unlockMessage ||
+		(nextStage === null ?
+			'All five Solve puzzles are complete.'
+		:	`Open this paragraph’s ${label} puzzle.`);
 
 	function handleOpen() {
+		if (isDisabled || nextStage === null) {
+			return;
+		}
+
 		router.push({
 			pathname: '/Solve',
 			params: {
 				deckId,
+				stage: String(nextStage),
 			},
 		});
 	}
@@ -73,9 +78,9 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 				disabled={isDisabled}
 				style={[styles.button, isDisabled && styles.disabledButton]}
 				background={
-					isEligible && (
+					!isDisabled && (
 						<LinearGradient
-							colors={solveGradientColors}
+							colors={gradientColors}
 							start={{
 								x: 0,
 								y: 1,
@@ -89,14 +94,18 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 						/>
 					)
 				}
-				accessibilityHint={
-					isEligible ?
-						'Open this paragraph’s puzzle.'
-					:	'Study every word in this paragraph to unlock Solve.'
-				}
+				accessibilityHint={accessibilityHint}
+				accessibilityState={{
+					disabled: isDisabled,
+				}}
 				SVGElement={
 					<MaterialSymbol
-						name={isEligible ? 'extension' : 'lock'}
+						name={
+							nextStage === null ? 'check'
+							: isDisabled ?
+								'lock'
+							:	'extension'
+						}
 						size={18}
 						color={color}
 					/>

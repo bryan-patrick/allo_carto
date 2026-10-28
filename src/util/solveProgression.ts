@@ -21,6 +21,7 @@ export type SolveLockReason =
 
 export interface SolveStageDefinition {
 	label: string;
+	isImplemented: boolean;
 	challengeType: SolveChallengeType;
 	answerLanguage: SolveAnswerLanguage | null;
 	fastUnlockLevel: number;
@@ -54,6 +55,7 @@ export interface SolveStageEligibility {
 export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	1: {
 		label: 'Solve',
+		isImplemented: true,
 		challengeType: 'word',
 		answerLanguage: 'english',
 		fastUnlockLevel: 0,
@@ -66,6 +68,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	},
 	2: {
 		label: 'Solve+',
+		isImplemented: true,
 		challengeType: 'word',
 		answerLanguage: 'french',
 		fastUnlockLevel: 2,
@@ -78,6 +81,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	},
 	3: {
 		label: 'Solve++',
+		isImplemented: false,
 		challengeType: 'reconstruction',
 		answerLanguage: null,
 		fastUnlockLevel: 3,
@@ -90,6 +94,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	},
 	4: {
 		label: 'Solve+++',
+		isImplemented: false,
 		challengeType: 'sentence',
 		answerLanguage: 'english',
 		fastUnlockLevel: 4,
@@ -102,6 +107,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	},
 	5: {
 		label: 'Solve++++',
+		isImplemented: false,
 		challengeType: 'sentence',
 		answerLanguage: 'french',
 		fastUnlockLevel: 5,
@@ -182,4 +188,44 @@ export function getSolveStageEligibility({
 		lockReason,
 		requiredPlayerLevel,
 	};
+}
+
+export interface SolveUnlockMessageOptions {
+	stage: SolveStage;
+	eligibility: SolveStageEligibility;
+	seenWordCount: number;
+	wordCount: number;
+}
+
+/**
+ * We use this to explain how to open the next Solve puzzle.
+ * The message names the earlier puzzle or player level (or do more flashcards)
+ */
+export function getSolveUnlockMessage({
+	stage,
+	eligibility,
+	seenWordCount,
+	wordCount,
+}: SolveUnlockMessageOptions): string {
+	const definition = solveStages[stage];
+	const previousStage = stage > 1 ? ((stage - 1) as SolveStage) : null;
+	const previousLabel = previousStage ? solveStages[previousStage].label : 'Solve';
+	const messages: Record<SolveLockReason, string> = {
+		completed: '',
+		paragraphLocked: 'Complete the earlier paragraphs to open this paragraph.',
+		noWords: '',
+		unseenWords: `Solve unlocks when you have seen every flashcard (${seenWordCount} of ${wordCount} seen).`,
+		previousStageRequired: `Complete ${previousLabel} to unlock ${definition.label}.`,
+		playerLevelRequired: `${definition.label} unlocks at player level ${eligibility.requiredPlayerLevel}.`,
+	};
+
+	if (eligibility.lockReason) {
+		return messages[eligibility.lockReason];
+	}
+
+	if (!definition.isImplemented) {
+		return `${definition.label} will be available in a future update.`;
+	}
+
+	return '';
 }

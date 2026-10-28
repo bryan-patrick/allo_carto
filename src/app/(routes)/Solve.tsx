@@ -8,12 +8,14 @@ import { useLocalSearchParams } from 'expo-router';
 export default function Solve() {
 	const params = useLocalSearchParams();
 	const deckId = typeof params.deckId === 'string' ? params.deckId : '';
+	const stage = params.stage === '2' ? 2 : 1;
 	const { id: userId } = useUserContext() ?? {};
 
 	return (
 		<SolveView
-			key={`${userId}-${deckId}`}
+			key={`${userId}-${deckId}-${stage}`}
 			deckId={deckId}
+			stage={stage}
 		/>
 	);
 }

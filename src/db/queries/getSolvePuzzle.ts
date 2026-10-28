@@ -1,9 +1,21 @@
-import type { SolvePosition, SolvePuzzle } from '@/src/components/Solve/solveTypes';
 import type { CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
+import type {
+	SolvePosition,
+	SolvePuzzle,
+	SolveStageSolvedPosition,
+	SolveStageUnlockedPosition,
+} from '@/src/components/Solve/solveTypes';
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
+import {
+	getCompletedSolveStages,
+	getSolveStageEligibility,
+	type SolveWordStage,
+} from '@/src/util/solveProgression';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import getSolveStageProgress from './getSolveStageProgress';
+import loadUserXP from './getUserExperience';
 import getUserProgress from './getUserProgress';
 
 /**
@@ -13,34 +25,34 @@ interface GetSolvePuzzleOptions {
 	database: SQLiteDatabase;
 	userId: string;
 	deckId: string;
+	stage?: SolveWordStage;
+	fastSolveUnlocks?: boolean;
 }
 
 interface SolveWordRow {
 	id: string;
+	frenchWord: string;
+	frenchArticle: string | null;
+	englishArticle: string | null;
 	englishWords: string;
 	rarity: CardRarity;
 }
 
-interface UnlockedPositionRow {
-	position: number;
-	wordId: string;
-}
-
-interface SolvedPositionRow extends UnlockedPositionRow {
-	acceptedAnswer: string;
-}
-
 /**
- * The solve puzzle gets every word from the paragraph
+ * Opens a paragraph's Solve or Solve+ puzzle with its saved cards.
  */
 export default async function getSolvePuzzle({
 	database,
 	userId,
 	deckId,
+	stage = 1,
+	fastSolveUnlocks = true,
 }: GetSolvePuzzleOptions): Promise<SolvePuzzle> {
 	const deck = findParagraphById(deckId);
 	const positions: SolvePosition[] = [];
 	let words: SolveWordRow[] = [];
+	let unlockedPositions: SolveStageUnlockedPosition[] = [];
+	let solvedPositions: SolveStageSolvedPosition[] = [];
 
 	if (!deck) {
 		throw new Error('This paragraph could not be found.');
@@ -54,25 +66,56 @@ export default async function getSolvePuzzle({
 		userId,
 	});
 	const progress = progressById[deckId];
+	const completedSolveStages = getCompletedSolveStages(progress);
 	const isUnlocked = isItemUnlocked({
 		id: deckId,
 		progressById,
 	});
 	const allWordsSeen = deck.wordIds.length > 0 && progress?.seenWordCount === deck.wordIds.length;
-	const unlockedPositions = await database.getAllAsync<UnlockedPositionRow>(
-		'SELECT position, wordId FROM solveUnlocks WHERE userId = ? AND deckId = ?;',
-		userId,
-		deckId,
-	);
-	const solvedPositions = await database.getAllAsync<SolvedPositionRow>(
-		'SELECT position, wordId, acceptedAnswer FROM solvePositions WHERE userId = ? AND deckId = ?;',
-		userId,
-		deckId,
-	);
+	const experience =
+		stage === 2 ?
+			await loadUserXP({
+				database,
+				userId,
+			})
+		:	null;
+	const eligibility = getSolveStageEligibility({
+		stage,
+		completedStages: completedSolveStages,
+		playerLevel: experience?.level ?? 1,
+		fastSolveUnlocks,
+		isParagraphUnlocked: isUnlocked,
+		wordCount: deck.wordIds.length,
+		seenWordCount: progress?.seenWordCount ?? 0,
+	});
+
+	if (stage === 2) {
+		const savedStage = await getSolveStageProgress({
+			database,
+			userId,
+			deckId,
+			stage,
+		});
+
+		unlockedPositions = savedStage.unlockedPositions;
+		solvedPositions = savedStage.solvedPositions;
+	} else {
+		unlockedPositions = await database.getAllAsync<SolveStageUnlockedPosition>(
+			'SELECT position, wordId FROM solveUnlocks WHERE userId = ? AND deckId = ?;',
+			userId,
+			deckId,
+		);
+		solvedPositions = await database.getAllAsync<SolveStageSolvedPosition>(
+			'SELECT position, wordId, acceptedAnswer FROM solvePositions WHERE userId = ? AND deckId = ?;',
+			userId,
+			deckId,
+		);
+	}
 
 	if (solveWordIds.length > 0) {
 		words = await database.getAllAsync<SolveWordRow>(
-			`SELECT id, englishWords, rarity FROM words WHERE id IN (${placeholders});`,
+			`SELECT id, frenchWord, frenchArticle, englishArticle, englishWords, rarity
+			 FROM words WHERE id IN (${placeholders});`,
 			...solveWordIds,
 		);
 	}
@@ -93,6 +136,21 @@ export default async function getSolvePuzzle({
 			saved => saved.position === position && saved.wordId === wordId,
 		);
 		const englishWords: string[] = word ? JSON.parse(word.englishWords) : [];
+		const englishMeanings = englishWords.join(' / ');
+		const englishPrompt =
+			word?.englishArticle ? `${word.englishArticle} ${englishMeanings}` : englishMeanings;
+		const frenchWords = new Set([text]);
+
+		if (word) {
+			frenchWords.add(word.frenchWord);
+
+			if (word.frenchArticle) {
+				const articleSeparator = /['’ʼ]$/u.test(word.frenchArticle) ? '' : ' ';
+				const wordWithArticle = `${word.frenchArticle}${articleSeparator}${word.frenchWord}`;
+
+				frenchWords.add(wordWithArticle);
+			}
+		}
 
 		if (!text) {
 			continue;
@@ -109,12 +167,17 @@ export default async function getSolvePuzzle({
 			rarity: word?.rarity ?? 'Common',
 			isUnlocked: !wordId || unlocked || Boolean(solved),
 			englishWords,
+			englishPrompt,
+			frenchWords: Array.from(frenchWords),
 			acceptedAnswer: solved?.acceptedAnswer ?? null,
 		});
 	}
 
 	return {
+		...eligibility,
 		deck,
+		stage,
+		completedSolveStages,
 		positions,
 		isUnlocked,
 		allWordsSeen,

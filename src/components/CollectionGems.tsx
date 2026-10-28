@@ -1,8 +1,12 @@
 import colors from '@/src/app/colors';
 import type { ProgressType, UserProgressRow } from '@/src/util/progression';
+import { getCompletedSolveStages, type CompletedSolveStages } from '@/src/util/solveProgression';
 import { Alert, Pressable, StyleSheet } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
+/**
+ * Typing
+ */
 interface CollectionGemsProps {
 	title: string;
 	progress?: UserProgressRow;
@@ -18,12 +22,9 @@ interface GemResponse {
 const gemColors = [colors.gems.first, colors.gems.second, colors.gems.third];
 
 /**
- * First gems come from saved puzzles, rather than vocabulary levels.
- * Chapter and story gems need every paragraph's first gem. Gems two and three come later.
+ * Explains earned gems and the next Solve challenge.
  */
-function getGemResponses(
-	progress?: UserProgressRow,
-): Record<'incomplete' | 'complete', GemResponse> {
+function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStages, GemResponse> {
 	const type = progress?.type ?? 'paragraph';
 	const completedParagraphCount = progress?.completedParagraphCount ?? 0;
 	const paragraphCount = progress?.paragraphCount ?? 0;
@@ -34,24 +35,51 @@ function getGemResponses(
 		chapter: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Solve every paragraph in this chapter to earn its first gem.`,
 		story: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Solve every paragraph in this story to earn its first gem.`,
 	};
+	const targets: Record<ProgressType, string> = {
+		paragraph: 'this paragraph',
+		chapter: 'every paragraph in this chapter',
+		story: 'every paragraph in this story',
+	};
+	const target = targets[type];
 
 	return {
-		incomplete: {
+		0: {
 			label: '0/3 Gems',
 			filledCount: 0,
 			description: requirements[type],
 		},
-		complete: {
+		1: {
 			label: '1/3 Gems',
 			filledCount: 1,
-			description: 'First gem earned! Every puzzle card is solved. Gems 2 and 3 are coming later.',
+			description: `First gem earned! Complete Solve+ for ${target} to earn the second gem.`,
+		},
+		2: {
+			label: '2/3 Gems',
+			filledCount: 2,
+			description: `Second gem earned! Complete Solve++ for ${target} to earn the third gem.`,
+		},
+		3: {
+			label: '3/3 Gems',
+			filledCount: 3,
+			description: `All three gems earned! Complete Solve+++ for ${target} to make them glow.`,
+		},
+		4: {
+			label: '3/3 Gems',
+			filledCount: 3,
+			description: `Complete Solve++++ for ${target} to reach final mastery.`,
+		},
+		5: {
+			label: '3/3 Gems',
+			filledCount: 3,
+			description: `All five Solve puzzles are complete for ${target}.`,
 		},
 	};
 }
 
 export default function CollectionGems({ title, progress, size = 18 }: CollectionGemsProps) {
 	const responses = getGemResponses(progress);
-	const response = progress?.hasFirstGem ? responses.complete : responses.incomplete;
+	const completedStages = getCompletedSolveStages(progress);
+	const response = responses[completedStages];
 
 	function showProgress() {
 		Alert.alert(`${title} (${response.label})`, response.description);
@@ -60,7 +88,7 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 	return (
 		<Pressable
 			accessibilityRole="button"
-			accessibilityLabel={`${title}: ${response.filledCount} of 3 gems.`}
+			accessibilityLabel={`${title}: ${response.filledCount} of 3 gems. ${completedStages} of 5 Solve stages complete.`}
 			accessibilityHint="Show puzzle progress and gem requirements."
 			hitSlop={8}
 			onPress={showProgress}
@@ -84,6 +112,9 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	gem: {
 		textShadowOffset: {

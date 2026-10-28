@@ -1,6 +1,11 @@
 import type { CardDeck, CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveAnswerResult } from '@/src/util/solveAnswer';
-import type { SolveStage } from '@/src/util/solveProgression';
+import type {
+	CompletedSolveStages,
+	SolveStage,
+	SolveStageEligibility,
+	SolveWordStage,
+} from '@/src/util/solveProgression';
 
 export type AdditionalSolveStage = Exclude<SolveStage, 1>;
 
@@ -28,11 +33,15 @@ export interface SolvePosition {
 	rarity: CardRarity;
 	isUnlocked: boolean;
 	englishWords: string[];
+	englishPrompt: string;
+	frenchWords: string[];
 	acceptedAnswer: string | null;
 }
 
-export interface SolvePuzzle {
+export interface SolvePuzzle extends SolveStageEligibility {
 	deck: CardDeck;
+	stage: SolveWordStage;
+	completedSolveStages: CompletedSolveStages;
 	positions: SolvePosition[];
 	isUnlocked: boolean;
 	allWordsSeen: boolean;
@@ -42,6 +51,7 @@ export interface SolvePuzzle {
 export interface SolveCardRequest {
 	deckId: string;
 	position: number;
+	stage?: SolveWordStage;
 }
 
 export interface SolveAttemptRequest extends SolveCardRequest {
@@ -61,4 +71,5 @@ export interface SolveAttemptResult {
 	acceptedAnswer: string | null;
 	inkSpent: number;
 	firstGemEarned: boolean;
+	stageCompleted?: boolean;
 }
