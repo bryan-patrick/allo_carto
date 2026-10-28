@@ -1,5 +1,6 @@
 import SolveView from '@/src/components/Views/SolveView';
 import SolveWordOrderView from '@/src/components/Views/SolveWordOrderView';
+import SolveSentenceView from '@/src/components/Views/SolveSentenceView';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -25,6 +26,13 @@ export default function Solve() {
 		case 3:
 			return (
 				<SolveWordOrderView
+					key={`${userId}-${deckId}-${stage}`}
+					deckId={deckId}
+				/>
+			);
+		case 4:
+			return (
+				<SolveSentenceView
 					key={`${userId}-${deckId}-${stage}`}
 					deckId={deckId}
 				/>

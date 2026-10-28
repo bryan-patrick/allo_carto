@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
 import type { ProgressType, UserProgressRow } from '@/src/util/progression';
 import { getCompletedSolveStages, type CompletedSolveStages } from '@/src/util/solveProgression';
-import { Alert, Pressable, StyleSheet } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
 /**
@@ -20,6 +20,7 @@ interface GemResponse {
 }
 
 const gemColors = [colors.gems.first, colors.gems.second, colors.gems.third];
+const glowGemColors = [colors.glowGems.first, colors.glowGems.second, colors.glowGems.third];
 
 /**
  * Explains earned gems and the next Solve challenge.
@@ -66,7 +67,7 @@ function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStage
 		4: {
 			label: '3/3 Gems',
 			filledCount: 3,
-			description: `Complete Solve++++ for ${target} to reach final mastery.`,
+			description: `All three gems are glowing! Complete Solve++++ for ${target} to reach final mastery.`,
 		},
 		5: {
 			label: '3/3 Gems',
@@ -80,6 +81,27 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 	const responses = getGemResponses(progress);
 	const completedStages = getCompletedSolveStages(progress);
 	const response = responses[completedStages];
+	const hasGlowingGems = completedStages >= 4;
+	const appearanceDescription = hasGlowingGems ? ' All three gems are glowing.' : '';
+	const glowGemSize = size * 1.5;
+	const glowGemOffset = (size - glowGemSize) / 2;
+	const glowRowPosition = {
+		top: size / 2 / 2,
+	};
+	const gemSlotStyle = {
+		width: size,
+		height: size,
+	};
+	const gemTextStyle = {
+		lineHeight: size,
+	};
+	const glowGemStyle = {
+		width: glowGemSize,
+		height: glowGemSize,
+		lineHeight: glowGemSize,
+		top: glowGemOffset,
+		left: glowGemOffset,
+	};
 
 	function showProgress() {
 		Alert.alert(`${title} (${response.label})`, response.description);
@@ -88,26 +110,52 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 	return (
 		<Pressable
 			accessibilityRole="button"
-			accessibilityLabel={`${title}: ${response.filledCount} of 3 gems. ${completedStages} of 5 Solve stages complete.`}
+			accessibilityLabel={`${title}: ${response.filledCount} of 3 gems. ${completedStages} of 5 Solve stages complete.${appearanceDescription}`}
 			accessibilityHint="Show puzzle progress and gem requirements."
 			hitSlop={8}
 			onPress={showProgress}
-			style={styles.row}
 		>
-			{gemColors.map((gemColor, index) => {
-				const filled = index < response.filledCount;
+			<View style={styles.container}>
+				{hasGlowingGems && (
+					<View
+						pointerEvents="none"
+						accessibilityElementsHidden
+						importantForAccessibility="no-hide-descendants"
+						style={[styles.row, styles.glowRow, glowRowPosition]}
+					>
+						{glowGemColors.map((gemColor, index) => (
+							<View
+								key={index}
+								style={gemSlotStyle}
+							>
+								<MaterialSymbol
+									name="diamond"
+									size={glowGemSize}
+									color={gemColor}
+									style={[styles.glowGem, glowGemStyle, { shadowColor: gemColor }]}
+									filled
+								/>
+							</View>
+						))}
+					</View>
+				)}
+				<View style={styles.row}>
+					{gemColors.map((gemColor, index) => {
+						const filled = index < response.filledCount;
 
-				return (
-					<MaterialSymbol
-						key={index}
-						name="diamond"
-						size={size}
-						filled={filled}
-						color={filled ? gemColor : colors.gems.unsolved}
-						style={filled ? styles.gem : styles.unfilled}
-					/>
-				);
-			})}
+						return (
+							<MaterialSymbol
+								key={index}
+								name="diamond"
+								size={size}
+								filled={filled}
+								color={filled ? gemColor : colors.gems.unsolved}
+								style={[gemSlotStyle, gemTextStyle, !filled && styles.unfilled]}
+							/>
+						);
+					})}
+				</View>
+			</View>
 		</Pressable>
 	);
 }
@@ -116,13 +164,24 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
  * Styles
  */
 const styles = StyleSheet.create({
-	gem: {
-		textShadowOffset: {
+	container: {
+		position: 'relative',
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignContent: 'center',
+	},
+	glowRow: {
+		...StyleSheet.absoluteFill,
+	},
+	glowGem: {
+		position: 'absolute',
+		opacity: 0.2,
+		shadowOffset: {
 			width: 0,
 			height: 0,
 		},
-		textShadowRadius: 1,
-		textShadowColor: colors.gems.glow,
+		shadowOpacity: 1,
+		shadowRadius: 1,
 	},
 	unfilled: {
 		opacity: 0.4,

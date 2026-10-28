@@ -94,16 +94,16 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	},
 	4: {
 		label: 'Solve+++',
-		isImplemented: false,
+		isImplemented: true,
 		challengeType: 'sentence',
 		answerLanguage: 'english',
 		fastUnlockLevel: 4,
 		normalUnlockLevel: 15,
 		cardCostIncrease: 0,
-		attemptInkCost: 15,
-		incorrectAttemptInkCost: 15,
+		attemptInkCost: 5,
+		incorrectAttemptInkCost: 5,
 		buttonGradient: [`${colors.gems.third}26`, `${colors.gems.third}59`],
-		backgroundTint: `${colors.rarity.Legendary}0A`,
+		backgroundTint: `${colors.gems.third}0A`,
 	},
 	5: {
 		label: 'Solve++++',
@@ -127,7 +127,6 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 
 /**
  * Reports how many Solve puzzles have been completed for a paragraph, chapter, or story.
- * Older progress that only has the first gem counts as one completed puzzle.
  */
 export function getCompletedSolveStages(progress?: UserProgressRow): CompletedSolveStages {
 	if (progress?.completedSolveStages !== undefined) {
@@ -139,7 +138,6 @@ export function getCompletedSolveStages(progress?: UserProgressRow): CompletedSo
 
 /**
  * Finds the next puzzle for the Solve button.
- * Returns null once all five puzzles are finished.
  */
 export function getNextSolveStage(completedStages: CompletedSolveStages): SolveStage | null {
 	if (completedStages === 5) {
@@ -151,7 +149,6 @@ export function getNextSolveStage(completedStages: CompletedSolveStages): SolveS
 
 /**
  * Prices card unlocks and correct answers in Solve and Solve+.
- * Starts with the card's rarity price and adds one Ink for Solve+.
  */
 export function getSolveCardInkCost(stage: SolveWordStage, rarity: CardRarity): number {
 	const rarityCost = inkConfig.cardCostByRarity[rarity];
@@ -162,7 +159,6 @@ export function getSolveCardInkCost(stage: SolveWordStage, rarity: CardRarity): 
 
 /**
  * Decides whether the player can open a Solve puzzle or what is keeping it locked.
- * Checks the paragraph, earlier puzzle completions, required flashcard practice, and player level.
  */
 export function getSolveStageEligibility({
 	stage,
