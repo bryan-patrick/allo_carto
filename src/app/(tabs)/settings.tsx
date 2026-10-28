@@ -11,6 +11,7 @@ import {
 } from '../../settings/appSettings';
 import { useAppSettings } from '../../settings/useAppSettings';
 import { getCardsPerDeck, maxCardsPerDeck, minCardsPerDeck } from '../../util/cardsPerDeck';
+import { solveStages } from '../../util/solveProgression';
 import colors from '../colors';
 
 /**
@@ -47,12 +48,27 @@ const cardCountOptions = Array.from(
 	(_, index) => minCardsPerDeck + index,
 );
 
+/**
+ * We explain both unlock settings using the same levels that open Solve stages.
+ */
+function getSolveUnlockDescription(): string {
+	const stageDefinitions = Object.values(solveStages);
+	const enhancedStages = stageDefinitions.filter(stage => stage.fastUnlockLevel > 0);
+	const fastLevels = enhancedStages.map(stage => stage.fastUnlockLevel);
+	const normalLevels = enhancedStages.map(stage => stage.normalUnlockLevel);
+	const fastLevelsText = fastLevels.join(', ');
+	const normalLevelsText = normalLevels.join(', ');
+
+	return `Use player levels ${fastLevelsText} instead of ${normalLevelsText}. Complete each Solve stage before starting the next one.`;
+}
+
 export default function Settings() {
 	const { experience, reloadProgress } = useUserProgress();
 	const { settings, setSetting } = useAppSettings();
 	const useAutomaticCardCount = settings.cardsPerDeck === null;
 	const automaticCardCount = getCardsPerDeck(experience.level);
 	const automaticCardCountLabel = `Automatic (${automaticCardCount})`;
+	const solveUnlockDescription = getSolveUnlockDescription();
 
 	/**
 	 * State
@@ -172,6 +188,26 @@ export default function Settings() {
 							</Pressable>
 						);
 					})}
+				</View>
+			</View>
+			<View style={styles.section}>
+				<Text style={styles.heading}>Solve progression</Text>
+				<View style={styles.settingRow}>
+					<View style={styles.settingText}>
+						<Text style={styles.settingLabel}>Fast Solve Unlocks</Text>
+						<Text style={styles.text}>{solveUnlockDescription}</Text>
+					</View>
+					<Switch
+						accessibilityLabel="Fast Solve Unlocks"
+						accessibilityHint="Change player level requirements. Saved Solve progress is kept."
+						ios_backgroundColor={colors.dark.border}
+						onValueChange={enabled => setSetting('fastSolveUnlocks', enabled)}
+						trackColor={{
+							false: colors.dark.border,
+							true: colors.dark.primaryActive,
+						}}
+						value={settings.fastSolveUnlocks}
+					/>
 				</View>
 			</View>
 			<View style={styles.section}>
