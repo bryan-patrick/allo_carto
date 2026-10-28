@@ -13,6 +13,7 @@ interface BooleanSettings {
 	showUnseenWords: boolean;
 	showDebugOptions: boolean;
 	showSkipWordLink: boolean;
+	fastSolveUnlocks: boolean;
 }
 
 export interface AppSettings extends BooleanSettings {
@@ -32,6 +33,7 @@ const booleanSettingKeys: BooleanSettingKey[] = [
 	'showUnseenWords',
 	'showDebugOptions',
 	'showSkipWordLink',
+	'fastSolveUnlocks',
 ];
 
 const volumeSettingKeys: ('soundEffectsVolume' | 'ttsVolume')[] = [
@@ -61,6 +63,7 @@ export const defaultAppSettings: AppSettings = {
 	showUnseenWords: false,
 	showDebugOptions: false,
 	showSkipWordLink: true,
+	fastSolveUnlocks: true,
 	cardsPerDeck: null,
 	pronunciationFormat: 'readable',
 };

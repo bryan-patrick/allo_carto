@@ -1,5 +1,6 @@
 import { getAtlasCompletionItems } from '@/src/util/atlasCompletion';
 import type { ProgressById, UserProgressRow } from '@/src/util/progression';
+import type { CompletedSolveStages } from '@/src/util/solveProgression';
 import { getWordProgressKeyFromCounts, type WordProgressKey } from '@/src/util/wordProgress';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { emptyDeckWordProgressCounts } from './getDeckWordProgressCounts';
@@ -17,6 +18,7 @@ interface UserWordProgressRow {
 
 interface SolveCompletionRow {
 	deckId: string;
+	completedSolveStages: CompletedSolveStages;
 }
 
 /**
@@ -33,7 +35,7 @@ export default async function getUserProgress({
 			FROM userProgress WHERE userId = ?;
 		`,
 		getWords: 'SELECT wordId, correctCount, seenCount FROM userWords WHERE userId = ?;',
-		getCompletions: 'SELECT deckId FROM solveCompletions WHERE userId = ?;',
+		getCompletions: 'SELECT deckId, completedSolveStages FROM solveCompletions WHERE userId = ?;',
 	};
 	const result: ProgressById = {};
 	const rows = await database.getAllAsync<UserProgressRow>(statements.getProgress, userId);
@@ -44,7 +46,12 @@ export default async function getUserProgress({
 	);
 	const savedParagraphIds = completions.map(completion => completion.deckId);
 	const completedParagraphs = new Set(savedParagraphIds);
+	const completedStagesByParagraph = new Map<string, CompletedSolveStages>();
 	const wordProgressById = new Map<string, WordProgressKey>();
+
+	for (const completion of completions) {
+		completedStagesByParagraph.set(completion.deckId, completion.completedSolveStages);
+	}
 
 	for (const word of words) {
 		const wordProgress = getWordProgressKeyFromCounts(word);
@@ -70,6 +77,15 @@ export default async function getUserProgress({
 		};
 		let seenPercentage = 0;
 		let seenWordCount = 0;
+		let completedSolveStages: CompletedSolveStages = paragraphCount > 0 ? 5 : 0;
+
+		for (const paragraphId of item.paragraphIds) {
+			const paragraphStages = completedStagesByParagraph.get(paragraphId) ?? 0;
+
+			if (paragraphStages < completedSolveStages) {
+				completedSolveStages = paragraphStages;
+			}
+		}
 
 		for (const wordId of item.wordIds) {
 			const wordProgress = wordProgressById.get(wordId) ?? 'unseen';
@@ -90,6 +106,7 @@ export default async function getUserProgress({
 			wordProgressCounts,
 			completedParagraphCount,
 			paragraphCount,
+			completedSolveStages,
 			hasFirstGem: paragraphCount > 0 && completedParagraphCount === paragraphCount,
 		};
 	}

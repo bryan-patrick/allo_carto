@@ -140,6 +140,8 @@ async function createSolveTables(): Promise<void> {
 			userId TEXT NOT NULL,
 			deckId TEXT NOT NULL,
 			completedAt INTEGER NOT NULL,
+			completedSolveStages INTEGER NOT NULL DEFAULT 1
+				CHECK (completedSolveStages BETWEEN 1 AND 5),
 			PRIMARY KEY (userId, deckId),
 			FOREIGN KEY (userId) REFERENCES users(id)
 		);
@@ -174,6 +176,77 @@ async function createSolveTables(): Promise<void> {
 			acceptedAnswer TEXT,
 			inkSpent INTEGER NOT NULL CHECK (inkSpent >= 0),
 			firstGemEarned INTEGER NOT NULL DEFAULT 0,
+			PRIMARY KEY (userId, attemptId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+	`;
+
+	await database.execAsync(statement);
+	await ensureCompletedSolveStagesColumn();
+	await createSolveStageTables();
+}
+
+/**
+ * Just making sure we have completed Solve puzzles
+ */
+async function ensureCompletedSolveStagesColumn(): Promise<void> {
+	const database = await getDB();
+	const columns = await database.getAllAsync<DatabaseColumn>(
+		'PRAGMA table_info(solveCompletions);',
+	);
+	const hasCompletedStagesColumn = columns.some(column => column.name === 'completedSolveStages');
+	const addColumnStatement = `
+		ALTER TABLE solveCompletions
+		ADD COLUMN completedSolveStages INTEGER NOT NULL DEFAULT 1
+			CHECK (completedSolveStages BETWEEN 1 AND 5);
+	`;
+
+	if (!hasCompletedStagesColumn) {
+		await database.execAsync(addColumnStatement);
+	}
+}
+
+/**
+ * We save later Solve stages separately so Solve+ can start with fresh locked cards.
+ * Each stage keeps its own answers and paid-attempt receipts without changing Stage 1.
+ */
+async function createSolveStageTables(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS solveStageUnlocks (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			stage INTEGER NOT NULL CHECK (stage = 2),
+			position INTEGER NOT NULL CHECK (position >= 0),
+			wordId TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId, stage, position),
+			FOREIGN KEY (userId) REFERENCES users(id),
+			FOREIGN KEY (wordId) REFERENCES words(id)
+		);
+
+		CREATE TABLE IF NOT EXISTS solveStagePositions (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			stage INTEGER NOT NULL CHECK (stage BETWEEN 2 AND 5),
+			position INTEGER NOT NULL CHECK (position >= 0),
+			wordId TEXT,
+			acceptedAnswer TEXT NOT NULL,
+			PRIMARY KEY (userId, deckId, stage, position),
+			FOREIGN KEY (userId) REFERENCES users(id),
+			FOREIGN KEY (wordId) REFERENCES words(id)
+		);
+
+		CREATE TABLE IF NOT EXISTS solveStageAttempts (
+			userId TEXT NOT NULL,
+			attemptId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			stage INTEGER NOT NULL CHECK (stage BETWEEN 2 AND 5),
+			position INTEGER NOT NULL CHECK (position >= 0),
+			answer TEXT NOT NULL,
+			status TEXT NOT NULL CHECK (status IN ('exact', 'close', 'incorrect')),
+			acceptedAnswer TEXT,
+			inkSpent INTEGER NOT NULL CHECK (inkSpent >= 0),
+			stageCompleted INTEGER NOT NULL DEFAULT 0 CHECK (stageCompleted IN (0, 1)),
 			PRIMARY KEY (userId, attemptId),
 			FOREIGN KEY (userId) REFERENCES users(id)
 		);
