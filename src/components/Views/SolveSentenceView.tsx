@@ -88,7 +88,7 @@ const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 };
 
 /**
- * Show the result and Ink cost after a sentence answer is submitted.
+ * Show the result and ink cost after a sentence answer is submitted.
  */
 function getSentenceFeedback(result: SolveAttemptResult, answerLanguage: string): SentenceFeedback {
 	const messages: Partial<Record<SolveAttemptResult['status'], SentenceFeedback>> = {

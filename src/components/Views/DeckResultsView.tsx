@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { DeckSessionProps } from '@/src/components/CardDeck/deckSessionTypes';
+import CompletionPassage from '@/src/components/DeckCompletion/CompletionPassage';
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
@@ -67,7 +68,7 @@ export default function DeckResultsView() {
 		color: storyColor,
 	};
 	let newlySeenLabel = `${newlySeenCardCount} new cards seen this session`;
-	let title = 'You finished the deck!';
+	let title = 'You finished the flashcards!';
 	let description = cardDeck.title;
 	let studyLabel = 'Repeat';
 	let wordResultsLabel = 'Show word results';
@@ -112,7 +113,6 @@ export default function DeckResultsView() {
 
 	/**
 	 * Do more flashcards using the latest saved word progress.
-	 * The ref blocks extra presses before the Starting label appears.
 	 */
 	async function handleRepeat() {
 		let selectedDeck: CardDeck | undefined;
@@ -178,7 +178,7 @@ export default function DeckResultsView() {
 					<View style={styles.header}>
 						<MaterialSymbol
 							name="task_alt"
-							size={28}
+							size={24}
 							color={storyColor}
 						/>
 						<View style={styles.headingText}>
@@ -194,6 +194,10 @@ export default function DeckResultsView() {
 					<ScrollView contentContainerStyle={styles.scrollContent}>
 						{hasReview && session && (
 							<>
+								<CompletionPassage
+									deck={cardDeck}
+									results={session.results}
+								/>
 								<CompletionRewards
 									session={session}
 									color={storyColor}
@@ -309,29 +313,32 @@ const styles = StyleSheet.create({
 	header: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		padding: 12,
-		gap: 8,
+		padding: 8,
+		gap: 6,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
 	},
-	headingText: { flex: 1, gap: 3 },
+	headingText: {
+		flex: 1,
+		gap: 2,
+	},
 	title: {
-		fontSize: 20,
+		fontSize: 18,
 		fontFamily: 'lexend-600',
 	},
 	description: {
-		fontSize: 12,
-		lineHeight: 18,
+		fontSize: 11,
+		lineHeight: 16,
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
 	scrollContent: {
-		padding: 12,
-		gap: 12,
+		padding: 8,
+		gap: 8,
 	},
 	cardProgress: {
-		gap: 8,
-		padding: 12,
+		gap: 4,
+		padding: 8,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
@@ -349,7 +356,7 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	sectionTitle: {
-		fontSize: 14,
+		fontSize: 12,
 		fontFamily: 'lexend-600',
 	},
 	unlocks: {
@@ -365,15 +372,15 @@ const styles = StyleSheet.create({
 		borderTopColor: colors.light.goldenBorder,
 	},
 	footer: {
-		gap: 8,
-		padding: 10,
+		gap: 6,
+		padding: 8,
 		borderTopWidth: 1,
 		borderTopColor: colors.light.goldenBorder,
 	},
 	footerRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: 6,
 	},
 	footerButton: {
 		flex: 1,
