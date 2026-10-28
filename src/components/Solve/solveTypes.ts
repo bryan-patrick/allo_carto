@@ -102,3 +102,29 @@ export interface SolveWordOrderPuzzle extends SolveStageEligibility {
 	completedSolveStages: CompletedSolveStages;
 	lastAttempt: SavedWordOrderAttempt | null;
 }
+
+export interface SolveSentenceKeyword {
+	englishWords: string[];
+}
+
+export interface SolveSentence {
+	position: number;
+	frenchText: string;
+	englishText: string | null;
+	keywords: SolveSentenceKeyword[];
+	acceptedAnswer: string | null;
+}
+
+export interface SolveSentencePuzzle extends SolveStageEligibility {
+	deck: CardDeck;
+	isUnlocked: boolean;
+	sentences: SolveSentence[];
+	completedSolveStages: CompletedSolveStages;
+}
+
+export interface SentenceAttemptRequest {
+	deckId: string;
+	position: number;
+	answer: string;
+	attemptId: string;
+}

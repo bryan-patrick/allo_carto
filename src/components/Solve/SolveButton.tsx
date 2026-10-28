@@ -112,10 +112,11 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
  */
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		minWidth: 110,
 	},
 	button: {
 		paddingVertical: 6,
+		paddingHorizontal: 6,
 		borderBottomWidth: 2,
 		shadowOpacity: 0,
 		borderRadius: 8,

@@ -85,6 +85,13 @@ const colors = {
 		third: '#b052ca',
 		glow: '#FFFFFF',
 	},
+	glowGems: {
+		unsolved: '#90846F',
+		first: '#ff0000',
+		second: '#0f00ff',
+		third: '#ff00ff',
+		glow: '#FFFFFF',
+	},
 	rarity: {
 		Common: '#f0d2a1',
 		Rare: '#a2cec2',
