@@ -15,24 +15,27 @@ import { StyleSheet, View } from 'react-native';
 interface SolveButtonProps {
 	deckId: string;
 	color: string;
+	disabled?: boolean;
 }
 
 /**
  * Opens the next unfinished Solve puzzle for a paragraph.
  */
-export default function SolveButton({ deckId, color }: SolveButtonProps) {
+export default function SolveButton({ deckId, color, disabled = false }: SolveButtonProps) {
 	const router = useRouter();
 	const { id: userId } = useUserContext() ?? {};
 	const { status, isUpdatingProgress } = useUserProgress();
 	const { nextStage, definition, isEligible, unlockMessage } = useSolveProgress(deckId);
 	const deck = findParagraphById(deckId);
 	const isDisabled =
+		disabled ||
 		!isEligible ||
 		!definition?.isImplemented ||
 		status !== 'ready' ||
 		!userId ||
 		isUpdatingProgress;
 	const label = definition?.label ?? 'Mastered';
+	const isMastered = nextStage === null;
 	const gradientColors = definition?.buttonGradient ?? solveStages[5].buttonGradient;
 	const accessibilityHint =
 		unlockMessage ||
@@ -65,9 +68,9 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 				color={color}
 				type="outline"
 				disabled={isDisabled}
-				style={[styles.button, isDisabled && styles.disabledButton]}
+				style={[styles.button, isDisabled && !isMastered && styles.disabledButton]}
 				background={
-					!isDisabled && (
+					(!isDisabled || isMastered) && (
 						<LinearGradient
 							colors={gradientColors}
 							start={{

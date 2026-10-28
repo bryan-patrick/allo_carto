@@ -149,7 +149,7 @@ export function checkSolveAnswer({
 /**
  * Clean up a French answer while keeping its accents.
  */
-function normalizeFrenchSolveAnswer(answer: string): string {
+export function normalizeFrenchSolveAnswer(answer: string): string {
 	const compatibleText = answer.normalize('NFKC');
 	const lowerCaseText = compatibleText.toLowerCase();
 	const textWithoutApostrophes = lowerCaseText.replace(/['’‘ʼ]/gu, '');

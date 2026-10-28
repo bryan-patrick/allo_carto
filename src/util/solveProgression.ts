@@ -9,6 +9,7 @@ import type { UserProgressRow } from './progression';
 export type CompletedSolveStages = 0 | 1 | 2 | 3 | 4 | 5;
 export type SolveStage = Exclude<CompletedSolveStages, 0>;
 export type SolveWordStage = 1 | 2;
+export type SolveSentenceStage = 4 | 5;
 export type SolveChallengeType = 'word' | 'wordOrder' | 'sentence';
 export type SolveAnswerLanguage = 'english' | 'french';
 export type SolveLockReason =
@@ -107,7 +108,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	},
 	5: {
 		label: 'Solve++++',
-		isImplemented: false,
+		isImplemented: true,
 		challengeType: 'sentence',
 		answerLanguage: 'french',
 		fastUnlockLevel: 5,

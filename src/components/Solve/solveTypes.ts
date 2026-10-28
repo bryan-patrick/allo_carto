@@ -4,6 +4,7 @@ import type {
 	CompletedSolveStages,
 	SolveStage,
 	SolveStageEligibility,
+	SolveSentenceStage,
 	SolveWordStage,
 } from '@/src/util/solveProgression';
 
@@ -110,6 +111,7 @@ export interface SolveSentenceKeyword {
 export interface SolveSentence {
 	position: number;
 	frenchText: string;
+	frenchAnswers: string[];
 	englishText: string | null;
 	keywords: SolveSentenceKeyword[];
 	acceptedAnswer: string | null;
@@ -124,6 +126,7 @@ export interface SolveSentencePuzzle extends SolveStageEligibility {
 
 export interface SentenceAttemptRequest {
 	deckId: string;
+	stage?: SolveSentenceStage;
 	position: number;
 	answer: string;
 	attemptId: string;

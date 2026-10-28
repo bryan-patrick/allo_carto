@@ -1,6 +1,6 @@
 import type { SentenceAttemptRequest, SolveAttemptResult } from '@/src/components/Solve/solveTypes';
 import { solveStages } from '@/src/util/solveProgression';
-import { checkSentenceAnswer } from '@/src/util/solveSentenceAnswer';
+import { checkFrenchSentenceAnswer, checkSentenceAnswer } from '@/src/util/solveSentenceAnswer';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolveSentencePuzzle from './getSolveSentencePuzzle';
 
@@ -25,12 +25,13 @@ interface SentenceReceiptRow {
 }
 
 /**
- * Charge for a sentence answer and make the gems glow after every sentence is solved.
+ * Charge for a sentence answer and award the stage after every sentence is solved.
  */
 export default async function writeSentenceAttempt({
 	database,
 	userId,
 	deckId,
+	stage = 4,
 	position,
 	answer,
 	attemptId,
@@ -51,22 +52,22 @@ export default async function writeSentenceAttempt({
 		`,
 		saveAnswer: `
 			INSERT INTO solveStagePositions (userId, deckId, stage, position, acceptedAnswer)
-			VALUES (?, ?, 4, ?, ?)
+			VALUES (?, ?, ?, ?, ?)
 			ON CONFLICT(userId, deckId, stage, position)
 			DO UPDATE SET acceptedAnswer = excluded.acceptedAnswer;
 		`,
-		saveGlowingGems: `
-			UPDATE solveCompletions SET completedSolveStages = 4
-			WHERE userId = ? AND deckId = ? AND completedSolveStages = 3;
+		saveCompletion: `
+			UPDATE solveCompletions SET completedSolveStages = ?
+			WHERE userId = ? AND deckId = ? AND completedSolveStages = ?;
 		`,
 		saveReceipt: `
 			INSERT INTO solveStageAttempts (
 				userId, attemptId, deckId, stage, position, answer,
 				status, acceptedAnswer, inkSpent, stageCompleted
-			) VALUES (?, ?, ?, 4, ?, ?, ?, ?, ?, ?);
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 		`,
 	};
-	const inkCost = solveStages[4].attemptInkCost;
+	const inkCost = solveStages[stage].attemptInkCost;
 	let result: SolveAttemptResult = {
 		status: 'unavailable',
 		acceptedAnswer: null,
@@ -91,7 +92,7 @@ export default async function writeSentenceAttempt({
 
 		if (receipt) {
 			if (
-				receipt.stage !== 4 ||
+				receipt.stage !== stage ||
 				receipt.deckId !== deckId ||
 				receipt.position !== position ||
 				receipt.answer !== answer
@@ -113,6 +114,7 @@ export default async function writeSentenceAttempt({
 			database: transaction,
 			userId,
 			deckId,
+			stage,
 			fastSolveUnlocks,
 		});
 		const sentence = puzzle.sentences.find(sentence => sentence.position === position);
@@ -134,7 +136,8 @@ export default async function writeSentenceAttempt({
 			return;
 		}
 
-		const checkedAnswer = checkSentenceAnswer({
+		const checkAnswer = stage === 5 ? checkFrenchSentenceAnswer : checkSentenceAnswer;
+		const checkedAnswer = checkAnswer({
 			answer,
 			sentence,
 		});
@@ -156,15 +159,22 @@ export default async function writeSentenceAttempt({
 				statements.saveAnswer,
 				userId,
 				deckId,
+				stage,
 				position,
 				checkedAnswer.acceptedAnswer,
 			);
 
 			if (remainingSentences.length === 0) {
-				const completion = await transaction.runAsync(statements.saveGlowingGems, userId, deckId);
+				const completion = await transaction.runAsync(
+					statements.saveCompletion,
+					stage,
+					userId,
+					deckId,
+					stage - 1,
+				);
 
 				if (completion.changes !== 1) {
-					throw new Error('Could not save the glowing gems.');
+					throw new Error('Could not save the sentence stage completion.');
 				}
 
 				stageCompleted = true;
@@ -176,6 +186,7 @@ export default async function writeSentenceAttempt({
 			userId,
 			attemptId,
 			deckId,
+			stage,
 			position,
 			answer,
 			checkedAnswer.status,

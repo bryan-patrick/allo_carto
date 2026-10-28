@@ -2,7 +2,11 @@ import type { SolveSentencePuzzle } from '@/src/components/Solve/solveTypes';
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
-import { getCompletedSolveStages, getSolveStageEligibility } from '@/src/util/solveProgression';
+import {
+	getCompletedSolveStages,
+	getSolveStageEligibility,
+	type SolveSentenceStage,
+} from '@/src/util/solveProgression';
 import { getSolveSentences, type SolveSentenceWord } from '@/src/util/solveSentences';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolveStageProgress from './getSolveStageProgress';
@@ -13,6 +17,7 @@ interface GetSolveSentencePuzzleOptions {
 	database: SQLiteDatabase;
 	userId: string;
 	deckId: string;
+	stage?: SolveSentenceStage;
 	fastSolveUnlocks: boolean;
 }
 
@@ -23,12 +28,13 @@ interface SentenceWordRow {
 }
 
 /**
- * Load the French sentences and saved English answers for a paragraph's Solve+++ puzzle.
+ * Load sentence prompts and saved answers for the chosen Solve stage.
  */
 export default async function getSolveSentencePuzzle({
 	database,
 	userId,
 	deckId,
+	stage = 4,
 	fastSolveUnlocks,
 }: GetSolveSentencePuzzleOptions): Promise<SolveSentencePuzzle> {
 	const deck = findParagraphById(deckId);
@@ -57,8 +63,17 @@ export default async function getSolveSentencePuzzle({
 		database,
 		userId,
 		deckId,
-		stage: 4,
+		stage,
 	});
+	const englishStage =
+		stage === 5 ?
+			await getSolveStageProgress({
+				database,
+				userId,
+				deckId,
+				stage: 4,
+			})
+		:	null;
 	const progress = progressById[deckId];
 	const completedSolveStages = getCompletedSolveStages(progress);
 	const isUnlocked = isItemUnlocked({
@@ -66,7 +81,7 @@ export default async function getSolveSentencePuzzle({
 		progressById,
 	});
 	const eligibility = getSolveStageEligibility({
-		stage: 4,
+		stage,
 		completedStages: completedSolveStages,
 		playerLevel: experience.level,
 		fastSolveUnlocks,
@@ -89,15 +104,23 @@ export default async function getSolveSentencePuzzle({
 		const saved = savedStage.solvedPositions.find(
 			position => position.position === sentence.position,
 		);
+		const savedEnglishAnswer = englishStage?.solvedPositions.find(
+			position => position.position === sentence.position,
+		);
 
 		return {
 			...sentence,
+			englishText: sentence.englishText ?? savedEnglishAnswer?.acceptedAnswer ?? null,
 			acceptedAnswer: saved?.acceptedAnswer ?? null,
 		};
 	});
 
 	if (sentences.length === 0) {
 		throw new Error('This paragraph has no sentences to solve.');
+	}
+
+	if (stage === 5 && eligibility.isEligible && sentences.some(sentence => !sentence.englishText)) {
+		throw new Error('This paragraph needs matching English sentences before Solve++++ can open.');
 	}
 
 	return {
