@@ -20,7 +20,7 @@ import colors from '../app/colors';
 import SVGRightArrow from './SVG/SVGRightArrow';
 
 /**
- * Creats the JSX <AnimatedPressable> we need to animate the component
+ * Allows the button to move and change its shadow when pressed.
  */
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const linkButtonShadowHeight = 2;
@@ -57,8 +57,7 @@ interface ButtonIconProps {
 }
 
 /**
- * This displays a button that opens a screen or runs an action.
- * Screen links need their styles combined into one object because Expo Router rejects style arrays.
+ * Displays an app button that either opens a screen or runs an action.
  */
 export default function LinkButton({ screen, params, href, ...props }: LinkButtonProps) {
 	const screenDestination =
@@ -88,6 +87,9 @@ export default function LinkButton({ screen, params, href, ...props }: LinkButto
 	return <Button {...props} />;
 }
 
+/**
+ * Handles the button's label, optional arrow, tap sound, and pressed appearance.
+ */
 function Button({
 	handler = () => {},
 	children,
@@ -163,7 +165,7 @@ function Button({
 	} = allTheProps;
 
 	/**
-	 * Handle animations on pressed
+	 * Lowers the button and removes its shadow while pressed, then restores both when released.
 	 */
 	useEffect(() => {
 		if (isPressed) {
@@ -186,9 +188,6 @@ function Button({
 		}
 	}, [buttonShadowHeight, isPressed, shadowOffsetHeight, top]);
 
-	/**
-	 * Render the thing
-	 */
 	return (
 		<AnimatedPressable
 			{...buttonProps}
@@ -258,7 +257,7 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0,
 	},
 	innerRow: {
-		width: '100%',
+		alignSelf: 'stretch',
 		padding: 2,
 		borderColor: 'rgba(255, 255, 255, 0.1)',
 		borderWidth: 2,
@@ -273,6 +272,8 @@ const styles = StyleSheet.create({
 		borderWidth: 0,
 	},
 	linkText: {
+		textAlign: 'center',
+		paddingHorizontal: 24,
 		color: colors.light.text,
 		fontFamily: 'lexend-600',
 		fontSize: 14,

@@ -7,6 +7,9 @@ import type {
 	SolveWordStage,
 } from '@/src/util/solveProgression';
 
+/**
+ * Typing
+ */
 export type AdditionalSolveStage = Exclude<SolveStage, 1>;
 
 export interface SolveStageUnlockedPosition {
@@ -72,4 +75,30 @@ export interface SolveAttemptResult {
 	inkSpent: number;
 	firstGemEarned: boolean;
 	stageCompleted?: boolean;
+}
+
+export interface SolveWordOrderCard {
+	id: number;
+	text: string;
+}
+
+export interface WordOrderAttemptRequest {
+	deckId: string;
+	positions: number[];
+	attemptId: string;
+}
+
+export interface SavedWordOrderAttempt {
+	positions: number[];
+	inkSpent: number;
+	status: 'exact' | 'incorrect';
+}
+
+export interface SolveWordOrderPuzzle extends SolveStageEligibility {
+	deck: CardDeck;
+	isUnlocked: boolean;
+	cards: SolveWordOrderCard[];
+	positions: number[];
+	completedSolveStages: CompletedSolveStages;
+	lastAttempt: SavedWordOrderAttempt | null;
 }

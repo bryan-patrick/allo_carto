@@ -4,20 +4,10 @@ import { useSolveProgress } from '@/src/components/Solve/useSolveProgress';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findParagraphById } from '@/src/util/atlasCompletion';
-import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
+import { solveStages } from '@/src/util/solveProgression';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-
-/**
- * Change these colors to adjust the Solve button's background.
- * The first color starts at the top left, and the last ends at the bottom right.
- */
-const solveGradientColors: LinearGradientProps['colors'] = [
-	'rgb(248, 200, 8, 0.1)',
-	'rgb(6, 164, 255, 0.1)',
-	'rgba(255, 139, 6, 0.1)',
-	'rgb(251, 6, 186, 0.1)',
-];
 
 /**
  * Typing
@@ -28,8 +18,7 @@ interface SolveButtonProps {
 }
 
 /**
- * We use this to open the paragraph's next unfinished Solve puzzle.
- * The button shows that puzzle's name and stays disabled until its requirements are met.
+ * Opens the next unfinished Solve puzzle for a paragraph.
  */
 export default function SolveButton({ deckId, color }: SolveButtonProps) {
 	const router = useRouter();
@@ -44,7 +33,7 @@ export default function SolveButton({ deckId, color }: SolveButtonProps) {
 		!userId ||
 		isUpdatingProgress;
 	const label = definition?.label ?? 'Mastered';
-	const gradientColors = definition?.buttonGradient ?? solveGradientColors;
+	const gradientColors = definition?.buttonGradient ?? solveStages[5].buttonGradient;
 	const accessibilityHint =
 		unlockMessage ||
 		(nextStage === null ?

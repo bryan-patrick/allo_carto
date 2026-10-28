@@ -9,7 +9,7 @@ import type { UserProgressRow } from './progression';
 export type CompletedSolveStages = 0 | 1 | 2 | 3 | 4 | 5;
 export type SolveStage = Exclude<CompletedSolveStages, 0>;
 export type SolveWordStage = 1 | 2;
-export type SolveChallengeType = 'word' | 'reconstruction' | 'sentence';
+export type SolveChallengeType = 'word' | 'wordOrder' | 'sentence';
 export type SolveAnswerLanguage = 'english' | 'french';
 export type SolveLockReason =
 	| 'completed'
@@ -29,7 +29,7 @@ export interface SolveStageDefinition {
 	cardCostIncrease: number;
 	attemptInkCost: number | null;
 	incorrectAttemptInkCost: number;
-	buttonGradient: readonly [string, string] | null;
+	buttonGradient: readonly [string, string, ...string[]];
 	backgroundTint: string;
 }
 
@@ -50,7 +50,7 @@ export interface SolveStageEligibility {
 }
 
 /**
- * We use this table for each Solve stage's rules and colors.
+ * Keeps the names, required player levels, Ink prices, and colors for all five Solve puzzles in one place.
  */
 export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	1: {
@@ -63,7 +63,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		cardCostIncrease: 0,
 		attemptInkCost: null,
 		incorrectAttemptInkCost: inkConfig.incorrectSolveAttempt,
-		buttonGradient: null,
+		buttonGradient: [`${colors.gems.first}0D`, `${colors.gems.first}33`],
 		backgroundTint: `${colors.gems.first}0A`,
 	},
 	2: {
@@ -76,20 +76,20 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		cardCostIncrease: 1,
 		attemptInkCost: null,
 		incorrectAttemptInkCost: inkConfig.incorrectSolveAttempt + 1,
-		buttonGradient: [`${colors.gems.second}26`, `${colors.categoryLight.Health}26`],
+		buttonGradient: [`${colors.gems.second}0D`, `${colors.gems.second}33`],
 		backgroundTint: `${colors.gems.second}0A`,
 	},
 	3: {
 		label: 'Solve++',
-		isImplemented: false,
-		challengeType: 'reconstruction',
+		isImplemented: true,
+		challengeType: 'wordOrder',
 		answerLanguage: null,
 		fastUnlockLevel: 3,
 		normalUnlockLevel: 10,
 		cardCostIncrease: 0,
 		attemptInkCost: 10,
 		incorrectAttemptInkCost: 10,
-		buttonGradient: [`${colors.gems.third}26`, `${colors.light.CEFR.A2}26`],
+		buttonGradient: [`${colors.gems.third}0D`, `${colors.gems.third}33`],
 		backgroundTint: `${colors.gems.third}0A`,
 	},
 	4: {
@@ -102,7 +102,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		cardCostIncrease: 0,
 		attemptInkCost: 15,
 		incorrectAttemptInkCost: 15,
-		buttonGradient: [`${colors.rarity.Legendary}26`, `${colors.gems.first}26`],
+		buttonGradient: [`${colors.gems.third}26`, `${colors.gems.third}59`],
 		backgroundTint: `${colors.rarity.Legendary}0A`,
 	},
 	5: {
@@ -115,13 +115,19 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		cardCostIncrease: 0,
 		attemptInkCost: 20,
 		incorrectAttemptInkCost: 20,
-		buttonGradient: [`${colors.gems.second}26`, `${colors.gems.third}26`],
+		buttonGradient: [
+			'rgb(248, 200, 8, 0.1)',
+			'rgb(6, 164, 255, 0.1)',
+			'rgba(255, 139, 6, 0.1)',
+			'rgb(251, 6, 186, 0.1)',
+		],
 		backgroundTint: `${colors.gems.third}0A`,
 	},
 };
 
 /**
- * Get the Solve puzzle progresseseseses
+ * Reports how many Solve puzzles have been completed for a paragraph, chapter, or story.
+ * Older progress that only has the first gem counts as one completed puzzle.
  */
 export function getCompletedSolveStages(progress?: UserProgressRow): CompletedSolveStages {
 	if (progress?.completedSolveStages !== undefined) {
@@ -132,7 +138,8 @@ export function getCompletedSolveStages(progress?: UserProgressRow): CompletedSo
 }
 
 /**
- * We offer the stage after the last completed puzzle (or no stage after the last).
+ * Finds the next puzzle for the Solve button.
+ * Returns null once all five puzzles are finished.
  */
 export function getNextSolveStage(completedStages: CompletedSolveStages): SolveStage | null {
 	if (completedStages === 5) {
@@ -143,7 +150,8 @@ export function getNextSolveStage(completedStages: CompletedSolveStages): SolveS
 }
 
 /**
- * We use the same price for unlocking a word card and solving it correctly until Solve++
+ * Prices card unlocks and correct answers in Solve and Solve+.
+ * Starts with the card's rarity price and adds one Ink for Solve+.
  */
 export function getSolveCardInkCost(stage: SolveWordStage, rarity: CardRarity): number {
 	const rarityCost = inkConfig.cardCostByRarity[rarity];
@@ -153,7 +161,8 @@ export function getSolveCardInkCost(stage: SolveWordStage, rarity: CardRarity): 
 }
 
 /**
- * We check story access, earlier Solve stages, and player level before opening a puzzle.
+ * Decides whether the player can open a Solve puzzle or what is keeping it locked.
+ * Checks the paragraph, earlier puzzle completions, required flashcard practice, and player level.
  */
 export function getSolveStageEligibility({
 	stage,
@@ -198,8 +207,7 @@ export interface SolveUnlockMessageOptions {
 }
 
 /**
- * We use this to explain how to open the next Solve puzzle.
- * The message names the earlier puzzle or player level (or do more flashcards)
+ * Explains a locked Solve button beside the paragraph's other actions.
  */
 export function getSolveUnlockMessage({
 	stage,
