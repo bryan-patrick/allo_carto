@@ -3,6 +3,7 @@ import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import CollectionGems from '@/src/components/CollectionGems';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import type {
 	SentenceAttemptRequest,
 	SolveAttemptResult,
@@ -24,6 +25,7 @@ import {
 	getSolveStageEligibility,
 	getSolveUnlockMessage,
 	solveStages,
+	type SolveSentenceStage,
 } from '@/src/util/solveProgression';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
@@ -38,11 +40,27 @@ import {
 	Text,
 	TextInput,
 	View,
+	type TextInputInstance,
+	type TextInputSelectionChangeEvent,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SolveSentenceViewProps {
 	deckId: string;
+	stage?: SolveSentenceStage;
+}
+
+interface SentenceAnswerSelection {
+	start: number;
+	end: number;
+}
+
+interface SentenceStageText {
+	promptLanguage: string;
+	answerLanguage: string;
+	instruction: string;
+	completionTitle: string;
+	completionMessage: string;
 }
 
 interface SentenceFeedback {
@@ -52,11 +70,27 @@ interface SentenceFeedback {
 }
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
+const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
+	4: {
+		promptLanguage: 'French',
+		answerLanguage: 'English',
+		instruction: 'Translate the sentence to English.',
+		completionTitle: 'Glowing gems earned!',
+		completionMessage: 'Every sentence is solved. All three gems now glow.',
+	},
+	5: {
+		promptLanguage: 'English',
+		answerLanguage: 'French',
+		instruction: "Translate the sentence to French. Don't give up!",
+		completionTitle: 'Paragraph mastered!',
+		completionMessage: 'All five Solve stages are complete. Your gems are now prismatic.',
+	},
+};
 
 /**
- * Show the result and Ink cost after a sentence answer is submitted.
+ * Show the result and ink cost after a sentence answer is submitted.
  */
-function getSentenceFeedback(result: SolveAttemptResult): SentenceFeedback {
+function getSentenceFeedback(result: SolveAttemptResult, answerLanguage: string): SentenceFeedback {
 	const messages: Partial<Record<SolveAttemptResult['status'], SentenceFeedback>> = {
 		exact: {
 			text: 'Correct! Sentence saved.',
@@ -67,7 +101,7 @@ function getSentenceFeedback(result: SolveAttemptResult): SentenceFeedback {
 			backgroundColor: colors.light.danger,
 		},
 		empty: {
-			text: 'Type the English sentence before submitting.',
+			text: `Type the ${answerLanguage} sentence before submitting.`,
 			backgroundColor: colors.light.warning,
 		},
 		notEnoughInk: {
@@ -90,9 +124,9 @@ function getSentenceFeedback(result: SolveAttemptResult): SentenceFeedback {
 }
 
 /**
- * Let the player translate each French sentence into English to earn glowing gems.
+ * Let the player translate each sentence to earn glowing or prismatic gems.
  */
-export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
+export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceViewProps) {
 	const router = useRouter();
 	const { top, bottom } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
@@ -103,14 +137,21 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 	const [puzzle, setPuzzle] = useState<SolveSentencePuzzle>();
 	const [selectedPosition, setSelectedPosition] = useState(0);
 	const [answer, setAnswer] = useState('');
+	const [answerSelection, setAnswerSelection] = useState<SentenceAnswerSelection>({
+		start: 0,
+		end: 0,
+	});
 	const [loadError, setLoadError] = useState('');
 	const [feedback, setFeedback] = useState<SentenceFeedback | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
 	const [needsRetry, setNeedsRetry] = useState(false);
 	const isBusy = useRef(false);
 	const pendingAttempt = useRef<SentenceAttemptRequest | null>(null);
+	const answerInput = useRef<TextInputInstance>(null);
 	const fastSolveUnlocks = settings.fastSolveUnlocks;
-	const stageDefinition = solveStages[4];
+	const stageDefinition = solveStages[stage];
+	const stageText = sentenceStageText[stage];
+	const isFrenchAnswer = stageDefinition.answerLanguage === 'french';
 	const inkCost = stageDefinition.attemptInkCost ?? stageDefinition.incorrectAttemptInkCost;
 	const progress = progressById[deckId];
 	const savedCompletedStages = getCompletedSolveStages(progress);
@@ -120,11 +161,12 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 	const sentences = puzzle?.sentences ?? [];
 	const selectedIndex = sentences.findIndex(sentence => sentence.position === selectedPosition);
 	const selectedSentence = sentences[selectedIndex];
+	const promptText = isFrenchAnswer ? selectedSentence?.englishText : selectedSentence?.frenchText;
 	const solvedCount = sentences.filter(sentence => sentence.acceptedAnswer !== null).length;
-	const isComplete = completedStages >= 4;
+	const isComplete = completedStages >= stage;
 	const isSentenceSolved = Boolean(selectedSentence && selectedSentence.acceptedAnswer !== null);
 	const eligibility = getSolveStageEligibility({
-		stage: 4,
+		stage,
 		completedStages,
 		playerLevel: experience.level,
 		fastSolveUnlocks,
@@ -133,7 +175,7 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 		seenWordCount: progress?.seenWordCount ?? 0,
 	});
 	const unlockMessage = getSolveUnlockMessage({
-		stage: 4,
+		stage,
 		eligibility,
 		wordCount: puzzle?.deck.wordIds.length ?? 0,
 		seenWordCount: progress?.seenWordCount ?? 0,
@@ -203,6 +245,7 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 						database,
 						userId,
 						deckId,
+						stage,
 						fastSolveUnlocks,
 					});
 					const firstUnsolved = savedPuzzle.sentences.find(
@@ -213,6 +256,10 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 						setPuzzle(savedPuzzle);
 						setSelectedPosition(firstUnsolved?.position ?? 0);
 						setAnswer('');
+						setAnswerSelection({
+							start: 0,
+							end: 0,
+						});
 						setFeedback(null);
 						setNeedsRetry(false);
 						pendingAttempt.current = null;
@@ -231,7 +278,7 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 			return () => {
 				isActive = false;
 			};
-		}, [deckId, userId, fastSolveUnlocks]),
+		}, [deckId, userId, fastSolveUnlocks, stage]),
 	);
 
 	function handleAnswerChange(nextAnswer: string) {
@@ -244,6 +291,31 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 		pendingAttempt.current = null;
 	}
 
+	function handleAnswerSelection(event: TextInputSelectionChangeEvent) {
+		setAnswerSelection(event.nativeEvent.selection);
+	}
+
+	/**
+	 * Insert a French character at the cursor and replace any selected letters.
+	 */
+	function handleInsertCharacter(character: string) {
+		const textBeforeSelection = answer.slice(0, answerSelection.start);
+		const textAfterSelection = answer.slice(answerSelection.end);
+		const nextAnswer = textBeforeSelection + character + textAfterSelection;
+		const cursorPosition = textBeforeSelection.length + character.length;
+
+		if (inputDisabled || isBusy.current) {
+			return;
+		}
+
+		handleAnswerChange(nextAnswer);
+		setAnswerSelection({
+			start: cursorPosition,
+			end: cursorPosition,
+		});
+		answerInput.current?.focus();
+	}
+
 	function selectSentence(index: number) {
 		const sentence = sentences[index];
 
@@ -253,6 +325,10 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 
 		setSelectedPosition(sentence.position);
 		setAnswer('');
+		setAnswerSelection({
+			start: 0,
+			end: 0,
+		});
 		setFeedback(null);
 		pendingAttempt.current = null;
 	}
@@ -290,9 +366,13 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 		setPuzzle({
 			...puzzle,
 			sentences: updatedSentences,
-			completedSolveStages: result.stageCompleted ? 4 : puzzle.completedSolveStages,
+			completedSolveStages: result.stageCompleted ? stage : puzzle.completedSolveStages,
 		});
 		setAnswer('');
+		setAnswerSelection({
+			start: 0,
+			end: 0,
+		});
 
 		if (nextUnsolved) {
 			setSelectedPosition(nextUnsolved.position);
@@ -316,6 +396,7 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 		if (!attempt) {
 			attempt = {
 				deckId,
+				stage,
 				position: selectedSentence.position,
 				answer,
 				attemptId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -336,11 +417,15 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 			}
 
 			setNeedsRetry(false);
-			setFeedback(getSentenceFeedback(result));
+			setFeedback(getSentenceFeedback(result, stageText.answerLanguage));
 			updateSavedSentence(attempt.position, result);
 
 			if (result.status === 'incorrect') {
 				setAnswer('');
+				setAnswerSelection({
+					start: 0,
+					end: 0,
+				});
 			} else {
 				pendingAttempt.current = null;
 			}
@@ -430,7 +515,7 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 					</Text>
 					<Pressable
 						accessibilityRole="button"
-						accessibilityLabel="Close Solve+++"
+						accessibilityLabel={`Close ${stageDefinition.label}`}
 						disabled={disabled}
 						onPress={handleClose}
 						style={styles.closeButton}
@@ -466,10 +551,8 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 								progress={completionProgress}
 								size={32}
 							/>
-							<Text style={styles.title}>Glowing gems earned!</Text>
-							<Text style={[styles.text, styles.centeredText]}>
-								Every sentence is solved. All three gems now glow.
-							</Text>
+							<Text style={styles.title}>{stageText.completionTitle}</Text>
+							<Text style={[styles.text, styles.centeredText]}>{stageText.completionMessage}</Text>
 							<LinkButton
 								handler={handleClose}
 								color={storyColor}
@@ -482,15 +565,13 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 						<Text style={styles.text}>{unlockMessage}</Text>
 					: selectedSentence ?
 						<>
-							{!isSentenceSolved && (
-								<Text style={styles.text}>Translate the sentence to english.</Text>
-							)}
+							{!isSentenceSolved && <Text style={styles.text}>{stageText.instruction}</Text>}
 							<View style={styles.sentenceCard}>
 								<Text
-									style={styles.frenchSentence}
-									accessibilityLabel={`French sentence: ${selectedSentence.frenchText}`}
+									style={styles.sentencePrompt}
+									accessibilityLabel={`${stageText.promptLanguage} sentence: ${promptText}`}
 								>
-									{selectedSentence.frenchText}
+									{promptText}
 								</Text>
 								{isSentenceSolved ?
 									<View style={styles.savedAnswer}>
@@ -499,17 +580,27 @@ export default function SolveSentenceView({ deckId }: SolveSentenceViewProps) {
 									</View>
 								:	<>
 										<TextInput
-											accessibilityLabel="English sentence answer"
+											ref={answerInput}
+											accessibilityLabel={`${stageText.answerLanguage} sentence answer`}
 											value={answer}
 											onChangeText={handleAnswerChange}
+											onSelectionChange={handleAnswerSelection}
+											selection={isFrenchAnswer ? answerSelection : undefined}
 											editable={!inputDisabled}
-											placeholder="Type the English sentence"
+											placeholder={`Type the ${stageText.answerLanguage} sentence`}
 											placeholderTextColor={colors.light.border}
 											autoCorrect={false}
 											autoCapitalize="sentences"
 											multiline
 											style={[styles.input, inputDisabled && styles.disabled]}
 										/>
+										{isFrenchAnswer && (
+											<SolveCharacterKeyboard
+												color={storyColor}
+												disabled={inputDisabled}
+												onCharacterPress={handleInsertCharacter}
+											/>
+										)}
 										{!hasEnoughInk && (
 											<Text
 												accessibilityLiveRegion="polite"
@@ -686,7 +777,7 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.border,
 		borderRadius: 8,
 	},
-	frenchSentence: {
+	sentencePrompt: {
 		fontFamily: 'lexend-400',
 		fontSize: 18,
 		lineHeight: 27,

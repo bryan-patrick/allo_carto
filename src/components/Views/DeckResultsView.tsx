@@ -1,14 +1,17 @@
 import colors from '@/src/app/colors';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { DeckSessionProps } from '@/src/components/CardDeck/deckSessionTypes';
+import CompletionPassage from '@/src/components/DeckCompletion/CompletionPassage';
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import SolveButton from '@/src/components/Solve/SolveButton';
+import SolveEligibilityHint from '@/src/components/Solve/SolveEligibilityHint';
 import { getDeck } from '@/src/db/interface';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findCompletionPath } from '@/src/util/atlasCompletion';
+import { findCompletionPath, findParagraphById } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
@@ -31,7 +34,7 @@ import LinkButton from '../LinkButton';
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /**
- * We use this to show rewards after flashcards.
+ * Show flashcard rewards and offer to finish, solve the paragraph, or practice again.
  */
 export default function DeckResultsView() {
 	const router = useRouter();
@@ -46,6 +49,7 @@ export default function DeckResultsView() {
 	const isStartingDeck = useRef(false);
 	const completionPath = findCompletionPath({ id: cardDeck.id });
 	const chapter = completionPath[1];
+	const solveParagraph = findParagraphById(cardDeck.id);
 	const storyColor = getDeckStoryColor(cardDeck.id);
 	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
 	const hasReview = Boolean(session?.completion);
@@ -53,7 +57,6 @@ export default function DeckResultsView() {
 	const containerStyle = { paddingBottom: Math.max(bottom, 8) };
 	const paragraphCardCount = cardDeck.wordIds.length;
 	const seenCardCount = progressById[cardDeck.id]?.seenWordCount ?? 0;
-	const unseenCardCount = paragraphCardCount - seenCardCount;
 	const newlySeenCards = cardDeck.words.filter(word => {
 		const previousSeenCount = word.seenCount ?? 0;
 		const hasSessionResult = session?.results.some(result => result.wordId === word.id) ?? false;
@@ -65,7 +68,7 @@ export default function DeckResultsView() {
 		color: storyColor,
 	};
 	let newlySeenLabel = `${newlySeenCardCount} new cards seen this session`;
-	let title = 'You finished the deck!';
+	let title = 'You finished the flashcards!';
 	let description = cardDeck.title;
 	let studyLabel = 'Repeat';
 	let wordResultsLabel = 'Show word results';
@@ -110,7 +113,6 @@ export default function DeckResultsView() {
 
 	/**
 	 * Do more flashcards using the latest saved word progress.
-	 * The ref blocks extra presses before the Starting label appears.
 	 */
 	async function handleRepeat() {
 		let selectedDeck: CardDeck | undefined;
@@ -176,7 +178,7 @@ export default function DeckResultsView() {
 					<View style={styles.header}>
 						<MaterialSymbol
 							name="task_alt"
-							size={28}
+							size={24}
 							color={storyColor}
 						/>
 						<View style={styles.headingText}>
@@ -192,26 +194,25 @@ export default function DeckResultsView() {
 					<ScrollView contentContainerStyle={styles.scrollContent}>
 						{hasReview && session && (
 							<>
+								<CompletionPassage
+									deck={cardDeck}
+									results={session.results}
+								/>
 								<CompletionRewards
 									session={session}
 									color={storyColor}
 									inkBalance={inkBalance}
 								/>
-								<View style={styles.cardProgress}>
-									<Text
-										accessibilityRole="header"
-										style={[styles.sectionTitle, headingStyle]}
-									>
-										Cards seen
-									</Text>
-									<View style={styles.cardCounts}>
-										<Text style={styles.cardProgressText}>
-											Seen: {seenCardCount} / {paragraphCardCount}
+								{!(seenCardCount === paragraphCardCount) && (
+									<View style={styles.cardProgress}>
+										<Text
+											accessibilityRole="header"
+											style={[styles.sectionTitle, headingStyle]}
+										>
+											{newlySeenLabel}
 										</Text>
-										<Text style={styles.cardProgressText}>Not seen: {unseenCardCount}</Text>
 									</View>
-									<Text style={styles.cardProgressText}>{newlySeenLabel}</Text>
-								</View>
+								)}
 								<Pressable
 									accessibilityRole="button"
 									accessibilityLabel={wordResultsLabel}
@@ -245,19 +246,33 @@ export default function DeckResultsView() {
 							useArrow={false}
 							showShadow={false}
 							showInnerBorder={false}
-							style={styles.footerButton}
+							fullwidth
 						>
 							Finish
 						</LinkButton>
 						{hasReview && (
-							<LinkButton
-								handler={handleRepeat}
-								disabled={repeatDisabled}
-								color={storyColor}
-								style={styles.footerButton}
-							>
-								{studyLabel}
-							</LinkButton>
+							<>
+								<View style={styles.footerRow}>
+									{solveParagraph && (
+										<View style={styles.footerButton}>
+											<SolveButton
+												deckId={cardDeck.id}
+												color={storyColor}
+												disabled={repeatDisabled}
+											/>
+										</View>
+									)}
+									<LinkButton
+										handler={handleRepeat}
+										disabled={repeatDisabled}
+										color={storyColor}
+										style={styles.footerButton}
+									>
+										{studyLabel}
+									</LinkButton>
+								</View>
+								{solveParagraph && <SolveEligibilityHint deck={solveParagraph} />}
+							</>
 						)}
 					</View>
 				</View>
@@ -298,29 +313,32 @@ const styles = StyleSheet.create({
 	header: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		padding: 12,
-		gap: 8,
+		padding: 8,
+		gap: 6,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
 	},
-	headingText: { flex: 1, gap: 3 },
+	headingText: {
+		flex: 1,
+		gap: 2,
+	},
 	title: {
-		fontSize: 20,
+		fontSize: 18,
 		fontFamily: 'lexend-600',
 	},
 	description: {
-		fontSize: 12,
-		lineHeight: 18,
+		fontSize: 11,
+		lineHeight: 16,
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
 	scrollContent: {
-		padding: 12,
-		gap: 12,
+		padding: 8,
+		gap: 8,
 	},
 	cardProgress: {
-		gap: 8,
-		padding: 12,
+		gap: 4,
+		padding: 8,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
@@ -338,7 +356,7 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	sectionTitle: {
-		fontSize: 14,
+		fontSize: 12,
 		fontFamily: 'lexend-600',
 	},
 	unlocks: {
@@ -354,11 +372,15 @@ const styles = StyleSheet.create({
 		borderTopColor: colors.light.goldenBorder,
 	},
 	footer: {
-		flexDirection: 'row',
-		gap: 8,
-		padding: 10,
+		gap: 6,
+		padding: 8,
 		borderTopWidth: 1,
 		borderTopColor: colors.light.goldenBorder,
+	},
+	footerRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
 	},
 	footerButton: {
 		flex: 1,

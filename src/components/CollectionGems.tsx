@@ -1,6 +1,8 @@
 import colors from '@/src/app/colors';
 import type { ProgressType, UserProgressRow } from '@/src/util/progression';
 import { getCompletedSolveStages, type CompletedSolveStages } from '@/src/util/solveProgression';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
@@ -19,8 +21,63 @@ interface GemResponse {
 	description: string;
 }
 
+interface PrismaticGemProps {
+	size: number;
+}
+
 const gemColors = [colors.gems.first, colors.gems.second, colors.gems.third];
 const glowGemColors = [colors.glowGems.first, colors.glowGems.second, colors.glowGems.third];
+const prismaticGemColors = [
+	colors.rarity.Legendary,
+	colors.gems.second,
+	colors.gems.third,
+	colors.gems.first,
+] as const;
+const gemAppearanceDescriptions: Partial<Record<CompletedSolveStages, string>> = {
+	4: ' All three gems are glowing.',
+	5: ' All three gems are prismatic. You have fully mastered this paragraph, congrats!',
+};
+
+/**
+ * Gives the paragraph gems a cool prismatic color effect
+ */
+function PrismaticGem({ size }: PrismaticGemProps) {
+	const slotStyle = {
+		width: size,
+		height: size,
+	};
+	const symbolStyle = {
+		lineHeight: size,
+	};
+
+	return (
+		<MaskedView
+			style={slotStyle}
+			maskElement={
+				<MaterialSymbol
+					name="diamond"
+					size={size}
+					filled
+					color={colors.dark.text}
+					style={[slotStyle, symbolStyle]}
+				/>
+			}
+		>
+			<LinearGradient
+				colors={prismaticGemColors}
+				start={{
+					x: 0,
+					y: 1,
+				}}
+				end={{
+					x: 1,
+					y: 0,
+				}}
+				style={StyleSheet.absoluteFill}
+			/>
+		</MaskedView>
+	);
+}
 
 /**
  * Explains earned gems and the next Solve challenge.
@@ -72,7 +129,7 @@ function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStage
 		5: {
 			label: '3/3 Gems',
 			filledCount: 3,
-			description: `All five Solve puzzles are complete for ${target}.`,
+			description: `Prismatic gems earned! All five Solve puzzles are complete for ${target}.`,
 		},
 	};
 }
@@ -82,7 +139,8 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 	const completedStages = getCompletedSolveStages(progress);
 	const response = responses[completedStages];
 	const hasGlowingGems = completedStages >= 4;
-	const appearanceDescription = hasGlowingGems ? ' All three gems are glowing.' : '';
+	const hasPrismaticGems = completedStages === 5;
+	const appearanceDescription = gemAppearanceDescriptions[completedStages] ?? '';
 	const glowGemSize = size * 1.5;
 	const glowGemOffset = (size - glowGemSize) / 2;
 	const glowRowPosition = {
@@ -115,46 +173,70 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 			hitSlop={8}
 			onPress={showProgress}
 		>
-			<View style={styles.container}>
-				{hasGlowingGems && (
-					<View
-						pointerEvents="none"
-						accessibilityElementsHidden
-						importantForAccessibility="no-hide-descendants"
-						style={[styles.row, styles.glowRow, glowRowPosition]}
-					>
-						{glowGemColors.map((gemColor, index) => (
-							<View
-								key={index}
-								style={gemSlotStyle}
-							>
-								<MaterialSymbol
-									name="diamond"
-									size={glowGemSize}
-									color={gemColor}
-									style={[styles.glowGem, glowGemStyle, { shadowColor: gemColor }]}
-									filled
-								/>
-							</View>
-						))}
-					</View>
-				)}
-				<View style={styles.row}>
-					{gemColors.map((gemColor, index) => {
-						const filled = index < response.filledCount;
+			<View style={styles.masteryRow}>
+				<View style={styles.container}>
+					{hasGlowingGems && (
+						<View
+							pointerEvents="none"
+							accessibilityElementsHidden
+							importantForAccessibility="no-hide-descendants"
+							style={[styles.row, styles.glowRow, glowRowPosition]}
+						>
+							{glowGemColors.map((gemColor, index) => {
+								const shadowColor = {
+									shadowColor: gemColor,
+								};
 
-						return (
-							<MaterialSymbol
-								key={index}
-								name="diamond"
-								size={size}
-								filled={filled}
-								color={filled ? gemColor : colors.gems.unsolved}
-								style={[gemSlotStyle, gemTextStyle, !filled && styles.unfilled]}
-							/>
-						);
-					})}
+								return (
+									<View
+										key={index}
+										style={gemSlotStyle}
+									>
+										<MaterialSymbol
+											name="diamond"
+											size={glowGemSize}
+											color={gemColor}
+											style={[styles.glowGem, glowGemStyle, shadowColor]}
+											filled
+										/>
+									</View>
+								);
+							})}
+						</View>
+					)}
+					<View style={styles.row}>
+						{gemColors.map((gemColor, index) => {
+							const filled = index < response.filledCount;
+
+							if (hasPrismaticGems) {
+								return (
+									<PrismaticGem
+										key={index}
+										size={size}
+									/>
+								);
+							}
+
+							return (
+								<MaterialSymbol
+									key={index}
+									name="diamond"
+									size={size}
+									filled={filled}
+									color={filled ? gemColor : colors.gems.unsolved}
+									style={[gemSlotStyle, gemTextStyle, !filled && styles.unfilled]}
+								/>
+							);
+						})}
+					</View>
 				</View>
+				{hasPrismaticGems && (
+					<MaterialSymbol
+						name="check"
+						size={size}
+						color={colors.wordProgress.mastered}
+					/>
+				)}
 			</View>
 		</Pressable>
 	);
@@ -164,6 +246,11 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
  * Styles
  */
 const styles = StyleSheet.create({
+	masteryRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
 	container: {
 		position: 'relative',
 		justifyContent: 'center',

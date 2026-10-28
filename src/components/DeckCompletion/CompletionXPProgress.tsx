@@ -154,21 +154,21 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 	},
 	progress: {
-		gap: 8,
+		gap: 4,
 	},
 	progressRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: 6,
 	},
 	level: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 11,
 		color: colors.dark.text,
 	},
 	bar: {
 		flex: 1,
-		height: 10,
+		height: 8,
 		borderRadius: 4,
 		borderWidth: 1,
 		borderColor: colors.light.border,
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
 	},
 	progressLabel: {
 		fontFamily: 'azeret-mono-400',
-		fontSize: 12,
+		fontSize: 11,
 		textAlign: 'center',
 		color: colors.dark.text,
 	},

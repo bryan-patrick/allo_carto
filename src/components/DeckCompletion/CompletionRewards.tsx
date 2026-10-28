@@ -52,7 +52,7 @@ export default function CompletionRewards({ session, color, inkBalance }: Comple
 			>
 				<MaterialSymbol
 					name="water_drop"
-					size={32}
+					size={24}
 					color={color}
 				/>
 				<View style={styles.inkAmount}>
@@ -100,33 +100,36 @@ export default function CompletionRewards({ session, color, inkBalance }: Comple
  */
 const styles = StyleSheet.create({
 	container: {
-		gap: 12,
+		gap: 8,
 	},
 	inkReward: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
-		padding: 8,
+		gap: 6,
+		padding: 6,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
 		backgroundColor: `${colors.light.secondary}55`,
 	},
-	inkAmount: { flex: 1, gap: 4 },
+	inkAmount: {
+		flex: 1,
+		gap: 2,
+	},
 	fullInkBalance: {
 		backgroundColor: colors.ink.full,
-		paddingHorizontal: 8,
-		paddingVertical: 6,
+		paddingHorizontal: 6,
+		paddingVertical: 4,
 		borderRadius: 6,
 	},
 	totals: {
 		flexDirection: 'row',
-		gap: 8,
+		gap: 6,
 	},
 	total: {
 		flex: 1,
-		gap: 4,
-		padding: 8,
+		gap: 2,
+		padding: 6,
 		borderWidth: 1,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
@@ -134,18 +137,18 @@ const styles = StyleSheet.create({
 	},
 	amount: {
 		fontFamily: 'lexend-600',
-		fontSize: 26,
+		fontSize: 22,
 		color: colors.dark.text,
 	},
 	label: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 11,
 		color: colors.dark.text,
 	},
 	note: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
-		lineHeight: 16,
+		fontSize: 11,
+		lineHeight: 14,
 		color: colors.dark.text,
 	},
 });

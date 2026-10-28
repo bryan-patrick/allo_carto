@@ -31,10 +31,12 @@ export default function Solve() {
 				/>
 			);
 		case 4:
+		case 5:
 			return (
 				<SolveSentenceView
 					key={`${userId}-${deckId}-${stage}`}
 					deckId={deckId}
+					stage={stage}
 				/>
 			);
 		default:

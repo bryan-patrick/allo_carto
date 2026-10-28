@@ -1,5 +1,10 @@
 import type { SolveSentence, SolveSentenceKeyword } from '@/src/components/Solve/solveTypes';
-import { checkSolveAnswer, normalizeSolveAnswer, type SolveAnswerResult } from './solveAnswer';
+import {
+	checkSolveAnswer,
+	normalizeFrenchSolveAnswer,
+	normalizeSolveAnswer,
+	type SolveAnswerResult,
+} from './solveAnswer';
 
 export interface CheckSentenceAnswerOptions {
 	answer: string;
@@ -66,6 +71,97 @@ const optionalSentenceWords = new Set([
 	'within',
 	'without',
 ]);
+
+const optionalFrenchSentenceWords = new Set([
+	'le',
+	'la',
+	'les',
+	'un',
+	'une',
+	'des',
+	'du',
+	'au',
+	'aux',
+	'à',
+	'après',
+	'avant',
+	'avec',
+	'chez',
+	'contre',
+	'dans',
+	'de',
+	'depuis',
+	'derrière',
+	'dès',
+	'devant',
+	'durant',
+	'en',
+	'entre',
+	'envers',
+	'hors',
+	'malgré',
+	'par',
+	'parmi',
+	'pendant',
+	'pour',
+	'sans',
+	'selon',
+	'sous',
+	'sur',
+	'vers',
+]);
+
+/**
+ * Keep the French keywords in order while leaving accents unchanged.
+ */
+function getFrenchSentenceKeywords(text: string): string[] {
+	const compatibleText = text.normalize('NFKC');
+	const lowerCaseText = compatibleText.toLowerCase();
+	const plainApostrophes = lowerCaseText.replace(/[’‘ʼ]/gu, "'");
+	const withoutShortArticles = plainApostrophes.replace(/\b[ld]'(?=[\p{L}\p{M}])/gu, '');
+	const normalizedText = normalizeFrenchSolveAnswer(withoutShortArticles);
+	const words = normalizedText.split(' ');
+
+	return words.filter(word => word.length > 0 && !optionalFrenchSentenceWords.has(word));
+}
+
+/**
+ * Check the French sentence's spelling, accents, and keyword order against its saved wording.
+ */
+export function checkFrenchSentenceAnswer({
+	answer,
+	sentence,
+}: CheckSentenceAnswerOptions): SolveAnswerResult {
+	const normalizedAnswer = normalizeFrenchSolveAnswer(answer);
+	const answerWords = getFrenchSentenceKeywords(answer);
+	let matches = false;
+
+	if (!normalizedAnswer) {
+		return {
+			status: 'empty',
+			acceptedAnswer: null,
+		};
+	}
+
+	for (const frenchAnswer of sentence.frenchAnswers) {
+		const expectedWords = getFrenchSentenceKeywords(frenchAnswer);
+
+		matches = expectedWords.length > 0 && answerWords.length === expectedWords.length;
+
+		if (matches) {
+			matches = answerWords.every((word, index) => word === expectedWords[index]);
+		}
+
+		if (matches) {
+			break;
+		}
+	}
+
+	return {
+		status: matches ? 'exact' : 'incorrect',
+		acceptedAnswer: matches ? answer.trim() : null,
+	};
+}
 
 const englishContractions: Record<string, string> = {
 	"can't": 'can not',

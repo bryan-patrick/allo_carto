@@ -2,6 +2,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveSentence, SolveSentenceKeyword } from '@/src/components/Solve/solveTypes';
 import { getSolvePassage, type SolvePassageSegment } from './getSolvePassage';
 import { getSentenceKeywords } from './solveSentenceAnswer';
+import { getWordOrderCards, isCompleteWordOrder } from './solveWordOrder';
 
 /**
  * Typing
@@ -15,6 +16,34 @@ export interface SolveSentenceWord {
 interface SentencePassage {
 	text: string;
 	segments: SolvePassageSegment[];
+}
+
+/**
+ * Keep the sentence's French wording and any other card orders accepted for the paragraph.
+ */
+function getFrenchSentenceAnswers(sentence: SentencePassage, deck: CardDeck): string[] {
+	const answers = [sentence.text];
+	const cards = getWordOrderCards(deck);
+	const segmentsByPosition = new Map(sentence.segments.map(segment => [segment.position, segment]));
+
+	for (const acceptedOrder of deck.acceptedWordOrders ?? []) {
+		const sentencePositions = acceptedOrder.filter(position => segmentsByPosition.has(position));
+		let alternativeText = '';
+
+		if (!isCompleteWordOrder(acceptedOrder, cards)) {
+			throw new Error(`An accepted French order for ${deck.title} is missing or repeating cards.`);
+		}
+
+		for (const position of sentencePositions) {
+			const segment = segmentsByPosition.get(position)!;
+
+			alternativeText += segment.text + (segment.after ?? ' ');
+		}
+
+		answers.push(alternativeText.trim());
+	}
+
+	return answers;
 }
 
 /**
@@ -132,6 +161,7 @@ export function getSolveSentences(deck: CardDeck, words: SolveSentenceWord[]): S
 	return frenchSentences.map((sentence, position) => ({
 		position,
 		frenchText: sentence.text,
+		frenchAnswers: getFrenchSentenceAnswers(sentence, deck),
 		englishText: canPairEnglish ? englishSentences[position].trim() : null,
 		keywords: getSentenceCardKeywords(sentence.segments, wordsById),
 		acceptedAnswer: null,
