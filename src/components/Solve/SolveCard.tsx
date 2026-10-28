@@ -1,12 +1,13 @@
 import colors from '@/src/app/colors';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { cardBackgrounds } from '@/src/components/WordCard/cardBackgrounds';
-import { inkConfig } from '@/src/util/ink';
+import { getSolveCardInkCost, type SolveWordStage } from '@/src/util/solveProgression';
 import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SolvePosition } from './solveTypes';
 
 interface SolveCardProps {
 	card: SolvePosition;
+	stage: SolveWordStage;
 	isSelected: boolean;
 	disabled: boolean;
 	storyColor: string;
@@ -14,11 +15,11 @@ interface SolveCardProps {
 }
 
 /**
- * Puzzle cards use the same rarity backgrounds and double borders as flashcards.
- * A locked card shows its price without giving away the French word.
+ * Returns a French word (card props) in Solve or its English meaning in Solve+.
  */
 export default function SolveCard({
 	card,
+	stage,
 	isSelected,
 	disabled,
 	storyColor,
@@ -26,7 +27,8 @@ export default function SolveCard({
 }: SolveCardProps) {
 	const isSolved = card.acceptedAnswer !== null;
 	const isDisabled = disabled || isSolved;
-	const cardCost = inkConfig.cardCostByRarity[card.rarity];
+	const cardCost = getSolveCardInkCost(stage, card.rarity);
+	const prompt = stage === 2 ? card.englishPrompt : card.text;
 	const wordColor = {
 		color: storyColor,
 	};
@@ -36,11 +38,11 @@ export default function SolveCard({
 	let accessibilityLabel = `Locked ${card.rarity} card ${card.position + 1}, unlock for ${cardCost} Ink`;
 
 	if (card.isUnlocked) {
-		accessibilityLabel = `${card.text}, card ${card.position + 1}, solve for ${cardCost} Ink`;
+		accessibilityLabel = `${prompt}, card ${card.position + 1}, solve for ${cardCost} Ink`;
 	}
 
 	if (isSolved) {
-		accessibilityLabel = `${card.text}, solved: ${card.acceptedAnswer}`;
+		accessibilityLabel = `${prompt}, solved: ${card.acceptedAnswer}`;
 	}
 
 	if (!card.wordId) {
@@ -74,7 +76,7 @@ export default function SolveCard({
 			>
 				{card.isUnlocked ?
 					<>
-						<Text style={[styles.word, wordColor]}>{card.text}</Text>
+						<Text style={[styles.word, wordColor]}>{prompt}</Text>
 						{isSolved && <Text style={styles.translation}>✓ {card.acceptedAnswer}</Text>}
 					</>
 				:	<>

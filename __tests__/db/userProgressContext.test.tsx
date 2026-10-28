@@ -12,6 +12,11 @@ import type { ReactNode } from 'react';
 jest.mock('@/src/db/queries/getUserExperience');
 jest.mock('@/src/db/queries/getUserInk');
 jest.mock('@/src/db/queries/getUserProgress');
+jest.mock('@/src/settings/useAppSettings', () => ({
+	useAppSettings: () => ({
+		settings: jest.requireActual('@/src/settings/appSettings').defaultAppSettings,
+	}),
+}));
 jest.mock('@/src/db/queries/writeUserProgress', () => ({
 	writeCorrectAnswer: jest.fn(),
 	writeDeckCompletion: jest.fn(),

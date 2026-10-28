@@ -8,6 +8,7 @@ import type {
 	SolveCardRequest,
 } from '@/src/components/Solve/solveTypes';
 import type { ProgressById } from '@/src/util/progression';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import { useSQLiteContext } from 'expo-sqlite';
 import {
@@ -96,6 +97,8 @@ export function UserProgressProvider({ children, userId }: UserProgressProviderP
  */
 function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const database = useSQLiteContext();
+	const { settings } = useAppSettings();
+	const fastSolveUnlocks = settings.fastSolveUnlocks;
 
 	/**
 	 * State
@@ -209,9 +212,16 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const recordSolveAttempt = useCallback(
 		async (request: SolveAttemptRequest): Promise<SolveAttemptResult | false> => {
-			return runProgressWrite(() => writeSolveAttempt({ database, userId: userId!, ...request }));
+			return runProgressWrite(() =>
+				writeSolveAttempt({
+					database,
+					userId: userId!,
+					...request,
+					fastSolveUnlocks,
+				}),
+			);
 		},
-		[database, runProgressWrite, userId],
+		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
 	/**
@@ -224,10 +234,11 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 					database,
 					userId: userId!,
 					...request,
+					fastSolveUnlocks,
 				}),
 			);
 		},
-		[database, runProgressWrite, userId],
+		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
 	/**
