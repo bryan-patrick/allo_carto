@@ -124,6 +124,7 @@ export default function AppLayout() {
 
 		if (resetDB) {
 			await database.execAsync(`
+        DROP TABLE IF EXISTS solveWordOrderDrafts;
         DROP TABLE IF EXISTS solveStageAttempts;
         DROP TABLE IF EXISTS solveStagePositions;
         DROP TABLE IF EXISTS solveStageUnlocks;
