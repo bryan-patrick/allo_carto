@@ -89,7 +89,7 @@ function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStage
 	const seenWordCount = progress?.seenWordCount ?? 0;
 	const wordCount = progress?.wordCount ?? 0;
 	const requirements: Record<ProgressType, string> = {
-		paragraph: `${seenWordCount} of ${wordCount} words seen. See every word in flashcards, then unlock and solve every puzzle card to earn the first gem.`,
+		paragraph: `${seenWordCount} of ${wordCount} words seen. See every word in flashcards, then solve every puzzle card to earn the first gem.`,
 		chapter: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Solve every paragraph in this chapter to earn its first gem.`,
 		story: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Solve every paragraph in this story to earn its first gem.`,
 	};

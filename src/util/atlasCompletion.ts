@@ -169,6 +169,29 @@ export function isItemUnlocked({
 }
 
 /**
+ * List the chapter's paragraphs
+ */
+export function getVisibleParagraphs(chapter: DeckChapter, progressById: ProgressById): CardDeck[] {
+	const paragraphs = chapter.decks.filter(hasParagraphContent);
+	const visibleParagraphs: CardDeck[] = [];
+
+	for (const paragraph of paragraphs) {
+		const isUnlocked = isItemUnlocked({
+			id: paragraph.id,
+			progressById,
+		});
+
+		visibleParagraphs.push(paragraph);
+
+		if (!isUnlocked) {
+			break;
+		}
+	}
+
+	return visibleParagraphs;
+}
+
+/**
  * We use these same requirements for access checks and the messages on locked content.
  * A chapter is finished only when every playable paragraph has its saved first gem.
  */

@@ -1,6 +1,6 @@
 import colors from '@/src/app/colors';
-import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import LinkButton from '@/src/components/LinkButton';
+import SecondaryButton from '@/src/components/SecondaryButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ReadingLink from '@/src/components/ReadingLink';
 import SolveCard from '@/src/components/Solve/SolveCard';
@@ -10,19 +10,16 @@ import type {
 	SolveAttemptResult,
 	SolvePuzzle,
 } from '@/src/components/Solve/solveTypes';
-import { getDB, getDeck } from '@/src/db/interface';
+import { getDB } from '@/src/db/interface';
 import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { findCompletionPath, findNextParagraph } from '@/src/util/atlasCompletion';
-import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
-import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { inkConfig } from '@/src/util/ink';
 import {
 	getCompletedSolveStages,
-	getSolveCardInkCost,
 	getSolveStageEligibility,
 	getSolveUnlockMessage,
 	solveStages,
@@ -31,7 +28,6 @@ import {
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import {
-	Alert,
 	ImageBackground,
 	KeyboardAvoidingView,
 	Platform,
@@ -62,14 +58,12 @@ interface SolveAnswerSelection {
 interface SolveFeedback {
 	text: string;
 	backgroundColor: string;
-	needsInk?: boolean;
 }
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /**
- * This gets the message shown after an unlock or a Solve answer.
- * It also picks a light background color for success, a wrong answer, or a warning.
+ * Choose the message and color shown after a word answer is checked.
  */
 function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): SolveFeedback {
 	const messages: Record<SolveAttemptResult['status'], SolveFeedback> = {
@@ -90,9 +84,8 @@ function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): So
 			backgroundColor: colors.light.warning,
 		},
 		notEnoughInk: {
-			text: 'Not enough Ink.',
+			text: 'Not enough Ink. Close this puzzle and practice flashcards to earn more.',
 			backgroundColor: colors.light.warning,
-			needsInk: true,
 		},
 		alreadySolved: {
 			text: `Already solved: ${result.acceptedAnswer}.`,
@@ -102,40 +95,20 @@ function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): So
 			text: 'This puzzle is locked. Check its unlock requirements beside the Solve button.',
 			backgroundColor: colors.light.warning,
 		},
-		locked: {
-			text: 'This card is locked.',
-			backgroundColor: colors.light.warning,
-		},
-		unlocked: {
-			text: 'Card unlocked.',
-			backgroundColor: colors.light.success,
-		},
-		alreadyUnlocked: {
-			text: 'This card is already unlocked.',
-			backgroundColor: colors.light.success,
-		},
 	};
 
 	return messages[result.status];
 }
 
 /**
- * We use this screen to unlock and solve a paragraph's word cards with Ink.
- * Solve asks for English meanings, Solve+ asks for French words, and both keep the player's saved cards.
+ * Let the player select word cards and submit English or French answers for Ink.
  */
 export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const router = useRouter();
 	const { bottom, top } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
-	const {
-		experience,
-		progressById,
-		inkBalance,
-		isUpdatingProgress,
-		writeSolveAttempt,
-		unlockSolveCard,
-	} = useUserProgress();
-	const { cardDeckDispatch } = useCardDeck();
+	const { experience, progressById, inkBalance, isUpdatingProgress, writeSolveAttempt } =
+		useUserProgress();
 	const { settings } = useAppSettings();
 	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const stageDefinition = solveStages[stage];
@@ -150,7 +123,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	});
 	const [feedback, setFeedback] = useState<SolveFeedback | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
-	const [isStartingFlashcards, setIsStartingFlashcards] = useState(false);
 	const [needsRetry, setNeedsRetry] = useState(false);
 	const isBusy = useRef(false);
 	const answerInput = useRef<TextInputInstance>(null);
@@ -181,21 +153,17 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const isEligible = Boolean(
 		puzzle && (eligibility.isEligible || eligibility.lockReason === 'completed'),
 	);
-	const cardCost = selectedCard ? getSolveCardInkCost(stage, selectedCard.rarity) : 0;
+	const cardCost = selectedCard?.inkCost ?? 0;
 	const hasEnoughInk = selectedCard ? inkBalance >= cardCost : inkBalance > 0;
-	const isUnlocking = selectedCard?.isUnlocked === false;
 	const hasUnsolvedCard = Boolean(selectedCard?.wordId && selectedCard.acceptedAnswer === null);
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
-	const disabled = isSaving || isUpdatingProgress || isStartingFlashcards;
+	const disabled = isSaving || isUpdatingProgress;
 	const isInputDisabled =
-		disabled || needsRetry || !isEligible || !hasEnoughInk || !hasUnsolvedCard || isUnlocking;
-	const canSubmit =
-		isEligible && hasUnsolvedCard && hasEnoughInk && (isUnlocking || Boolean(answer.trim()));
+		disabled || needsRetry || !isEligible || !hasEnoughInk || !hasUnsolvedCard;
+	const canSubmit = isEligible && hasUnsolvedCard && hasEnoughInk && Boolean(answer.trim());
 	const isSubmitDisabled = disabled || (!needsRetry && !canSubmit);
 	const submitColor = isSubmitDisabled ? colors.dark.border : inkColor;
 	const needsInk = hasUnsolvedCard && !hasEnoughInk && !needsRetry;
-	const showFlashcards = needsInk || Boolean(feedback?.needsInk);
-	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
 	const storyColor = getDeckStoryColor(deckId);
 	const chapter = findCompletionPath({
 		id: deckId,
@@ -220,14 +188,14 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	};
 	const gemColor = stage === 2 ? colors.gems.second : colors.gems.first;
 	const gemTitle = stage === 2 ? 'Second gem earned!' : 'First gem earned!';
-	const action = isUnlocking ? 'Unlock' : stageDefinition.label;
 	const statusTextStyle = {
 		backgroundColor: 'transparent',
 	};
 	const feedbackTextStyle = {
 		backgroundColor: feedback?.backgroundColor ?? 'transparent',
 	};
-	let submitLabel = selectedCard ? `${action} (${cardCost} Ink)` : stageDefinition.label;
+	let submitLabel =
+		selectedCard ? `${stageDefinition.label} (${cardCost} Ink)` : stageDefinition.label;
 	let prompt = 'No card selected.';
 	let statusMessage = '';
 	let completionMessage = 'All cards solved. The next paragraph is ready.';
@@ -246,13 +214,13 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 
 	if (selectedCard) {
 		prompt =
-			isUnlocking ? `${selectedCard.rarity} card is locked.`
-			: isFrenchAnswer ? `French word for “${selectedCard.englishPrompt}”`
-			: `English meaning of “${selectedCard.text}”`;
+			isFrenchAnswer ?
+				`French word for “${selectedCard.englishPrompt}”`
+			:	`English meaning of “${selectedCard.text}”`;
 	}
 
 	if (needsInk) {
-		statusMessage = `Not enough Ink. ${cardCost} Ink required.`;
+		statusMessage = `You need ${cardCost} Ink. Close this puzzle and practice flashcards to earn more.`;
 		statusTextStyle.backgroundColor = colors.light.warning;
 	}
 
@@ -263,7 +231,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	if (disabled) {
-		statusMessage = isStartingFlashcards ? 'Opening flashcards…' : 'Saving…';
+		statusMessage = 'Saving…';
 		statusTextStyle.backgroundColor = 'transparent';
 	}
 
@@ -334,8 +302,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	/**
-	 * This inserts a French character into the answer at the cursor.
-	 * It replaces selected text when needed, then moves the cursor after the new character.
+	 * Insert a French character at the cursor and replace any selected letters.
 	 */
 	function handleInsertCharacter(character: string) {
 		const textBeforeSelection = answer.slice(0, answerSelection.start);
@@ -357,9 +324,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	function updateSavedCard(position: number, result: SolveAttemptResult) {
-		const wasUnlocked = result.status === 'unlocked' || result.status === 'alreadyUnlocked';
-
-		if (!wasUnlocked && result.acceptedAnswer === null) {
+		if (result.acceptedAnswer === null) {
 			return;
 		}
 
@@ -375,7 +340,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 
 				return {
 					...card,
-					isUnlocked: true,
 					acceptedAnswer: result.acceptedAnswer ?? card.acceptedAnswer,
 				};
 			});
@@ -391,12 +355,9 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	/**
-	 * We keep the answer's ID after a failed save so retrying cannot charge twice.
-	 * Unlock retries are safe because a card can only be unlocked once.
+	 * Submit a paid answer and keep its ID so retrying a failed save cannot charge twice.
 	 */
 	async function handleSubmit() {
-		let result: SolveAttemptResult | false;
-
 		if (disabled || isBusy.current || (!needsRetry && !canSubmit) || !selectedCard) {
 			return;
 		}
@@ -406,25 +367,17 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		setFeedback(null);
 
 		try {
-			if (isUnlocking) {
-				result = await unlockSolveCard({
+			if (!pendingAttempt.current) {
+				pendingAttempt.current = {
 					deckId,
 					position: selectedCard.position,
 					stage,
-				});
-			} else {
-				if (!pendingAttempt.current) {
-					pendingAttempt.current = {
-						deckId,
-						position: selectedCard.position,
-						stage,
-						answer,
-						attemptId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-					};
-				}
-
-				result = await writeSolveAttempt(pendingAttempt.current);
+					answer,
+					attemptId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+				};
 			}
+
+			const result = await writeSolveAttempt(pendingAttempt.current);
 
 			if (result === false) {
 				setNeedsRetry(true);
@@ -437,8 +390,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 			updateSavedCard(selectedCard.position, result);
 
 			/**
-			 * A wrong answer needs fresh input before another paid attempt.
-			 * A second quick tap should not spend more Ink on the same answer.
+			 * Clear wrong answers so a quick second tap cannot charge for the same text again.
 			 */
 			if (result.status === 'incorrect') {
 				setAnswer('');
@@ -450,46 +402,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		} finally {
 			isBusy.current = false;
 			setIsSaving(false);
-		}
-	}
-
-	/**
-	 * We open fresh flashcards for this paragraph so the player can earn more Ink.
-	 * Replacing Solve closes the puzzle while keeping its saved cards and answers.
-	 */
-	async function handleOpenFlashcards() {
-		if (!userId || !puzzle || !isEligible || disabled || needsRetry || isBusy.current) {
-			return;
-		}
-
-		isBusy.current = true;
-		setIsStartingFlashcards(true);
-
-		try {
-			const selectedDeck = await getDeck({
-				deck: puzzle.deck,
-				amount: cardsPerDeck,
-				userId,
-			});
-			const nextSession = createDeckSession(experience.totalXP);
-
-			if (!selectedDeck || selectedDeck.words.length === 0) {
-				Alert.alert('Could not start session', 'Please try again.');
-				return;
-			}
-
-			cardDeckDispatch({
-				type: 'SET_DECK',
-				payload: selectedDeck,
-				session: nextSession,
-			});
-			router.replace('/CardDeck');
-		} catch (error) {
-			console.error('Could not start flashcards from Solve:', error);
-			Alert.alert('Could not start session', 'Please try again.');
-		} finally {
-			isBusy.current = false;
-			setIsStartingFlashcards(false);
 		}
 	}
 
@@ -539,7 +451,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 					<Pressable
 						accessibilityRole="button"
 						accessibilityLabel={`Close ${stageDefinition.label}`}
-						accessibilityHint="Return to paragraph selection. Your unlocked and solved cards are saved."
+						accessibilityHint="Return to paragraph selection. Your solved cards are saved."
 						disabled={disabled}
 						onPress={handleClose}
 						style={styles.closeButton}
@@ -601,7 +513,11 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 								/>
 							))}
 						</ScrollView>
-						<View style={styles.editor}>
+					</>
+				)}
+				<View style={styles.editor}>
+					{isEligible && (
+						<>
 							{isComplete ?
 								<View style={styles.completion}>
 									<MaterialSymbol
@@ -613,15 +529,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 									/>
 									<Text style={styles.word}>{gemTitle}</Text>
 									<Text style={styles.text}>{completionMessage}</Text>
-									<LinkButton
-										handler={handleClose}
-										disabled={disabled}
-										color={storyColor}
-										useArrow={false}
-										fullwidth
-									>
-										Close
-									</LinkButton>
 								</View>
 							:	<>
 									<Text style={styles.text}>{prompt}</Text>
@@ -641,50 +548,36 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 											<Text style={feedbackTextStyle}>{feedback.text}</Text>
 										</Text>
 									)}
-									{!isUnlocking && (
-										<>
-											<TextInput
-												ref={answerInput}
-												accessibilityLabel={isFrenchAnswer ? 'French answer' : 'English answer'}
-												accessibilityState={{
-													disabled: isInputDisabled,
-												}}
-												placeholder={
-													isFrenchAnswer ? 'Type the French word' : 'Type the English meaning'
-												}
-												placeholderTextColor={colors.light.border}
-												value={answer}
-												selection={answerSelection}
-												onChangeText={setAnswer}
-												onSelectionChange={handleAnswerSelection}
-												editable={!isInputDisabled}
-												autoCorrect={false}
-												autoCapitalize="none"
-												returnKeyType="done"
-												onSubmitEditing={handleSubmit}
-												style={[styles.input, isInputDisabled && styles.disabledInput]}
-											/>
-											{isFrenchAnswer && (
-												<SolveCharacterKeyboard
-													color={storyColor}
-													disabled={isInputDisabled}
-													onCharacterPress={handleInsertCharacter}
-												/>
-											)}
-										</>
+									<TextInput
+										ref={answerInput}
+										accessibilityLabel={isFrenchAnswer ? 'French answer' : 'English answer'}
+										accessibilityState={{
+											disabled: isInputDisabled,
+										}}
+										placeholder={
+											isFrenchAnswer ? 'Type the French word' : 'Type the English meaning'
+										}
+										placeholderTextColor={colors.light.border}
+										value={answer}
+										selection={answerSelection}
+										onChangeText={setAnswer}
+										onSelectionChange={handleAnswerSelection}
+										editable={!isInputDisabled}
+										autoCorrect={false}
+										autoCapitalize="none"
+										returnKeyType="done"
+										onSubmitEditing={handleSubmit}
+										style={[styles.input, isInputDisabled && styles.disabledInput]}
+									/>
+									{isFrenchAnswer && (
+										<SolveCharacterKeyboard
+											color={storyColor}
+											disabled={isInputDisabled}
+											onCharacterPress={handleInsertCharacter}
+										/>
 									)}
 								</>
 							}
-							{showFlashcards && !isComplete && (
-								<LinkButton
-									handler={handleOpenFlashcards}
-									disabled={disabled || needsRetry}
-									color={storyColor}
-									fullwidth
-								>
-									Flashcards
-								</LinkButton>
-							)}
 							{!isComplete && (
 								<LinkButton
 									handler={handleSubmit}
@@ -702,9 +595,18 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 									{submitLabel}
 								</LinkButton>
 							)}
-						</View>
-					</>
-				)}
+						</>
+					)}
+					<SecondaryButton
+						onPress={handleClose}
+						disabled={disabled}
+						color={storyColor}
+						type="outline"
+						fullwidth
+					>
+						Close
+					</SecondaryButton>
+				</View>
 			</ImageBackground>
 		</KeyboardAvoidingView>
 	);

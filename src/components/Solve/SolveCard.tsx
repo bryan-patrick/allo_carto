@@ -1,7 +1,6 @@
 import colors from '@/src/app/colors';
-import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { cardBackgrounds } from '@/src/components/WordCard/cardBackgrounds';
-import { getSolveCardInkCost, type SolveWordStage } from '@/src/util/solveProgression';
+import type { SolveWordStage } from '@/src/util/solveProgression';
 import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SolvePosition } from './solveTypes';
 
@@ -15,7 +14,7 @@ interface SolveCardProps {
 }
 
 /**
- * Returns a French word (card props) in Solve or its English meaning in Solve+.
+ * Returns a French/English word (card props) in Solve
  */
 export default function SolveCard({
 	card,
@@ -27,7 +26,6 @@ export default function SolveCard({
 }: SolveCardProps) {
 	const isSolved = card.acceptedAnswer !== null;
 	const isDisabled = disabled || isSolved;
-	const cardCost = getSolveCardInkCost(stage, card.rarity);
 	const prompt = stage === 2 ? card.englishPrompt : card.text;
 	const wordColor = {
 		color: storyColor,
@@ -35,11 +33,7 @@ export default function SolveCard({
 	const selectedBorder = {
 		borderColor: storyColor,
 	};
-	let accessibilityLabel = `Locked ${card.rarity} card ${card.position + 1}, unlock for ${cardCost} Ink`;
-
-	if (card.isUnlocked) {
-		accessibilityLabel = `${prompt}, card ${card.position + 1}, solve for ${cardCost} Ink`;
-	}
+	let accessibilityLabel = `${prompt}, card ${card.position + 1}, solve for ${card.inkCost} Ink`;
 
 	if (isSolved) {
 		accessibilityLabel = `${prompt}, solved: ${card.acceptedAnswer}`;
@@ -74,20 +68,16 @@ export default function SolveCard({
 				source={cardBackgrounds[card.rarity]}
 				style={[styles.cardContent, isSolved && styles.solvedBorder]}
 			>
-				{card.isUnlocked ?
-					<>
-						<Text style={[styles.word, wordColor]}>{prompt}</Text>
-						{isSolved && <Text style={styles.translation}>✓ {card.acceptedAnswer}</Text>}
-					</>
-				:	<>
-						<MaterialSymbol
-							name="lock"
-							size={24}
-							color={storyColor}
-						/>
-						<Text style={styles.cost}>Unlock ({cardCost} Ink)</Text>
-					</>
-				}
+				{isSolved && (
+					<View
+						pointerEvents="none"
+						style={styles.solvedOverlay}
+					/>
+				)}
+				<Text style={[styles.word, wordColor]}>{prompt}</Text>
+				{isSolved ?
+					<Text style={styles.translation}>✓ {card.acceptedAnswer}</Text>
+				:	<Text style={styles.cost}>{card.inkCost} Ink</Text>}
 			</ImageBackground>
 		</Pressable>
 	);
@@ -130,6 +120,11 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.light.success,
 		borderColor: colors.dark.success,
 	},
+	solvedOverlay: {
+		...StyleSheet.absoluteFill,
+		backgroundColor: colors.light.success,
+		opacity: 0.4,
+	},
 	word: {
 		fontSize: 14,
 		fontFamily: 'lexend-600',
@@ -138,7 +133,7 @@ const styles = StyleSheet.create({
 	cost: {
 		fontSize: 12,
 		fontFamily: 'lexend-400',
-		color: colors.dark.text,
+		color: colors.wordProgress.familiar,
 		textAlign: 'center',
 	},
 	translation: {

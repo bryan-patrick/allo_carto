@@ -19,7 +19,7 @@ import Animated, {
 import colors from '../app/colors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-const secondaryButtonShadowHeight = 2;
+const secondaryButtonShadowHeight = 0;
 
 interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'> {
 	SVGElement?: ReactNode;
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		borderColor: colors.dark.border,
-		borderRadius: 4,
+		borderRadius: 8,
 		paddingHorizontal: 8,
 		paddingVertical: 12,
 		shadowOpacity: 1,

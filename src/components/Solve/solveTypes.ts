@@ -13,11 +13,6 @@ import type {
  */
 export type AdditionalSolveStage = Exclude<SolveStage, 1>;
 
-export interface SolveStageUnlockedPosition {
-	position: number;
-	wordId: string;
-}
-
 export interface SolveStageSolvedPosition {
 	position: number;
 	wordId: string | null;
@@ -26,7 +21,6 @@ export interface SolveStageSolvedPosition {
 
 export interface SavedSolveStageProgress {
 	stage: AdditionalSolveStage;
-	unlockedPositions: SolveStageUnlockedPosition[];
 	solvedPositions: SolveStageSolvedPosition[];
 }
 
@@ -35,7 +29,7 @@ export interface SolvePosition {
 	text: string;
 	wordId?: string;
 	rarity: CardRarity;
-	isUnlocked: boolean;
+	inkCost: number;
 	englishWords: string[];
 	englishPrompt: string;
 	frenchWords: string[];
@@ -64,14 +58,7 @@ export interface SolveAttemptRequest extends SolveCardRequest {
 }
 
 export interface SolveAttemptResult {
-	status:
-		| SolveAnswerResult['status']
-		| 'notEnoughInk'
-		| 'alreadySolved'
-		| 'unavailable'
-		| 'locked'
-		| 'unlocked'
-		| 'alreadyUnlocked';
+	status: SolveAnswerResult['status'] | 'notEnoughInk' | 'alreadySolved' | 'unavailable';
 	acceptedAnswer: string | null;
 	inkSpent: number;
 	firstGemEarned: boolean;

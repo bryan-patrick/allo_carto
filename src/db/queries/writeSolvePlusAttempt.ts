@@ -1,6 +1,6 @@
 import type { SolveAttemptRequest, SolveAttemptResult } from '@/src/components/Solve/solveTypes';
 import { checkFrenchSolveAnswer } from '@/src/util/solveAnswer';
-import { getSolveCardInkCost, solveStages } from '@/src/util/solveProgression';
+import { solveStages } from '@/src/util/solveProgression';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolvePuzzle from './getSolvePuzzle';
 
@@ -25,7 +25,7 @@ interface SavedSolvePlusAttempt {
 }
 
 /**
- * We use this to check a paid French answer in Solve+ and award Gem 2 after the last card. Also saves the ink charge, correct answer, and gem together.
+ * Check a French answer and save its Ink charge, solved card, and second gem together.
  */
 export default async function writeSolvePlusAttempt({
 	database,
@@ -134,16 +134,11 @@ export default async function writeSolvePlusAttempt({
 			return;
 		}
 
-		if (!card.isUnlocked) {
-			result.status = 'locked';
-			return;
-		}
-
 		const checkedAnswer = checkFrenchSolveAnswer({
 			answer,
 			frenchWords: card.frenchWords,
 		});
-		const cardCost = getSolveCardInkCost(2, card.rarity);
+		const cardCost = card.inkCost;
 		const inkSpent =
 			checkedAnswer.status === 'incorrect' ? solveStages[2].incorrectAttemptInkCost : cardCost;
 

@@ -8,8 +8,7 @@ interface InkConfig {
 }
 
 /**
- * We use the same rarity price to unlock a puzzle card and to solve it correctly.
- * Wrong answers only cost one Ink.
+ * Set flashcard ink rewards and the costs used for word puzzles.
  */
 export const inkConfig: InkConfig = {
 	correctFlashcard: 1,
