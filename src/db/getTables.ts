@@ -1,6 +1,7 @@
 import createTables from './schema/createTables';
 import seedLocalUser from './seeders/seedLocalUser';
 import seedWords from './seeders/seedWords';
+import { validateCollectionAtlas } from '@/src/util/vocabularyCollections';
 
 /**
  * Expo does the heavy lifting here for us.
@@ -18,6 +19,7 @@ import seedWords from './seeders/seedWords';
  */
 export default async function getTables(): Promise<void> {
 	try {
+		validateCollectionAtlas();
 		await createTables();
 		await seedWords();
 		await seedLocalUser();

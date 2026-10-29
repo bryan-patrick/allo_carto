@@ -2,6 +2,7 @@ export type WordProgressKey = 'unseen' | 'new' | 'learning' | 'familiar' | 'know
 
 export interface WordProgressDefinition {
 	key: WordProgressKey;
+	level: number;
 	name: string;
 	minCorrectCount: number;
 	symbolName: string;
@@ -10,36 +11,42 @@ export interface WordProgressDefinition {
 export const wordProgressDefinitions: WordProgressDefinition[] = [
 	{
 		key: 'unseen',
+		level: 0,
 		name: 'Unseen',
 		minCorrectCount: 0,
 		symbolName: 'question_mark',
 	},
 	{
 		key: 'new',
+		level: 1,
 		name: 'New',
 		minCorrectCount: 1,
 		symbolName: 'featured_seasonal_and_gifts',
 	},
 	{
 		key: 'learning',
+		level: 2,
 		name: 'Learning',
 		minCorrectCount: 5,
 		symbolName: 'school',
 	},
 	{
 		key: 'familiar',
+		level: 3,
 		name: 'Familiar',
 		minCorrectCount: 15,
 		symbolName: 'person_celebrate',
 	},
 	{
 		key: 'known',
+		level: 4,
 		name: 'Known',
 		minCorrectCount: 30,
 		symbolName: 'cognition_2',
 	},
 	{
 		key: 'mastered',
+		level: 5,
 		name: 'Mastered',
 		minCorrectCount: 50,
 		symbolName: 'star',

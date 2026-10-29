@@ -124,6 +124,7 @@ export default function AppLayout() {
 
 		if (resetDB) {
 			await database.execAsync(`
+        DROP TABLE IF EXISTS collectionRewardClaims;
         DROP TABLE IF EXISTS solveWordOrderDrafts;
         DROP TABLE IF EXISTS solveStageAttempts;
         DROP TABLE IF EXISTS solveStagePositions;
@@ -200,6 +201,16 @@ export default function AppLayout() {
 										<Stack.Screen
 											name="(tabs)"
 											options={({ route }) => getTabHeaderOptions(route)}
+										/>
+										<Stack.Screen
+											name="(routes)/CollectionDetail"
+											options={{
+												headerShown: true,
+												headerTransparent: true,
+												headerBackTitle: 'Collections',
+												headerBackButtonDisplayMode: 'minimal',
+												headerTitle: '',
+											}}
 										/>
 										<Stack.Screen
 											name="(routes)/CardDeck"

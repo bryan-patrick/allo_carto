@@ -8,9 +8,15 @@ import type {
 	SolveAttemptResult,
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
+import { collectionAtlas } from '@/data/french/collectionAtlas';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { ProgressById } from '@/src/util/progression';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
+import {
+	getVocabularyCollectionProgress,
+	type CollectionRewardClaim,
+	type VocabularyCollectionProgress,
+} from '@/src/util/vocabularyCollections';
 import { useSQLiteContext } from 'expo-sqlite';
 import {
 	createContext,
@@ -22,8 +28,14 @@ import {
 	type ReactNode,
 } from 'react';
 import loadUserXP from './queries/getUserExperience';
+import claimCollectionReward, {
+	type ClaimCollectionRewardRequest,
+	type CollectionRewardReceipt,
+} from './queries/claimCollectionReward';
+import getCollectionRewardClaims from './queries/getCollectionRewardClaims';
 import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
+import getUserWordProgress, { type UserWordProgressById } from './queries/getUserWordProgress';
 import writeSentenceAttempt from './queries/writeSentenceAttempt';
 import writeSolveAttempt from './queries/writeSolveAttempt';
 import {
@@ -46,6 +58,10 @@ interface UserProgressProviderProps {
 }
 
 interface UserProgressContextProps {
+	collections: VocabularyCollectionProgress[];
+	claimCollectionReward: (
+		request: ClaimCollectionRewardRequest,
+	) => Promise<CollectionRewardReceipt | false>;
 	inkBalance: number;
 	experience: UserExperience;
 	isUpdatingProgress: boolean;
@@ -66,6 +82,8 @@ interface UserProgressContextProps {
  * Initial progress state
  */
 const initialValue: UserProgressContextProps = {
+	collections: [],
+	claimCollectionReward: async () => false,
 	inkBalance: 0,
 	experience: getUserExperience(0),
 	isUpdatingProgress: false,
@@ -109,35 +127,68 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 	const [progressById, setProgressById] = useState<ProgressById>({});
+	const [wordProgressById, setWordProgressById] = useState<UserWordProgressById>({});
+	const [collectionClaims, setCollectionClaims] = useState<CollectionRewardClaim[]>([]);
 	const [experience, setExperience] = useState<UserExperience>(() => getUserExperience(0));
 	const [inkBalance, setInkBalance] = useState(0);
 	const [status, setStatus] = useState<ProgressStatus>('loading');
 	const isSavingProgress = useRef(false);
 
 	/**
-	 * Reload vocabulary progress, XP, and Ink after saving an answer.
+	 * Reloads word levels, collection claims, XP, and Ink to keep progress displays current.
 	 */
 	const refreshProgress = useCallback(async () => {
 		if (!userId) {
 			return;
 		}
 
-		return Promise.all([
-			getUserProgress({ database, userId }),
-			loadUserXP({ database, userId }),
-			getUserInk({ database, userId }),
-		])
-			.then(([nextProgress, nextExperience, nextInkBalance]) => {
-				setProgressById(nextProgress);
-				setExperience(nextExperience);
-				setInkBalance(nextInkBalance);
-				setStatus('ready');
-			})
-			.catch(error => {
-				console.error('Could not retrieve user progress:', error);
-				setStatus('error');
+		try {
+			const nextWordProgressById = await getUserWordProgress({
+				database,
+				userId,
 			});
+			const [nextProgress, nextExperience, nextInkBalance, nextCollectionClaims] =
+				await Promise.all([
+					getUserProgress({
+						database,
+						userId,
+						wordProgressById: nextWordProgressById,
+					}),
+					loadUserXP({
+						database,
+						userId,
+					}),
+					getUserInk({
+						database,
+						userId,
+					}),
+					getCollectionRewardClaims({
+						database,
+						userId,
+					}),
+				]);
+
+			setProgressById(nextProgress);
+			setWordProgressById(nextWordProgressById);
+			setCollectionClaims(nextCollectionClaims);
+			setExperience(nextExperience);
+			setInkBalance(nextInkBalance);
+			setStatus('ready');
+		} catch (error) {
+			console.error('Could not retrieve user progress:', error);
+			setStatus('error');
+		}
 	}, [database, userId]);
+
+	const collections = useMemo(() => {
+		return collectionAtlas.collections.map(collection => {
+			return getVocabularyCollectionProgress({
+				collection,
+				wordProgressById,
+				claims: collectionClaims,
+			});
+		});
+	}, [collectionClaims, wordProgressById]);
 
 	/**
 	 * Load userProgress rows when the database is ready
@@ -172,6 +223,22 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			}
 		},
 		[refreshProgress, userId],
+	);
+
+	/**
+	 * Claims collection XP and refreshes progress to update the album and player level.
+	 */
+	const recordCollectionReward = useCallback(
+		async (request: ClaimCollectionRewardRequest): Promise<CollectionRewardReceipt | false> => {
+			return runProgressWrite(() => {
+				return claimCollectionReward({
+					database,
+					userId: userId!,
+					...request,
+				});
+			});
+		},
+		[database, runProgressWrite, userId],
 	);
 
 	/**
@@ -267,6 +334,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const value = useMemo<UserProgressContextProps>(
 		() => ({
+			collections,
+			claimCollectionReward: recordCollectionReward,
 			inkBalance,
 			experience,
 			isUpdatingProgress,
@@ -281,6 +350,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			status,
 		}),
 		[
+			collections,
+			recordCollectionReward,
 			inkBalance,
 			experience,
 			isUpdatingProgress,
