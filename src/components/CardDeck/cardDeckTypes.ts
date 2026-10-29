@@ -48,9 +48,14 @@ export interface CardDeckDefinition extends Progression {
 	acceptedWordOrders?: number[][];
 }
 
+/**
+ * We use this to keep all the paragraph's planned flashcard decks together.
+ * Each list holds one deck's word IDs in play order, so we know which cards
+ * belong together even while the learner is playing only the first deck.
+ */
 export interface CardDeck extends CardDeckDefinition {
-	/** Non-exempt word IDs from the passage, with duplicates removed. */
 	wordIds: string[];
+	flashcardDecks?: string[][];
 }
 
 export type ReadingPassage = Pick<CardDeck, 'id' | 'title' | 'passage' | 'wordIds'>;
