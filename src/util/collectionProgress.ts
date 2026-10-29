@@ -46,8 +46,7 @@ export function getWordsAtLevel(
 }
 
 /**
- * Checks whether every word in a story, chapter, or paragraph
- * has reached the requested level or higher.
+ * Checks whether every word has reached a learning level to unlock rewards
  */
 export function hasCollectionLevel(
 	progress: UserProgressRow | undefined,

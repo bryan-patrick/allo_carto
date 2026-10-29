@@ -127,6 +127,27 @@ export default async function createTables(): Promise<void> {
 }
 
 /**
+ * Creates storage for claimed collections XP (receipts)
+ */
+async function createCollectionRewardClaimsTable(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS collectionRewardClaims (
+			userId TEXT NOT NULL,
+			collectionId TEXT NOT NULL,
+			requiredWordProgress TEXT NOT NULL
+				CHECK (requiredWordProgress IN ('new', 'learning', 'familiar', 'known', 'mastered')),
+			xp INTEGER NOT NULL CHECK (xp > 0),
+			claimedAt INTEGER NOT NULL,
+			PRIMARY KEY (userId, collectionId, requiredWordProgress),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+	`;
+
+	await database.execAsync(statement);
+}
+
+/**
  * Creates storage for the first Solve puzzle's unlocked cards, answers, paid attempts, and earned gem.
  * Also prepares saved progress for the later Solve puzzles.
  */
