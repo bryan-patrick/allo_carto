@@ -121,9 +121,31 @@ export default async function createTables(): Promise<void> {
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
 	await createInkTables();
+	await createCollectionRewardClaimsTable();
 	await createSolveTables();
 	await ensureFlashcardsStartedColumn();
 	await ensureParagraphProgressType();
+}
+
+/**
+ * Creates storage for claimed collection rewards so each level pays XP once per player.
+ */
+async function createCollectionRewardClaimsTable(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS collectionRewardClaims (
+			userId TEXT NOT NULL,
+			collectionId TEXT NOT NULL,
+			requiredWordProgress TEXT NOT NULL
+				CHECK (requiredWordProgress IN ('new', 'learning', 'familiar', 'known', 'mastered')),
+			xp INTEGER NOT NULL CHECK (xp > 0),
+			claimedAt INTEGER NOT NULL,
+			PRIMARY KEY (userId, collectionId, requiredWordProgress),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+	`;
+
+	await database.execAsync(statement);
 }
 
 /**

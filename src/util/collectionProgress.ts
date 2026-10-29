@@ -1,11 +1,15 @@
-import type { UserProgressRow } from './progression';
+import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { wordProgressDefinitions, type WordProgressKey } from './wordProgress';
 
+interface CollectionWordProgress {
+	wordCount?: number;
+	wordProgressCounts?: DeckWordProgressCounts;
+}
+
 /**
- * Starting from the bottom, the lowest level that has cards is the collection level
- * Since all cards (words) must be at the level to be on that level (gem or w/e)
+ * Gets the lowest word level to use as the collection's learning level.
  */
-export function getCollectionLevel(progress?: UserProgressRow): WordProgressKey {
+export function getCollectionLevel(progress?: CollectionWordProgress): WordProgressKey {
 	const wordCount = progress?.wordCount ?? 0;
 	const wordProgressCounts = progress?.wordProgressCounts;
 
@@ -26,10 +30,10 @@ export function getCollectionLevel(progress?: UserProgressRow): WordProgressKey 
 }
 
 /**
- * Returns all of the words at a given "level" (learning level, new, learning, mastered, etc.)
+ * Counts words at or above a learning level to measure progress toward a goal.
  */
 export function getWordsAtLevel(
-	progress: UserProgressRow | undefined,
+	progress: CollectionWordProgress | undefined,
 	level: WordProgressKey,
 ): number {
 	const wordProgressCounts = progress?.wordProgressCounts;
@@ -46,11 +50,10 @@ export function getWordsAtLevel(
 }
 
 /**
- * Checks whether every word in a story, chapter, or paragraph
- * has reached the requested level or higher.
+ * Checks whether every word has reached a learning level to unlock progress or rewards.
  */
 export function hasCollectionLevel(
-	progress: UserProgressRow | undefined,
+	progress: CollectionWordProgress | undefined,
 	level: WordProgressKey,
 ): boolean {
 	const totalWordCount = progress?.wordCount ?? 0;

@@ -6,6 +6,9 @@ import { words_an_amber_approach } from './words_an_amber_approach';
 import { words_meet_leo } from './words_meet_leo';
 import { words_a_new_restaurant } from './words_a_new_restaurant';
 import { words_le_chef_leo } from './words_le_chef_leo';
+import { words_days_of_the_week } from './words_days_of_the_week';
+import { words_clothing } from './words_clothing';
+import { words_seasons } from './words_seasons';
 
 export * from './words_le_chef_leo';
 export * from './words_welcome_to_allo_carto';
@@ -15,6 +18,9 @@ export * from './words_a_cab_and_a_close_call';
 export * from './words_an_amber_approach';
 export * from './words_meet_leo';
 export * from './words_a_new_restaurant';
+export * from './words_days_of_the_week';
+export * from './words_clothing';
+export * from './words_seasons';
 
 export const seedWords = [
 	...words_a1,
@@ -25,4 +31,7 @@ export const seedWords = [
 	...words_a_new_restaurant,
 	...words_welcome_to_allo_carto,
 	...words_le_chef_leo,
+	...words_days_of_the_week,
+	...words_clothing,
+	...words_seasons,
 ];
