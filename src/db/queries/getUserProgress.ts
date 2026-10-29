@@ -1,19 +1,14 @@
 import { getAtlasCompletionItems } from '@/src/util/atlasCompletion';
 import type { ProgressById, UserProgressRow } from '@/src/util/progression';
 import type { CompletedSolveStages } from '@/src/util/solveProgression';
-import { getWordProgressKeyFromCounts, type WordProgressKey } from '@/src/util/wordProgress';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { emptyDeckWordProgressCounts } from './getDeckWordProgressCounts';
+import getUserWordProgress, { type UserWordProgressById } from './getUserWordProgress';
 
 interface GetUserProgressOptions {
 	database: SQLiteDatabase;
 	userId: string;
-}
-
-interface UserWordProgressRow {
-	wordId: string;
-	correctCount: number;
-	seenCount: number;
+	wordProgressById?: UserWordProgressById;
 }
 
 interface SolveCompletionRow {
@@ -28,18 +23,23 @@ interface SolveCompletionRow {
 export default async function getUserProgress({
 	database,
 	userId,
+	wordProgressById,
 }: GetUserProgressOptions): Promise<ProgressById> {
 	const statements = {
 		getProgress: `
 			SELECT userId, id, type, completionPercentage, hasStartedFlashcards
 			FROM userProgress WHERE userId = ?;
 		`,
-		getWords: 'SELECT wordId, correctCount, seenCount FROM userWords WHERE userId = ?;',
 		getCompletions: 'SELECT deckId, completedSolveStages FROM solveCompletions WHERE userId = ?;',
 	};
 	const result: ProgressById = {};
 	const rows = await database.getAllAsync<UserProgressRow>(statements.getProgress, userId);
-	const words = await database.getAllAsync<UserWordProgressRow>(statements.getWords, userId);
+	const savedWordProgress =
+		wordProgressById ??
+		(await getUserWordProgress({
+			database,
+			userId,
+		}));
 	const completions = await database.getAllAsync<SolveCompletionRow>(
 		statements.getCompletions,
 		userId,
@@ -47,15 +47,9 @@ export default async function getUserProgress({
 	const savedParagraphIds = completions.map(completion => completion.deckId);
 	const completedParagraphs = new Set(savedParagraphIds);
 	const completedStagesByParagraph = new Map<string, CompletedSolveStages>();
-	const wordProgressById = new Map<string, WordProgressKey>();
 
 	for (const completion of completions) {
 		completedStagesByParagraph.set(completion.deckId, completion.completedSolveStages);
-	}
-
-	for (const word of words) {
-		const wordProgress = getWordProgressKeyFromCounts(word);
-		wordProgressById.set(word.wordId, wordProgress);
 	}
 
 	for (const row of rows) {
@@ -88,7 +82,7 @@ export default async function getUserProgress({
 		}
 
 		for (const wordId of item.wordIds) {
-			const wordProgress = wordProgressById.get(wordId) ?? 'unseen';
+			const wordProgress = savedWordProgress[wordId] ?? 'unseen';
 			wordProgressCounts[wordProgress]++;
 		}
 

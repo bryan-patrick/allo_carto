@@ -783,4 +783,17 @@ export const words_welcome_to_allo_carto: Word[] = [
 		form: 'present',
 		tense: 'impératif',
 	}),
+	defineWord({
+		id: 'word_verb_porte',
+		frenchWord: 'porte',
+		englishWords: ['wears', 'is wearing'],
+		pronunciation: 'pohrt',
+		ipaPronunciation: 'pɔʁt',
+		CEFR: 'A1',
+		partOfSpeech: 'verb',
+		rarity: 'Common',
+		lemmaId: 'word_verb_porter',
+		form: 'present',
+		tense: 'présent',
+	}),
 ];

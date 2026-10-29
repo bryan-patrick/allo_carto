@@ -2,6 +2,7 @@ import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import VolumeSetting from '../../components/VolumeSetting';
+import MockParagraphProgressSetting from '../../components/MockParagraphProgressSetting';
 import { resetDB } from '../../db/interface';
 import { useUserProgress } from '../../db/useUserProgress';
 import {
@@ -63,7 +64,7 @@ function getSolveUnlockDescription(): string {
 }
 
 export default function Settings() {
-	const { experience, reloadProgress } = useUserProgress();
+	const { experience, reloadProgress, isUpdatingProgress } = useUserProgress();
 	const { settings, setSetting } = useAppSettings();
 	const useAutomaticCardCount = settings.cardsPerDeck === null;
 	const automaticCardCount = getCardsPerDeck(experience.level);
@@ -274,10 +275,14 @@ export default function Settings() {
 			{settings.showDebugOptions && (
 				<View style={styles.section}>
 					<Text style={styles.heading}>Debug</Text>
+					<MockParagraphProgressSetting disabled={isResettingDB} />
 					<Pressable
 						accessibilityRole="button"
-						disabled={isResettingDB}
-						style={[styles.resetPressable, isResettingDB && styles.disabledPressable]}
+						disabled={isResettingDB || isUpdatingProgress}
+						style={[
+							styles.resetPressable,
+							(isResettingDB || isUpdatingProgress) && styles.disabledPressable,
+						]}
 						onPress={confirmResetDB}
 					>
 						<Text style={styles.text}>{isResettingDB ? 'Resetting DB...' : 'Reset DB'}</Text>

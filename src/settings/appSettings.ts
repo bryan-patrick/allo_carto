@@ -1,4 +1,6 @@
 import { isValidCardsPerDeck } from '@/src/util/cardsPerDeck';
+import type { CompletedSolveStages } from '@/src/util/solveProgression';
+import { isMockParagraphPreset } from './mockParagraphProgress';
 
 /**
  * Typing
@@ -17,6 +19,7 @@ interface BooleanSettings {
 }
 
 export interface AppSettings extends BooleanSettings {
+	mockParagraphCompletion: CompletedSolveStages;
 	soundEffectsVolume: number;
 	ttsVolume: number;
 	cardsPerDeck: number | null;
@@ -54,6 +57,7 @@ export function clampAudioVolume(volume: number): number {
  * Default settings
  */
 export const defaultAppSettings: AppSettings = {
+	mockParagraphCompletion: 1,
 	soundEffectsEnabled: true,
 	ttsOnCorrectEnabled: true,
 	soundEffectsVolume: 0.5,
@@ -109,6 +113,10 @@ export function readAppSettings(value: string | null): AppSettings {
 
 	if (saved.pronunciationFormat === 'readable' || saved.pronunciationFormat === 'ipa') {
 		settingsCopy.pronunciationFormat = saved.pronunciationFormat;
+	}
+
+	if (isMockParagraphPreset(saved.mockParagraphCompletion)) {
+		settingsCopy.mockParagraphCompletion = saved.mockParagraphCompletion;
 	}
 
 	return settingsCopy;

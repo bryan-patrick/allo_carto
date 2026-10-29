@@ -45,6 +45,19 @@ export default function TabsLayout({ size = 28 }) {
 				}}
 			/>
 			<Tabs.Screen
+				name="achievements"
+				options={{
+					title: 'Achievements',
+					tabBarIcon: ({ color }) => (
+						<MaterialSymbol
+							color={color}
+							size={size}
+							name="emoji_events"
+						/>
+					),
+				}}
+			/>
+			<Tabs.Screen
 				name="settings"
 				options={{
 					title: 'Settings',

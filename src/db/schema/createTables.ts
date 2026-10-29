@@ -121,6 +121,7 @@ export default async function createTables(): Promise<void> {
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
 	await createInkTables();
+	await createCollectionRewardClaimsTable();
 	await createSolveTables();
 	await ensureFlashcardsStartedColumn();
 	await ensureParagraphProgressType();
