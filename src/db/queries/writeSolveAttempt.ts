@@ -6,6 +6,9 @@ import getSolvePuzzle from './getSolvePuzzle';
 import getUserInk from './getUserInk';
 import writeSolvePlusAttempt from './writeSolvePlusAttempt';
 
+/**
+ * Typing
+ */
 interface WriteSolveAttemptOptions extends SolveAttemptRequest {
 	database: SQLiteDatabase;
 	userId: string;
@@ -19,8 +22,7 @@ interface SavedSolveAttempt extends Omit<SolveAttemptResult, 'firstGemEarned'> {
 }
 
 /**
- * We save the answer and its Ink charge together so neither can be saved alone.
- * Retrying the same answer uses its saved receipt without charging again.
+ * Check an English answer and save the ink charge and card.
  */
 export default async function writeSolveAttempt({
 	database,
@@ -120,16 +122,11 @@ export default async function writeSolveAttempt({
 			return;
 		}
 
-		if (!card.isUnlocked) {
-			result.status = 'locked';
-			return;
-		}
-
 		const checkedAnswer = checkSolveAnswer({
 			answer,
 			englishWords: card.englishWords,
 		});
-		const cardCost = inkConfig.cardCostByRarity[card.rarity];
+		const cardCost = card.inkCost;
 		const inkBalance = await getUserInk({
 			database: transaction,
 			userId,
@@ -144,8 +141,7 @@ export default async function writeSolveAttempt({
 		}
 
 		/**
-		 * The player needs enough Ink for a correct answer before trying.
-		 * Takes the smaller price if their answer is wrong.
+		 * Wrong answers don't cost as much ink as correct ones
 		 */
 		if (inkBalance < cardCost) {
 			result.status = 'notEnoughInk';
@@ -169,8 +165,7 @@ export default async function writeSolveAttempt({
 			);
 
 			/**
-			 * The last correct card earns the first gem in this same save.
-			 * Story access follows that saved gem, so a failed save cannot open the next paragraph.
+			 * Save the first gem with the last answer so the next paragraph opens only after both save.
 			 */
 			if (remainingCards.length === 0 && !puzzle.hasFirstGem) {
 				const completion = await transaction.runAsync(

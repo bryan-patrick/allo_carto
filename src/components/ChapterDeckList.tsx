@@ -17,8 +17,11 @@ import getDeckWordProgressCounts, {
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
-import { hasParagraphContent } from '@/src/util/atlasContent';
+import {
+	getUnlockCriteria,
+	getVisibleParagraphs,
+	isItemUnlocked,
+} from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import type { ProgressById } from '@/src/util/progression';
@@ -43,7 +46,7 @@ interface PassageState {
 }
 
 /**
- * We use this to list a chapter's paragraphs and open their reading or flashcard view.
+ * Show the chapter's open paragraphs and next locked one with reading and practice buttons.
  */
 export default function ChapterDeckList({ chapter, progressById, story }: ChapterDeckListProps) {
 	const router = useRouter();
@@ -60,6 +63,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 	const [loadingPassageId, setLoadingPassageId] = useState<string>();
 	const [passageState, setPassageState] = useState<PassageState>();
 	const storyColor = colors.category[story.category];
+	const visibleParagraphs = getVisibleParagraphs(chapter, progressById);
 
 	/**
 	 * Load and begin the selected deck
@@ -143,7 +147,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 				chapter={chapter}
 				color={storyColor}
 			/>
-			{chapter.decks.filter(hasParagraphContent).map((deck, index) => {
+			{visibleParagraphs.map((deck, index) => {
 				const isFirstDeck = index === 0;
 				const isLocked = !isItemUnlocked({
 					id: deck.id,
@@ -212,8 +216,8 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 									accessibilityLabel={`${actionLabel} for paragraph: ${deck.title}`}
 									arrowColor={colors.light.text}
 									color={storyColor}
-									contentPaddingHorizontal={6}
-									contentPaddingVertical={6}
+									contentPaddingHorizontal={8}
+									contentPaddingVertical={8}
 									handler={() => handleSelectDeck(deck)}
 									disabled={isUpdatingProgress}
 									showInnerBorder={false}
@@ -290,6 +294,7 @@ const styles = StyleSheet.create({
 	},
 	primaryActionButton: {
 		flex: 2,
+		borderBottomWidth: 2,
 	},
 	loadingButton: {
 		opacity: 0.5,

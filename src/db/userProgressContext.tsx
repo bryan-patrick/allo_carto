@@ -6,7 +6,6 @@ import type {
 	SentenceAttemptRequest,
 	SolveAttemptRequest,
 	SolveAttemptResult,
-	SolveCardRequest,
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
 import { useAppSettings } from '@/src/settings/useAppSettings';
@@ -25,7 +24,6 @@ import {
 import loadUserXP from './queries/getUserExperience';
 import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
-import unlockSolveCard from './queries/unlockSolveCard';
 import writeSentenceAttempt from './queries/writeSentenceAttempt';
 import writeSolveAttempt from './queries/writeSolveAttempt';
 import {
@@ -59,7 +57,6 @@ interface UserProgressContextProps {
 	) => Promise<DeckCompletionReceiptProps | false>;
 	writeWordSeen: (wordId: string, deckId?: string) => Promise<boolean>;
 	writeSolveAttempt: (request: SolveAttemptRequest) => Promise<SolveAttemptResult | false>;
-	unlockSolveCard: (request: SolveCardRequest) => Promise<SolveAttemptResult | false>;
 	writeWordOrderAttempt: (request: WordOrderAttemptRequest) => Promise<SolveAttemptResult | false>;
 	writeSentenceAttempt: (request: SentenceAttemptRequest) => Promise<SolveAttemptResult | false>;
 	reloadProgress: () => Promise<void>;
@@ -78,7 +75,6 @@ const initialValue: UserProgressContextProps = {
 	writeDeckCompletion: async () => false,
 	writeWordSeen: async () => false,
 	writeSolveAttempt: async () => false,
-	unlockSolveCard: async () => false,
 	writeWordOrderAttempt: async () => false,
 	writeSentenceAttempt: async () => false,
 	reloadProgress: async () => {},
@@ -233,23 +229,6 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	);
 
 	/**
-	 * Unlocking a puzzle card updates the ink after it saves.
-	 */
-	const recordSolveUnlock = useCallback(
-		async (request: SolveCardRequest): Promise<SolveAttemptResult | false> => {
-			return runProgressWrite(() =>
-				unlockSolveCard({
-					database,
-					userId: userId!,
-					...request,
-					fastSolveUnlocks,
-				}),
-			);
-		},
-		[database, runProgressWrite, userId, fastSolveUnlocks],
-	);
-
-	/**
 	 * Submits the Solve++ answer using the current unlock setting, then reloads the player's Ink and gems.
 	 */
 	const recordWordOrderAttempt = useCallback(
@@ -296,7 +275,6 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			writeDeckCompletion: recordDeckCompletion,
 			writeWordSeen: recordWordSeen,
 			writeSolveAttempt: recordSolveAttempt,
-			unlockSolveCard: recordSolveUnlock,
 			writeWordOrderAttempt: recordWordOrderAttempt,
 			writeSentenceAttempt: recordSentenceAttempt,
 			reloadProgress: refreshProgress,
@@ -311,7 +289,6 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			recordDeckCompletion,
 			recordWordSeen,
 			recordSolveAttempt,
-			recordSolveUnlock,
 			recordWordOrderAttempt,
 			recordSentenceAttempt,
 			refreshProgress,

@@ -1,6 +1,6 @@
 import colors from '@/src/app/colors';
-import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import LinkButton from '@/src/components/LinkButton';
+import SecondaryButton from '@/src/components/SecondaryButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import WordOrderBoard from '@/src/components/Solve/WordOrderBoard';
 import type {
@@ -8,15 +8,13 @@ import type {
 	SolveWordOrderPuzzle,
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
-import { getDB, getDeck } from '@/src/db/interface';
+import { getDB } from '@/src/db/interface';
 import getSolveWordOrderPuzzle from '@/src/db/queries/getSolveWordOrderPuzzle';
 import saveWordOrderDraft from '@/src/db/queries/saveWordOrderDraft';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { findCompletionPath } from '@/src/util/atlasCompletion';
-import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
-import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { inkConfig } from '@/src/util/ink';
 import {
@@ -27,7 +25,7 @@ import {
 } from '@/src/util/solveProgression';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { Alert, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SolveWordOrderViewProps {
@@ -56,7 +54,7 @@ function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 			backgroundColor: colors.light.danger,
 		},
 		notEnoughInk: {
-			text: 'Not enough Ink. Practice flashcards to earn more.',
+			text: 'Not enough Ink. Close this puzzle and practice flashcards to earn more.',
 			backgroundColor: colors.light.warning,
 			needsInk: true,
 		},
@@ -84,7 +82,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const { id: userId } = useUserContext() ?? {};
 	const { progressById, experience, inkBalance, isUpdatingProgress, writeWordOrderAttempt } =
 		useUserProgress();
-	const { cardDeckDispatch } = useCardDeck();
 	const { settings } = useAppSettings();
 	const [puzzle, setPuzzle] = useState<SolveWordOrderPuzzle>();
 	const [positions, setPositions] = useState<number[]>([]);
@@ -132,11 +129,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
-	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
-	const showFlashcards =
-		Boolean(puzzle) &&
-		!isComplete &&
-		(!hasEnoughInk || feedback?.needsInk || eligibility.lockReason === 'playerLevelRequired');
 	const containerInsets = {
 		paddingTop: top + 8,
 	};
@@ -332,46 +324,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		}
 	}
 
-	/**
-	 * Opens this paragraph's flashcards so the player can earn Ink or raise their player level.
-	 * The saved Word Order arrangement stays available when they return.
-	 */
-	async function handleOpenFlashcards() {
-		if (!userId || !puzzle || disabled || needsRetry || isBusy.current) {
-			return;
-		}
-
-		isBusy.current = true;
-		setIsSaving(true);
-
-		try {
-			const selectedDeck = await getDeck({
-				deck: puzzle.deck,
-				amount: cardsPerDeck,
-				userId,
-			});
-			const session = createDeckSession(experience.totalXP);
-
-			if (!selectedDeck || selectedDeck.words.length === 0) {
-				Alert.alert('Could not start session', 'Please try again.');
-				return;
-			}
-
-			cardDeckDispatch({
-				type: 'SET_DECK',
-				payload: selectedDeck,
-				session,
-			});
-			router.replace('/CardDeck');
-		} catch (error) {
-			console.error('Could not open flashcards:', error);
-			Alert.alert('Could not start session', 'Please try again.');
-		} finally {
-			isBusy.current = false;
-			setIsSaving(false);
-		}
-	}
-
 	function handleClose() {
 		if (disabled || isBusy.current) {
 			return;
@@ -445,13 +397,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						/>
 						<Text style={styles.title}>Third gem earned!</Text>
 						<Text style={styles.text}>All three gems are earned for this paragraph.</Text>
-						<LinkButton
-							handler={handleClose}
-							color={storyColor}
-							useArrow={false}
-						>
-							Close
-						</LinkButton>
 					</View>
 				: isEligible ?
 					<WordOrderBoard
@@ -462,46 +407,50 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						onDraggingChange={setIsDragging}
 					/>
 				:	<Text style={styles.notice}>{unlockMessage}</Text>}
-				{puzzle && !isComplete && (
-					<View style={styles.footer}>
-						{isEligible && !hasEnoughInk && !feedback?.needsInk && (
-							<Text style={styles.text}>You need {inkCost} Ink to submit.</Text>
-						)}
-						{feedback && (
-							<Text
-								accessibilityLiveRegion="polite"
-								style={styles.text}
-							>
-								<Text style={feedbackStyle}>{feedback.text}</Text>
-							</Text>
-						)}
-						{showFlashcards && (
+				<View style={styles.footer}>
+					{puzzle && !isComplete && (
+						<>
+							{isEligible && !hasEnoughInk && !feedback?.needsInk && (
+								<Text style={styles.text}>
+									You need {inkCost} Ink to submit. Close this puzzle and practice flashcards to
+									earn more.
+								</Text>
+							)}
+							{feedback && (
+								<Text
+									accessibilityLiveRegion="polite"
+									style={styles.text}
+								>
+									<Text style={feedbackStyle}>{feedback.text}</Text>
+								</Text>
+							)}
 							<LinkButton
-								handler={handleOpenFlashcards}
-								color={storyColor}
-								disabled={disabled || needsRetry}
+								handler={handleSubmit}
+								disabled={submitDisabled}
+								accessibilityLabel={submitLabel}
+								accessibilityState={{
+									disabled: submitDisabled,
+									busy: isSaving,
+								}}
+								color={submitDisabled ? colors.dark.border : inkColor}
+								style={submitDisabled && styles.disabled}
+								useArrow={false}
 								fullwidth
 							>
-								Flashcards
+								{submitLabel}
 							</LinkButton>
-						)}
-						<LinkButton
-							handler={handleSubmit}
-							disabled={submitDisabled}
-							accessibilityLabel={submitLabel}
-							accessibilityState={{
-								disabled: submitDisabled,
-								busy: isSaving,
-							}}
-							color={submitDisabled ? colors.dark.border : inkColor}
-							style={submitDisabled && styles.disabled}
-							useArrow={false}
-							fullwidth
-						>
-							{submitLabel}
-						</LinkButton>
-					</View>
-				)}
+						</>
+					)}
+					<SecondaryButton
+						onPress={handleClose}
+						disabled={disabled}
+						color={storyColor}
+						type="outline"
+						fullwidth
+					>
+						Close
+					</SecondaryButton>
+				</View>
 			</ImageBackground>
 		</View>
 	);

@@ -17,9 +17,7 @@ interface CompletionXPProgressProps {
 }
 
 /**
- * TODO: Fill the bar to show the user's new XP. This hasn't been working well...
- * Might have something to do with the reduced motion
- * The carry over on level up does work though.
+ * Show the player's level and animate XP earned from the flashcard session.
  */
 export default function CompletionXPProgress({
 	fromXP,
@@ -39,6 +37,9 @@ export default function CompletionXPProgress({
 	});
 
 	const previousExperience = getUserExperience(fromXP);
+	const titleColor = {
+		color,
+	};
 
 	let nextLevelLabel = `Lvl. ${experience.level + 1}`;
 	let progressLabel = `${experience.xpIntoLevel} / ${experience.xpForNextLevel} XP`;
@@ -116,25 +117,35 @@ export default function CompletionXPProgress({
 	 */
 	return (
 		<View style={styles.container}>
+			<View style={styles.headerRow}>
+				<Text
+					accessibilityRole="header"
+					style={[styles.sectionTitle, titleColor]}
+				>
+					Level progress
+				</Text>
+				<Text style={styles.progressLabel}>{progressLabel}</Text>
+			</View>
 			{levelUpLabel && <Text style={styles.levelUp}>{levelUpLabel}</Text>}
 			<View
 				accessible
 				accessibilityLabel={`Level ${experience.level}. ${progressLabel}.`}
 				accessibilityRole="progressbar"
-				accessibilityValue={{ min: 0, max: 100, now: experience.progressPercentage }}
-				style={styles.progress}
+				accessibilityValue={{
+					min: 0,
+					max: 100,
+					now: experience.progressPercentage,
+				}}
+				style={styles.progressRow}
 			>
-				<View style={styles.progressRow}>
-					<Text style={styles.level}>Lvl. {experience.level}</Text>
-					<ProgressBar
-						key={experience.level}
-						color={color}
-						percent={experience.progressPercentage}
-						style={styles.bar}
-					/>
-					<Text style={styles.level}>{nextLevelLabel}</Text>
-				</View>
-				<Text style={styles.progressLabel}>{progressLabel}</Text>
+				<Text style={styles.level}>Lvl. {experience.level}</Text>
+				<ProgressBar
+					key={experience.level}
+					color={color}
+					percent={experience.progressPercentage}
+					style={styles.bar}
+				/>
+				<Text style={styles.level}>{nextLevelLabel}</Text>
 			</View>
 		</View>
 	);
@@ -145,21 +156,29 @@ export default function CompletionXPProgress({
  */
 const styles = StyleSheet.create({
 	container: {
-		gap: 4,
+		paddingVertical: 12,
+		gap: 8,
+	},
+	headerRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: 8,
+	},
+	sectionTitle: {
+		fontFamily: 'lexend-600',
+		fontSize: 14,
 	},
 	levelUp: {
 		fontFamily: 'lexend-600',
-		fontSize: 12,
+		fontSize: 14,
 		color: colors.dark.success,
 		textAlign: 'center',
-	},
-	progress: {
-		gap: 4,
 	},
 	progressRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
+		gap: 8,
 	},
 	level: {
 		fontFamily: 'lexend-400',
@@ -177,7 +196,7 @@ const styles = StyleSheet.create({
 	progressLabel: {
 		fontFamily: 'azeret-mono-400',
 		fontSize: 11,
-		textAlign: 'center',
+		textAlign: 'right',
 		color: colors.dark.text,
 	},
 });

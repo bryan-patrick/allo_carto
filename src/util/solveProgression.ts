@@ -149,13 +149,14 @@ export function getNextSolveStage(completedStages: CompletedSolveStages): SolveS
 }
 
 /**
- * Prices card unlocks and correct answers in Solve and Solve+.
+ * Gets the ink cost
  */
 export function getSolveCardInkCost(stage: SolveWordStage, rarity: CardRarity): number {
 	const rarityCost = inkConfig.cardCostByRarity[rarity];
 	const costIncrease = solveStages[stage].cardCostIncrease;
+	const cardPrice = rarityCost + costIncrease;
 
-	return rarityCost + costIncrease;
+	return cardPrice * 2;
 }
 
 /**
@@ -219,7 +220,7 @@ export function getSolveUnlockMessage({
 		completed: '',
 		paragraphLocked: 'Complete the earlier paragraphs to open this paragraph.',
 		noWords: '',
-		unseenWords: `Solve unlocks when you have seen every flashcard (${seenWordCount} of ${wordCount} seen).`,
+		unseenWords: `See every flashcard to solve (${seenWordCount} of ${wordCount} seen).`,
 		previousStageRequired: `Complete ${previousLabel} to unlock ${definition.label}.`,
 		playerLevelRequired: `${definition.label} unlocks at player level ${eligibility.requiredPlayerLevel}.`,
 	};

@@ -100,6 +100,7 @@ export default function SolveButton({ deckId, color, disabled = false }: SolveBu
 						}
 						size={18}
 						color={color}
+						style={styles.icon}
 					/>
 				}
 				fullwidth
@@ -118,11 +119,16 @@ const styles = StyleSheet.create({
 		minWidth: 110,
 	},
 	button: {
-		paddingVertical: 6,
-		paddingHorizontal: 6,
+		paddingVertical: 9,
+		paddingHorizontal: 8,
+		borderWidth: 1,
 		borderBottomWidth: 2,
 		shadowOpacity: 0,
 		borderRadius: 8,
+	},
+	icon: {
+		height: 18,
+		lineHeight: 18,
 	},
 	gradient: {
 		...StyleSheet.absoluteFill,

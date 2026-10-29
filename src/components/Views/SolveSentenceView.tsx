@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
-import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import CollectionGems from '@/src/components/CollectionGems';
 import LinkButton from '@/src/components/LinkButton';
+import SecondaryButton from '@/src/components/SecondaryButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import type {
@@ -9,14 +9,12 @@ import type {
 	SolveAttemptResult,
 	SolveSentencePuzzle,
 } from '@/src/components/Solve/solveTypes';
-import { getDB, getDeck } from '@/src/db/interface';
+import { getDB } from '@/src/db/interface';
 import getSolveSentencePuzzle from '@/src/db/queries/getSolveSentencePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { findCompletionPath } from '@/src/util/atlasCompletion';
-import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
-import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { inkConfig } from '@/src/util/ink';
 import type { UserProgressRow } from '@/src/util/progression';
@@ -30,7 +28,6 @@ import {
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import {
-	Alert,
 	ImageBackground,
 	KeyboardAvoidingView,
 	Platform,
@@ -66,7 +63,6 @@ interface SentenceStageText {
 interface SentenceFeedback {
 	text: string;
 	backgroundColor: string;
-	needsInk?: boolean;
 }
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
@@ -105,9 +101,8 @@ function getSentenceFeedback(result: SolveAttemptResult, answerLanguage: string)
 			backgroundColor: colors.light.warning,
 		},
 		notEnoughInk: {
-			text: 'Not enough Ink. Practice flashcards to earn more.',
+			text: 'Not enough Ink. Close this puzzle and practice flashcards to earn more.',
 			backgroundColor: colors.light.warning,
-			needsInk: true,
 		},
 		alreadySolved: {
 			text: 'This sentence is already solved.',
@@ -132,7 +127,6 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const { id: userId } = useUserContext() ?? {};
 	const { progressById, experience, inkBalance, isUpdatingProgress, writeSentenceAttempt } =
 		useUserProgress();
-	const { cardDeckDispatch } = useCardDeck();
 	const { settings } = useAppSettings();
 	const [puzzle, setPuzzle] = useState<SolveSentencePuzzle>();
 	const [selectedPosition, setSelectedPosition] = useState(0);
@@ -189,14 +183,9 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const navigationDisabled = disabled || needsRetry;
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
 	const storyColor = getDeckStoryColor(deckId);
-	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
-	const showFlashcards =
-		Boolean(puzzle) &&
-		!isComplete &&
-		(!hasEnoughInk || feedback?.needsInk || eligibility.lockReason === 'playerLevelRequired');
 	const completionProgress: UserProgressRow = {
 		...progress,
 		userId: userId ?? '',
@@ -435,45 +424,6 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		}
 	}
 
-	/**
-	 * Open this paragraph's flashcards to earn more Ink while keeping solved sentences saved.
-	 */
-	async function handleOpenFlashcards() {
-		if (!userId || !puzzle || disabled || needsRetry || isBusy.current) {
-			return;
-		}
-
-		isBusy.current = true;
-		setIsSaving(true);
-
-		try {
-			const selectedDeck = await getDeck({
-				deck: puzzle.deck,
-				amount: cardsPerDeck,
-				userId,
-			});
-			const session = createDeckSession(experience.totalXP);
-
-			if (!selectedDeck || selectedDeck.words.length === 0) {
-				Alert.alert('Could not start session', 'Please try again.');
-				return;
-			}
-
-			cardDeckDispatch({
-				type: 'SET_DECK',
-				payload: selectedDeck,
-				session,
-			});
-			router.replace('/CardDeck');
-		} catch (error) {
-			console.error('Could not open flashcards:', error);
-			Alert.alert('Could not start session', 'Please try again.');
-		} finally {
-			isBusy.current = false;
-			setIsSaving(false);
-		}
-	}
-
 	function handleClose() {
 		if (disabled || isBusy.current) {
 			return;
@@ -553,13 +503,6 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 							/>
 							<Text style={styles.title}>{stageText.completionTitle}</Text>
 							<Text style={[styles.text, styles.centeredText]}>{stageText.completionMessage}</Text>
-							<LinkButton
-								handler={handleClose}
-								color={storyColor}
-								useArrow={false}
-							>
-								Close
-							</LinkButton>
 						</View>
 					: !isEligible ?
 						<Text style={styles.text}>{unlockMessage}</Text>
@@ -606,7 +549,8 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 												accessibilityLiveRegion="polite"
 												style={styles.text}
 											>
-												You need {inkCost} Ink to type an answer. Practice flashcards to earn more.
+												You need {inkCost} Ink to type an answer. Close this puzzle and practice
+												flashcards to earn more.
 											</Text>
 										)}
 									</>
@@ -657,43 +601,44 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 						</>
 					:	null}
 				</ScrollView>
-				{puzzle && !isComplete && (
-					<View style={styles.footer}>
-						{feedback && (
-							<Text
-								accessibilityLiveRegion="polite"
-								style={styles.text}
-							>
-								<Text style={feedbackStyle}>{feedback.text}</Text>
-							</Text>
-						)}
-						{showFlashcards && (
+				<View style={styles.footer}>
+					{puzzle && !isComplete && (
+						<>
+							{feedback && (
+								<Text
+									accessibilityLiveRegion="polite"
+									style={styles.text}
+								>
+									<Text style={feedbackStyle}>{feedback.text}</Text>
+								</Text>
+							)}
 							<LinkButton
-								handler={handleOpenFlashcards}
-								disabled={disabled || needsRetry}
-								color={storyColor}
+								handler={handleSubmit}
+								disabled={submitDisabled}
+								accessibilityLabel={submitLabel}
+								accessibilityState={{
+									disabled: submitDisabled,
+									busy: isSaving,
+								}}
+								color={submitDisabled ? colors.dark.border : inkColor}
+								style={submitDisabled && styles.disabled}
+								useArrow={false}
 								fullwidth
 							>
-								Flashcards
+								{submitLabel}
 							</LinkButton>
-						)}
-						<LinkButton
-							handler={handleSubmit}
-							disabled={submitDisabled}
-							accessibilityLabel={submitLabel}
-							accessibilityState={{
-								disabled: submitDisabled,
-								busy: isSaving,
-							}}
-							color={submitDisabled ? colors.dark.border : inkColor}
-							style={submitDisabled && styles.disabled}
-							useArrow={false}
-							fullwidth
-						>
-							{submitLabel}
-						</LinkButton>
-					</View>
-				)}
+						</>
+					)}
+					<SecondaryButton
+						onPress={handleClose}
+						disabled={disabled}
+						color={storyColor}
+						type="outline"
+						fullwidth
+					>
+						Close
+					</SecondaryButton>
+				</View>
 			</ImageBackground>
 		</KeyboardAvoidingView>
 	);

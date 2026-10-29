@@ -13,30 +13,35 @@ interface CompletionRewardsProps {
 	session: DeckSessionProps;
 	color: string;
 	inkBalance: number;
+	newFlashcardsSeen: number;
+	seenFlashcards: number;
+	totalFlashcards: number;
 }
 
 /**
- * Shows the current flashcard study session totals
+ * List the session's Ink, new flashcards, and XP above the player's level progress.
  */
-export default function CompletionRewards({ session, color, inkBalance }: CompletionRewardsProps) {
+export default function CompletionRewards({
+	session,
+	color,
+	inkBalance,
+	newFlashcardsSeen,
+	seenFlashcards,
+	totalFlashcards,
+}: CompletionRewardsProps) {
 	const { completion, results } = session;
-	const correctResults = results.filter(result => result.outcome === 'correct');
-	const skippedResults = results.filter(result => result.outcome === 'skipped');
-	const correctCount = correctResults.length;
-	const studiedCount = results.length;
-	const skippedCount = skippedResults.length;
 	const wordXP = results.reduce((total, result) => total + result.xp, 0);
 	const bonusXP = completion?.bonuses.reduce((total, bonus) => total + bonus.xp, 0) ?? 0;
 	const earnedXP = wordXP + bonusXP;
-	const accentStyle = { color };
+	const accentStyle = {
+		color,
+	};
 	const earnedInk = completion?.earnedInk ?? 0;
 	const isInkFull = inkBalance >= inkConfig.maxBalance;
-	let balanceLabel = `You have: ${inkBalance.toLocaleString()} / ${inkConfig.maxBalance}`;
-	let inkDescription = `Earned ${earnedInk} Ink. ${balanceLabel} Ink.`;
+	let balanceDescription = `Ink balance: ${inkBalance} of ${inkConfig.maxBalance}.`;
 
 	if (isInkFull) {
-		balanceLabel += ' - Full';
-		inkDescription += ' Ink is full. Correct answers still earn XP.';
+		balanceDescription += ' Ink is full. Correct answers still earn XP.';
 	}
 
 	if (!completion) {
@@ -45,44 +50,51 @@ export default function CompletionRewards({ session, color, inkBalance }: Comple
 
 	return (
 		<View style={styles.container}>
-			<View
-				accessible
-				accessibilityLabel={inkDescription}
-				style={styles.inkReward}
-			>
-				<MaterialSymbol
-					name="water_drop"
-					size={24}
-					color={color}
-				/>
-				<View style={styles.inkAmount}>
+			<View>
+				<View
+					accessible
+					accessibilityLabel={`Earned ${earnedInk} Ink. ${balanceDescription}`}
+					style={styles.row}
+				>
+					<View style={styles.rowLabel}>
+						<MaterialSymbol
+							name="water_drop"
+							size={18}
+							color={color}
+						/>
+						<Text style={styles.label}>
+							Ink earned ({inkBalance}/{inkConfig.maxBalance})
+						</Text>
+					</View>
 					<CountUp
 						value={earnedInk}
 						duration={500}
 						prefix="+"
 						style={[styles.amount, accentStyle]}
 					/>
-					<Text style={styles.label}>Ink earned</Text>
 				</View>
-				<Text style={[styles.label, isInkFull && styles.fullInkBalance]}>{balanceLabel}</Text>
-			</View>
-			<View style={styles.totals}>
-				<View style={styles.total}>
-					<Text style={[styles.amount, accentStyle]}>
-						{correctCount} / {studiedCount}
+				<View style={styles.row}>
+					<View style={styles.rowDetails}>
+						<Text style={styles.label}>New flashcards seen</Text>
+					</View>
+					<Text
+						style={[styles.amount, accentStyle]}
+						accessibilityLabel={`${newFlashcardsSeen} new flashcards seen this session. ${seenFlashcards} of ${totalFlashcards} flashcards seen in this paragraph.`}
+					>
+						{newFlashcardsSeen} ({seenFlashcards}/{totalFlashcards})
 					</Text>
-					<Text style={styles.label}>Correct</Text>
-					{skippedCount > 0 && <Text style={styles.note}>{skippedCount} skipped</Text>}
 				</View>
-				<View style={styles.total}>
+				<View style={styles.row}>
+					<View style={styles.rowDetails}>
+						<Text style={styles.label}>XP earned</Text>
+						{bonusXP > 0 && <Text style={styles.note}>{bonusXP} bonus XP</Text>}
+					</View>
 					<CountUp
 						value={earnedXP}
 						duration={500}
 						prefix="+"
 						style={[styles.amount, accentStyle]}
 					/>
-					<Text style={styles.label}>XP earned</Text>
-					{bonusXP > 0 && <Text style={styles.note}>Includes {bonusXP} bonus XP</Text>}
 				</View>
 			</View>
 			<CompletionXPProgress
@@ -102,47 +114,32 @@ const styles = StyleSheet.create({
 	container: {
 		gap: 8,
 	},
-	inkReward: {
+	row: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
-		padding: 6,
-		borderWidth: 1,
-		borderColor: colors.light.goldenBorder,
-		borderRadius: 8,
-		backgroundColor: `${colors.light.secondary}55`,
+		justifyContent: 'space-between',
+		gap: 8,
+		paddingVertical: 8,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.light.border,
 	},
-	inkAmount: {
-		flex: 1,
-		gap: 2,
-	},
-	fullInkBalance: {
-		backgroundColor: colors.ink.full,
-		paddingHorizontal: 6,
-		paddingVertical: 4,
-		borderRadius: 6,
-	},
-	totals: {
+	rowLabel: {
 		flexDirection: 'row',
-		gap: 6,
+		alignItems: 'center',
+		gap: 4,
 	},
-	total: {
+	rowDetails: {
 		flex: 1,
 		gap: 2,
-		padding: 6,
-		borderWidth: 1,
-		borderRadius: 8,
-		borderColor: colors.light.goldenBorder,
-		backgroundColor: `${colors.light.secondary}55`,
 	},
 	amount: {
 		fontFamily: 'lexend-600',
-		fontSize: 22,
+		fontSize: 16,
 		color: colors.dark.text,
 	},
 	label: {
 		fontFamily: 'lexend-400',
-		fontSize: 11,
+		fontSize: 12,
 		color: colors.dark.text,
 	},
 	note: {

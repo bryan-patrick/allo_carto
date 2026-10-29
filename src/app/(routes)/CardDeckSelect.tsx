@@ -3,8 +3,12 @@ import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findChapterById, getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
-import { hasParagraphContent } from '@/src/util/atlasContent';
+import {
+	findChapterById,
+	getUnlockCriteria,
+	getVisibleParagraphs,
+	isItemUnlocked,
+} from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -23,10 +27,12 @@ export default function CardDeckSelect() {
 	const scrollIndicatorInsets = { top: headerHeight };
 	const chapter = findChapterById(chapterId);
 	const decks =
-		chapter?.decks.filter(hasParagraphContent).map(deck => ({
-			...deck,
-			chapter: chapter.name,
-		})) ?? [];
+		chapter ?
+			getVisibleParagraphs(chapter, progressById).map(deck => ({
+				...deck,
+				chapter: chapter.name,
+			}))
+		:	[];
 
 	/**
 	 * Check a deck's lock

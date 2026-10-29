@@ -3,13 +3,13 @@ import type {
 	SolvePosition,
 	SolvePuzzle,
 	SolveStageSolvedPosition,
-	SolveStageUnlockedPosition,
 } from '@/src/components/Solve/solveTypes';
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
 import {
 	getCompletedSolveStages,
+	getSolveCardInkCost,
 	getSolveStageEligibility,
 	type SolveWordStage,
 } from '@/src/util/solveProgression';
@@ -51,7 +51,6 @@ export default async function getSolvePuzzle({
 	const deck = findParagraphById(deckId);
 	const positions: SolvePosition[] = [];
 	let words: SolveWordRow[] = [];
-	let unlockedPositions: SolveStageUnlockedPosition[] = [];
 	let solvedPositions: SolveStageSolvedPosition[] = [];
 
 	if (!deck) {
@@ -97,14 +96,8 @@ export default async function getSolvePuzzle({
 			stage,
 		});
 
-		unlockedPositions = savedStage.unlockedPositions;
 		solvedPositions = savedStage.solvedPositions;
 	} else {
-		unlockedPositions = await database.getAllAsync<SolveStageUnlockedPosition>(
-			'SELECT position, wordId FROM solveUnlocks WHERE userId = ? AND deckId = ?;',
-			userId,
-			deckId,
-		);
 		solvedPositions = await database.getAllAsync<SolveStageSolvedPosition>(
 			'SELECT position, wordId, acceptedAnswer FROM solvePositions WHERE userId = ? AND deckId = ?;',
 			userId,
@@ -123,7 +116,7 @@ export default async function getSolvePuzzle({
 	for (const segment of solvePassage) {
 		const position = segment.position;
 		/**
-		 * We don't want to include punctuation in the puzzle solver
+		 * Leave punctuation out of the word cards.
 		 */
 		const textWithoutPunctuation = segment.text.replace(/[^\p{L}\p{M}\p{N}\s'’ʼ-]/gu, '');
 		const text = textWithoutPunctuation.trim();
@@ -132,9 +125,8 @@ export default async function getSolvePuzzle({
 		const solved = solvedPositions.find(
 			saved => saved.position === position && saved.wordId === wordId,
 		);
-		const unlocked = unlockedPositions.some(
-			saved => saved.position === position && saved.wordId === wordId,
-		);
+		const rarity = word?.rarity ?? 'Common';
+		const inkCost = wordId ? getSolveCardInkCost(stage, rarity) : 0;
 		const englishWords: string[] = word ? JSON.parse(word.englishWords) : [];
 		const englishMeanings = englishWords.join(' / ');
 		const englishPrompt =
@@ -164,8 +156,8 @@ export default async function getSolvePuzzle({
 			position,
 			text,
 			wordId,
-			rarity: word?.rarity ?? 'Common',
-			isUnlocked: !wordId || unlocked || Boolean(solved),
+			rarity,
+			inkCost,
 			englishWords,
 			englishPrompt,
 			frenchWords: Array.from(frenchWords),

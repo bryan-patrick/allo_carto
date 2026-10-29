@@ -1,24 +1,14 @@
 import colors from '@/src/app/colors';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
-import type { DeckSessionProps } from '@/src/components/CardDeck/deckSessionTypes';
 import CompletionPassage from '@/src/components/DeckCompletion/CompletionPassage';
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import SolveButton from '@/src/components/Solve/SolveButton';
-import SolveEligibilityHint from '@/src/components/Solve/SolveEligibilityHint';
-import { getDeck } from '@/src/db/interface';
-import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findCompletionPath, findParagraphById } from '@/src/util/atlasCompletion';
-import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
-import { createDeckSession } from '@/src/util/createDeckSession';
+import { findCompletionPath } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
-	Alert,
 	BackHandler,
 	ImageBackground,
 	Pressable,
@@ -27,34 +17,25 @@ import {
 	Text,
 	View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import LinkButton from '../LinkButton';
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /**
- * Show flashcard rewards and offer to finish, solve the paragraph, or practice again.
+ * Show the flashcard results and return to the chapter when the player finishes.
  */
 export default function DeckResultsView() {
 	const router = useRouter();
-	const { experience, inkBalance, isUpdatingProgress, progressById } = useUserProgress();
-	const { cardDeckState, cardDeckDispatch } = useCardDeck();
-	const { id: userId } = useUserContext() ?? {};
-	const { settings } = useAppSettings();
-	const { bottom } = useSafeAreaInsets();
+	const { inkBalance, isUpdatingProgress, progressById } = useUserProgress();
+	const { cardDeckState } = useCardDeck();
 	const { cardDeck, session } = cardDeckState;
 	const [showWordResults, setShowWordResults] = useState(false);
-	const [isRepeating, setIsRepeating] = useState(false);
-	const isStartingDeck = useRef(false);
 	const completionPath = findCompletionPath({ id: cardDeck.id });
 	const chapter = completionPath[1];
-	const solveParagraph = findParagraphById(cardDeck.id);
 	const storyColor = getDeckStoryColor(cardDeck.id);
-	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
 	const hasReview = Boolean(session?.completion);
-	const repeatDisabled = !userId || isUpdatingProgress || isRepeating;
-	const containerStyle = { paddingBottom: Math.max(bottom, 8) };
 	const paragraphCardCount = cardDeck.wordIds.length;
 	const seenCardCount = progressById[cardDeck.id]?.seenWordCount ?? 0;
 	const newlySeenCards = cardDeck.words.filter(word => {
@@ -67,24 +48,14 @@ export default function DeckResultsView() {
 	const headingStyle = {
 		color: storyColor,
 	};
-	let newlySeenLabel = `${newlySeenCardCount} new cards seen this session`;
 	let title = 'You finished the flashcards!';
 	let description = cardDeck.title;
-	let studyLabel = 'Repeat';
 	let wordResultsLabel = 'Show word results';
 	let wordResultsIcon = 'expand_more';
-
-	if (newlySeenCardCount === 1) {
-		newlySeenLabel = '1 new card seen this session';
-	}
 
 	if (!hasReview) {
 		title = 'No session results to review';
 		description = 'Finish a flashcard session to see your results and rewards.';
-	}
-
-	if (isRepeating) {
-		studyLabel = 'Starting…';
 	}
 
 	if (showWordResults) {
@@ -96,10 +67,6 @@ export default function DeckResultsView() {
 	 * Return to the chapter we were studying, or Home if that chapter is missing.
 	 */
 	const handleFinish = useCallback(() => {
-		if (isStartingDeck.current) {
-			return;
-		}
-
 		if (chapter) {
 			router.dismissTo({
 				pathname: '/ChapterDetail',
@@ -110,45 +77,6 @@ export default function DeckResultsView() {
 
 		router.replace('/(tabs)');
 	}, [chapter, router]);
-
-	/**
-	 * Do more flashcards using the latest saved word progress.
-	 */
-	async function handleRepeat() {
-		let selectedDeck: CardDeck | undefined;
-		let nextSession: DeckSessionProps;
-
-		if (repeatDisabled || isStartingDeck.current || !hasReview || !userId) {
-			return;
-		}
-
-		isStartingDeck.current = true;
-		setIsRepeating(true);
-
-		try {
-			selectedDeck = await getDeck({ deck: cardDeck, amount: cardsPerDeck, userId });
-
-			if (!selectedDeck || selectedDeck.words.length === 0) {
-				Alert.alert('Could not start session', 'Please try again.');
-				return;
-			}
-
-			nextSession = createDeckSession(experience.totalXP);
-
-			cardDeckDispatch({
-				type: 'SET_DECK',
-				payload: selectedDeck,
-				session: nextSession,
-			});
-			router.replace('/CardDeck');
-		} catch (error) {
-			console.error('Could not repeat deck:', error);
-			Alert.alert('Could not start session', 'Please try again.');
-		} finally {
-			isStartingDeck.current = false;
-			setIsRepeating(false);
-		}
-	}
 
 	function handleToggleWordResults() {
 		setShowWordResults(!showWordResults);
@@ -169,13 +97,18 @@ export default function DeckResultsView() {
 	);
 
 	return (
-		<View style={[styles.container, containerStyle]}>
+		<SafeAreaView
+			style={styles.container}
+			edges={{
+				bottom: 'maximum',
+			}}
+		>
 			<ImageBackground
 				source={postcardBackground}
 				style={styles.postcard}
 			>
 				<View style={styles.postcardBorder}>
-					<View style={styles.header}>
+					<View style={[styles.section, styles.headingRow]}>
 						<MaterialSymbol
 							name="task_alt"
 							size={24}
@@ -191,93 +124,87 @@ export default function DeckResultsView() {
 							<Text style={styles.description}>{description}</Text>
 						</View>
 					</View>
-					<ScrollView contentContainerStyle={styles.scrollContent}>
+					<ScrollView>
 						{hasReview && session && (
 							<>
-								<CompletionPassage
-									deck={cardDeck}
-									results={session.results}
-								/>
-								<CompletionRewards
-									session={session}
-									color={storyColor}
-									inkBalance={inkBalance}
-								/>
-								{!(seenCardCount === paragraphCardCount) && (
-									<View style={styles.cardProgress}>
+								{cardDeck.passage.length > 0 && (
+									<View style={styles.section}>
 										<Text
 											accessibilityRole="header"
 											style={[styles.sectionTitle, headingStyle]}
 										>
-											{newlySeenLabel}
+											Paragraph
 										</Text>
+										<CompletionPassage
+											deck={cardDeck}
+											results={session.results}
+										/>
 									</View>
 								)}
-								<Pressable
-									accessibilityRole="button"
-									accessibilityLabel={wordResultsLabel}
-									accessibilityState={{ expanded: showWordResults }}
-									onPress={handleToggleWordResults}
-									style={styles.wordResultsToggle}
-								>
-									<Text style={[styles.sectionTitle, headingStyle]}>{wordResultsLabel}</Text>
-									<MaterialSymbol
-										name={wordResultsIcon}
-										size={24}
+								<View style={styles.section}>
+									<Text
+										accessibilityRole="header"
+										style={[styles.sectionTitle, headingStyle]}
+									>
+										Rewards
+									</Text>
+									<CompletionRewards
+										session={session}
 										color={storyColor}
+										inkBalance={inkBalance}
+										newFlashcardsSeen={newlySeenCardCount}
+										seenFlashcards={seenCardCount}
+										totalFlashcards={paragraphCardCount}
 									/>
-								</Pressable>
-								{showWordResults && (
-									<CompletionWordResults
-										words={cardDeck.words}
-										results={session.results}
-										color={storyColor}
-									/>
-								)}
+								</View>
+								<View style={styles.section}>
+									<Pressable
+										accessibilityRole="button"
+										accessibilityLabel={wordResultsLabel}
+										accessibilityState={{ expanded: showWordResults }}
+										onPress={handleToggleWordResults}
+										style={[styles.headingRow, styles.wordResultsToggle]}
+									>
+										<Text
+											accessibilityRole="header"
+											style={[styles.sectionTitle, headingStyle]}
+										>
+											Word results
+										</Text>
+										<MaterialSymbol
+											name={wordResultsIcon}
+											size={24}
+											color={storyColor}
+										/>
+									</Pressable>
+									{showWordResults && (
+										<CompletionWordResults
+											words={cardDeck.words}
+											results={session.results}
+											color={storyColor}
+										/>
+									)}
+								</View>
 							</>
 						)}
 					</ScrollView>
 					<View style={styles.footer}>
 						<LinkButton
 							handler={handleFinish}
-							disabled={isRepeating || isUpdatingProgress}
+							disabled={isUpdatingProgress}
 							color={storyColor}
+							contentPaddingHorizontal={8}
+							contentPaddingVertical={8}
 							type="outline"
-							useArrow={false}
 							showShadow={false}
-							showInnerBorder={false}
 							fullwidth
 						>
 							Finish
 						</LinkButton>
-						{hasReview && (
-							<>
-								<View style={styles.footerRow}>
-									{solveParagraph && (
-										<View style={styles.footerButton}>
-											<SolveButton
-												deckId={cardDeck.id}
-												color={storyColor}
-												disabled={repeatDisabled}
-											/>
-										</View>
-									)}
-									<LinkButton
-										handler={handleRepeat}
-										disabled={repeatDisabled}
-										color={storyColor}
-										style={styles.footerButton}
-									>
-										{studyLabel}
-									</LinkButton>
-								</View>
-								{solveParagraph && <SolveEligibilityHint deck={solveParagraph} />}
-							</>
-						)}
 					</View>
 				</View>
 			</ImageBackground>
-		</View>
+		</SafeAreaView>
 	);
 }
 
@@ -287,8 +214,7 @@ export default function DeckResultsView() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		paddingTop: 8,
-		paddingHorizontal: 8,
+		padding: 8,
 		backgroundColor: colors.dark.background,
 	},
 	postcard: {
@@ -310,13 +236,11 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.goldenBorder,
 		overflow: 'hidden',
 	},
-	header: {
+	headingRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		padding: 8,
-		gap: 6,
-		borderBottomWidth: 1,
-		borderBottomColor: colors.light.goldenBorder,
+		justifyContent: 'space-between',
+		gap: 8,
 	},
 	headingText: {
 		flex: 1,
@@ -327,62 +251,26 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-600',
 	},
 	description: {
-		fontSize: 11,
-		lineHeight: 16,
-		fontFamily: 'lexend-400',
-		color: colors.dark.text,
-	},
-	scrollContent: {
-		padding: 8,
-		gap: 8,
-	},
-	cardProgress: {
-		gap: 4,
-		padding: 8,
-		borderWidth: 1,
-		borderColor: colors.light.goldenBorder,
-		borderRadius: 8,
-		backgroundColor: `${colors.light.secondary}55`,
-	},
-	cardCounts: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		justifyContent: 'space-between',
-		gap: 8,
-	},
-	cardProgressText: {
-		fontFamily: 'lexend-400',
 		fontSize: 14,
+		lineHeight: 18,
+		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
 	sectionTitle: {
-		fontSize: 12,
+		fontSize: 14,
 		fontFamily: 'lexend-600',
 	},
-	unlocks: {
+	section: {
+		paddingHorizontal: 6,
+		paddingVertical: 12,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.light.goldenBorder,
 		gap: 8,
 	},
-	wordResultsToggle: {
-		minHeight: 44,
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: 8,
-		borderTopWidth: 1,
-		borderTopColor: colors.light.goldenBorder,
-	},
+	wordResultsToggle: {},
 	footer: {
-		gap: 6,
-		padding: 8,
+		padding: 12,
 		borderTopWidth: 1,
 		borderTopColor: colors.light.goldenBorder,
-	},
-	footerRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 6,
-	},
-	footerButton: {
-		flex: 1,
 	},
 });
