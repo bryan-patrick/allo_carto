@@ -11,6 +11,7 @@ import type {
 import { collectionAtlas } from '@/data/french/collectionAtlas';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { ProgressById } from '@/src/util/progression';
+import type { CompletedSolveStages } from '@/src/util/solveProgression';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import {
 	getVocabularyCollectionProgress,
@@ -28,6 +29,7 @@ import {
 	type ReactNode,
 } from 'react';
 import loadUserXP from './queries/getUserExperience';
+import applyMockParagraphProgress from './queries/applyMockParagraphProgress';
 import claimCollectionReward, {
 	type ClaimCollectionRewardRequest,
 	type CollectionRewardReceipt,
@@ -58,6 +60,7 @@ interface UserProgressProviderProps {
 }
 
 interface UserProgressContextProps {
+	applyMockParagraphProgress: (completedStages: CompletedSolveStages) => Promise<number | false>;
 	collections: VocabularyCollectionProgress[];
 	claimCollectionReward: (
 		request: ClaimCollectionRewardRequest,
@@ -82,6 +85,7 @@ interface UserProgressContextProps {
  * Initial progress state
  */
 const initialValue: UserProgressContextProps = {
+	applyMockParagraphProgress: async () => false,
 	collections: [],
 	claimCollectionReward: async () => false,
 	inkBalance: 0,
@@ -226,6 +230,22 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	);
 
 	/**
+	 * Applies a mock paragraph state and reloads progress so gems and chapter access update together.
+	 */
+	const recordMockParagraphProgress = useCallback(
+		async (completedStages: CompletedSolveStages): Promise<number | false> => {
+			return runProgressWrite(() => {
+				return applyMockParagraphProgress({
+					database,
+					userId: userId!,
+					completedStages,
+				});
+			});
+		},
+		[database, runProgressWrite, userId],
+	);
+
+	/**
 	 * Claims collection XP and refreshes progress to update the album and player level.
 	 */
 	const recordCollectionReward = useCallback(
@@ -334,6 +354,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const value = useMemo<UserProgressContextProps>(
 		() => ({
+			applyMockParagraphProgress: recordMockParagraphProgress,
 			collections,
 			claimCollectionReward: recordCollectionReward,
 			inkBalance,
@@ -350,6 +371,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			status,
 		}),
 		[
+			recordMockParagraphProgress,
 			collections,
 			recordCollectionReward,
 			inkBalance,

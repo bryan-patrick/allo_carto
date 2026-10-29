@@ -51,6 +51,14 @@ const colors = {
 		known: '#1A1A1A',
 		mastered: '#0e6162',
 	},
+	wordProgressLight: {
+		unseen: '#E4D7C3',
+		new: '#D0D9D7',
+		learning: '#E8CED6',
+		familiar: '#E4D2EF',
+		known: '#D8D8D8',
+		mastered: '#C6E4DE',
+	},
 	ink: {
 		full: '#C7A6F4',
 		available: '#285D3B',

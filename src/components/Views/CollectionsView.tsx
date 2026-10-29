@@ -56,9 +56,7 @@ export default function CollectionsView() {
 			style={styles.background}
 		>
 			<ScrollView contentContainerStyle={styles.content}>
-				<Text style={styles.introduction}>
-					Find words in flashcards, fill your albums, and earn XP as you learn.
-				</Text>
+				<Text style={styles.introduction}>Do flashcards to find</Text>
 				{collectionSections.map(section => {
 					const albums = collections.filter(progress => progress.section === section.key);
 

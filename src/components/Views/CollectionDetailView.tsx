@@ -1,12 +1,14 @@
 import { chapterSelectBackground } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import CollectionMeter from '@/src/components/Collections/CollectionMeter';
-import CollectionRewards from '@/src/components/Collections/CollectionRewards';
+import CollectionClaim from '@/src/components/Collections/CollectionClaim';
 import VocabularyStamp from '@/src/components/Collections/VocabularyStamp';
 import LinkButton from '@/src/components/LinkButton';
 import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import WordProgressBadge from '@/src/components/WordProgressBadge';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import {
@@ -46,14 +48,17 @@ export default function CollectionDetailView() {
 	const scrollIndicatorInsets = {
 		top: headerHeight,
 	};
-	const levelLabel =
-		progress?.level ? `Collection Lvl. ${progress.level}` : 'Collection level: Unseen';
+	const learningLevel =
+		wordProgressDefinitions.find(definition => definition.level === progress?.level) ??
+		wordProgressDefinitions[0];
+	const collectionRewards = progress?.rewards ?? [];
+	const progressTarget = progress?.nextReward ?? collectionRewards[collectionRewards.length - 1];
 	let notice = 'This collection could not be found. Please go back and choose an album.';
 
 	function explainCollectionLevels() {
 		Alert.alert(
 			'Collection learning levels',
-			'Your first flashcard reveals this album. The collection’s level is the lowest level of all its words, so it stays Unseen until every stamp is found. Reach each learning level on every word to earn that level’s XP reward.',
+			'Your collection level is the lowest learning level of all its words. Reach each level on every word to claim its XP reward.',
 		);
 	}
 
@@ -101,47 +106,42 @@ export default function CollectionDetailView() {
 					imageStyle={styles.paperImage}
 					style={styles.album}
 				>
-					<View style={styles.header}>
-						<View style={styles.heading}>
+					<WordProgressBadge progress={learningLevel.key} />
+					<View style={styles.heading}>
+						<View style={styles.titleRow}>
 							<Text
 								accessibilityRole="header"
 								style={styles.title}
 							>
 								{progress.collection.name}
 							</Text>
-							<Text style={styles.description}>{progress.stamps.length} words total</Text>
-							<Text style={styles.description}>{progress.collection.description}</Text>
+							<Pressable
+								accessibilityRole="button"
+								accessibilityLabel={`Explain collection learning levels. Current stage: ${learningLevel.name}.`}
+								onPress={explainCollectionLevels}
+								style={styles.infoButton}
+							>
+								<MaterialSymbol
+									name="info"
+									size={18}
+									color={colors.wordProgress.unseen}
+								/>
+							</Pressable>
 						</View>
-						<ImageBackground
-							accessible={false}
-							source={progress.collection.image}
-							resizeMode="contain"
-							style={styles.headerIllustration}
-						/>
+						<Text style={styles.description}>{progress.collection.description}</Text>
 					</View>
-					<Pressable
-						accessibilityRole="button"
-						accessibilityLabel={`${levelLabel}. Explain collection learning levels.`}
-						onPress={explainCollectionLevels}
-						style={styles.levelRow}
-					>
-						<Text style={styles.level}>{levelLabel}</Text>
-						<MaterialSymbol
-							name="info"
-							size={18}
-							color={colors.wordProgress.unseen}
-						/>
-					</Pressable>
-					{progress.nextReward && (
+					{progressTarget && (
 						<CollectionMeter
-							qualifyingWordCount={progress.nextReward.qualifyingWordCount}
+							qualifyingWordCount={progressTarget.qualifyingWordCount}
 							wordCount={progress.stamps.length}
-							targetLevel={progress.nextReward.level}
+							targetLevel={progressTarget.level}
+							learningLevel={learningLevel.key}
 						/>
 					)}
-					<Text style={styles.description}>
-						{progress.discoveredWordCount} / {progress.stamps.length} stamps discovered
-					</Text>
+					<CollectionClaim
+						key={progress.collection.id}
+						progress={progress}
+					/>
 					<View style={styles.stampGrid}>
 						{progress.stamps.map(stamp => (
 							<View
@@ -152,10 +152,6 @@ export default function CollectionDetailView() {
 							</View>
 						))}
 					</View>
-					<CollectionRewards
-						key={progress.collection.id}
-						progress={progress}
-					/>
 				</ImageBackground>
 			</ScrollView>
 		</ImageBackground>
@@ -183,16 +179,11 @@ const styles = StyleSheet.create({
 	paperImage: {
 		borderRadius: 12,
 	},
-	header: {
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-		gap: 12,
-	},
 	heading: {
-		flex: 1,
 		gap: 8,
 	},
 	title: {
+		flexShrink: 1,
 		fontFamily: 'lexend-600',
 		fontSize: 25,
 		color: colors.dark.text,
@@ -203,21 +194,17 @@ const styles = StyleSheet.create({
 		lineHeight: 18,
 		color: colors.wordProgress.unseen,
 	},
-	headerIllustration: {
-		width: 84,
-		height: 104,
-	},
-	levelRow: {
+	titleRow: {
 		flexDirection: 'row',
+		flexWrap: 'wrap',
 		alignItems: 'center',
 		gap: 8,
-		minHeight: 44,
 	},
-	level: {
-		fontFamily: 'lexend-600',
-		fontSize: 13,
-		color: colors.wordProgress.unseen,
-		flexShrink: 1,
+	infoButton: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		minWidth: 44,
+		minHeight: 44,
 	},
 	stampGrid: {
 		flexDirection: 'row',

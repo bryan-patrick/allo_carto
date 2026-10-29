@@ -1,8 +1,11 @@
+import { placeholderStampImage } from '@/data/french/collectionAtlas';
 import colors from '@/src/app/colors';
 import type { VocabularyCollectionProgress } from '@/src/util/vocabularyCollections';
-import { Alert, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useRouter } from 'expo-router';
+import { Alert, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from '../MaterialSymbol';
+import WordProgressBadge from '../WordProgressBadge';
 import CollectionMeter from './CollectionMeter';
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
@@ -12,13 +15,17 @@ interface CollectionCardProps {
 }
 
 /**
- * Shows a collection card with its discovery state, learning progress, and next reward.
+ * Shows a collection's first stamp and learning progress in the overview.
  */
 export default function CollectionCard({ progress }: CollectionCardProps) {
 	const router = useRouter();
 	const { collection, isDiscovered, nextReward, section, level } = progress;
+	const firstStamp = progress.stamps[0];
 	const title = isDiscovered ? collection.name : '???';
-	const levelLabel = level > 0 ? `Collection Lvl. ${level}` : 'Collection level: Unseen';
+	const learningLevel =
+		wordProgressDefinitions.find(definition => definition.level === level) ??
+		wordProgressDefinitions[0];
+	const progressTarget = nextReward ?? progress.rewards[progress.rewards.length - 1];
 	const isReady = section === 'ready';
 	const actionSymbol =
 		!isDiscovered ? 'lock'
@@ -30,7 +37,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 		:	'All rewards claimed.';
 	const accessibilityLabel =
 		isDiscovered ?
-			`${title}. ${levelLabel}. ${rewardDescription} ${isReady ? 'Reward ready to claim.' : ''}`
+			`${title}. ${learningLevel.name}. ${rewardDescription} ${isReady ? 'Reward ready to claim.' : ''}`
 		:	'Undiscovered collection.';
 
 	function openCollection() {
@@ -64,9 +71,10 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 				imageStyle={styles.paperImage}
 				style={[styles.card, isReady && styles.readyCard]}
 			>
+				{isDiscovered && <WordProgressBadge progress={learningLevel.key} />}
 				<ImageBackground
 					accessible={false}
-					source={collection.image}
+					source={firstStamp?.image ?? placeholderStampImage}
 					resizeMode="contain"
 					style={styles.illustration}
 				/>
@@ -74,15 +82,14 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 					<Text style={styles.title}>{title}</Text>
 					{isDiscovered && (
 						<>
-							<Text style={styles.level}>{levelLabel}</Text>
-							{nextReward && (
+							{progressTarget && (
 								<CollectionMeter
-									qualifyingWordCount={nextReward.qualifyingWordCount}
+									qualifyingWordCount={progressTarget.qualifyingWordCount}
 									wordCount={progress.stamps.length}
-									targetLevel={nextReward.level}
+									targetLevel={progressTarget.level}
+									learningLevel={learningLevel.key}
 								/>
 							)}
-							{isReady && <Text style={styles.reward}>+{nextReward?.xp} XP ready to claim</Text>}
 							{section === 'completed' && <Text style={styles.reward}>All rewards claimed</Text>}
 						</>
 					)}
@@ -102,8 +109,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 12,
-		padding: 12,
-		borderRadius: 10,
+		padding: 4,
+		borderRadius: 8,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		backgroundColor: colors.light.background,
@@ -115,8 +122,8 @@ const styles = StyleSheet.create({
 		borderWidth: 2,
 	},
 	illustration: {
-		width: 72,
-		height: 86,
+		width: 72, //placeholder
+		height: 80, //placeholder
 		borderWidth: 1,
 		borderStyle: 'dashed',
 		borderColor: colors.light.border,
@@ -127,14 +134,10 @@ const styles = StyleSheet.create({
 		gap: 6,
 	},
 	title: {
+		flexShrink: 1,
 		fontFamily: 'lexend-600',
 		fontSize: 17,
 		color: colors.dark.text,
-	},
-	level: {
-		fontFamily: 'lexend-400',
-		fontSize: 11,
-		color: colors.wordProgress.unseen,
 	},
 	reward: {
 		fontFamily: 'lexend-600',

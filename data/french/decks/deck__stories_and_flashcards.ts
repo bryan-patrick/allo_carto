@@ -10,7 +10,8 @@ export const DeckStoriesAndFlashcards = createCardDeck({
 	unlockRequirements: [{ id: 'deck__welcome_to_allo_carto', requiredWordProgress: 'new' }],
 	words: [],
 	wordChoices: [],
-	englishPassage: 'The application uses stories and flash cards to make learning French easy.',
+	englishPassage:
+		'The application uses stories and flash cards to make learning French easy. For example: “One winter Monday, Léo is wearing a knit hat.”',
 	passage: [
 		{ text: 'L’', wordId: 'word_article_la', after: '' },
 		{ text: 'application', wordId: 'word_noun_application' },
@@ -27,6 +28,50 @@ export const DeckStoriesAndFlashcards = createCardDeck({
 		{ text: 'du', wordId: 'word_preposition_du' },
 		{ text: 'français', wordId: 'word_noun_francais' },
 		{ text: 'plus', wordId: 'word_adverb_plus' },
-		{ text: 'facile', wordId: 'word_adjective_facile', after: '.' },
+		{
+			text: 'facile',
+			wordId: 'word_adjective_facile',
+			after: '. ',
+		},
+		{
+			text: 'Par exemple',
+			wordId: 'word_expression_par_exemple',
+			after: '\u00a0: «\u00a0',
+		},
+		{
+			text: 'Un',
+			wordId: 'word_article_un',
+		},
+		{
+			text: 'lundi',
+			wordId: 'word_noun_lundi',
+		},
+		{
+			text: 'd’',
+			wordId: 'word_preposition_de',
+			after: '',
+		},
+		{
+			text: 'hiver',
+			wordId: 'word_noun_hiver',
+			after: ', ',
+		},
+		{
+			text: 'Léo',
+			unlockExempt: true,
+		},
+		{
+			text: 'porte',
+			wordId: 'word_verb_porte',
+		},
+		{
+			text: 'une',
+			wordId: 'word_article_une',
+		},
+		{
+			text: 'tuque',
+			wordId: 'word_noun_tuque',
+			after: '.\u00a0»',
+		},
 	],
 });

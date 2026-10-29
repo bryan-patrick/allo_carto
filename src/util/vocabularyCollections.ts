@@ -4,7 +4,6 @@ import {
 	type CollectionRewardLevel,
 	type VocabularyCollection,
 } from '@/data/french/collectionAtlas';
-import { getDecks } from '@/data/french/storyAtlas';
 import { seedWords } from '@/data/french/words';
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import {
@@ -77,14 +76,6 @@ for (const word of seedWords) {
 export function validateCollectionAtlas(): void {
 	const collectionIds = new Set<string>();
 	const collectedWordIds = new Set<string>();
-	const playableWordIds = new Set<string>();
-	const decks = getDecks();
-
-	for (const deck of decks) {
-		for (const wordId of deck.wordIds) {
-			playableWordIds.add(wordId);
-		}
-	}
 
 	for (const collection of collectionAtlas.collections) {
 		const rewardLevels = new Set<CollectionRewardLevel>();
@@ -97,8 +88,8 @@ export function validateCollectionAtlas(): void {
 		collectionIds.add(collection.id);
 
 		for (const entry of collection.words) {
-			if (!vocabularyById.has(entry.wordId) || !playableWordIds.has(entry.wordId)) {
-				throw new Error(`Collection word ${entry.wordId} needs vocabulary and playable content.`);
+			if (!vocabularyById.has(entry.wordId)) {
+				throw new Error(`Collection word ${entry.wordId} is missing from the vocabulary.`);
 			}
 
 			if (collectedWordIds.has(entry.wordId)) {

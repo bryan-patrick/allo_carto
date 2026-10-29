@@ -1,10 +1,10 @@
+import { placeholderStampImage } from '@/data/french/collectionAtlas';
 import colors from '@/src/app/colors';
 import type { CollectionStamp } from '@/src/util/vocabularyCollections';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from '../MaterialSymbol';
 
 const stampPaper = require('@/src/app/assets/images/postcard-parts/background.jpg');
-const placeholderIllustration = require('@/src/app/assets/images/chapters/how-it-works.png');
 
 interface VocabularyStampProps {
 	stamp: CollectionStamp;
@@ -30,7 +30,7 @@ export default function VocabularyStamp({ stamp }: VocabularyStampProps) {
 				<>
 					<ImageBackground
 						accessible={false}
-						source={stamp.image ?? placeholderIllustration}
+						source={stamp.image ?? placeholderStampImage}
 						resizeMode="contain"
 						style={styles.illustration}
 					/>

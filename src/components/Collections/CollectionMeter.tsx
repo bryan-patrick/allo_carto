@@ -1,10 +1,12 @@
 import colors from '@/src/app/colors';
+import type { WordProgressKey } from '@/src/util/wordProgress';
 import { StyleSheet, Text, View } from 'react-native';
 
 interface CollectionMeterProps {
 	qualifyingWordCount: number;
 	wordCount: number;
 	targetLevel: number;
+	learningLevel: WordProgressKey;
 }
 
 /**
@@ -14,11 +16,13 @@ export default function CollectionMeter({
 	qualifyingWordCount,
 	wordCount,
 	targetLevel,
+	learningLevel,
 }: CollectionMeterProps) {
 	const percentage = wordCount > 0 ? (qualifyingWordCount / wordCount) * 100 : 0;
 	const fillWidth = `${percentage}%` as const;
 	const fillStyle = {
 		width: fillWidth,
+		backgroundColor: colors.wordProgress[learningLevel],
 	};
 	const progressLabel = `${qualifyingWordCount} / ${wordCount} at Lvl. ${targetLevel}`;
 
@@ -50,7 +54,6 @@ const styles = StyleSheet.create({
 	},
 	fill: {
 		height: '100%',
-		backgroundColor: colors.dark.primary,
 		borderRadius: 6,
 	},
 	label: {

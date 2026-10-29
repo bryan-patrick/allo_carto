@@ -36,6 +36,12 @@ const resetDB = false;
  */
 function getTabHeaderOptions(route: DescriptorRouteProp<ParamListBase>) {
 	const tabName = getFocusedRouteNameFromRoute(route) ?? 'index';
+	const headerTitles: Record<string, string> = {
+		collection: 'Collections',
+		settings: 'Settings',
+		achievements: 'Achievements',
+	};
+	const headerTitle = headerTitles[tabName] ?? 'Collections';
 
 	if (tabName === 'index') {
 		return {
@@ -43,12 +49,6 @@ function getTabHeaderOptions(route: DescriptorRouteProp<ParamListBase>) {
 			headerTransparent: false,
 			header: () => <ChapterSelectHeader />,
 		};
-	}
-
-	let headerTitle = 'Collections';
-
-	if (tabName === 'settings') {
-		headerTitle = 'Settings';
 	}
 
 	return {
