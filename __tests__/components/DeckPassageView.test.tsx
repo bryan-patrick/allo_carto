@@ -23,7 +23,7 @@ describe('<DeckPassageView />', () => {
 			setSetting: jest.fn(),
 		});
 
-		/**
+		/*
 		 * Don't wait for animations (Copilot actually got this wrong)
 		 */
 		const animatedMock = jest.requireActual('react-native/Libraries/Animated/AnimatedMock').default;
@@ -33,7 +33,7 @@ describe('<DeckPassageView />', () => {
 
 	afterEach(() => jest.restoreAllMocks());
 
-	/**
+	/*
 	 * Including unseen words shifts the speech positions of the words after them.
 	 * We check both settings so repeated words keep their own highlights.
 	 */
@@ -144,7 +144,7 @@ describe('<DeckPassageView />', () => {
 		},
 	);
 
-	/**
+	/*
 	 * A setting change must stop the old reading before its word positions change.
 	 * Late speech events should not bring an old highlight back.
 	 */

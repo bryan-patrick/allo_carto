@@ -6,7 +6,7 @@ import { inkConfig } from '@/src/util/ink';
 import { StyleSheet, Text, View } from 'react-native';
 import CompletionXPProgress from './CompletionXPProgress';
 
-/**
+/*
  * Typing
  */
 interface CompletionRewardsProps {
@@ -18,7 +18,7 @@ interface CompletionRewardsProps {
 	totalFlashcards: number;
 }
 
-/**
+/*
  * List the session's Ink, new flashcards, and XP above the player's level progress.
  */
 export default function CompletionRewards({
@@ -122,7 +122,7 @@ export default function CompletionRewards({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

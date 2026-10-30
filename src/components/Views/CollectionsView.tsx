@@ -31,7 +31,7 @@ const collectionSections: CollectionSectionDefinition[] = [
 	},
 ];
 
-/**
+/*
  * Groups collection cards by progress so rewards ready to claim are easy to find.
  */
 export default function CollectionsView() {
@@ -56,7 +56,7 @@ export default function CollectionsView() {
 			style={styles.background}
 		>
 			<ScrollView contentContainerStyle={styles.content}>
-				<Text style={styles.introduction}>Do flashcards to find</Text>
+				<Text style={styles.introduction}>Do flashcards to complete collections!</Text>
 				{collectionSections.map(section => {
 					const albums = collections.filter(progress => progress.section === section.key);
 
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		fontSize: 13,
 		lineHeight: 20,
+		textAlign: 'center',
 		color: colors.light.background,
 	},
 	section: {

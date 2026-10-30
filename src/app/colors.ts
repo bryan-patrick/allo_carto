@@ -1,4 +1,4 @@
-/**
+/*
  * Aiming for WCAG AAA Dark | Light & Text
  */
 const colors = {

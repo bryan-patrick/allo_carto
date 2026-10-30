@@ -30,7 +30,7 @@ import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface ChapterDeckListProps {
@@ -45,12 +45,12 @@ interface PassageState {
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
 }
 
-/**
+/*
  * Show the chapter's open paragraphs and next locked one with reading and practice buttons.
  */
 export default function ChapterDeckList({ chapter, progressById, story }: ChapterDeckListProps) {
 	const router = useRouter();
-	/**
+	/*
 	 * Context and state
 	 */
 	const { id: userId } = useUserContext() ?? {};
@@ -65,7 +65,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 	const storyColor = colors.category[story.category];
 	const visibleParagraphs = getVisibleParagraphs(chapter, progressById);
 
-	/**
+	/*
 	 * Load and begin the selected deck
 	 */
 	async function handleSelectDeck(deck: CardDeck) {
@@ -106,7 +106,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 		}
 	}
 
-	/**
+	/*
 	 * Load passage progress before opening the passage view
 	 */
 	async function handleShowPassage(deck: ReadingPassage) {
@@ -139,7 +139,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 		}
 	}
 
-	/**
+	/*
 	 * Show each paragraph with its number, title, gems, and reading and flashcard actions.
 	 */
 	return (
@@ -244,7 +244,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

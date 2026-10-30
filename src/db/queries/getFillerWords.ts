@@ -2,7 +2,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import filterFillerWords from '@/src/util/filterFillerWords';
 import { getDB } from '../connection';
 
-/**
+/*
  * Typing
  */
 interface GetDeckFillerWordsProps {
@@ -30,7 +30,7 @@ function parseEnglishWords(serializedEnglishWords: string): string[] {
 	return [];
 }
 
-/**
+/*
  * Get random english words for filler words when we
  * map the choice buttons the user can press to make their selection.
  */

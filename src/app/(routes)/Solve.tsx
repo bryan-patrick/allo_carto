@@ -1,10 +1,10 @@
+import SolveSentenceView from '@/src/components/Views/SolveSentenceView';
 import SolveView from '@/src/components/Views/SolveView';
 import SolveWordOrderView from '@/src/components/Views/SolveWordOrderView';
-import SolveSentenceView from '@/src/components/Views/SolveSentenceView';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useLocalSearchParams } from 'expo-router';
 
-/**
+/*
  * Open the paragraph's puzzle screen for the requested Solve stage.
  */
 export default function Solve() {

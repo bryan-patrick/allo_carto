@@ -1,4 +1,4 @@
-/**
+/*
  * Typing
  */
 interface SolveTypoAllowance {
@@ -27,7 +27,7 @@ export interface SolveAnswerResult {
 	acceptedAnswer: string | null;
 }
 
-/**
+/*
  * Set how many spelling mistakes an English word answer can have.
  */
 export const solveAnswerConfig: SolveAnswerConfig = {
@@ -53,7 +53,7 @@ export const solveAnswerConfig: SolveAnswerConfig = {
 
 const optionalArticles = ['a', 'an', 'the'];
 
-/**
+/*
  * Clean up an English answer so small writing differences do not count as mistakes.
  */
 export function normalizeSolveAnswer(answer: string): string {
@@ -71,7 +71,7 @@ export function normalizeSolveAnswer(answer: string): string {
 	return textWithoutInfinitiveTo || trimmedText;
 }
 
-/**
+/*
  * Check a word's letters in order while allowing a few spelling mistakes.
  */
 function matchesSolveWord(answer: string, definition: string): boolean {
@@ -98,7 +98,7 @@ function matchesSolveWord(answer: string, definition: string): boolean {
 	return longerLength - matchedLetters <= allowedTypos;
 }
 
-/**
+/*
  * Check a typed English meaning against the card's saved answers.
  */
 export function checkSolveAnswer({
@@ -146,7 +146,7 @@ export function checkSolveAnswer({
 	};
 }
 
-/**
+/*
  * Clean up a French answer while keeping its accents.
  */
 export function normalizeFrenchSolveAnswer(answer: string): string {
@@ -159,7 +159,7 @@ export function normalizeFrenchSolveAnswer(answer: string): string {
 	return textWithSingleSpaces.trim();
 }
 
-/**
+/*
  * Check the typed French word against the card's saved word forms.
  */
 export function checkFrenchSolveAnswer({

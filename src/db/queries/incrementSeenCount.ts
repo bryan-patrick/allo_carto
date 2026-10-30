@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-/**
+/*
  * Increments the seen count row on the userWords table
  */
 export async function incrementSeenCount(

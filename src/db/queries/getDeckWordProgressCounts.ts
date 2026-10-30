@@ -1,7 +1,7 @@
-import { getWordProgressSqlCountSelect } from '../../util/wordProgress';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { getWordProgressSqlCountSelect } from '../../util/wordProgress';
 
-/**
+/*
  * Typing
  */
 export interface DeckWordProgressCounts {
@@ -19,7 +19,7 @@ interface GetDeckWordProgressCountsProps {
 	wordIds: string[];
 }
 
-/**
+/*
  * Deck word progress counts init
  */
 export const emptyDeckWordProgressCounts: DeckWordProgressCounts = {
@@ -31,7 +31,7 @@ export const emptyDeckWordProgressCounts: DeckWordProgressCounts = {
 	mastered: 0,
 };
 
-/**
+/*
  * Count every word in a deck by the user's current word progress.
  */
 export default async function getDeckWordProgressCounts({

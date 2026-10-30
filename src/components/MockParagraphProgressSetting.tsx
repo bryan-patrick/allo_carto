@@ -8,7 +8,7 @@ interface MockParagraphProgressSettingProps {
 	disabled: boolean;
 }
 
-/**
+/*
  * Lets the player apply saved paragraph completion presets from the debug settings.
  */
 export default function MockParagraphProgressSetting({

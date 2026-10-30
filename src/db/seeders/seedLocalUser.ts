@@ -3,7 +3,7 @@ import { getDB, logThisIfItFails } from '../connection';
 export default async function seedLocalUser(): Promise<void> {
 	const database = await getDB();
 
-	/**
+	/*
 	 * Create a local user
 	 * isMonHomme just means local user
 	 */

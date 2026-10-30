@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
 import { StyleSheet } from 'react-native';
 
-/**
+/*
  * Shared styles - front and back of cards
  */
 export const sharedWordCardStyles = StyleSheet.create({

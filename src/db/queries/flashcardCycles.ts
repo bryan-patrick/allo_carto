@@ -6,7 +6,7 @@ import { createDeckSession } from '@/src/util/createDeckSession';
 import { createFlashcardDecks } from '@/src/util/createFlashcardDecks';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-/**
+/*
  * Typing
  */
 interface FlashcardCycleOptions {
@@ -89,7 +89,7 @@ const statements = {
 	`,
 };
 
-/**
+/*
  * Reopen a paragraph's saved flashcard decks or start a new cycle.
  * Keeps the same order until every deck is finished.
  */
@@ -121,7 +121,7 @@ export async function getFlashcardCycle({
 		let deckIndex = savedCycle?.deckIndex ?? 0;
 		let plannedDecks = decks;
 
-		/**
+		/*
 		 * If we change a paragraph in a future update, make sure the cycle doesn't freak out
 		 */
 		if (needsNewCycle || !savedCycle?.sessionId) {
@@ -179,7 +179,7 @@ export async function getFlashcardCycle({
 	return cycle;
 }
 
-/**
+/*
  * Save a card's correct, incorrect, or skipped result so it stays recorded after leaving.
  * Keep an existing answer unchanged if the same save is tried again.
  */
@@ -195,7 +195,7 @@ export async function saveFlashcardResult({
 		sessionId,
 	);
 
-	/**
+	/*
 	 * Sessions opened before saved cycles were added can still finish normally.
 	 */
 	if (!savedCycle) {

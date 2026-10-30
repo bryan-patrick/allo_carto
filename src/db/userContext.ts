@@ -1,10 +1,10 @@
-/**
+/*
  * The context for handling user data
  */
 import { createContext } from 'react';
 import { UserRow } from './queries/getMonHomme';
 
-/**
+/*
  * Init User state
  */
 interface UserContextValue extends UserRow {

@@ -7,7 +7,7 @@ import { getSelectedStory } from '@/src/util/getSelectedStory';
 import { ImageBackground, ScrollView, StyleSheet, Text } from 'react-native';
 import colors from '../../app/colors';
 
-/** Home shows the chapters for the story chosen in its fixed header. */
+/* Home shows the chapters for the story chosen in its fixed header. */
 export default function ChapterSelectView() {
 	const { progressById, status } = useUserProgress();
 	const user = useUserContext();
@@ -48,7 +48,7 @@ export default function ChapterSelectView() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

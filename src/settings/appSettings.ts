@@ -2,7 +2,7 @@ import { isValidCardsPerDeck } from '@/src/util/cardsPerDeck';
 import type { CompletedSolveStages } from '@/src/util/solveProgression';
 import { isMockParagraphPreset } from './mockParagraphProgress';
 
-/**
+/*
  * Typing
  */
 export type PronunciationFormat = 'readable' | 'ipa';
@@ -53,7 +53,7 @@ export function clampAudioVolume(volume: number): number {
 	return Math.max(0, Math.min(maxAudioVolume, volume));
 }
 
-/**
+/*
  * Default settings
  */
 export const defaultAppSettings: AppSettings = {
@@ -74,7 +74,7 @@ export const defaultAppSettings: AppSettings = {
 
 export const appSettingsStorageKey = 'allo_carto.settings';
 
-/**
+/*
  * Get the current settings and set defaults
  */
 export function readAppSettings(value: string | null): AppSettings {

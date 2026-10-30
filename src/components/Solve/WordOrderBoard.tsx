@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import type { SolveWordOrderCard } from './solveTypes';
 
-/**
+/*
  * Typing
  */
 interface WordOrderBoardProps {
@@ -43,7 +43,7 @@ interface WordOrderDrag {
 	viewportBounds: WordOrderBounds | null;
 }
 
-/**
+/*
  * Lets the player put a paragraph's French cards in order for Solve++.
  * Cards can move by dragging, tapping a new position, or using the move buttons.
  */
@@ -150,7 +150,7 @@ export default function WordOrderBoard({
 		cardLayouts.current.set(cardId, event.nativeEvent.layout);
 	}
 
-	/**
+	/*
 	 * Starts dragging a card and records where the board sits on the screen.
 	 * Measuring the visible area keeps drop positions correct after scrolling.
 	 */
@@ -410,7 +410,7 @@ export default function WordOrderBoard({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

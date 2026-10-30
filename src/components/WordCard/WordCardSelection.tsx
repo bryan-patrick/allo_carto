@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import MappedWords from './MappedWords';
 import { useWordCardUI } from './useWordCardUI';
 
-/**
+/*
  * Typing
  */
 interface WordCardSelectionProps {
@@ -11,7 +11,7 @@ interface WordCardSelectionProps {
 	fillerWords: string[];
 }
 
-/**
+/*
  * WordCardSelection Component
  */
 export default function WordCardSelection({ articleWords, fillerWords }: WordCardSelectionProps) {
@@ -31,7 +31,7 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
 		[wordCardUIDispatch],
 	);
 
-	/**
+	/*
 	 * Render the mapped words
 	 */
 	return (
@@ -52,7 +52,7 @@ export default function WordCardSelection({ articleWords, fillerWords }: WordCar
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

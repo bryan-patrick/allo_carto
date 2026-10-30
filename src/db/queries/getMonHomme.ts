@@ -2,7 +2,7 @@ import { WordProgressKey } from '@/src/util/wordProgress';
 import { getDB } from '../connection';
 import { DeckWordProgressCounts } from './getDeckWordProgressCounts';
 
-/**
+/*
  * Typing
  */
 export interface PassageProgress {
@@ -32,7 +32,7 @@ export interface UserProgress {
 	deckProgressById: Record<string, DeckProgress>;
 }
 
-/**
+/*
  * Gets the local user
  */
 export default async function getMonHomme() {

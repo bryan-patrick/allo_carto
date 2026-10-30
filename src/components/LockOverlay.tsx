@@ -5,7 +5,7 @@ import colors from '../app/colors';
 import MaterialSymbol from './MaterialSymbol';
 import SVGCheck from './SVG/SVGCheck';
 
-/**
+/*
  * Typing
  */
 interface LockOverlayProps {
@@ -21,7 +21,7 @@ interface LockOverlayProps {
 	unlockCriteria?: UnlockCriteria[];
 }
 
-/**
+/*
  * LockOverlay Component
  */
 export default function LockOverlay({
@@ -36,7 +36,7 @@ export default function LockOverlay({
 	overlayStyle: customOverlayStyle,
 	style,
 }: LockOverlayProps) {
-	/**
+	/*
 	 * Overlay vars
 	 */
 	const showLockOverlay = isLocked;
@@ -47,7 +47,7 @@ export default function LockOverlay({
 		label: formatUnlockCriterion(criterion),
 	}));
 
-	/**
+	/*
 	 * Ternaries
 	 */
 	const accessibilityHint = showLockOverlay ? lockedAccessibilityHint : completeAccessibilityHint;
@@ -55,7 +55,7 @@ export default function LockOverlay({
 		showLockOverlay ? lockedAccessibilityLabel : completeAccessibilityLabel;
 	const overlayTestID = showLockOverlay ? 'lock-overlay' : 'complete-overlay';
 
-	/**
+	/*
 	 * Render LockOverlay
 	 */
 	return (
@@ -109,7 +109,7 @@ export default function LockOverlay({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

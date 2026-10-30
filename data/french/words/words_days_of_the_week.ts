@@ -1,6 +1,6 @@
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 
-/**
+/*
  * Adds the missing weekday words for collections and future stories.
  */
 export const words_days_of_the_week: Word[] = [

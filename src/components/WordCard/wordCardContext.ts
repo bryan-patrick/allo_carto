@@ -1,11 +1,11 @@
-/**
+/*
  * UI State for each individual card in a deck
  * This context handles UI updates and layout
  */
 import { createContext, type Dispatch } from 'react';
 import { type WordCardUIAction } from './wordCardUIReducer';
 
-/**
+/*
  * Concatenation of stage + progress + mistake
  */
 export const FEEDBACK_TEXT_FRONT: Partial<Record<FeedbackKey, string>> = {
@@ -37,7 +37,7 @@ export function getFeedbackKey(
 	return `${state.stage}_${state.progress}_${state.mistake}`;
 }
 
-/**
+/*
  * It might seem redundant to have both stage and
  * progress, BUT they are two separate moving pieces
  * of state and CAN move independently of each other.

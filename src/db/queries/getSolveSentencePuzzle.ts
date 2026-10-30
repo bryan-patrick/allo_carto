@@ -27,7 +27,7 @@ interface SentenceWordRow {
 	partOfSpeech: string | null;
 }
 
-/**
+/*
  * Load sentence prompts and saved answers for the chosen Solve stage.
  */
 export default async function getSolveSentencePuzzle({

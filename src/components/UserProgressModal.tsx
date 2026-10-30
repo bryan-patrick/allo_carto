@@ -3,7 +3,7 @@ import { Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'r
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialSymbol from './MaterialSymbol';
 
-/**
+/*
  * Typing
  */
 interface UserProgressModalProps {
@@ -11,7 +11,7 @@ interface UserProgressModalProps {
 	visible: boolean;
 }
 
-/**
+/*
  * User progress modal shell
  */
 export default function UserProgressModal({ onRequestClose, visible }: UserProgressModalProps) {
@@ -61,7 +61,7 @@ export default function UserProgressModal({ onRequestClose, visible }: UserProgr
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

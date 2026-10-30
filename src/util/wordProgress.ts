@@ -79,7 +79,7 @@ export function getWordProgressDefinition({
 	return wordProgressDefinitions[1];
 }
 
-/**
+/*
  * Get a word's progress from its stored userWords counts.
  */
 export function getWordProgressKeyFromCounts({

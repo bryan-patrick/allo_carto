@@ -1,6 +1,6 @@
 import type { Progression } from '@/src/util/progression';
 
-/**
+/*
  * Typing
  */
 export type CardRarity = 'Common' | 'Rare' | 'Epic' | 'Legendary';
@@ -41,14 +41,14 @@ export interface CardDeckDefinition extends Progression {
 	passage: PassageSegment[];
 	// Original English passage, when available.
 	englishPassage?: string;
-	/**
+	/*
 	 * Allows a paragraph to accept more than one correct order in Solve++.
 	 * Each answer lists the cards' passage positions in the accepted order.
 	 */
 	acceptedWordOrders?: number[][];
 }
 
-/**
+/*
  * Hold a paragraph's content, learnable word IDs, and planned flashcard decks.
  * Each planned deck lists its word IDs in play order to match the learner's saved cycle.
  */
@@ -65,7 +65,7 @@ export interface FlashcardDeckProgress {
 
 export type ReadingPassage = Pick<CardDeck, 'id' | 'title' | 'passage' | 'wordIds'>;
 
-/**
+/*
  * Word type
  * As a general rule, ids should always be slug-safe (no accents or anything)
  * IDs are "word_partOfSpeech_frenchword(no special chars)"

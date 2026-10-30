@@ -2,7 +2,7 @@ import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { getDB } from '../connection';
 import type { WordRow } from '../types';
 
-/**
+/*
  * Types
  */
 export type OtherWordForm = Pick<
@@ -10,7 +10,7 @@ export type OtherWordForm = Pick<
 	'lemmaId' | 'frenchWord' | 'frenchArticle' | 'form' | 'tense' | 'gender' | 'partOfSpeech'
 >;
 
-/**
+/*
  * A helper for the link on the cards to get the other word forms
  */
 export default async function getOtherWordForms(
@@ -18,14 +18,14 @@ export default async function getOtherWordForms(
 ): Promise<OtherWordForm[]> {
 	const { lemmaId } = word;
 
-	/**
+	/*
 	 * A missing or blank lemma has no related forms
 	 */
 	if (typeof lemmaId !== 'string' || !lemmaId.trim()) return [];
 
 	const database = await getDB();
 
-	/**
+	/*
 	 * We de-dupe and get our lemma collate
 	 */
 	return database.getAllAsync<OtherWordForm>(

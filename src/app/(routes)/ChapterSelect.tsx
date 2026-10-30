@@ -7,7 +7,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Alert, Text } from 'react-native';
 
-/**
+/*
  *
  */
 export default function ChapterSelect() {

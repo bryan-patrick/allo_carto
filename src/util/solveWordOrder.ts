@@ -3,7 +3,7 @@ import type { SolveWordOrderCard } from '@/src/components/Solve/solveTypes';
 import { getSolvePassage } from './getSolvePassage';
 import shuffleArray from './shuffleArray';
 
-/**
+/*
  * Typing
  */
 export interface CheckWordOrderAnswerOptions {
@@ -11,7 +11,7 @@ export interface CheckWordOrderAnswerOptions {
 	positions: number[];
 }
 
-/**
+/*
  * Builds the French cards that the player arranges in Solve++.
  */
 export function getWordOrderCards(deck: CardDeck): SolveWordOrderCard[] {
@@ -33,7 +33,7 @@ export function getWordOrderCards(deck: CardDeck): SolveWordOrderCard[] {
 	return cards;
 }
 
-/**
+/*
  * Checks that an arrangement contains every card exactly once before it is saved or checked as an answer.
  */
 export function isCompleteWordOrder(
@@ -58,7 +58,7 @@ export function isCompleteWordOrder(
 	return cards.length > 0;
 }
 
-/**
+/*
  * Reads a saved card order so the player can resume Solve++.
  */
 export function readWordOrder(value: string, cards: SolveWordOrderCard[]): number[] | null {
@@ -73,7 +73,7 @@ export function readWordOrder(value: string, cards: SolveWordOrderCard[]): numbe
 	return isCompleteWordOrder(positions, cards) ? positions : null;
 }
 
-/**
+/*
  * Checks whether the player's arrangement matches the paragraph or another accepted answer.
  */
 export function checkWordOrderAnswer({ deck, positions }: CheckWordOrderAnswerOptions): boolean {
@@ -103,7 +103,7 @@ export function checkWordOrderAnswer({ deck, positions }: CheckWordOrderAnswerOp
 	return false;
 }
 
-/**
+/*
  * Creates a shuffled starting order for Solve++.
  */
 export function shuffleWordOrder(deck: CardDeck): number[] {
@@ -130,7 +130,7 @@ export function shuffleWordOrder(deck: CardDeck): number[] {
 	return positions;
 }
 
-/**
+/*
  * Moves one card to a chosen spot and shifts the cards in between.
  */
 export function moveWordOrderCard(

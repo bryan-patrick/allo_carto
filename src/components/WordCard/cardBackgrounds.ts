@@ -1,7 +1,7 @@
 import type { CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
 import type { ImageSourcePropType } from 'react-native';
 
-/**
+/*
  * Flashcards and puzzle cards share the same backgrounds for each rarity.
  */
 export const cardBackgrounds: Record<CardRarity, ImageSourcePropType> = {

@@ -39,7 +39,7 @@ export const mockParagraphPresets: MockParagraphPreset[] = [
 	},
 ];
 
-/**
+/*
  * Checks a saved mock preset so debug settings only use supported completion states.
  */
 export function isMockParagraphPreset(value: unknown): value is CompletedSolveStages {

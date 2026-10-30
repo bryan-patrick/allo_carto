@@ -7,7 +7,7 @@ interface SolveEligibilityHintProps {
 	deck: CardDeck;
 }
 
-/**
+/*
  * We show this beside a locked Solve button to explain how the player can open its puzzle.
  */
 export default function SolveEligibilityHint({ deck }: SolveEligibilityHintProps) {

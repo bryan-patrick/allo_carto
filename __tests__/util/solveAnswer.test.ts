@@ -1,6 +1,6 @@
 import { checkSolveAnswer } from '@/src/util/solveAnswer';
 
-/**
+/*
  * Solve attempts cost Ink, so spelling tolerance needs predictable boundaries.
  * These examples check real answers without mocking the app or its database.
  */

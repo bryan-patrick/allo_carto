@@ -2,7 +2,7 @@ import { G, Path } from 'react-native-svg';
 import type { SVGProps } from './SVG';
 import SVG from './SVG';
 
-/**
+/*
  * SVGArrowDownToLine Component
  */
 export default function SVGArrowDownToLine({

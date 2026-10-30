@@ -14,7 +14,7 @@ export default function Pages() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

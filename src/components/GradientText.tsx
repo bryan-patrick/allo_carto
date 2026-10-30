@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface GradientTextProps {
@@ -12,7 +12,7 @@ interface GradientTextProps {
 	text: string;
 }
 
-/**
+/*
  * GradientText component
  */
 export default function GradientText({
@@ -43,7 +43,7 @@ export default function GradientText({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

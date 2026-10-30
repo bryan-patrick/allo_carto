@@ -6,7 +6,7 @@ import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-postmark.png');
 
-/**
+/*
  * Typing
  */
 interface ChapterHeaderProps {
@@ -14,7 +14,7 @@ interface ChapterHeaderProps {
 	color: string;
 }
 
-/**
+/*
  * Chapter heading and passage action
  */
 export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
@@ -62,7 +62,7 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

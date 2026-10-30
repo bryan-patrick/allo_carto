@@ -27,7 +27,7 @@ import { useCallback, useRef, useState } from 'react';
 import { Alert, Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeckBoxModal from './DeckBoxModal';
 
-/**
+/*
  * Images
  */
 const deckBoxTopImage = require('@/src/app/assets/images/decks/deck-box-top.png');
@@ -37,7 +37,7 @@ const deckBoxRightBorderImage = require('@/src/app/assets/images/decks/deck-box-
 const deckBoxBottomImage = require('@/src/app/assets/images/decks/deck-box-border-bottom.png');
 const deckBoxBg = require('@/src/app/assets/images/decks/deck-box-bg.jpg');
 
-/**
+/*
  * Typing
  */
 interface DeckBoxProps {
@@ -46,14 +46,14 @@ interface DeckBoxProps {
 	unlockCriteria: UnlockCriteria[];
 }
 
-/**
+/*
  * DeckBox component
  */
 export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps) {
 	const router = useRouter();
 	const { CEFR, description: deckDescription, passage, title: deckTitle, wordIds } = deck;
 
-	/**
+	/*
 	 * Context and state
 	 */
 	const { id: userId } = useUserContext() ?? {};
@@ -71,12 +71,12 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	const [isPassageModalVisible, setIsPassageModalVisible] = useState(false);
 	const [passageChevronTranslateY] = useState(() => new Animated.Value(0));
 
-	/**
+	/*
 	 * Story display values
 	 */
 	const storyColor = getDeckStoryColor(deck.id);
 
-	/**
+	/*
 	 * Deck metadata
 	 */
 	const deckCardCount = wordIds.length;
@@ -92,7 +92,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		completionPercent: deckCompletionPercent,
 	};
 
-	/**
+	/*
 	 * Data loaders
 	 */
 	const loadWordProgressCounts = useCallback(async () => {
@@ -133,7 +133,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		}
 	}, [passage, userId]);
 
-	/**
+	/*
 	 * The passage blips weren't updating when returning
 	 * to the deck selection after completing a deck.
 	 * This forces it.
@@ -145,7 +145,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		}, [loadPassageWordProgress, loadWordProgressCounts]),
 	);
 
-	/**
+	/*
 	 * Select deck handler
 	 */
 	const handleSelectDeck = useCallback(async () => {
@@ -178,7 +178,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		}
 	}, [userId, isUpdatingProgress, deck, cardsPerDeck, cardDeckDispatch, router]);
 
-	/**
+	/*
 	 * Refresh passage data and show modal
 	 */
 	async function handleShowPassage() {
@@ -187,7 +187,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		setIsPassageModalVisible(true);
 	}
 
-	/**
+	/*
 	 * Passage button animation handlers
 	 */
 	function handlePassageButtonPressIn() {
@@ -206,7 +206,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		}).start();
 	}
 
-	/**
+	/*
 	 * Render the Deck Box
 	 */
 	return (
@@ -356,7 +356,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

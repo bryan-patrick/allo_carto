@@ -74,7 +74,7 @@ const clearSolveStatements = [
 	'DELETE FROM solveCompletions WHERE userId = ?;',
 ];
 
-/**
+/*
  * Builds solved word and sentence answers so mock gems match the paragraph's saved puzzles.
  */
 function getMockSolveAnswers({
@@ -149,7 +149,7 @@ function getMockSolveAnswers({
 	return answers;
 }
 
-/**
+/*
  * Replaces the player's paragraph puzzle progress with a chosen mock state for debugging.
  */
 export default async function applyMockParagraphProgress({

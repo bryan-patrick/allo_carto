@@ -1,11 +1,11 @@
 import colors from '@/src/app/colors';
 import { ImageBackground, StyleSheet, View } from 'react-native';
 
-/**
+/*
  * The graphical Crease (of the book)
  */
 export default function Crease() {
-	/**
+	/*
 	 * Render the component
 	 */
 	return (
@@ -19,7 +19,7 @@ export default function Crease() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

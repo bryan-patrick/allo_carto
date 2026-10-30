@@ -8,7 +8,7 @@ interface ViewCardsViewProps {
 	deck?: CardDeck;
 }
 
-/**
+/*
  * ViewCardsView component
  */
 export default function ViewCardsView({ deck }: ViewCardsViewProps) {
@@ -36,7 +36,7 @@ export default function ViewCardsView({ deck }: ViewCardsViewProps) {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

@@ -4,7 +4,7 @@ import MaterialSymbol from '@/src/components/MaterialSymbol';
 import VerticalText from '@/src/components/VerticalText';
 import { ImageBackground, StyleSheet, View } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface SpineProps {
@@ -13,11 +13,11 @@ interface SpineProps {
 	materialSymbolName?: string;
 }
 
-/**
+/*
  * The spine graphic component (of the book)
  */
 export default function Spine({ color, category, materialSymbolName }: SpineProps) {
-	/**
+	/*
 	 * Render the component
 	 */
 	return (
@@ -51,7 +51,7 @@ export default function Spine({ color, category, materialSymbolName }: SpineProp
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

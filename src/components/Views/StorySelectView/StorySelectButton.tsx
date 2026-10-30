@@ -3,7 +3,7 @@ import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
 import { StyleSheet, Text, View } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface StorySelectButtonProps {
@@ -14,7 +14,7 @@ interface StorySelectButtonProps {
 	onSelect: (story: DeckStory) => void;
 }
 
-/**
+/*
  * Story select button
  */
 export default function StorySelectButton({
@@ -42,7 +42,7 @@ export default function StorySelectButton({
 		);
 	}
 
-	/**
+	/*
 	 * Render the component
 	 */
 	return (
@@ -60,7 +60,7 @@ export default function StorySelectButton({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

@@ -3,7 +3,7 @@ import type { UserProgressRow } from '@/src/util/progression';
 import { StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
-/**
+/*
  * Typing
  */
 interface CollectionProgressProps {
@@ -13,7 +13,7 @@ interface CollectionProgressProps {
 	fontSize?: number;
 }
 
-/**
+/*
  * Shows cards seen and how well the users "knows" the deck
  */
 export default function CollectionProgress({
@@ -55,7 +55,7 @@ export default function CollectionProgress({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

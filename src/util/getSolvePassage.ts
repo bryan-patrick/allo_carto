@@ -5,7 +5,7 @@ export interface SolvePassageSegment extends PassageSegment {
 	position: number;
 }
 
-/**
+/*
  * We match dictionary contractions regardless of capitalization or apostrophe style.
  */
 function getContractionKey(text: string): string {
@@ -24,7 +24,7 @@ for (const word of seedWords) {
 	}
 }
 
-/**
+/*
  * Get the paragraph and join the segments for the puzzle solve
  */
 export function getSolvePassage(passage: PassageSegment[]): SolvePassageSegment[] {

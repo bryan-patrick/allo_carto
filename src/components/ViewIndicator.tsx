@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../app/colors';
 import MaterialSymbol from './MaterialSymbol';
 
-/**
+/*
  * Typing
  */
 interface ViewIndicatorProps {
@@ -16,7 +16,7 @@ interface ViewIndicatorProps {
 	showTextShadow?: boolean;
 }
 
-/**
+/*
  * View Indicator component
  */
 export default function ViewIndicator({
@@ -29,7 +29,7 @@ export default function ViewIndicator({
 }: ViewIndicatorProps) {
 	const paddingTop = useSafeAreaInsets().top;
 
-	/**
+	/*
 	 * Render the thing
 	 */
 	return (
@@ -65,7 +65,7 @@ export default function ViewIndicator({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

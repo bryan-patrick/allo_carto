@@ -1,7 +1,7 @@
-import type { SQLiteDatabase } from 'expo-sqlite';
 import type { ProgressType } from '@/src/util/progression';
+import type { SQLiteDatabase } from 'expo-sqlite';
 
-/**
+/*
  * Create or update one row in the userProgress table
  */
 export default async function updateUserProgress({
@@ -17,7 +17,7 @@ export default async function updateUserProgress({
 	type: ProgressType;
 	userId: string;
 }): Promise<void> {
-	/**
+	/*
 	 * Create the row if it is missing
 	 */
 	await database.runAsync(

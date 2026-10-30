@@ -15,12 +15,12 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-/**
+/*
  * Images
  */
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/**
+/*
  * Typing
  */
 interface DeckBoxModalProps {
@@ -32,7 +32,7 @@ interface DeckBoxModalProps {
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
 }
 
-/**
+/*
  * Standalone passage modal with a close button
  */
 export default function DeckBoxModal({
@@ -65,7 +65,7 @@ export default function DeckBoxModal({
 			Math.min(contentHeight + 44 + bottomPadding, maximumSheetHeight)
 		);
 
-	/**
+	/*
 	 * Render the modal
 	 */
 	return (
@@ -124,7 +124,7 @@ export default function DeckBoxModal({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

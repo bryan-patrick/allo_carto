@@ -12,7 +12,7 @@ import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordPr
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface DeckPassageViewProps {
@@ -48,7 +48,7 @@ interface PassageSpeech {
 	wordRanges: PassageWordRange[];
 }
 
-/**
+/*
  * Constants
  */
 const learningLevelOpacity: Record<WordProgressKey, number> = {
@@ -63,7 +63,7 @@ const filteredOutWordOpacity = 0.05;
 const passageLineHeight = 32;
 const passageHighlightVerticalInset = 2;
 
-/**
+/*
  * Helper functions
  */
 function getPassageWordOpacity(
@@ -120,7 +120,7 @@ function createWordProgressOpacityValues(
 function getPassageTrailingText(after?: string): string {
 	const trailingText = after ?? ' ';
 
-	/**
+	/*
 	 * Add a thin space after word gaps
 	 */
 	if (trailingText.endsWith(' ')) {
@@ -130,7 +130,7 @@ function getPassageTrailingText(after?: string): string {
 	}
 }
 
-/**
+/*
  * Check if the current word should be visible
  */
 function isPassageWordVisible(
@@ -145,7 +145,7 @@ function isPassageWordVisible(
 	return progress !== 'unseen';
 }
 
-/**
+/*
  * Each word keeps its place in that text so the highlight follows the voice.
  * We return an object, because we're insane.
  */
@@ -175,7 +175,7 @@ function getPassageSpeech(
 	return { text, wordRanges };
 }
 
-/**
+/*
  * DeckPassageView component
  */
 export default function DeckPassageView({
@@ -193,7 +193,7 @@ export default function DeckPassageView({
 		settings: { useLearningLevelColors, useLevelOpacity, showUnseenWords },
 		setSetting,
 	} = useAppSettings();
-	/**
+	/*
 	 * State
 	 */
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
@@ -218,7 +218,7 @@ export default function DeckPassageView({
 	const hasPassageHeader = showTitle || showProgress || showLearningControls;
 	const passageTextContainerStyle = { minHeight: minimumPassageHeight };
 
-	/**
+	/*
 	 * Share the exact text and typography between foreground and background.
 	 */
 	const passageSegments = deck.passage.map(({ text, wordId, unlockExempt, after }, index) => {
@@ -284,7 +284,7 @@ export default function DeckPassageView({
 		/>
 	);
 
-	/**
+	/*
 	 * Passage metadata
 	 */
 	const totalWordCount = new Set(deck.wordIds).size;
@@ -312,7 +312,7 @@ export default function DeckPassageView({
 		seenPercent = (wordsSeenCount / totalWordCount) * 100;
 	}
 
-	/**
+	/*
 	 * Get the rendered height for the modal
 	 */
 	function handleHeightMeasurement(section: keyof PassageHeightMeasurements, height: number) {
@@ -334,13 +334,13 @@ export default function DeckPassageView({
 		onContentHeightChange?.(contentHeight);
 	}
 
-	/**
+	/*
 	 * Highlight one word progress group at a time
 	 */
 	function handleWordProgressFilterPress(progress: WordProgressKey) {
 		let nextProgress: WordProgressKey | null = progress;
 
-		/**
+		/*
 		 * Toggle the filter
 		 */
 		if (activeWordProgressFilter === progress) {
@@ -350,7 +350,7 @@ export default function DeckPassageView({
 		setActiveWordProgressFilter(nextProgress);
 	}
 
-	/**
+	/*
 	 * Respond to changes from either the passage toggles or Settings.
 	 */
 	useEffect(() => {
@@ -386,7 +386,7 @@ export default function DeckPassageView({
 		exemptWordOpacity,
 	]);
 
-	/**
+	/*
 	 * Render the passage
 	 */
 	return (
@@ -584,7 +584,7 @@ export default function DeckPassageView({
 								wordCountLabel = 'word';
 							}
 
-							/**
+							/*
 							 * Render the filter
 							 */
 							return (
@@ -624,7 +624,7 @@ export default function DeckPassageView({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

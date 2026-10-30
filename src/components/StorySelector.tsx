@@ -11,13 +11,13 @@ let storyFontFamily = 'lexend-600';
 
 if (Platform.OS === 'ios') {
 	storyFontFamily = 'Lexend-SemiBold';
-	/**
+	/*
 	 * Use the color modifier supported by the native Expo Go runtime.
 	 */
 	titleModifiers.push(foregroundColor(headingColor));
 }
 
-/**
+/*
  * Typing
  */
 interface StorySelectorProps {
@@ -26,7 +26,7 @@ interface StorySelectorProps {
 	onPress: () => void;
 }
 
-/**
+/*
  * Show the current story's name and open the story picker when pressed.
  */
 export default function StorySelector({ story, isExpanded, onPress }: StorySelectorProps) {
@@ -89,7 +89,7 @@ export default function StorySelector({ story, isExpanded, onPress }: StorySelec
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

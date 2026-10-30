@@ -1,7 +1,7 @@
 import type { WordProgressKey } from './wordProgress';
 import { getWordProgressKeyFromCounts } from './wordProgress';
 
-/**
+/*
  * We give unseen flashcards a much bigger chance to appear during practice.
  * Rarity still affects the draw, and seen words keep a chance to appear too.
  */
@@ -19,7 +19,7 @@ interface DeckWordProgressSelectionCounts {
 	seenCount: number;
 }
 
-/**
+/*
  * Get the chance increase for a word based on its current progress.
  */
 export function getDeckWordProgressSelectionWeight({

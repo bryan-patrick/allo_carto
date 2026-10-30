@@ -3,7 +3,7 @@ import shuffleArray from './shuffleArray';
 export const frenchArticles = ['le', 'la', "l\'", 'les', 'un', 'une', 'des'];
 export const englishArticles = ['the', 'a', 'an'];
 
-/**
+/*
  * Typing
  */
 interface FilterFillerWordsProps {
@@ -26,7 +26,7 @@ function getUniqueWords(words: string[]) {
 	return [...uniqueWords.values()];
 }
 
-/**
+/*
  * This is a helper function for
  * use with the buttons on flashcards.
  *
@@ -38,7 +38,7 @@ export default function filterFillerWords({
 	words = englishArticles,
 	correctWords,
 }: FilterFillerWordsProps) {
-	/**
+	/*
 	 * Different French words can have the same English
 	 * translations so we remove the duplicates.
 	 */
@@ -46,7 +46,7 @@ export default function filterFillerWords({
 	const uniqueCorrectWords = getUniqueWords(correctWords);
 	const normalizedCorrectWords = new Set(uniqueCorrectWords.map(word => word.toLowerCase()));
 
-	/**
+	/*
 	 * Remove the correct answer from this choices arr
 	 * (also shuffle and slice to amount)
 	 */

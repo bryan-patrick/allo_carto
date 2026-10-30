@@ -5,7 +5,7 @@ import PassageHighlightLayer from '@/src/components/PassageHighlightLayer';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface CompletionPassageProps {
@@ -25,7 +25,7 @@ const resultColors: Record<DeckWordResultProps['outcome'], string> = {
 	skipped: `${colors.light.danger}33`,
 };
 
-/**
+/*
  * Show the paragraph with this session's correct and incorrect words highlighted.
  */
 export default function CompletionPassage({ deck, results }: CompletionPassageProps) {
@@ -116,7 +116,7 @@ export default function CompletionPassage({ deck, results }: CompletionPassagePr
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

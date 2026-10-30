@@ -19,7 +19,7 @@ import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useState } from 'react';
 import { Pressable, type StyleProp, StyleSheet, Text, type TextStyle, View } from 'react-native';
 
-/**
+/*
  * Typing
  */
 export interface ReadingLinkProps {
@@ -36,7 +36,7 @@ interface PassageState {
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
 }
 
-/**
+/*
  * Opens the story modal
  */
 export default function ReadingLink({
@@ -63,7 +63,7 @@ export default function ReadingLink({
 		decks = [item];
 	}
 
-	/**
+	/*
 	 * Reading a chapter or story only includes paragraphs the player can already open.
 	 */
 	decks = decks.filter(deck => {
@@ -203,7 +203,7 @@ export default function ReadingLink({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

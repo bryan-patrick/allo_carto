@@ -2,7 +2,7 @@ import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { Tabs } from 'expo-router';
 import colors from '../colors';
 
-/**
+/*
  * Icon dir here
  * https://mui.com/material-ui/material-icons/
  */

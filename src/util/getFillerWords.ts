@@ -1,7 +1,7 @@
 import { SharedValue } from 'react-native-reanimated';
 import filterFillerWords from './filterFillerWords';
 
-/**
+/*
  * Typing
  */
 export interface GetFillerWordsProps {
@@ -12,7 +12,7 @@ export interface GetFillerWordsProps {
 	words?: string[];
 }
 
-/**
+/*
  * ZZZZZZZZZZzzzzzzzzzzz
  */
 export function sleep(ms: number | SharedValue<number>) {
@@ -21,7 +21,7 @@ export function sleep(ms: number | SharedValue<number>) {
 	return new Promise(resolve => setTimeout(resolve, delay));
 }
 
-/**
+/*
  * This function gets filler words for the
  * user to select from when doing flash cards.
  *

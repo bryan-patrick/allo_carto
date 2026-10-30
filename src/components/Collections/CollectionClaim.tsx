@@ -1,6 +1,6 @@
 import colors from '@/src/app/colors';
-import { useUserProgress } from '@/src/db/useUserProgress';
 import type { CollectionRewardReceipt } from '@/src/db/queries/claimCollectionReward';
+import { useUserProgress } from '@/src/db/useUserProgress';
 import type { VocabularyCollectionProgress } from '@/src/util/vocabularyCollections';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -10,7 +10,7 @@ interface CollectionClaimProps {
 	progress: VocabularyCollectionProgress;
 }
 
-/**
+/*
  * Gets a message explaining the result of a collection reward claim.
  */
 function getClaimFeedback(receipt: CollectionRewardReceipt): string {
@@ -23,7 +23,7 @@ function getClaimFeedback(receipt: CollectionRewardReceipt): string {
 	return responses[receipt.status];
 }
 
-/**
+/*
  * Shows the next XP claim below the progress bar when its learning level is ready.
  */
 export default function CollectionClaim({ progress }: CollectionClaimProps) {

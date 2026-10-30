@@ -1,8 +1,10 @@
-import { placeholderStampImage } from '@/data/french/collectionAtlas';
 import colors from '@/src/app/colors';
 import type { CollectionStamp } from '@/src/util/vocabularyCollections';
+import { getWordProgressDefinitionByKey } from '@/src/util/wordProgress';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from '../MaterialSymbol';
+import WordProgressBar from '../WordProgressBar';
+import StampIllustration from './StampIllustration';
 
 const stampPaper = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
@@ -10,32 +12,30 @@ interface VocabularyStampProps {
 	stamp: CollectionStamp;
 }
 
-/**
+/*
  * Shows a word's collectible stamp or a locked space until its flashcard is discovered.
  */
 export default function VocabularyStamp({ stamp }: VocabularyStampProps) {
 	const isDiscovered = stamp.progress !== 'unseen';
+	const learningLevel = getWordProgressDefinitionByKey(stamp.progress);
 	const accessibilityLabel =
-		isDiscovered ? `${stamp.frenchWord}. Learning level ${stamp.level}.` : 'Undiscovered word.';
+		isDiscovered ?
+			`${stamp.frenchWord}. Learning stage: ${learningLevel.name}.`
+		:	'Undiscovered word.';
 
 	return (
 		<ImageBackground
 			accessible
 			accessibilityLabel={accessibilityLabel}
-			source={stampPaper}
+			source={isDiscovered ? undefined : stampPaper}
 			imageStyle={styles.paperImage}
-			style={styles.stamp}
+			style={[styles.stamp, !isDiscovered && styles.lockedStamp]}
 		>
 			{isDiscovered ?
 				<>
-					<ImageBackground
-						accessible={false}
-						source={stamp.image ?? placeholderStampImage}
-						resizeMode="contain"
-						style={styles.illustration}
-					/>
+					<StampIllustration image={stamp.image} />
 					<Text style={styles.word}>{stamp.frenchWord}</Text>
-					<Text style={styles.level}>Lvl. {stamp.level}</Text>
+					<WordProgressBar progress={stamp.progress} />
 				</>
 			:	<View style={styles.lockedContent}>
 					<MaterialSymbol
@@ -57,6 +57,8 @@ const styles = StyleSheet.create({
 		gap: 5,
 		minHeight: 160,
 		alignItems: 'center',
+	},
+	lockedStamp: {
 		borderWidth: 1,
 		borderStyle: 'dashed',
 		borderColor: colors.light.border,
@@ -66,20 +68,11 @@ const styles = StyleSheet.create({
 	paperImage: {
 		borderRadius: 3,
 	},
-	illustration: {
-		width: '100%',
-		aspectRatio: 1,
-	},
 	word: {
 		fontFamily: 'lexend-600',
 		fontSize: 14,
 		color: colors.dark.text,
 		textAlign: 'center',
-	},
-	level: {
-		fontFamily: 'lexend-400',
-		fontSize: 11,
-		color: colors.wordProgress.unseen,
 	},
 	lockedContent: {
 		flex: 1,

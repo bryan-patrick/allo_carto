@@ -1,7 +1,7 @@
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { getCompletionPercentage } from './progression';
 
-/**
+/*
  * Deck completion helper
  */
 export function getDeckCompletionPercent({

@@ -10,7 +10,7 @@ export interface StoryArea {
 	color: string;
 }
 
-/**
+/*
  * Player level ranges used to explore the story atlas.
  */
 export const storyAreas: StoryArea[] = [

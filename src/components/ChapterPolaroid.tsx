@@ -22,7 +22,7 @@ interface ChapterPolaroidProps {
 	style?: StyleProp<ViewStyle>;
 }
 
-/**
+/*
  * Show a chapter photo in a Polaroid frame, with a tilted frame behind it.
  */
 export default function ChapterPolaroid({

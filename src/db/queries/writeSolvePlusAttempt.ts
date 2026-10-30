@@ -4,7 +4,7 @@ import { solveStages } from '@/src/util/solveProgression';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolvePuzzle from './getSolvePuzzle';
 
-/**
+/*
  * Typing
  */
 interface WriteSolvePlusAttemptOptions extends SolveAttemptRequest {
@@ -24,7 +24,7 @@ interface SavedSolvePlusAttempt {
 	stageCompleted: number;
 }
 
-/**
+/*
  * Check a French answer and save its Ink charge, solved card, and second gem together.
  */
 export default async function writeSolvePlusAttempt({

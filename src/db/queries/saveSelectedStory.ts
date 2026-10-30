@@ -5,7 +5,7 @@ interface SaveSelectedStoryProps {
 	storyId: string;
 }
 
-/**
+/*
  * Save currently selected story to the db.
  * We do this so that when we reopen or whatever then
  * we come back to the story we were on.

@@ -10,7 +10,7 @@ import { getStoriesForArea } from '@/src/util/storyAreas';
 import { StyleSheet, Text, View } from 'react-native';
 import Story from './Story';
 
-/**
+/*
  * Typing
  */
 interface StorySelectViewProps {
@@ -18,7 +18,7 @@ interface StorySelectViewProps {
 	isSelecting: boolean;
 }
 
-/**
+/*
  * Show all of the awesome stories we have!
  */
 export default function StorySelectView({ onSelect, isSelecting }: StorySelectViewProps) {
@@ -81,7 +81,7 @@ export default function StorySelectView({ onSelect, isSelecting }: StorySelectVi
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

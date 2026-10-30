@@ -5,18 +5,18 @@ import { useCardDeck } from '../CardDeck/useCardDeck';
 
 // Show the deck number, card number, and marks for correct and incorrect answers.
 export default function DeckProgress() {
-	/**
+	/*
 	 * State
 	 */
 	const { cardDeckState } = useCardDeck();
 
-	/**
+	/*
 	 * Destructuring
 	 */
 	const { cardDeck: currentCardDeck, currentIndex, correctWords, incorrectWords } = cardDeckState;
 	const { words } = currentCardDeck;
 
-	/**
+	/*
 	 * Card vars
 	 */
 	const totalCards = words.length;
@@ -25,7 +25,7 @@ export default function DeckProgress() {
 	const correctWordIds: Set<string> = new Set(correctWords.map(word => word.id));
 	const incorrectWordIds: Set<string> = new Set(incorrectWords.map(word => word.id));
 
-	/**
+	/*
 	 * Render the component
 	 */
 	return (
@@ -39,7 +39,7 @@ export default function DeckProgress() {
 			</View>
 			<View style={styles.blipContainer}>
 				{
-					/**
+					/*
 					 * Map and render the blip things
 					 */
 					words.map((word: Word, index: number) => {
@@ -52,7 +52,7 @@ export default function DeckProgress() {
 						const isFilled: boolean = isCompleted || isCorrect || isIncorrect;
 						const blipColor: string = isIncorrect ? colors.light.danger : rarityColor;
 
-						/**
+						/*
 						 * Dynamic Blip styles
 						 */
 						const dynamicBlipStyle: ViewStyle = {
@@ -61,7 +61,7 @@ export default function DeckProgress() {
 							opacity: isFilled || isCurrent ? 1 : 0.5,
 						};
 
-						/**
+						/*
 						 * Render a blip
 						 */
 						return (
@@ -78,7 +78,7 @@ export default function DeckProgress() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

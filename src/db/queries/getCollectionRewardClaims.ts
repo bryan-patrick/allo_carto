@@ -6,7 +6,7 @@ interface GetCollectionRewardClaimsOptions {
 	userId: string;
 }
 
-/**
+/*
  * Loads claimed collection rewards so the app remembers which XP has already been paid.
  */
 export default async function getCollectionRewardClaims({

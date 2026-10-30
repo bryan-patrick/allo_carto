@@ -2,14 +2,14 @@ import { deleteDatabaseAsync, openDatabaseAsync, type SQLiteDatabase } from 'exp
 
 let db: SQLiteDatabase | null = null;
 
-/**
+/*
  * Use the connection opened by SQLiteProvider for the whole application.
  */
 export function setDB(database: SQLiteDatabase): void {
 	db = database;
 }
 
-/**
+/*
  * Get the SQLite DB
  */
 export async function getDB(): Promise<SQLiteDatabase> {
@@ -31,7 +31,7 @@ export async function getDB(): Promise<SQLiteDatabase> {
 	}
 }
 
-/**
+/*
  * Close any cached connection before deleting the database file.
  */
 export async function deleteDB(): Promise<void> {
@@ -45,7 +45,7 @@ export async function deleteDB(): Promise<void> {
 	await deleteDatabaseAsync('allo_carto.db');
 }
 
-/**
+/*
  * Just a logging helper
  */
 export async function logThisIfItFails<T>(message: string, fn: () => Promise<T>): Promise<T> {

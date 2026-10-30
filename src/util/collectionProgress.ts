@@ -6,7 +6,7 @@ interface CollectionWordProgress {
 	wordProgressCounts?: DeckWordProgressCounts;
 }
 
-/**
+/*
  * Gets the lowest word level to use as the collection's learning level.
  */
 export function getCollectionLevel(progress?: CollectionWordProgress): WordProgressKey {
@@ -29,7 +29,7 @@ export function getCollectionLevel(progress?: CollectionWordProgress): WordProgr
 	return 'unseen';
 }
 
-/**
+/*
  * Counts words at or above a learning level to measure progress toward a goal.
  */
 export function getWordsAtLevel(
@@ -49,7 +49,7 @@ export function getWordsAtLevel(
 	return qualifyingWordCount;
 }
 
-/**
+/*
  * Checks whether every word has reached a learning level to unlock rewards
  */
 export function hasCollectionLevel(

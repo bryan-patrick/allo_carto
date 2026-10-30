@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import colors from '../app/colors';
 
-/**
+/*
  * A simple fallback while application data is loading.
  */
 export default function Loader() {

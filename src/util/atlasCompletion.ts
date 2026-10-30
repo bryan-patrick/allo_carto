@@ -54,7 +54,7 @@ function getUniqueWordIds(paragraphs: CardDeck[]): string[] {
 	return Array.from(uniqueWordIds);
 }
 
-/**
+/*
  * We keep vocabulary totals and solved-paragraph totals separate for each atlas item.
  * Empty chapters and paragraphs do not count toward finishing a story.
  */
@@ -107,7 +107,7 @@ export function getAtlasItemsContainingWord({
 	return completionItems.filter(item => item.wordIds.includes(wordId));
 }
 
-/**
+/*
  * A paragraph's path contains its story, chapter, and paragraph, in that order.
  */
 export function findCompletionPath({
@@ -135,7 +135,7 @@ export function findCompletionPath({
 	return [];
 }
 
-/**
+/*
  * Every published story starts open. Within a story, earlier paragraphs and chapters
  * need their first gems before the player moves forward. XP never blocks this path.
  */
@@ -168,7 +168,7 @@ export function isItemUnlocked({
 	return getUnlockCriteria(item, progressById, atlas).every(criterion => criterion.isUnlocked);
 }
 
-/**
+/*
  * List the chapter's paragraphs
  */
 export function getVisibleParagraphs(chapter: DeckChapter, progressById: ProgressById): CardDeck[] {
@@ -191,7 +191,7 @@ export function getVisibleParagraphs(chapter: DeckChapter, progressById: Progres
 	return visibleParagraphs;
 }
 
-/**
+/*
  * Build the requirements that decide access and explain why content is locked.
  * A chapter is finished only when every playable paragraph has its saved first gem.
  */
@@ -311,7 +311,7 @@ export function findParagraphById(
 	}
 }
 
-/**
+/*
  * The next reading action stays within this story and skips unwritten content.
  */
 export function findNextParagraph(

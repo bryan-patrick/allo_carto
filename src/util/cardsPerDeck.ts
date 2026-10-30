@@ -1,7 +1,7 @@
 export const minCardsPerDeck = 5;
 export const maxCardsPerDeck = 12;
 
-/**
+/*
  * Level 8 and all higher levels use the maximum deck size.
  */
 export const cardsPerDeckByLevel: Record<number, number> = {

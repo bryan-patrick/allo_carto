@@ -3,7 +3,7 @@ import { isItemUnlocked } from './atlasCompletion';
 import { hasStoryContent } from './atlasContent';
 import type { ProgressById } from './progression';
 
-/**
+/*
  * Typing
  */
 interface GetSelectedStoryProps {
@@ -11,7 +11,7 @@ interface GetSelectedStoryProps {
 	progressById: ProgressById;
 }
 
-/**
+/*
  * We use the same story for the fixed header and the chapters underneath it.
  */
 export function getSelectedStory({ selectedStoryId, progressById }: GetSelectedStoryProps) {

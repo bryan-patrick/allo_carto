@@ -3,7 +3,7 @@ import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import { getWordProgressKeyFromCounts, type WordProgressKey } from '@/src/util/wordProgress';
 import { getDB } from '../connection';
 
-/**
+/*
  * Typing
  */
 export interface GetWordProgressByIdProps {
@@ -12,7 +12,7 @@ export interface GetWordProgressByIdProps {
 }
 export type PromiseWordProgressKey = Promise<Record<string, WordProgressKey>>;
 
-/**
+/*
  * We want to return an object from this function that looks like this:
  * {
  *  word_pronoun_je: 'unseen',
@@ -40,7 +40,7 @@ export default async function getWordProgressById({
 		const database = await getDB();
 		const quests = uniqueWordIds.map(() => '?').join(',');
 
-		/**
+		/*
 		 * Get all of the user's
 		 * scores for these words
 		 * in one query.
@@ -60,7 +60,7 @@ export default async function getWordProgressById({
 			...uniqueWordIds,
 		);
 
-		/**
+		/*
 		 * Turn the database rows into an object lookup.
 		 * This makes the next loop simple.
 		 */
@@ -71,7 +71,7 @@ export default async function getWordProgressById({
 			};
 		}
 
-		/**
+		/*
 		 * Make sure every requested word id gets a progress key.
 		 *
 		 * Use the stored userWords counts to get each word's progress.

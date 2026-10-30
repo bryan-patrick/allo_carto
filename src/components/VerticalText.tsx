@@ -1,7 +1,7 @@
 import type { StyleProp, TextStyle, ViewProps, ViewStyle } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface VerticalTextProps extends Omit<ViewProps, 'children' | 'style'> {
@@ -10,7 +10,7 @@ interface VerticalTextProps extends Omit<ViewProps, 'children' | 'style'> {
 	textStyle?: StyleProp<TextStyle>;
 }
 
-/**
+/*
  * Arrange the characters in a word vertically
  */
 export default function VerticalText({

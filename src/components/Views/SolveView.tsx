@@ -1,8 +1,8 @@
 import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
-import SecondaryButton from '@/src/components/SecondaryButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ReadingLink from '@/src/components/ReadingLink';
+import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import type {
@@ -42,7 +42,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-/**
+/*
  * Typing
  */
 interface SolveViewProps {
@@ -62,7 +62,7 @@ interface SolveFeedback {
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/**
+/*
  * Choose the message and color shown after a word answer is checked.
  */
 function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): SolveFeedback {
@@ -100,7 +100,7 @@ function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): So
 	return messages[result.status];
 }
 
-/**
+/*
  * Let the player select word cards and submit English or French answers for Ink.
  */
 export default function SolveView({ deckId, stage }: SolveViewProps) {
@@ -301,7 +301,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		setAnswerSelection(event.nativeEvent.selection);
 	}
 
-	/**
+	/*
 	 * Insert a French character at the cursor and replace any selected letters.
 	 */
 	function handleInsertCharacter(character: string) {
@@ -354,7 +354,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		});
 	}
 
-	/**
+	/*
 	 * Submit a paid answer and keep its ID so retrying a failed save cannot charge twice.
 	 */
 	async function handleSubmit() {
@@ -389,7 +389,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 			setFeedback(getSolveFeedback(result, stage));
 			updateSavedCard(selectedCard.position, result);
 
-			/**
+			/*
 			 * Clear wrong answers so a quick second tap cannot charge for the same text again.
 			 */
 			if (result.status === 'incorrect') {
@@ -612,7 +612,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

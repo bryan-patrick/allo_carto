@@ -4,12 +4,14 @@ import { StyleSheet, Text, View } from 'react-native';
 
 interface WordProgressBadgeProps {
 	progress: WordProgressKey;
+	placement?: 'corner' | 'inline';
 }
 
-/**
- * Shows the learning stage as a small, tilted sticker on the collection's upper-right corner.
- */
-export default function WordProgressBadge({ progress }: WordProgressBadgeProps) {
+// Show a word or collection's learning stage beside content or as a tilted corner sticker.
+export default function WordProgressBadge({
+	progress,
+	placement = 'corner',
+}: WordProgressBadgeProps) {
 	const definition = getWordProgressDefinitionByKey(progress);
 	const badgeStyle = {
 		backgroundColor: colors.wordProgress[progress],
@@ -21,7 +23,7 @@ export default function WordProgressBadge({ progress }: WordProgressBadgeProps) 
 	return (
 		<View
 			pointerEvents="none"
-			style={[styles.badge, badgeStyle]}
+			style={[styles.badge, placement === 'corner' && styles.cornerBadge, badgeStyle]}
 		>
 			<Text style={[styles.label, textStyle]}>{definition.name}</Text>
 		</View>
@@ -30,6 +32,14 @@ export default function WordProgressBadge({ progress }: WordProgressBadgeProps) 
 
 const styles = StyleSheet.create({
 	badge: {
+		borderRadius: 3,
+		borderWidth: 1,
+		borderColor: colors.light.border,
+		paddingHorizontal: 6,
+		paddingVertical: 2,
+		minWidth: 60,
+	},
+	cornerBadge: {
 		position: 'absolute',
 		top: 0,
 		right: -5,
@@ -39,12 +49,6 @@ const styles = StyleSheet.create({
 				rotate: '8deg',
 			},
 		],
-		borderRadius: 3,
-		borderWidth: 1,
-		borderColor: colors.light.border,
-		paddingHorizontal: 6,
-		paddingVertical: 2,
-		minWidth: 60,
 	},
 	label: {
 		fontFamily: 'lexend-600',

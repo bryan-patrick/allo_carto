@@ -15,14 +15,14 @@ import {
 import { useCardDeck } from './CardDeck/useCardDeck';
 import MaterialSymbol from './MaterialSymbol';
 
-/**
+/*
  * Typing
  */
 type WordProgressIconProps = Omit<ComponentProps<typeof MaterialSymbol>, 'name'> & {
 	progress: WordProgressKey;
 };
 
-/**
+/*
  * WordProgressIcon Component
  */
 export function WordProgressIcon({ progress, size = 12, color, ...props }: WordProgressIconProps) {
@@ -38,13 +38,13 @@ export function WordProgressIcon({ progress, size = 12, color, ...props }: WordP
 	);
 }
 
-/**
+/*
  * WordProgress Component
  */
 export default function WordProgress() {
 	const { currentCard } = useCardDeck();
 
-	/**
+	/*
 	 * State
 	 */
 	const [currentScore] = useState(currentCard.correctCount);
@@ -64,7 +64,7 @@ export default function WordProgress() {
 		}),
 	);
 
-	/**
+	/*
 	 * Animations / styles
 	 */
 	const currentProgressBackgroundStyle = {
@@ -79,7 +79,7 @@ export default function WordProgress() {
 		transform: [{ translateY: translateY.get() }],
 	}));
 
-	/**
+	/*
 	 * Trigger the animation
 	 */
 	useEffect(() => {
@@ -97,7 +97,7 @@ export default function WordProgress() {
 		}
 	}, [currentScore, currentCard.correctCount, translateY]);
 
-	/**
+	/*
 	 * Render the word progress
 	 */
 	return (
@@ -126,7 +126,7 @@ export default function WordProgress() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

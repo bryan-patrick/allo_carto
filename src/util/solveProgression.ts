@@ -3,7 +3,7 @@ import type { CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
 import { inkConfig } from './ink';
 import type { UserProgressRow } from './progression';
 
-/**
+/*
  * Typing
  */
 export type CompletedSolveStages = 0 | 1 | 2 | 3 | 4 | 5;
@@ -50,7 +50,7 @@ export interface SolveStageEligibility {
 	requiredPlayerLevel: number;
 }
 
-/**
+/*
  * Keeps the names, required player levels, Ink prices, and colors for all five Solve puzzles in one place.
  */
 export const solveStages: Record<SolveStage, SolveStageDefinition> = {
@@ -126,7 +126,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	},
 };
 
-/**
+/*
  * Reports how many Solve puzzles have been completed for a paragraph, chapter, or story.
  */
 export function getCompletedSolveStages(progress?: UserProgressRow): CompletedSolveStages {
@@ -137,7 +137,7 @@ export function getCompletedSolveStages(progress?: UserProgressRow): CompletedSo
 	return progress?.hasFirstGem ? 1 : 0;
 }
 
-/**
+/*
  * Finds the next puzzle for the Solve button.
  */
 export function getNextSolveStage(completedStages: CompletedSolveStages): SolveStage | null {
@@ -148,7 +148,7 @@ export function getNextSolveStage(completedStages: CompletedSolveStages): SolveS
 	return (completedStages + 1) as SolveStage;
 }
 
-/**
+/*
  * Gets the ink cost
  */
 export function getSolveCardInkCost(stage: SolveWordStage, rarity: CardRarity): number {
@@ -159,7 +159,7 @@ export function getSolveCardInkCost(stage: SolveWordStage, rarity: CardRarity): 
 	return cardPrice * 2;
 }
 
-/**
+/*
  * Decides whether the player can open a Solve puzzle or what is keeping it locked.
  */
 export function getSolveStageEligibility({
@@ -204,7 +204,7 @@ export interface SolveUnlockMessageOptions {
 	wordCount: number;
 }
 
-/**
+/*
  * Explains a locked Solve button beside the paragraph's other actions.
  */
 export function getSolveUnlockMessage({

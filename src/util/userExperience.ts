@@ -1,6 +1,6 @@
 import type { CardRarity, CEFR } from '@/src/components/CardDeck/cardDeckTypes';
 
-/**
+/*
  * Typing
  */
 interface UserLevelDefinition {
@@ -17,7 +17,7 @@ export interface UserExperience {
 	progressPercentage: number;
 }
 
-/**
+/*
  * More xp for rare cards
  */
 export const correctAnswerXPByRarity: Record<CardRarity, number> = {
@@ -27,7 +27,7 @@ export const correctAnswerXPByRarity: Record<CardRarity, number> = {
 	Legendary: 50,
 };
 
-/**
+/*
  * Each higher language level doubles the XP
  */
 export const correctAnswerXPMultiplierByCEFR: Record<CEFR, number> = {
@@ -47,7 +47,7 @@ export const userExperienceConfig = {
 	paragraphCompletionXP: 100,
 };
 
-/**
+/*
  * XP required for each level
  */
 export const userLevels: readonly UserLevelDefinition[] = [
@@ -83,7 +83,7 @@ export const userLevels: readonly UserLevelDefinition[] = [
 	{ level: 30, toNext: null },
 ];
 
-/**
+/*
  * Look up the player's level using the XP table.
  */
 export function getUserExperience(totalXP: number): UserExperience {

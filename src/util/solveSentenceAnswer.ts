@@ -111,7 +111,7 @@ const optionalFrenchSentenceWords = new Set([
 	'vers',
 ]);
 
-/**
+/*
  * Keep the French keywords in order while leaving accents unchanged.
  */
 function getFrenchSentenceKeywords(text: string): string[] {
@@ -125,7 +125,7 @@ function getFrenchSentenceKeywords(text: string): string[] {
 	return words.filter(word => word.length > 0 && !optionalFrenchSentenceWords.has(word));
 }
 
-/**
+/*
  * Check the French sentence's spelling, accents, and keyword order against its saved wording.
  */
 export function checkFrenchSentenceAnswer({
@@ -205,7 +205,7 @@ const englishContractions: Record<string, string> = {
 	"they'll": 'they will',
 };
 
-/**
+/*
  * Keeps English keywords while allowing articles and prepositions to move or be left out.
  */
 export function getSentenceKeywords(text: string): string[] {
@@ -229,7 +229,7 @@ export function getSentenceKeywords(text: string): string[] {
 	return words.filter(word => word.length > 0 && !optionalSentenceWords.has(word));
 }
 
-/**
+/*
  * Match every required keyword in order. They HAVE to at least be in order.
  */
 function matchesSentenceKeywords(answerWords: string[], keywords: SolveSentenceKeyword[]): boolean {
@@ -273,7 +273,7 @@ function matchesSentenceKeywords(answerWords: string[], keywords: SolveSentenceK
 	return matchedPositions.has(answerWords.length);
 }
 
-/**
+/*
  * Check the English keywords against the card meanings or existing English passage text.
  */
 export function checkSentenceAnswer({

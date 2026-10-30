@@ -20,7 +20,7 @@ export interface SolveProgress extends SolveStageEligibility {
 	unlockMessage: string;
 }
 
-/**
+/*
  * This hook works out the next Solve stage for a
  * paragraph and whether the player can open it.
  *

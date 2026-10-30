@@ -2,7 +2,7 @@ import { findParagraphById } from '@/src/util/atlasCompletion';
 import { getWordOrderCards, isCompleteWordOrder } from '@/src/util/solveWordOrder';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-/**
+/*
  * Typing
  */
 interface SaveWordOrderDraftOptions {
@@ -12,7 +12,7 @@ interface SaveWordOrderDraftOptions {
 	positions: number[];
 }
 
-/**
+/*
  * Saves the current card order so the player can leave Solve++ and resume later.
  */
 export default async function saveWordOrderDraft({

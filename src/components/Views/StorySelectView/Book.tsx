@@ -3,18 +3,18 @@ import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Pages from './Pages';
 
-/**
+/*
  * Typing
  */
 interface BookProps {
 	children: ReactNode;
 }
 
-/**
+/*
  * Book component (story select)
  */
 export default function Book({ children }: BookProps) {
-	/**
+	/*
 	 * Render the component
 	 */
 	return (
@@ -25,7 +25,7 @@ export default function Book({ children }: BookProps) {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

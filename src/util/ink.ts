@@ -7,7 +7,7 @@ interface InkConfig {
 	maxBalance: number;
 }
 
-/**
+/*
  * Set flashcard ink rewards and the costs used for word puzzles.
  */
 export const inkConfig: InkConfig = {
