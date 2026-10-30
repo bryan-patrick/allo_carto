@@ -23,7 +23,7 @@ import {
 	isItemUnlocked,
 } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
-import { createDeckSession } from '@/src/util/createDeckSession';
+import { getFlashcardActionLabel } from '@/src/util/getFlashcardActionLabel';
 import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useRouter } from 'expo-router';
@@ -86,15 +86,16 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 		try {
 			const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
 
-			if (!selectedDeck || selectedDeck.words.length === 0) {
+			if (!selectedDeck || selectedDeck.cardDeck.words.length === 0) {
 				Alert.alert('Could not start session', 'Please try again.');
 				return;
 			}
 
 			cardDeckDispatch({
 				type: 'SET_DECK',
-				payload: selectedDeck,
-				session: createDeckSession(experience.totalXP),
+				payload: selectedDeck.cardDeck,
+				session: selectedDeck.session,
+				currentIndex: selectedDeck.currentIndex,
 			});
 			router.push('/CardDeck');
 		} catch (error) {
@@ -153,14 +154,13 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 					id: deck.id,
 					progressById,
 				});
-				const completionPercent = Math.floor(progressById[deck.id]?.completionPercentage ?? 0);
 				const unlockCriteria = getUnlockCriteria(deck, progressById);
 				const isLoadingPassage = loadingPassageId === deck.id;
-				let actionLabel = 'Flashcards';
-
-				if (completionPercent > 0) {
-					actionLabel = 'Flashcards';
-				}
+				const actionLabel = getFlashcardActionLabel({
+					wordCount: deck.wordIds.length,
+					targetCardsPerDeck: cardsPerDeck,
+					savedProgress: progressById[deck.id]?.flashcardProgress,
+				});
 
 				return (
 					<View

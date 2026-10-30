@@ -4,14 +4,15 @@ export const completionEntryDuration = 360;
 export const completionStagger = 180;
 
 /**
- * Stagger with index
+ * Delay each result row based on its position so the rows appear one after another.
  */
 export function getCompletionDelay(index: number) {
 	return index * completionStagger;
 }
 
 /**
- * We use this short slide when word details or unlock choices appear.
+ * Slide and fade in word details or unlock choices, one row at a time.
+ * Follow the device's reduced-motion setting.
  */
 export function getCompletionEntry(index: number) {
 	return FadeInLeft.duration(completionEntryDuration)

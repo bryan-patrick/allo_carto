@@ -17,10 +17,10 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { UnlockCriteria } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
-import { createDeckSession } from '@/src/util/createDeckSession';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
+import { getFlashcardActionLabel } from '@/src/util/getFlashcardActionLabel';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
@@ -85,8 +85,11 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		deckWordCount: deckCardCount,
 		wordProgressCounts,
 	});
-	const selectAction = deckCompletionPercent > 0 ? 'Continue' : 'Start';
-	const selectText = `${selectAction} session`;
+	const selectText = getFlashcardActionLabel({
+		wordCount: deckCardCount,
+		targetCardsPerDeck: cardsPerDeck,
+		savedProgress: progressById[deck.id]?.flashcardProgress,
+	});
 	const deckMetadata = {
 		cardCount: deckCardCount,
 		CEFRLabel: deckCEFRLabel,
@@ -159,15 +162,16 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		try {
 			const selectedDeck = await getDeck({ deck, amount: cardsPerDeck, userId });
 
-			if (!selectedDeck || selectedDeck.words.length === 0) {
+			if (!selectedDeck || selectedDeck.cardDeck.words.length === 0) {
 				Alert.alert('Could not start session', 'Please try again.');
 				return;
 			}
 
 			cardDeckDispatch({
 				type: 'SET_DECK',
-				payload: selectedDeck,
-				session: createDeckSession(experience.totalXP),
+				payload: selectedDeck.cardDeck,
+				session: selectedDeck.session,
+				currentIndex: selectedDeck.currentIndex,
 			});
 			router.push('/CardDeck');
 		} catch (error) {
@@ -176,15 +180,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		} finally {
 			isStartingDeck.current = false;
 		}
-	}, [
-		userId,
-		isUpdatingProgress,
-		deck,
-		cardsPerDeck,
-		cardDeckDispatch,
-		experience.totalXP,
-		router,
-	]);
+	}, [userId, isUpdatingProgress, deck, cardsPerDeck, cardDeckDispatch, router]);
 
 	/**
 	 * Refresh passage data and show modal
@@ -328,7 +324,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 										</Animated.View>
 									</Pressable>
 									<LinkButton
-										accessibilityHint={`${selectAction} practicing ${deckTitle}.`}
+										accessibilityHint="Practice the next flashcard deck for this paragraph."
 										accessibilityLabel={`${selectText}: ${deckTitle}`}
 										arrowColor={colors.light.background}
 										color={storyColor}

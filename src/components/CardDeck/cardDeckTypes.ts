@@ -48,9 +48,19 @@ export interface CardDeckDefinition extends Progression {
 	acceptedWordOrders?: number[][];
 }
 
+/**
+ * Hold a paragraph's content, learnable word IDs, and planned flashcard decks.
+ * Each planned deck lists its word IDs in play order to match the learner's saved cycle.
+ */
 export interface CardDeck extends CardDeckDefinition {
-	/** Non-exempt word IDs from the passage, with duplicates removed. */
 	wordIds: string[];
+	flashcardDecks?: string[][];
+	flashcardProgress?: FlashcardDeckProgress;
+}
+
+export interface FlashcardDeckProgress {
+	deckIndex: number;
+	deckCount: number;
 }
 
 export type ReadingPassage = Pick<CardDeck, 'id' | 'title' | 'passage' | 'wordIds'>;

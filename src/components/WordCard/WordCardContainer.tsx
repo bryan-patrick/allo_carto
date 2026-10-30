@@ -1,17 +1,23 @@
 import colors from '@/src/app/colors';
 import sharedStyles from '@/src/app/sharedStyles';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { type ReactNode, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useReducer, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { englishArticles } from '../../util/filterFillerWords';
 import getFillerWords from '../../util/getFillerWords';
 import { type Word } from '../CardDeck/cardDeckTypes';
+import type { DeckWordResultProps } from '../CardDeck/deckSessionTypes';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import SVGRightArrow from '../SVG/SVGRightArrow';
 import WordCard from './WordCard';
 import WordCardButton from './WordCardButton';
-import { initialWordCardState, WordCardUIContext } from './wordCardContext';
+import {
+	getFeedbackKey,
+	initialWordCardState,
+	WordCardUIContext,
+	type WordCardStateProps,
+} from './wordCardContext';
 import WordCardSelection from './WordCardSelection';
 import { wordCardUIReducer } from './wordCardUIReducer';
 
@@ -22,6 +28,35 @@ interface CardContainerProps {
 	word: Word;
 	isCurrent: boolean;
 	wordActions?: ReactNode;
+}
+
+interface ResumeWordCardOptions {
+	word: Word;
+	result?: DeckWordResultProps;
+}
+
+/**
+ * Start unanswered cards ready to play and mark cards with saved answers as finished.
+ * This lets a reopened deck reach its results without asking for the same answer again.
+ */
+function getStartingWordCardState({ word, result }: ResumeWordCardOptions): WordCardStateProps {
+	if (!result) {
+		return initialWordCardState;
+	}
+
+	const resumedState: WordCardStateProps = {
+		...initialWordCardState,
+		stage: 'COMPLETED',
+		progress: result.outcome === 'incorrect' ? 'DANGER' : 'SUCCESS',
+		selectedArticle: word.englishArticle ?? null,
+		selectedWord: word.englishWords[0] ?? null,
+		isAnswerRevealed: result.outcome === 'skipped',
+	};
+
+	return {
+		...resumedState,
+		feedbackKey: getFeedbackKey(resumedState),
+	};
 }
 
 const MIN_SAME_PART_OF_SPEECH_WRONG_ANSWERS = 3;
@@ -56,7 +91,15 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 	const [articleWords, setArticleWords] = useState<string[]>([]);
 	const loadedWordId = useRef<string | null>(null);
 	const seenWordId = useRef<string | null>(null);
-	const [cardState, wordCardUIDispatch] = useReducer(wordCardUIReducer, initialWordCardState);
+	const savedResult = cardDeckState.session?.results.find(result => result.wordId === word.id);
+	const [cardState, wordCardUIDispatch] = useReducer(
+		wordCardUIReducer,
+		{
+			word,
+			result: savedResult,
+		},
+		getStartingWordCardState,
+	);
 	const isNextCardButton = cardState.stage === 'CORRECT' || cardState.stage === 'INCORRECT';
 	const nextCardArrowColor =
 		cardState.progress === 'SUCCESS' ? colors.dark.text : colors.light.text;
@@ -66,7 +109,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 	 */
 	useEffect(() => {
 		async function markWordSeen() {
-			if (!isCurrent || isUpdatingProgress) {
+			if (!isCurrent || isUpdatingProgress || savedResult) {
 				return;
 			}
 			if (seenWordId.current === word.id) {
@@ -81,7 +124,14 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 		}
 
 		markWordSeen();
-	}, [isCurrent, isUpdatingProgress, recordWordSeen, word.id, cardDeckState.cardDeck.id]);
+	}, [
+		isCurrent,
+		isUpdatingProgress,
+		recordWordSeen,
+		word.id,
+		cardDeckState.cardDeck.id,
+		savedResult,
+	]);
 
 	/**
 	 * Side effects

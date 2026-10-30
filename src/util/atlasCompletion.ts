@@ -192,7 +192,7 @@ export function getVisibleParagraphs(chapter: DeckChapter, progressById: Progres
 }
 
 /**
- * We use these same requirements for access checks and the messages on locked content.
+ * Build the requirements that decide access and explain why content is locked.
  * A chapter is finished only when every playable paragraph has its saved first gem.
  */
 export function getUnlockCriteria(
