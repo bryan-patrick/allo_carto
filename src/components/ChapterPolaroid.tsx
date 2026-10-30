@@ -24,7 +24,6 @@ interface ChapterPolaroidProps {
 
 /**
  * Show a chapter photo in a Polaroid frame, with a tilted frame behind it.
- * Chapter details can sit below the photo, and an optional grain texture covers the photo only.
  */
 export default function ChapterPolaroid({
 	source,
