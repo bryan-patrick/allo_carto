@@ -2,7 +2,7 @@ import { createCardDeck } from '@/src/util/createCardDeck';
 import { type CardDeckStateProps } from './cardDeckContext';
 import { type CardDeck, type CardDeckDefinition, type Word } from './cardDeckTypes';
 
-/**
+/*
  * Mock words
  */
 export const mockWords: Word[] = [
@@ -76,7 +76,7 @@ export const mockWords: Word[] = [
 	},
 ];
 
-/**
+/*
  * Mock deck
  */
 export const mockCardDeck: CardDeck = createCardDeck({
@@ -93,7 +93,7 @@ export const mockCardDeck: CardDeck = createCardDeck({
 	})),
 });
 
-/**
+/*
  * Make a mock deck with overrides.
  */
 export function makeMockCardDeck(overrides: Partial<CardDeckDefinition> = {}): CardDeck {
@@ -113,7 +113,7 @@ export function makeMockCardDeck(overrides: Partial<CardDeckDefinition> = {}): C
 	});
 }
 
-/**
+/*
  * Make mock card deck state with overrides.
  */
 export function makeMockCardDeckState(

@@ -11,8 +11,8 @@ import {
 import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import formatFrenchWordWithArticle from '../../util/formatFrenchWordWithArticle';
 import { useCardDeck } from '../CardDeck/useCardDeck';
-import { sharedWordCardStyles } from './sharedWordCardStyles';
 import TTSButton from '../TTSButton';
+import { sharedWordCardStyles } from './sharedWordCardStyles';
 import { useWordCardUI } from './useWordCardUI';
 import { FEEDBACK_TEXT_BACK } from './wordCardContext';
 import WordCardHeader from './WordCardHeader';
@@ -20,7 +20,7 @@ import WordPronunciation from './WordPronunciation';
 
 const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 
-/**
+/*
  * Typing
  */
 interface WordCardBackProps {
@@ -34,7 +34,7 @@ interface WordCardBackProps {
 	background: ImageSourcePropType;
 }
 
-/**
+/*
  * WordCardBack Component
  */
 const WordCardBack = memo(function WordCardBackMemo({
@@ -47,13 +47,13 @@ const WordCardBack = memo(function WordCardBackMemo({
 	wordSlotStyle,
 	background,
 }: WordCardBackProps) {
-	/**
+	/*
 	 * State
 	 */
 	const { cardState } = useWordCardUI();
 	const { currentCard } = useCardDeck();
 
-	/**
+	/*
 	 * Word data
 	 */
 	const { englishWords, englishArticle, frenchArticle, frenchWord, form, partOfSpeech } =
@@ -79,7 +79,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 	const shouldShowFeedback = !cardState.isAnswerRevealed;
 	const feedbackText = FEEDBACK_TEXT_BACK[cardState.feedbackKey] ?? '';
 
-	/**
+	/*
 	 * Render the back of the WordCard
 	 */
 	return (
@@ -148,12 +148,12 @@ const WordCardBack = memo(function WordCardBackMemo({
 	);
 });
 
-/**
+/*
  * Export memoized
  */
 export default WordCardBack;
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

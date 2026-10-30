@@ -8,7 +8,7 @@ import {
 	readAppSettings,
 } from './appSettings';
 
-/**
+/*
  * Types
  */
 type SetSetting = <Key extends keyof AppSettings>(key: Key, value: AppSettings[Key]) => void;
@@ -18,12 +18,12 @@ interface AppSettingsContextValue {
 	setSetting: SetSetting;
 }
 
-/**
+/*
  * The context
  */
 export const AppSettingsContext = createContext<AppSettingsContextValue | null>(null);
 
-/**
+/*
  * Get current settings
  */
 function getAppSettings(): AppSettings {
@@ -35,7 +35,7 @@ function getAppSettings(): AppSettings {
 	}
 }
 
-/**
+/*
  * The provider
  */
 export function AppSettingsProvider({ children }: { children: ReactNode }) {

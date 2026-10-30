@@ -2,7 +2,7 @@ import { G, Path } from 'react-native-svg';
 import type { SVGProps } from './SVG';
 import SVG from './SVG';
 
-/**
+/*
  * SVGRightArrow Component
  */
 export default function SVGRightArrow({

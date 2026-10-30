@@ -1,8 +1,8 @@
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import VolumeSetting from '../../components/VolumeSetting';
 import MockParagraphProgressSetting from '../../components/MockParagraphProgressSetting';
+import VolumeSetting from '../../components/VolumeSetting';
 import { resetDB } from '../../db/interface';
 import { useUserProgress } from '../../db/useUserProgress';
 import {
@@ -15,7 +15,7 @@ import { getCardsPerDeck, maxCardsPerDeck, minCardsPerDeck } from '../../util/ca
 import { solveStages } from '../../util/solveProgression';
 import colors from '../colors';
 
-/**
+/*
  * Typing
  */
 interface PassageSetting {
@@ -49,7 +49,7 @@ const cardCountOptions = Array.from(
 	(_, index) => minCardsPerDeck + index,
 );
 
-/**
+/*
  * We explain both unlock settings using the same levels that open Solve stages.
  */
 function getSolveUnlockDescription(): string {
@@ -71,12 +71,12 @@ export default function Settings() {
 	const automaticCardCountLabel = `Automatic (${automaticCardCount})`;
 	const solveUnlockDescription = getSolveUnlockDescription();
 
-	/**
+	/*
 	 * State
 	 */
 	const [isResettingDB, setIsResettingDB] = useState(false);
 
-	/**
+	/*
 	 * Reset the local DB, then rebuild the seed data.
 	 */
 	async function handleResetDB() {
@@ -293,7 +293,7 @@ export default function Settings() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

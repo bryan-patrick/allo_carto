@@ -6,7 +6,7 @@ import getSolvePuzzle from './getSolvePuzzle';
 import getUserInk from './getUserInk';
 import writeSolvePlusAttempt from './writeSolvePlusAttempt';
 
-/**
+/*
  * Typing
  */
 interface WriteSolveAttemptOptions extends SolveAttemptRequest {
@@ -21,7 +21,7 @@ interface SavedSolveAttempt extends Omit<SolveAttemptResult, 'firstGemEarned'> {
 	firstGemEarned: number;
 }
 
-/**
+/*
  * Check an English answer and save the ink charge and card.
  */
 export default async function writeSolveAttempt({
@@ -140,7 +140,7 @@ export default async function writeSolveAttempt({
 			return;
 		}
 
-		/**
+		/*
 		 * Wrong answers don't cost as much ink as correct ones
 		 */
 		if (inkBalance < cardCost) {
@@ -164,7 +164,7 @@ export default async function writeSolveAttempt({
 				checkedAnswer.acceptedAnswer,
 			);
 
-			/**
+			/*
 			 * Save the first gem with the last answer so the next paragraph opens only after both save.
 			 */
 			if (remainingCards.length === 0 && !puzzle.hasFirstGem) {

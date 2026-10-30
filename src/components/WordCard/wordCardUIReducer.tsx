@@ -1,7 +1,7 @@
 import { type Word } from '../CardDeck/cardDeckTypes';
 import { type CardMistake, getFeedbackKey, type WordCardStateProps } from './wordCardContext';
 
-/**
+/*
  * Typing
  */
 export type WordCardUIAction =
@@ -18,7 +18,7 @@ export type WordCardUIAction =
 			currentCard: Word | undefined;
 	  };
 
-/**
+/*
  * Compare the user's selection against actual
  */
 function getMistake(state: WordCardStateProps, currentCard: Word): CardMistake {
@@ -35,7 +35,7 @@ function getMistake(state: WordCardStateProps, currentCard: Word): CardMistake {
 	return mistake;
 }
 
-/**
+/*
  * WordCardUI state reducer
  */
 export function wordCardUIReducer(
@@ -59,11 +59,11 @@ export function wordCardUIReducer(
 		case 'CHECK_ANSWER': {
 			const nextAttempts = state.attempts + 1;
 
-			/**
+			/*
 			 * What we do depends on what stage the card is in.
 			 */
 			switch (state.stage) {
-				/**
+				/*
 				 * READY is initial value, so this is the first time
 				 * the user hit the 'Check' button. Check if the user
 				 * got the right answer or made a mistake.
@@ -73,7 +73,7 @@ export function wordCardUIReducer(
 
 					const mistake = getMistake(state, action.currentCard);
 
-					/**
+					/*
 					 * Check if the user has reached
 					 * the max allowed attempts.
 					 */
@@ -92,7 +92,7 @@ export function wordCardUIReducer(
 						};
 					}
 
-					/**
+					/*
 					 * User made a mistake but still has attempts left.
 					 */
 					if (mistake !== 'NONE') {
@@ -109,7 +109,7 @@ export function wordCardUIReducer(
 						};
 					}
 
-					/**
+					/*
 					 * User got the answer correct ↓
 					 */
 					const nextState: WordCardStateProps = {
@@ -126,7 +126,7 @@ export function wordCardUIReducer(
 					};
 				}
 
-				/**
+				/*
 				 * CORRECT means We were already showing the user
 				 * the other side of the card (with correct answers).
 				 * Mark this one completed.
@@ -145,7 +145,7 @@ export function wordCardUIReducer(
 					};
 				}
 
-				/**
+				/*
 				 * INCORRECT means the user got it wrong and
 				 * ran out of attempts. Progress the card
 				 * without upping the word score.

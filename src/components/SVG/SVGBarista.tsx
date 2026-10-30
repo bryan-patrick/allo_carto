@@ -2,7 +2,7 @@ import { Circle, Ellipse, Path } from 'react-native-svg';
 import type { SVGProps } from './SVG';
 import SVG from './SVG';
 
-/**
+/*
  * SVGBarista Component
  */
 export default function SVGBarista({

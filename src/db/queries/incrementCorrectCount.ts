@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-/**
+/*
  * Increments the correct count row on the userWords table
  */
 export async function incrementCorrectCount(

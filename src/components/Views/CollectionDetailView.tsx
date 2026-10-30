@@ -1,12 +1,11 @@
 import { chapterSelectBackground } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
-import CollectionMeter from '@/src/components/Collections/CollectionMeter';
 import CollectionClaim from '@/src/components/Collections/CollectionClaim';
 import VocabularyStamp from '@/src/components/Collections/VocabularyStamp';
 import LinkButton from '@/src/components/LinkButton';
 import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import WordProgressBadge from '@/src/components/WordProgressBadge';
+import WordProgressBar from '@/src/components/WordProgressBar';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useLocalSearchParams } from 'expo-router';
@@ -29,7 +28,7 @@ interface CollectionDetailParams extends Record<string, string | string[] | unde
 
 const albumPaper = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/**
+/*
  * Shows a discovered collection's stamp album so the player can track words and claim rewards.
  */
 export default function CollectionDetailView() {
@@ -51,8 +50,6 @@ export default function CollectionDetailView() {
 	const learningLevel =
 		wordProgressDefinitions.find(definition => definition.level === progress?.level) ??
 		wordProgressDefinitions[0];
-	const collectionRewards = progress?.rewards ?? [];
-	const progressTarget = progress?.nextReward ?? collectionRewards[collectionRewards.length - 1];
 	let notice = 'This collection could not be found. Please go back and choose an album.';
 
 	function explainCollectionLevels() {
@@ -106,7 +103,6 @@ export default function CollectionDetailView() {
 					imageStyle={styles.paperImage}
 					style={styles.album}
 				>
-					<WordProgressBadge progress={learningLevel.key} />
 					<View style={styles.heading}>
 						<View style={styles.titleRow}>
 							<Text
@@ -130,14 +126,11 @@ export default function CollectionDetailView() {
 						</View>
 						<Text style={styles.description}>{progress.collection.description}</Text>
 					</View>
-					{progressTarget && (
-						<CollectionMeter
-							qualifyingWordCount={progressTarget.qualifyingWordCount}
-							wordCount={progress.stamps.length}
-							targetLevel={progressTarget.level}
-							learningLevel={learningLevel.key}
-						/>
-					)}
+					<WordProgressBar
+						progress={learningLevel.key}
+						labelFormat="words"
+						accessibilityLabel="Collection learning level"
+					/>
 					<CollectionClaim
 						key={progress.collection.id}
 						progress={progress}
@@ -185,7 +178,7 @@ const styles = StyleSheet.create({
 	title: {
 		flexShrink: 1,
 		fontFamily: 'lexend-600',
-		fontSize: 25,
+		fontSize: 22,
 		color: colors.dark.text,
 	},
 	description: {

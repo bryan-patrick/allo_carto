@@ -28,7 +28,7 @@ interface OtherFormsAvailability {
 	hasOtherForms?: boolean;
 }
 
-/**
+/*
  * Deck view - A route wrapper in (routes)
  */
 export default function CardDeck() {
@@ -51,7 +51,7 @@ export default function CardDeck() {
 		otherFormsAvailability?.lemmaId === currentLemmaId &&
 		otherFormsAvailability?.hasOtherForms === true;
 
-	/**
+	/*
 	 * Check availability for the current word and ignore stale requests.
 	 */
 	useEffect(() => {
@@ -83,7 +83,7 @@ export default function CardDeck() {
 		};
 	}, [currentWordId, currentLemmaId]);
 
-	/**
+	/*
 	 * Refresh passage progress without changing the current flashcard.
 	 */
 	async function handleShowPassage() {
@@ -108,7 +108,7 @@ export default function CardDeck() {
 		}
 	}
 
-	/**
+	/*
 	 * Show the other forms already available in the word library.
 	 */
 	async function handleShowOtherForms() {
@@ -132,20 +132,20 @@ export default function CardDeck() {
 		}
 	}
 
-	/**
+	/*
 	 * Wait for the user's stored percentages
 	 */
 	if (status === 'loading') return <Loader />;
 	if (status === 'error') return <Text>Could not load paragraph progress.</Text>;
 
-	/**
+	/*
 	 * Block locked decks
 	 */
 	if (isLocked) {
 		return <Text style={{ textAlign: 'center' }}>This paragraph is locked.</Text>;
 	}
 
-	/**
+	/*
 	 * Render the deck
 	 */
 	return (
@@ -203,7 +203,7 @@ export default function CardDeck() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

@@ -20,7 +20,7 @@ const createUserProgressTableSQL = `
 async function createWordsTable(): Promise<void> {
 	const database = await getDB();
 
-	/**
+	/*
 	 * Stores the French words, English meanings, and card details used in flashcards and Solve.
 	 */
 	await logThisIfItFails('Oops we messed up creating the words table somehows', async () => {
@@ -64,7 +64,7 @@ async function ensureWordsFormColumn(): Promise<void> {
 async function createUsersTable(): Promise<void> {
 	const database = await getDB();
 
-	/**
+	/*
 	 * Stores local player profiles, their selected story, and earned XP.
 	 */
 	await logThisIfItFails('Oops we messed up the users table somehows mon homme', async () => {
@@ -83,7 +83,7 @@ async function createUsersTable(): Promise<void> {
 async function createUserWordsTable(): Promise<void> {
 	const database = await getDB();
 
-	/**
+	/*
 	 * Stores how often each player has seen or correctly answered each word.
 	 */
 	await logThisIfItFails('Oops our join table messed up', async () => {
@@ -101,7 +101,7 @@ async function createUserWordsTable(): Promise<void> {
 	});
 }
 
-/**
+/*
  * Stores learning progress for paragraphs, chapters, and stories, including whether flashcard practice has started.
  */
 async function createUserProgressTable(): Promise<void> {
@@ -128,7 +128,7 @@ export default async function createTables(): Promise<void> {
 	await ensureParagraphProgressType();
 }
 
-/**
+/*
  * Create storage for each learner's shuffled decks and answers so they can leave and resume.
  * One saved cycle per paragraph records which deck to open next.
  */
@@ -153,7 +153,7 @@ async function createFlashcardCyclesTable(): Promise<void> {
 	await database.execAsync(statement);
 }
 
-/**
+/*
  * Creates storage for claimed collections XP (receipts)
  */
 async function createCollectionRewardClaimsTable(): Promise<void> {
@@ -174,7 +174,7 @@ async function createCollectionRewardClaimsTable(): Promise<void> {
 	await database.execAsync(statement);
 }
 
-/**
+/*
  * Creates storage for the first Solve puzzle's unlocked cards, answers, paid attempts, and earned gem.
  * Also prepares saved progress for the later Solve puzzles.
  */
@@ -231,7 +231,7 @@ async function createSolveTables(): Promise<void> {
 	await createSolveStageTables();
 }
 
-/**
+/*
  * Adds a completed puzzle count when opening an older save.
  */
 async function ensureCompletedSolveStagesColumn(): Promise<void> {
@@ -251,7 +251,7 @@ async function ensureCompletedSolveStagesColumn(): Promise<void> {
 	}
 }
 
-/**
+/*
  * Creates storage for later Solve puzzles' unlocked cards, correct answers, paid attempts, and unfinished Word Order arrangements.
  */
 async function createSolveStageTables(): Promise<void> {
@@ -307,7 +307,7 @@ async function createSolveStageTables(): Promise<void> {
 	await database.execAsync(statement);
 }
 
-/**
+/*
  * Adds a saved story selection to older databases when needed.
  */
 async function ensureSelectedStoryColumn(): Promise<void> {
@@ -320,7 +320,7 @@ async function ensureSelectedStoryColumn(): Promise<void> {
 	}
 }
 
-/**
+/*
  * Updates older saves to call paragraph progress "paragraph" instead of "deck".
  */
 async function ensureParagraphProgressType(): Promise<void> {
@@ -355,7 +355,7 @@ async function ensureParagraphProgressType(): Promise<void> {
 	}
 }
 
-/**
+/*
  * Keeps the New badge accurate when opening an older save.
  */
 async function ensureFlashcardsStartedColumn(): Promise<void> {
@@ -376,7 +376,7 @@ async function ensureFlashcardsStartedColumn(): Promise<void> {
 	});
 }
 
-/**
+/*
  * Remembers finished flashcard sessions and the rewards already paid for them.
  */
 async function createDeckCompletionsTable(): Promise<void> {
@@ -397,7 +397,7 @@ async function createDeckCompletionsTable(): Promise<void> {
 			ON deckCompletions (userId, deckId);
 	`);
 
-	/**
+	/*
 	 * Adds the saved Ink payout to older databases.
 	 */
 	const columns = await database.getAllAsync<DatabaseColumn>('PRAGMA table_info(deckCompletions);');
@@ -411,7 +411,7 @@ async function createDeckCompletionsTable(): Promise<void> {
 	}
 }
 
-/**
+/*
  * Stores the player's Ink balance and the Ink earned by correct flashcard answers.
  */
 async function createInkTables(): Promise<void> {

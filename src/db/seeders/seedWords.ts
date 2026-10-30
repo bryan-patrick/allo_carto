@@ -4,7 +4,7 @@ import { getDB, logThisIfItFails } from '../connection';
 export default async function seedWords(): Promise<void> {
 	const database = await getDB();
 
-	/**
+	/*
 	 * Seed the existing words
 	 */
 	for (const word of frenchSeedWords) {

@@ -32,7 +32,7 @@ import type { Progression } from '@/src/util/progression';
 import type { ImageSourcePropType } from 'react-native';
 import { storyAreas, type StoryArea } from './storyAreas';
 
-/**
+/*
  * Image paths
  */
 const leoInTheWindow = require('@/src/app/assets/images/chapters/leo-in-the-window.png');
@@ -48,7 +48,7 @@ const welcomeChapterThree = require('@/src/app/assets/images/chapter-images/welc
 const welcomeStoryBackground = require('@/src/app/assets/images/story_backgrounds/S01.jpg');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
-/**
+/*
  * Typing
  */
 export type StoryCategory = keyof typeof colors.category;
@@ -79,7 +79,7 @@ export interface DeckChapter extends Progression {
 	characterImage?: ImageSourcePropType;
 }
 
-/**
+/*
  * The idea is:
  * Story -> Chapter -> Deck
  */
@@ -269,7 +269,7 @@ export const storyAtlas: StoryAtlas = {
 	],
 };
 
-/**
+/*
  * Get every playable deck in progression order.
  */
 export function getDecks(atlas: StoryAtlas = storyAtlas): CardDeck[] {

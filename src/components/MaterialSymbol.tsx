@@ -1,7 +1,7 @@
 import type { ColorValue, TextProps } from 'react-native';
 import { StyleSheet, Text } from 'react-native';
 
-/**
+/*
  * Typing
  */
 export type MaterialSymbolProps = Omit<TextProps, 'children'> & {
@@ -11,7 +11,7 @@ export type MaterialSymbolProps = Omit<TextProps, 'children'> & {
 	filled?: boolean;
 };
 
-/**
+/*
  * Material Symbol
  */
 export default function MaterialSymbol({

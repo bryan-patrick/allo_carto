@@ -4,7 +4,7 @@ import { checkFrenchSentenceAnswer, checkSentenceAnswer } from '@/src/util/solve
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolveSentencePuzzle from './getSolveSentencePuzzle';
 
-/**
+/*
  * Typings
  */
 interface WriteSentenceAttemptOptions extends SentenceAttemptRequest {
@@ -24,7 +24,7 @@ interface SentenceReceiptRow {
 	stageCompleted: number;
 }
 
-/**
+/*
  * Charge for a sentence answer and award the stage after every sentence is solved.
  */
 export default async function writeSentenceAttempt({

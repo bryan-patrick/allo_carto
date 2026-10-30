@@ -7,7 +7,7 @@ import { checkWordOrderAnswer, isCompleteWordOrder } from '@/src/util/solveWordO
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolveWordOrderPuzzle from './getSolveWordOrderPuzzle';
 
-/**
+/*
  * Typing
  */
 interface WriteWordOrderAttemptOptions extends WordOrderAttemptRequest {
@@ -26,7 +26,7 @@ interface WordOrderReceiptRow {
 	stageCompleted: number;
 }
 
-/**
+/*
  * Charges Ink to check a Solve++ arrangement and awards the third gem if it is correct.
  * Saves the result and charge together so a failed save or retry cannot charge the player twice.
  */

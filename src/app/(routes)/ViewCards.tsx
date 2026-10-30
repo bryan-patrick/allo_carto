@@ -7,7 +7,7 @@ import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { Text } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface ViewCardsRouteParams {
@@ -15,7 +15,7 @@ interface ViewCardsRouteParams {
 	chapterId?: string;
 }
 
-/**
+/*
  * Get one route param
  */
 function getRouteParam(routeParam: string | string[] | undefined) {
@@ -30,7 +30,7 @@ function getRouteParam(routeParam: string | string[] | undefined) {
 	return result;
 }
 
-/**
+/*
  * Find the deck from the route
  */
 function findDeckByRouteParams({
@@ -50,7 +50,7 @@ function findDeckByRouteParams({
 	return routeDeck;
 }
 
-/**
+/*
  * Route wrapper for viewing all cards in a deck.
  */
 export default function ViewCards() {
@@ -63,13 +63,13 @@ export default function ViewCards() {
 		chapterId,
 	});
 
-	/**
+	/*
 	 * Wait for the user's stored percentages
 	 */
 	if (status === 'loading') return <Loader />;
 	if (status === 'error') return <Text>Could not load paragraph progress.</Text>;
 
-	/**
+	/*
 	 * Block locked decks
 	 */
 	if (
@@ -82,7 +82,7 @@ export default function ViewCards() {
 		return <Text style={{ textAlign: 'center' }}>This paragraph is locked.</Text>;
 	}
 
-	/**
+	/*
 	 * Render the cards
 	 */
 	return <ViewCardsView deck={deck} />;

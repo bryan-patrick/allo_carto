@@ -12,7 +12,7 @@ interface GetSolveStageProgressOptions {
 	stage: AdditionalSolveStage;
 }
 
-/**
+/*
  * Loads saved progress for a specific paragraph and Solve stage
  */
 export default async function getSolveStageProgress({

@@ -1,4 +1,4 @@
-/** @type {import('prettier').Config} */
+/* @type {import('prettier').Config} */
 const config = {
 	// Wrap long lines around this point when Prettier can do so cleanly.
 	printWidth: 100,

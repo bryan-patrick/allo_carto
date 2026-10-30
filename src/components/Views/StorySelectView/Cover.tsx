@@ -2,18 +2,18 @@ import colors from '@/src/app/colors';
 import type { ReactNode } from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface CoverProps {
 	children: ReactNode;
 }
 
-/**
+/*
  * The "cover" of the book. This includes the story details.
  */
 export default function Cover({ children }: CoverProps) {
-	/**
+	/*
 	 * Render the component
 	 */
 	return (
@@ -27,7 +27,7 @@ export default function Cover({ children }: CoverProps) {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

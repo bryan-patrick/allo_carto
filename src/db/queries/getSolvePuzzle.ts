@@ -18,7 +18,7 @@ import getSolveStageProgress from './getSolveStageProgress';
 import loadUserXP from './getUserExperience';
 import getUserProgress from './getUserProgress';
 
-/**
+/*
  * Typing
  */
 interface GetSolvePuzzleOptions {
@@ -38,7 +38,7 @@ interface SolveWordRow {
 	rarity: CardRarity;
 }
 
-/**
+/*
  * Opens a paragraph's Solve or Solve+ puzzle with its saved cards.
  */
 export default async function getSolvePuzzle({
@@ -115,7 +115,7 @@ export default async function getSolvePuzzle({
 
 	for (const segment of solvePassage) {
 		const position = segment.position;
-		/**
+		/*
 		 * Leave punctuation out of the word cards.
 		 */
 		const textWithoutPunctuation = segment.text.replace(/[^\p{L}\p{M}\p{N}\s'’ʼ-]/gu, '');

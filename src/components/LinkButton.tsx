@@ -19,13 +19,13 @@ import Animated, {
 import colors from '../app/colors';
 import SVGRightArrow from './SVG/SVGRightArrow';
 
-/**
+/*
  * Allows the button to move and change its shadow when pressed.
  */
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const linkButtonShadowHeight = 2;
 
-/**
+/*
  * Typing
  */
 interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> {
@@ -56,7 +56,7 @@ interface ButtonIconProps {
 	color?: string;
 }
 
-/**
+/*
  * Displays an app button that either opens a screen or runs an action.
  */
 export default function LinkButton({ screen, params, href, ...props }: LinkButtonProps) {
@@ -87,7 +87,7 @@ export default function LinkButton({ screen, params, href, ...props }: LinkButto
 	return <Button {...props} />;
 }
 
-/**
+/*
  * Handles the button's label, optional arrow, tap sound, and pressed appearance.
  */
 function Button({
@@ -164,7 +164,7 @@ function Button({
 		...buttonProps
 	} = allTheProps;
 
-	/**
+	/*
 	 * Lowers the button and removes its shadow while pressed, then restores both when released.
 	 */
 	useEffect(() => {
@@ -231,7 +231,7 @@ function Button({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

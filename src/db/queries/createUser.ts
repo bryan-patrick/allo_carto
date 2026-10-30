@@ -1,6 +1,6 @@
 import { getDB } from '../connection';
 
-/**
+/*
  * Typing
  */
 interface CreateUserProps {
@@ -9,7 +9,7 @@ interface CreateUserProps {
 	isMonHomme?: number;
 }
 
-/**
+/*
  * Creates a new row on the users table
  */
 export async function createUser({ id, name = '', isMonHomme = 1 }: CreateUserProps) {

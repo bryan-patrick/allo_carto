@@ -1,6 +1,6 @@
 import type { PassageHighlightLayerProps } from './PassageHighlightLayer';
 
-/**
+/*
  * Native text line measurements are unavailable on web. CSS clips each
  * line's background using the same fixed line height as the passage.
  */

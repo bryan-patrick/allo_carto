@@ -1,4 +1,4 @@
-/**
+/*
  * Helper logging function thingy
  */
 export default function logify(item: any, space: number = 2): void {

@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
-import SecondaryButton from '@/src/components/SecondaryButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import SecondaryButton from '@/src/components/SecondaryButton';
 import WordOrderBoard from '@/src/components/Solve/WordOrderBoard';
 import type {
 	SolveAttemptResult,
@@ -40,7 +40,7 @@ interface WordOrderFeedback {
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/**
+/*
  * Gives the player feedback after submitting a Word Order puzzle.
  */
 function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
@@ -72,7 +72,7 @@ function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 	);
 }
 
-/**
+/*
  * Lets the player arrange a whole French paragraph and submit it in Solve++.
  * Saves each move for later and awards the third gem after a correct paid submission.
  */
@@ -217,7 +217,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		}, [deckId, userId, fastSolveUnlocks]),
 	);
 
-	/**
+	/*
 	 * Saves a card move before updating the board or allowing another action.
 	 * If saving fails, the last saved order stays in place so the player can try that move again.
 	 */
@@ -263,7 +263,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		}
 	}
 
-	/**
+	/*
 	 * Sends the current card order for a paid check and shows the result.
 	 * Keeps the same submission ID after a save error so retrying cannot charge twice.
 	 */
@@ -456,7 +456,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

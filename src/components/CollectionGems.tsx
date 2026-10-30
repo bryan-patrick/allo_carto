@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
-/**
+/*
  * Typing
  */
 interface CollectionGemsProps {
@@ -38,7 +38,7 @@ const gemAppearanceDescriptions: Partial<Record<CompletedSolveStages, string>> =
 	5: ' All three gems are prismatic. You have fully mastered this paragraph, congrats!',
 };
 
-/**
+/*
  * Gives the paragraph gems a cool prismatic color effect
  */
 function PrismaticGem({ size }: PrismaticGemProps) {
@@ -79,7 +79,7 @@ function PrismaticGem({ size }: PrismaticGemProps) {
 	);
 }
 
-/**
+/*
  * Explains earned gems and the next Solve challenge.
  */
 function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStages, GemResponse> {
@@ -242,7 +242,7 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

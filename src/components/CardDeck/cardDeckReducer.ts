@@ -6,7 +6,7 @@ import type {
 	WordAnswerAwardProps,
 } from './deckSessionTypes';
 
-/**
+/*
  * Typing
  */
 export type CardDeckAction =
@@ -22,7 +22,7 @@ export type CardDeckAction =
 			currentIndex?: number;
 	  };
 
-/**
+/*
  * Track the current flashcard, answers, and completion results.
  * Restore saved answers and the current card when reopening a deck so the learner can continue.
  */
@@ -111,7 +111,7 @@ export function cardDeckReducer(
 		case 'COMPLETE_DECK': {
 			let session = state.session;
 
-			/**
+			/*
 			 * To complete a deck, completion needs at least one correct word.
 			 */
 			const hasCorrectWord = Boolean(session?.results.some(result => result.outcome === 'correct'));

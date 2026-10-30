@@ -1,5 +1,5 @@
-import type { SQLiteDatabase } from 'expo-sqlite';
 import { getWordProgressKeyFromCounts, type WordProgressKey } from '@/src/util/wordProgress';
+import type { SQLiteDatabase } from 'expo-sqlite';
 
 export type UserWordProgressById = Partial<Record<string, WordProgressKey>>;
 
@@ -14,7 +14,7 @@ interface UserWordProgressRow {
 	seenCount: number;
 }
 
-/**
+/*
  * Loads the player's word levels so stories and collections use the same saved progress.
  */
 export default async function getUserWordProgress({

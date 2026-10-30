@@ -5,12 +5,12 @@ import type { WordRow } from '../types';
 import { getFlashcardCycle } from './flashcardCycles';
 import getDeckWordChoices from './getDeckWordChoices';
 
-/**
+/*
  * These are the paragraph, target card count, and learner we need to load flashcards.
  */
 interface GetDeckProps {
 	deck: CardDeck;
-	/**
+	/*
 	 * The target deck size. A deck can grow to 1.5 times this amount
 	 * so we can spread the paragraph's cards evenly across decks.
 	 */
@@ -22,7 +22,7 @@ interface DeckWordRow extends WordRow {
 	userSeenCount: number;
 }
 
-/**
+/*
  * Turn a saved database word into flashcard data the app can display.
  * Read its English answers as a list, turn the vulgar-word setting into true or false,
  * and include the learner's word counts, starting at zero when no counts are saved.
@@ -39,7 +39,7 @@ function parseWordRow(row: DeckWordRow): Word {
 	};
 }
 
-/**
+/*
  * Prepare a paragraph when the learner selects Flashcards.
  * Load the words, shuffle, then return the current deck and its answers.
  * The learner continues at the next unanswered card
@@ -51,7 +51,7 @@ export default async function getDeck({
 }: GetDeckProps): Promise<LoadedFlashcardDeck | undefined> {
 	const placeholders = deck.wordIds.map(() => '?').join(',');
 
-	/**
+	/*
 	 * Load all the paragraph's learnable words so every word can go into a deck.
 	 * Include this learner's word counts so each flashcard has their saved progress.
 	 */
@@ -92,7 +92,7 @@ export default async function getDeck({
 			targetCardsPerDeck: amount,
 		});
 
-		/**
+		/*
 		 * Look up the current deck's words in order
 		 */
 		const currentDeckWordIds = cycle.decks[cycle.deckIndex] ?? [];
@@ -105,7 +105,7 @@ export default async function getDeck({
 
 		let currentIndex = firstUnansweredIndex;
 
-		/**
+		/*
 		 * Its saved answer lets us finish the deck and show results without playing it again.
 		 */
 		if (currentIndex === -1) {
@@ -116,7 +116,7 @@ export default async function getDeck({
 			wordIds: deck.wordIds,
 		});
 
-		/**
+		/*
 		 * Use the current deck's words for the flashcards on screen.
 		 *
 		 * BUT we keep the whole paragraph's word IDs and

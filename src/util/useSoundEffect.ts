@@ -9,7 +9,7 @@ const sounds: Record<string, AudioSource> = {
 	tap: require('@/src/app/assets/sounds/tap.wav'),
 };
 
-/**
+/*
  * Play the selected sound effect at the player's saved volume.
  */
 export function useSoundEffect(sound: keyof typeof sounds) {

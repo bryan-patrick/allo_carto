@@ -1,6 +1,6 @@
 import { seedWords } from '@/data/french/words';
 
-/**
+/*
  * Check whether an article stored in its own field was also
  * accidentally included at the beginning of the word text.
  * Elided articles join directly; other articles use a space.
@@ -20,7 +20,7 @@ describe('word definitions', () => {
 	test('use unique dictionary IDs', () => {
 		expect(new Set(seedWords.map(word => word.id)).size).toBe(seedWords.length);
 	});
-	/**
+	/*
 	 * French articles are rendered separately by the card UI.
 	 * Including one in frenchWord would display it twice.
 	 */

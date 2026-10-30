@@ -17,7 +17,7 @@ import {
 	getCompletionEntry,
 } from './completionAnimations';
 
-/**
+/*
  * Information needed to show each word's result.
  */
 interface CompletionWordResultsProps {
@@ -33,27 +33,27 @@ interface WordResultRowProps {
 	index: number;
 }
 
-/**
+/*
  * Show a word's earned XP and its old and new learning levels.
  */
 function WordResultRow({ word, result, color, index }: WordResultRowProps) {
-	/**
+	/*
 	 * Make each row appear after the row before it.
 	 */
 	const entering = getCompletionEntry(index + 1);
 
-	/**
+	/*
 	 * Wait until the row appears before counting its XP.
 	 */
 	const countDelay = getCompletionDelay(index + 1) + completionEntryDuration;
 
-	/**
+	/*
 	 * Get the saved bonus for raising this word's learning level.
 	 * Use zero if there was no bonus. This bonus is already part of the word's total XP.
 	 */
 	const learningBonusXP = result.learningBonusXP ?? 0;
 
-	/**
+	/*
 	 * Turn the bonus setting into a percent for the label.
 	 * For example, a setting of 3 means a 300% bonus.
 	 */
@@ -61,7 +61,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 
 	const learningBonusLabel = `Level-up bonus (${learningBonusPercent}%)`;
 
-	/**
+	/*
 	 * Start with an X and red colors for wrong or skipped words.
 	 * Correct answers get a checkmark and green colors below.
 	 */
@@ -70,12 +70,12 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 	let iconBackground = `${colors.light.danger}33`;
 	let xpColor = colors.light.secondaryBorder;
 
-	/**
+	/*
 	 * Join the English meanings into one line, with a comma between them.
 	 */
 	let translation = word.englishWords.join(', ');
 
-	/**
+	/*
 	 * Keep the old and new learning levels here if the word changed levels.
 	 */
 	let learningChange:
@@ -88,14 +88,14 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 		xpColor = color;
 	}
 
-	/**
+	/*
 	 * Mark skipped words so the user can tell them apart from wrong answers.
 	 */
 	if (result.outcome === 'skipped') {
 		translation += ' (skipped)';
 	}
 
-	/**
+	/*
 	 * If the learning level changed, find the names and icons for both levels.
 	 */
 	if (
@@ -109,7 +109,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 		};
 	}
 
-	/**
+	/*
 	 * xpLabel is the full XP text for screen readers.
 	 * xpPrefix adds a plus sign to the counting number when XP was earned.
 	 */
@@ -121,7 +121,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 		xpPrefix = '+';
 	}
 
-	/**
+	/*
 	 * Build the text a screen reader says for this word.
 	 * Include the answer result, XP, language level, rarity, and any learning bonus or level change.
 	 */
@@ -134,7 +134,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 		accessibilityLabel += ` ${learningBonusLabel}: ${learningBonusXP} XP.`;
 	}
 
-	/**
+	/*
 	 * Give the answer icon its background color.
 	 * Use the word's language level and rarity to choose their label colors.
 	 */
@@ -142,7 +142,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 	const cefrStyle = { backgroundColor: colors.light.CEFR[word.CEFR] };
 	const rarityStyle = { backgroundColor: colors.rarity[word.rarity] };
 
-	/**
+	/*
 	 * Render the thing
 	 */
 	return (
@@ -211,7 +211,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 	);
 }
 
-/**
+/*
  * List the words in the order they were reviewed.
  * Show each word's saved XP above its language level and rarity.
  */
@@ -220,12 +220,12 @@ export default function CompletionWordResults({
 	results,
 	color,
 }: CompletionWordResultsProps) {
-	/**
+	/*
 	 * Store each result under its word ID so we can find it for the right word.
 	 */
 	const resultsByWordId = new Map(results.map(result => [result.wordId, result]));
 
-	/**
+	/*
 	 * Match each word with its result and keep them in order.
 	 */
 	const rows = words.flatMap(word => {
@@ -237,7 +237,7 @@ export default function CompletionWordResults({
 		return [{ word, result }];
 	});
 
-	/**
+	/*
 	 * Redner it
 	 */
 	return (
@@ -255,7 +255,7 @@ export default function CompletionWordResults({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

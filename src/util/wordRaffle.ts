@@ -1,6 +1,6 @@
 import type { CardRarity, Word } from '../components/CardDeck/cardDeckTypes';
 
-/**
+/*
  * More tickets make a word easier to draw.
  * Fewer tickets make a word harder to draw.
  *
@@ -25,7 +25,7 @@ function getWordRaffleTickets(word: Word, getWeightMultiplier: (word: Word) => n
 	return result;
 }
 
-/**
+/*
  * Draw words from a weighted raffle.
  *
  * This is for drawing words from a deck based on actual rarity.
@@ -38,14 +38,14 @@ export default function wordRaffle(
 	const result: Word[] = [];
 	const wordsInRaffle = [...words];
 
-	/**
+	/*
 	 * Keep drawing until the deck has enough words
 	 * or the raffle is empty.
 	 */
 	while (result.length < numberOfWordsToDraw && wordsInRaffle.length > 0) {
 		let totalRaffleTickets = 0;
 
-		/**
+		/*
 		 * Count all of the raffle tickets
 		 * currently in the draw.
 		 */
@@ -53,7 +53,7 @@ export default function wordRaffle(
 			totalRaffleTickets += getWordRaffleTickets(word, getWeightMultiplier);
 		}
 
-		/**
+		/*
 		 * Pick one winning ticket from all
 		 * of the tickets in the draw.
 		 *
@@ -64,7 +64,7 @@ export default function wordRaffle(
 		let raffleTicketsCounted = 0;
 		let winningWordIndex = 0;
 
-		/**
+		/*
 		 * Count each word's tickets in order.
 		 *
 		 * The word holding the winning ticket
@@ -84,7 +84,7 @@ export default function wordRaffle(
 			}
 		}
 
-		/**
+		/*
 		 * Take the winning word out of the raffle and put it in the deck.
 		 */
 		const wordsRemovedFromRaffle = wordsInRaffle.splice(winningWordIndex, 1);

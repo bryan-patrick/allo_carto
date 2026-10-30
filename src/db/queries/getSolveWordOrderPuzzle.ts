@@ -9,7 +9,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import loadUserXP from './getUserExperience';
 import getUserProgress from './getUserProgress';
 
-/**
+/*
  * Typing
  */
 interface GetSolveWordOrderPuzzleOptions {
@@ -29,7 +29,7 @@ interface WordOrderAttemptRow {
 	status: 'exact' | 'incorrect';
 }
 
-/**
+/*
  * Loads a paragraph's Solve++ cards, saved arrangement, last result, and unlock requirements.
  */
 export default async function getSolveWordOrderPuzzle({

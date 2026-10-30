@@ -1,7 +1,7 @@
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import type { ImageSourcePropType } from 'react-native';
 
-/**
+/*
  * Typing
  */
 export type CollectionRewardLevel = Exclude<WordProgressKey, 'unseen'>;
@@ -13,7 +13,6 @@ export interface CollectionRewardDefinition {
 
 export interface CollectionWordDefinition {
 	wordId: string;
-	image?: ImageSourcePropType;
 }
 
 export interface VocabularyCollection {
@@ -30,7 +29,7 @@ export interface CollectionAtlas {
 
 export const placeholderStampImage: ImageSourcePropType = require('@/src/app/assets/images/chapters/how-it-works.png');
 
-/**
+/*
  * Sets the XP awarded for reaching each collection learning level.
  */
 const collectionLevelRewards: CollectionRewardDefinition[] = [
@@ -56,7 +55,7 @@ const collectionLevelRewards: CollectionRewardDefinition[] = [
 	},
 ];
 
-/**
+/*
  * Defines each stamp album's words, artwork, and rewards using existing vocabulary IDs.
  */
 export const collectionAtlas: CollectionAtlas = {
@@ -68,7 +67,6 @@ export const collectionAtlas: CollectionAtlas = {
 			words: [
 				{
 					wordId: 'word_noun_lundi',
-					image: placeholderStampImage,
 				},
 				{
 					wordId: 'word_noun_mardi',
@@ -98,7 +96,6 @@ export const collectionAtlas: CollectionAtlas = {
 			words: [
 				{
 					wordId: 'word_noun_souliers',
-					image: require('@/src/app/assets/images/chapters/getting-ready.png'),
 				},
 				{
 					wordId: 'word_noun_veste',
@@ -134,7 +131,6 @@ export const collectionAtlas: CollectionAtlas = {
 			words: [
 				{
 					wordId: 'word_noun_printemps',
-					image: require('@/src/app/assets/images/chapters/leaves-in-the-yard.png'),
 				},
 				{
 					wordId: 'word_noun_l_ete',
@@ -155,7 +151,6 @@ export const collectionAtlas: CollectionAtlas = {
 			words: [
 				{
 					wordId: 'word_noun_croissant',
-					image: placeholderStampImage,
 				},
 				{
 					wordId: 'word_noun_grille_pain',

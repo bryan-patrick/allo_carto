@@ -1,7 +1,7 @@
 import { DarkTheme, type Theme } from 'expo-router';
 import colors from './colors';
 
-/**
+/*
  * This file is meant to be used sparingly.
  *
  * Our theme values are expected native theme values.

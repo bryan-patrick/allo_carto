@@ -2,7 +2,7 @@ import { G, Path } from 'react-native-svg';
 import type { SVGProps } from './SVG';
 import SVG from './SVG';
 
-/**
+/*
  * SVGCheck Component
  */
 export default function SVGCheck({ color = '#ffffff', height = '24px', width = '24px' }: SVGProps) {

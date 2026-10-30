@@ -4,11 +4,11 @@ import { inkConfig } from '@/src/util/ink';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialSymbol from './MaterialSymbol';
 import ProgressBar from './ProgressBar';
 import UserProgressModal from './UserProgressModal';
-import MaterialSymbol from './MaterialSymbol';
 
-/**
+/*
  * Player level and XP bar for headers
  */
 export default function LevelBadge() {
@@ -41,7 +41,7 @@ export default function LevelBadge() {
 
 	const hasLiquidGlass = isLiquidGlassAvailable();
 
-	/**
+	/*
 	 * Render the badge.
 	 */
 	return (
@@ -95,7 +95,7 @@ export default function LevelBadge() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

@@ -12,7 +12,7 @@ const frenchCharacterRows = [
 	['î', 'ï', 'ô', 'œ', 'ù', 'û', 'ü', 'ÿ'],
 ];
 
-/**
+/*
  * This shows French character keys under the puzzle answer field.
  */
 export default function SolveCharacterKeyboard({

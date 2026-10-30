@@ -13,7 +13,7 @@ interface SolveCardProps {
 	onSelect: (position: number) => void;
 }
 
-/**
+/*
  * Returns a French/English word (card props) in Solve
  */
 export default function SolveCard({

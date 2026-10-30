@@ -3,7 +3,7 @@ const os = require('os');
 const path = require('path');
 const { execFileSync, spawn, spawnSync } = require('child_process');
 
-/**
+/*
  * PROJECT_ROOT is the app folder.
  * PORT is where Metro runs.
  * PACKAGER_HOST is the Mac address used by the simulators.
@@ -13,7 +13,7 @@ const PROJECT_ROOT = path.resolve(path.dirname(process.argv[1]), '..');
 const PORT = process.env.EXPO_PORT || '8081';
 const PACKAGER_HOST = '127.0.0.1';
 
-/**
+/*
  * ANSI
  */
 const GREEN = '\x1b[32m';
@@ -26,14 +26,14 @@ const PHONE_NAMES = ['iPhone SE (3rd generation)', 'iPhone 17 Pro', 'iPhone 17 P
 
 const PROGRESS_STEPS = ['Find phones', 'Boot phones', 'Expo Go', 'Start Metro', 'Open app'];
 
-/**
+/*
  * Sleep
  */
 function sleep(milliseconds) {
 	return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
-/**
+/*
  * Show every step on one colored line.
  * Green is done, cyan is working, and gray is waiting.
  */
@@ -69,7 +69,7 @@ function showProgress(currentStep) {
 	process.stdout.write(`${CLEAR_LINE}${line}`);
 }
 
-/**
+/*
  * Mark every step done and move to a new line.
  */
 function finishProgress() {
@@ -77,7 +77,7 @@ function finishProgress() {
 	process.stdout.write('\n');
 }
 
-/**
+/*
  * Make sure the port is a number.
  * A bad port cannot start Metro
  */
@@ -87,7 +87,7 @@ function checkPort() {
 	}
 }
 
-/**
+/*
  * Compare names that contain version numbers.
  * Numeric sorting makes 10 come after 9.
  */
@@ -95,7 +95,7 @@ function compareVersions(left, right) {
 	return left.localeCompare(right, undefined, { numeric: true });
 }
 
-/**
+/*
  * Ask Xcode for every available simulator.
  * Find each phone in PHONE_NAMES.
  * If a phone exists in more than one iOS version, use the newest one.
@@ -143,7 +143,7 @@ function findSimulators() {
 	return simulators;
 }
 
-/**
+/*
  * Start every simulator we found.
  * Trying to boot an awake simulator reports an error, so ignore that.
  */
@@ -159,7 +159,7 @@ function bootSimulators(simulators) {
 	}
 }
 
-/**
+/*
  * Show Apple's Simulator app.
  * The phones are already booting before this window opens.
  */
@@ -167,7 +167,7 @@ function openSimulatorApp() {
 	execFileSync('open', ['-a', 'Simulator']);
 }
 
-/**
+/*
  * Read the Expo version from package.json
  * Look in Expo's cache for matching copies of Expo Go (there might be more than one)
  * Sort them and return the newest copy
@@ -211,7 +211,7 @@ function findExpoGo() {
 	return path.join(expoCache, expoGoName);
 }
 
-/**
+/*
  * Check the Expo Go copy on every simulator.
  * Do nothing when the correct copy is already installed.
  * Install or update it when the copies do not match.
@@ -239,7 +239,7 @@ function installExpoGo(simulators, expoGo) {
 	}
 }
 
-/**
+/*
  * Start Expo's Metro server.
  * Return the running Metro process so other steps can watch it.
  */
@@ -261,7 +261,7 @@ function startMetro() {
 	});
 }
 
-/**
+/*
  * Create a promise for the Metro process.
  * It finishes when Metro stops (method .once listens for the emitter)
  */
@@ -272,7 +272,7 @@ function watchMetro(metro) {
 	});
 }
 
-/**
+/*
  * Listen for the user stopping this script.
  * When this script stops, stop Metro too.
  */
@@ -281,7 +281,7 @@ function stopMetroWhenAsked(metro) {
 	process.once('SIGTERM', () => metro.kill('SIGTERM'));
 }
 
-/**
+/*
  * Metro needs a moment to become ready.
  * Check it twice a second for up to one minute.
  * When it is ready, open this project on every simulator.
@@ -345,7 +345,7 @@ async function openAppWhenMetroStarts(simulators, metro) {
 	throw new Error(`Metro did not start on port ${PORT}.`);
 }
 
-/**
+/*
  * Keep this script alive while Metro is alive.
  * If Metro exits with an error, use the same error code.
  */
@@ -357,7 +357,7 @@ async function finishWithMetro(metroDone) {
 	}
 }
 
-/**
+/*
  * Run the steps in order.
  * First prepare the simulators and Expo Go.
  * Then start Metro and open the app.
@@ -392,7 +392,7 @@ async function main() {
 	await finishWithMetro(metroDone);
 }
 
-/**
+/*
  * Show a simple error when any step fails.
  * Return an error code to the terminal.
  */

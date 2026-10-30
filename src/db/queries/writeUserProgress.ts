@@ -6,7 +6,6 @@ import type {
 } from '@/src/components/CardDeck/deckSessionTypes';
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { inkConfig } from '@/src/util/ink';
-import getUserInk from './getUserInk';
 import { getCompletionPercentage } from '@/src/util/progression';
 import {
 	correctAnswerXPByRarity,
@@ -15,13 +14,14 @@ import {
 } from '@/src/util/userExperience';
 import { getWordProgressKeyFromCounts } from '@/src/util/wordProgress';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { finishFlashcardDeck, saveFlashcardResult } from './flashcardCycles';
 import getDeckWordProgressCounts from './getDeckWordProgressCounts';
+import getUserInk from './getUserInk';
 import { incrementCorrectCount } from './incrementCorrectCount';
 import { incrementSeenCount } from './incrementSeenCount';
 import updateUserProgress from './updateUserProgress';
-import { finishFlashcardDeck, saveFlashcardResult } from './flashcardCycles';
 
-/**
+/*
  * Typing
  */
 export interface DeckCompletionRequest {
@@ -80,7 +80,7 @@ interface SavedDeckBonusesRow {
 	bonuses: string;
 }
 
-/**
+/*
  * Award XP using the current write's database connection.
  */
 async function incrementUserXP(database: SQLiteDatabase, userId: string, amount: number) {
@@ -95,7 +95,7 @@ async function incrementUserXP(database: SQLiteDatabase, userId: string, amount:
 	}
 }
 
-/**
+/*
  * Update the userProgress table rows affected by new word progress
  */
 async function updateUserProgressTableItems({
@@ -107,7 +107,7 @@ async function updateUserProgressTableItems({
 	userId: string;
 	wordId: string;
 }): Promise<void> {
-	/**
+	/*
 	 * The atlas tells us which stories, chapters, and decks contain the word
 	 */
 	const atlasItems = getAtlasItemsContainingWord({
@@ -115,7 +115,7 @@ async function updateUserProgressTableItems({
 	});
 
 	for (const atlasItem of atlasItems) {
-		/**
+		/*
 		 * Update the completion percentage
 		 */
 		const wordProgressCounts = await getDeckWordProgressCounts({
@@ -129,7 +129,7 @@ async function updateUserProgressTableItems({
 			wordCount: atlasItem.wordIds.length,
 		});
 
-		/**
+		/*
 		 * Save this percentage to the userProgress table
 		 */
 		await updateUserProgress({
@@ -142,7 +142,7 @@ async function updateUserProgressTableItems({
 	}
 }
 
-/**
+/*
  * Calculate the awards for a correct answer on a flashcard
  */
 function getCorrectAnswerAward(previousProgress: WordProgressForAward): WordAnswerAwardProps {
@@ -174,7 +174,7 @@ function getCorrectAnswerAward(previousProgress: WordProgressForAward): WordAnsw
 	};
 }
 
-/**
+/*
  * We save XP and word progress right away. The card's Ink waits for deck completion.
  */
 export async function writeCorrectAnswer({
@@ -240,7 +240,7 @@ export async function writeCorrectAnswer({
 
 		nextAward = getCorrectAnswerAward(previousProgress);
 
-		/**
+		/*
 		 * We save all parts of the answer before returning its rewards.
 		 * If any part fails we rolls everything back.
 		 */
@@ -283,7 +283,7 @@ export async function writeCorrectAnswer({
 	return award;
 }
 
-/**
+/*
  * Save an incorrect or skipped answer without awarding XP or Ink.
  * Keep the result when the learner leaves and comes back to the deck.
  */
@@ -480,7 +480,7 @@ export async function writeDeckCompletion({
 	return receipt;
 }
 
-/**
+/*
  * Save that a word was seen
  */
 export async function writeWordSeen({
@@ -494,11 +494,11 @@ export async function writeWordSeen({
 	wordId: string;
 	deckId?: string;
 }): Promise<void> {
-	/**
+	/*
 	 * Seen writes use the same lock
 	 */
 	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
-		/**
+		/*
 		 * Get the word's progress before the seenCount changes
 		 */
 		const previousProgress = await database.getFirstAsync<{

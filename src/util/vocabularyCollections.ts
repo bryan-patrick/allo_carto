@@ -12,10 +12,11 @@ import {
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import type { UserWordProgressById } from '@/src/db/queries/getUserWordProgress';
 import type { ImageSourcePropType } from 'react-native';
+import { getCollectionStampImage } from './collectionImages';
 import { getCollectionLevel, getWordsAtLevel, hasCollectionLevel } from './collectionProgress';
 import { getWordProgressDefinitionByKey, type WordProgressKey } from './wordProgress';
 
-/**
+/*
  * Typing
  */
 export type CollectionSection = 'ready' | 'inProgress' | 'undiscovered' | 'completed';
@@ -70,7 +71,7 @@ for (const word of seedWords) {
 	vocabularyById.set(word.id, word);
 }
 
-/**
+/*
  * Checks collection words and rewards so invalid albums are caught when the app loads.
  */
 export function validateCollectionAtlas(): void {
@@ -123,7 +124,7 @@ export function validateCollectionAtlas(): void {
 	}
 }
 
-/**
+/*
  * Builds album stamps from existing vocabulary, artwork, and the player's word levels.
  */
 function getCollectionStamps(
@@ -144,7 +145,7 @@ function getCollectionStamps(
 		stamps.push({
 			wordId: word.id,
 			frenchWord: word.frenchWord,
-			image: entry.image,
+			image: getCollectionStampImage(collection.id, word.frenchWord),
 			progress,
 			level: definition.level,
 		});
@@ -153,7 +154,7 @@ function getCollectionStamps(
 	return stamps;
 }
 
-/**
+/*
  * Counts stamps at each learning level to calculate collection progress.
  */
 function getCollectionWordCounts(stamps: CollectionStamp[]): CollectionWordCounts {
@@ -171,7 +172,7 @@ function getCollectionWordCounts(stamps: CollectionStamp[]): CollectionWordCount
 	};
 }
 
-/**
+/*
  * Gets each level's reward eligibility and claim status for the collection.
  */
 function getCollectionRewards(
@@ -199,7 +200,7 @@ function getCollectionRewards(
 	});
 }
 
-/**
+/*
  * Calculates revealed stamps, collection level, and rewards for the album screens.
  */
 export function getVocabularyCollectionProgress({

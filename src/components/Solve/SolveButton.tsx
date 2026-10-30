@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface SolveButtonProps {
@@ -18,7 +18,7 @@ interface SolveButtonProps {
 	disabled?: boolean;
 }
 
-/**
+/*
  * Opens the next unfinished Solve puzzle for a paragraph.
  */
 export default function SolveButton({ deckId, color, disabled = false }: SolveButtonProps) {
@@ -111,7 +111,7 @@ export default function SolveButton({ deckId, color, disabled = false }: SolveBu
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

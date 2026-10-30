@@ -1,5 +1,5 @@
-import type { SQLiteDatabase } from 'expo-sqlite';
 import { inkConfig } from '@/src/util/ink';
+import type { SQLiteDatabase } from 'expo-sqlite';
 
 interface GetUserInkOptions {
 	database: SQLiteDatabase;
@@ -10,7 +10,7 @@ interface UserInkRow {
 	inkBalance: number;
 }
 
-/**
+/*
  * Loads the user's ink! Ink is used to solve our paragraph puzzles
  */
 export default async function getUserInk({ database, userId }: GetUserInkOptions): Promise<number> {

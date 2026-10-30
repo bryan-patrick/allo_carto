@@ -12,7 +12,7 @@ import ReadingDescription from './ReadingDescription';
 import StorySelectModal from './StorySelectModal';
 import StorySelector from './StorySelector';
 
-/**
+/*
  * Component header that shows the story select, user level, and story meta
  */
 export default function ChapterSelectHeader() {
@@ -101,7 +101,7 @@ export default function ChapterSelectHeader() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

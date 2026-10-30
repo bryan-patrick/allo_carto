@@ -10,7 +10,7 @@ import LockedSection from './LockedSection';
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 const borderedPostcardBackground = require('@/src/app/assets/images/postcard-parts/background-bordered.jpg');
 
-/**
+/*
  * Typing
  */
 interface ChapterPostcardProps {
@@ -19,7 +19,7 @@ interface ChapterPostcardProps {
 	progressById: ProgressById;
 }
 
-/**
+/*
  * The chapter component. It shows chapter info and the different paragraphs in that chapter.
  */
 export default function ChapterPostcard({ chapter, story, progressById }: ChapterPostcardProps) {
@@ -72,7 +72,7 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

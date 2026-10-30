@@ -10,8 +10,9 @@
 	"include": [
 		"**/*.ts",
 		"**/*.tsx",
-		".expo/types/**/*.ts",
+		".expo/types/*/*.ts",
 		"expo-env.d.ts",
-		"data/french/decks/deck_a1__coffee_shops"
+		"data/french/decks/deck_a1__coffee_shops",
+		".expo/types/**/*.ts"
 	]
 }

@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import colors from '../app/colors';
 import LinkButton from './LinkButton';
 
-/**
+/*
  * Typing
  */
 interface CardProps {
@@ -15,11 +15,11 @@ interface CardProps {
 	linkText: string;
 }
 
-/**
+/*
  * LinkCard Component
  */
 export default function LinkCard({ title, SVGElement, description, screen, linkText }: CardProps) {
-	/**
+	/*
 	 * Different headings for when using an SVG or not
 	 */
 	let heading = <Text style={styles.title}>{title}</Text>;
@@ -36,7 +36,7 @@ export default function LinkCard({ title, SVGElement, description, screen, linkT
 		);
 	}
 
-	/**
+	/*
 	 * Render the LinkCard
 	 */
 	return (
@@ -52,7 +52,7 @@ export default function LinkCard({ title, SVGElement, description, screen, linkT
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

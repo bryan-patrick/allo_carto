@@ -1,7 +1,7 @@
 import { getDB } from './connection';
 import getTables from './getTables';
 
-/**
+/*
  * Resets local app data so development can start from a clean save.
  * Clears saved progress, Ink, and puzzle arrangements, then reloads the starting data, everything.
  */

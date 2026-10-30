@@ -1,4 +1,4 @@
-/**
+/*
  * The context for handling canonical card data and state
  */
 import { createCardDeck } from '@/src/util/createCardDeck';
@@ -8,7 +8,7 @@ import type { CardDeck, Word } from './cardDeckTypes';
 import { initialWordState } from './cardDeckTypes';
 import type { DeckSessionProps } from './deckSessionTypes';
 
-/**
+/*
  * Typing
  */
 export interface CardDeckContextType {
@@ -26,7 +26,7 @@ export interface CardDeckStateProps {
 	session?: DeckSessionProps;
 }
 
-/**
+/*
  * Init Deck state
  */
 export const initialCardDeckState: CardDeckStateProps = {

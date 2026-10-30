@@ -10,7 +10,7 @@ import {
 	View,
 } from 'react-native';
 
-/**
+/*
  * Typing
  */
 interface VolumeSettingProps {
@@ -19,7 +19,7 @@ interface VolumeSettingProps {
 	onValueChange: (value: number) => void;
 }
 
-/**
+/*
  * Consts
  */
 const thumbSize = 24;
@@ -95,7 +95,7 @@ export default function VolumeSetting({ label, value, onValueChange }: VolumeSet
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

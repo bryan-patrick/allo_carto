@@ -10,7 +10,7 @@ import { useHeaderHeight } from 'expo-router/react-navigation';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from '../MaterialSymbol';
 
-/**
+/*
  * The chapter details view (shows chapter and paragraph details)
  */
 export default function ChapterDetailView() {
@@ -66,7 +66,7 @@ export default function ChapterDetailView() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

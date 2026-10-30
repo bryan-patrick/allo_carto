@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import Svg from 'react-native-svg';
 
-/**
+/*
  * Typing
  */
 export interface SVGProps {
@@ -12,7 +12,7 @@ export interface SVGProps {
 	children?: ReactNode;
 }
 
-/**
+/*
  * SVG Component
  */
 export default function SVG({ viewbox, height = '32px', width = '32px', children }: SVGProps) {

@@ -11,7 +11,7 @@ import { useWordCardUI } from './useWordCardUI';
 import WordCardBack from './WordCardBack';
 import WordCardFront from './WordCardFront';
 
-/**
+/*
  * Typing
  */
 interface WordCardProps {
@@ -19,7 +19,7 @@ interface WordCardProps {
 	wordActions?: ReactNode;
 }
 
-/**
+/*
  * WordCard Component
  *
  * Note: I couldn't get the parent to flip on its
@@ -29,7 +29,7 @@ interface WordCardProps {
  */
 export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 	const router = useRouter();
-	/**
+	/*
 	 * State
 	 */
 	const { cardState } = useWordCardUI();
@@ -40,7 +40,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 	const hasArticleMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
 	const hasWordMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
 
-	/**
+	/*
 	 * Style vars
 	 */
 	let feedbackStyle: TextStyle = {};
@@ -76,7 +76,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 			break;
 	}
 
-	/**
+	/*
 	 * Animation vars
 	 */
 	const articleWidth = useSharedValue(0);
@@ -84,7 +84,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 	const flipDegrees = useSharedValue(0);
 	const flipDuration = useSharedValue(400);
 
-	/**
+	/*
 	 * Animation timing functions
 	 */
 	const timing = useMemo(
@@ -95,7 +95,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 		[],
 	);
 
-	/**
+	/*
 	 * Animation styles
 	 */
 	const articleWidthStyle = useAnimatedStyle(() => ({
@@ -114,7 +114,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 		transform: [{ perspective: 1000 }, { rotateY: `-${180 + flipDegrees.get()}deg` }],
 	}));
 
-	/**
+	/*
 	 * Handle setting the animated width of the selected word/article
 	 * And the flip (These are side effects).
 	 */
@@ -126,7 +126,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 		wordWidth.set(withTiming(event.nativeEvent.layout.width, timing));
 	};
 
-	/**
+	/*
 	 * Handle the card flip
 	 */
 	useLayoutEffect(() => {
@@ -140,7 +140,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 		);
 	}, [flipDegrees, flipDuration, cardState.progress]);
 
-	/**
+	/*
 	 * Trigger the next card on 'COMPLETED'.
 	 * This fires when we have the correct state
 	 * and the user hits the 'Next Card ->' button.
@@ -215,7 +215,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 		router,
 	]);
 
-	/**
+	/*
 	 * Render the card
 	 */
 	return (
@@ -246,7 +246,7 @@ export default function WordCard({ isCurrent, wordActions }: WordCardProps) {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

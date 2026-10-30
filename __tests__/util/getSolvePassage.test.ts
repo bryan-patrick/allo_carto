@@ -1,7 +1,7 @@
 import type { PassageSegment } from '@/src/components/CardDeck/cardDeckTypes';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
 
-/**
+/*
  * Joining cards changes which passage positions cost Ink.
  * These examples protect the joins and the saved positions that follow them.
  */

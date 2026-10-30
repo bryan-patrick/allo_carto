@@ -16,7 +16,7 @@ import colors from '../colors';
 
 const deckSelectBackgroundImage = require('@/src/app/assets/images/decks/deck-select-bg.jpg');
 
-/**
+/*
  * CardDeckSelect component
  */
 export default function CardDeckSelect() {
@@ -34,7 +34,7 @@ export default function CardDeckSelect() {
 			}))
 		:	[];
 
-	/**
+	/*
 	 * Check a deck's lock
 	 */
 	function getIsDeckLocked(deck: CardDeck): boolean {
@@ -44,13 +44,13 @@ export default function CardDeckSelect() {
 		});
 	}
 
-	/**
+	/*
 	 * Wait for the user's stored percentages
 	 */
 	if (status === 'loading') return <Loader />;
 	if (status === 'error') return <Text>Could not load paragraph progress.</Text>;
 
-	/**
+	/*
 	 * Block locked chapters
 	 */
 	if (
@@ -67,7 +67,7 @@ export default function CardDeckSelect() {
 		);
 	}
 
-	/**
+	/*
 	 * Render the card grid
 	 */
 	return (
@@ -115,7 +115,7 @@ export default function CardDeckSelect() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

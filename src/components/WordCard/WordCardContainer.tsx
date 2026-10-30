@@ -21,7 +21,7 @@ import {
 import WordCardSelection from './WordCardSelection';
 import { wordCardUIReducer } from './wordCardUIReducer';
 
-/**
+/*
  * Typing
  */
 interface CardContainerProps {
@@ -35,7 +35,7 @@ interface ResumeWordCardOptions {
 	result?: DeckWordResultProps;
 }
 
-/**
+/*
  * Start unanswered cards ready to play and mark cards with saved answers as finished.
  * This lets a reopened deck reach its results without asking for the same answer again.
  */
@@ -78,11 +78,11 @@ function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
 	return wrongAnswerChoices.size;
 }
 
-/**
+/*
  * WordCardContainer Component
  */
 export default function WordCardContainer({ word, isCurrent, wordActions }: CardContainerProps) {
-	/**
+	/*
 	 * State
 	 */
 	const { cardDeckState } = useCardDeck();
@@ -104,7 +104,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 	const nextCardArrowColor =
 		cardState.progress === 'SUCCESS' ? colors.dark.text : colors.light.text;
 
-	/**
+	/*
 	 * Increment the seen count when a card becomes current.
 	 */
 	useEffect(() => {
@@ -133,7 +133,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 		savedResult,
 	]);
 
-	/**
+	/*
 	 * Side effects
 	 *
 	 * Load the new card and its state.
@@ -141,7 +141,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 	 */
 	useEffect(() => {
 		async function loadWords() {
-			/**
+			/*
 			 * Checking an answer updates the deck's words array, which reruns this
 			 * effect and reshuffles the choices mid card, which is bad mmmk?
 			 *
@@ -151,14 +151,14 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 			if (loadedWordId.current === word.id) return;
 			loadedWordId.current = word.id;
 
-			/**
+			/*
 			 * Keep a list of the choices shown in the article buttons.
 			 * A Set stores each choice only once.
 			 */
 			const uniqueArticleChoices = new Set<string>();
 
 			if (word.englishArticle) {
-				/**
+				/*
 				 * Include the usual articles and this word's correct article, such as "to".
 				 * Use lowercase so "The" and "the" are treated as the same choice.
 				 */
@@ -167,7 +167,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 				}
 			}
 
-			/**
+			/*
 			 * Keep a word choice only if it is not already an article choice.
 			 * This stops a choice like "to" from showing up in both groups of buttons.
 			 */
@@ -175,7 +175,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 				return !uniqueArticleChoices.has(choice.toLowerCase());
 			}
 
-			/**
+			/*
 			 * Put all the deck's English meanings into one list.
 			 * Then remove the choices already used by the article buttons.
 			 */
@@ -183,7 +183,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 				.flatMap(choice => choice.englishWords)
 				.filter(isAvailableWordChoice);
 
-			/**
+			/*
 			 * Start with all word choices. Below, we try to use words of the same kind,
 			 * such as other verbs when the current word is a verb.
 			 */
@@ -232,7 +232,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 		cardDeckState.cardDeck.wordChoices,
 	]);
 
-	/**
+	/*
 	 * Handle current card styles
 	 */
 	const currentPosition = useSharedValue(isCurrent ? 0 : 1000);
@@ -242,7 +242,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 		opacity: currentOpacity.get(),
 	}));
 
-	/**
+	/*
 	 * Kind of a shuffle animation effect
 	 */
 	useLayoutEffect(() => {
@@ -271,7 +271,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 		}
 	}, [isCurrent, currentPosition, currentOpacity]);
 
-	/**
+	/*
 	 * Render the WordCard container
 	 */
 	return (
@@ -303,7 +303,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

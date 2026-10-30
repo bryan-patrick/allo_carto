@@ -13,7 +13,7 @@ import { type CardProgress } from './wordCardContext';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-/**
+/*
  * Typing
  */
 interface MappedWordsProps {
@@ -35,7 +35,7 @@ interface MappedButtonProps {
 	handler: Dispatch<string>;
 }
 
-/**
+/*
  * Private MappedButton Component
  *
  * We need this component in addition to the other one
@@ -53,7 +53,7 @@ const MappedButton = memo(function MappedButtonMemo({
 	highlightTextStyle,
 	handler,
 }: MappedButtonProps) {
-	/**
+	/*
 	 * Animation vars
 	 */
 	const buttonBackgroundColor = useSharedValue(colors.light.background);
@@ -76,7 +76,7 @@ const MappedButton = memo(function MappedButtonMemo({
 		[],
 	);
 
-	/**
+	/*
 	 * Style vars
 	 */
 	const activeButtonStyle = useAnimatedStyle(() => ({
@@ -85,7 +85,7 @@ const MappedButton = memo(function MappedButtonMemo({
 		boxShadow: buttonBoxShadow.value,
 	}));
 
-	/**
+	/*
 	 * Handle animation side effects
 	 */
 	useEffect(() => {
@@ -131,7 +131,7 @@ const MappedButton = memo(function MappedButtonMemo({
 		buttonBoxShadow,
 	]);
 
-	/**
+	/*
 	 * Render the words.
 	 * Note the hitslop, it works well here.
 	 */
@@ -153,7 +153,7 @@ const MappedButton = memo(function MappedButtonMemo({
 	);
 });
 
-/**
+/*
  * MappedWords Component
  * Map the word buttons
  */
@@ -163,13 +163,13 @@ const MappedWords = memo(function MappedWordsMemo({
 	activeWord,
 	handler,
 }: MappedWordsProps) {
-	/**
+	/*
 	 * Context
 	 */
 	const { currentCard } = useCardDeck();
 	const { cardState } = useWordCardUI();
 
-	/**
+	/*
 	 * Validate and highlight choices only against the slot they fill.
 	 */
 	let correctWords = currentCard.englishWords;
@@ -226,7 +226,7 @@ const MappedWords = memo(function MappedWordsMemo({
 
 export default MappedWords;
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

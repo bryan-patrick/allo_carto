@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text, type TextProps } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 
-/**
+/*
  * Options for the numbers, text, and how long the count takes.
  */
 interface CountUpProps extends Omit<TextProps, 'children'> {
@@ -16,7 +16,7 @@ interface CountUpProps extends Omit<TextProps, 'children'> {
 
 export const countUpDuration = 1020;
 
-/**
+/*
  * Show a number changing from its starting value to its final value.
  */
 export default function CountUp({
@@ -35,7 +35,7 @@ export default function CountUp({
 	const [count, setCount] = useState(startCount);
 	const shouldCount = !reducedMotion && duration > 0 && finalCount > startCount;
 
-	/**
+	/*
 	 * Show the final number right away if we do not need to count.
 	 */
 	let displayedCount = finalCount;
@@ -47,7 +47,7 @@ export default function CountUp({
 	const label = `${prefix}${displayedCount.toLocaleString()}${suffix}`;
 	const finalLabel = `${prefix}${finalCount.toLocaleString()}${suffix}`;
 
-	/**
+	/*
 	 * Wait, then add one each time the timer ticks.
 	 * Stop when we reach the final number.
 	 */
@@ -69,7 +69,7 @@ export default function CountUp({
 			}, tickDuration);
 		}, delay);
 
-		/**
+		/*
 		 * Stop both timers when this view closes.
 		 */
 		return () => {
@@ -81,7 +81,7 @@ export default function CountUp({
 		};
 	}, [startCount, finalCount, delay, duration, shouldCount]);
 
-	/**
+	/*
 	 * Screen readers say the final number once instead of reading each change.
 	 */
 	return (

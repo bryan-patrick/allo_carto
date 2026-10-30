@@ -9,7 +9,7 @@ interface CollectionMeterProps {
 	learningLevel: WordProgressKey;
 }
 
-/**
+/*
  * Shows how many stamps have reached the learning level needed for the next reward.
  */
 export default function CollectionMeter({

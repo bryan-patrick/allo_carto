@@ -1,8 +1,8 @@
 import colors from '@/src/app/colors';
 import CollectionGems from '@/src/components/CollectionGems';
 import LinkButton from '@/src/components/LinkButton';
-import SecondaryButton from '@/src/components/SecondaryButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import type {
 	SentenceAttemptRequest,
@@ -83,7 +83,7 @@ const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 	},
 };
 
-/**
+/*
  * Show the result and ink cost after a sentence answer is submitted.
  */
 function getSentenceFeedback(result: SolveAttemptResult, answerLanguage: string): SentenceFeedback {
@@ -118,7 +118,7 @@ function getSentenceFeedback(result: SolveAttemptResult, answerLanguage: string)
 	);
 }
 
-/**
+/*
  * Let the player translate each sentence to earn glowing or prismatic gems.
  */
 export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceViewProps) {
@@ -284,7 +284,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		setAnswerSelection(event.nativeEvent.selection);
 	}
 
-	/**
+	/*
 	 * Insert a French character at the cursor and replace any selected letters.
 	 */
 	function handleInsertCharacter(character: string) {
@@ -330,7 +330,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		selectSentence(selectedIndex + 1);
 	}
 
-	/**
+	/*
 	 * Save the accepted sentence on screen and move to the next unfinished one.
 	 */
 	function updateSavedSentence(position: number, result: SolveAttemptResult) {
@@ -368,7 +368,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		}
 	}
 
-	/**
+	/*
 	 * Submit one paid sentence answer and keep its ID if the save needs to be retried.
 	 */
 	async function handleSubmit() {

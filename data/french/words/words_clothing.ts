@@ -1,6 +1,6 @@
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 
-/**
+/*
  * Adds clothing vocabulary for collections and future stories.
  */
 export const words_clothing: Word[] = [

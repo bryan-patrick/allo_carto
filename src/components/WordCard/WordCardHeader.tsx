@@ -4,18 +4,18 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import WordProgress from '../WordProgress';
 
-/**
+/*
  * WordCardHeader Component
  */
 export default function WordCardHeader() {
 	const { currentCard } = useCardDeck();
 
-	/**
+	/*
 	 * Card vars
 	 */
 	const { rarity } = currentCard;
 
-	/**
+	/*
 	 * Render the WordCardHeader
 	 */
 	return (
@@ -43,7 +43,7 @@ export default function WordCardHeader() {
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

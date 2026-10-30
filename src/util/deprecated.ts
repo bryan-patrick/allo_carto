@@ -1,11 +1,11 @@
-/**
+/*
  * This file contains things that have been removed or
  * refactored that might be useful to reuse
  */
 import { type LinearGradientProps } from 'expo-linear-gradient';
 import colors from '../app/colors';
 
-/**
+/*
  * Polaroid
  */
 const polaroidColors: LinearGradientProps['colors'] = [
@@ -42,7 +42,7 @@ const polaroidStyles = {
 	},
 };
 
-/**
+/*
  * Inventory
  */
 void { polaroid: [polaroidColors, polaroidColorStops, polaroidStyles] };

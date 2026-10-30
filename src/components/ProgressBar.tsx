@@ -11,7 +11,7 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated';
 
-/**
+/*
  * Typing
  */
 interface ProgressBarProps {
@@ -20,7 +20,7 @@ interface ProgressBarProps {
 	style?: StyleProp<ViewStyle>;
 }
 
-/**
+/*
  * Animation consts
  */
 const glowDuration = 200;
@@ -28,7 +28,7 @@ const fillDelay = 80;
 const fillDuration = 2400;
 export const progressBarAnimationDuration = fillDelay + fillDuration;
 
-/**
+/*
  * Progress bar with glow/fill animation
  */
 export default function ProgressBar({ color, percent, style }: ProgressBarProps) {
@@ -45,7 +45,7 @@ export default function ProgressBar({ color, percent, style }: ProgressBarProps)
 		transform: [{ scaleX: fill.value / 100 }],
 	}));
 
-	/**
+	/*
 	 * Animate the visible fill on the UI thread. Scaling from the left avoids
 	 * percentage-width layout updates while keeping one continuous fill.
 	 */
@@ -74,7 +74,7 @@ export default function ProgressBar({ color, percent, style }: ProgressBarProps)
 		};
 	}, [targetPercent, fill, glow]);
 
-	/**
+	/*
 	 * Render the bar
 	 */
 	return (
@@ -87,7 +87,7 @@ export default function ProgressBar({ color, percent, style }: ProgressBarProps)
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

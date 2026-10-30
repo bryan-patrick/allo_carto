@@ -1,6 +1,6 @@
 import type { PassageSegment } from '@/src/components/CardDeck/cardDeckTypes';
 
-/**
+/*
  * Get the learnable word IDs from a passage and remove duplicates.
  */
 export function getPassageWordIds(passage: PassageSegment[]): string[] {

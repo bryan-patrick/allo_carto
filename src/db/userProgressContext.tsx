@@ -1,3 +1,4 @@
+import { collectionAtlas } from '@/data/french/collectionAtlas';
 import type {
 	DeckCompletionReceiptProps,
 	WordAnswerAwardProps,
@@ -8,7 +9,6 @@ import type {
 	SolveAttemptResult,
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
-import { collectionAtlas } from '@/data/french/collectionAtlas';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { ProgressById } from '@/src/util/progression';
 import type { CompletedSolveStages } from '@/src/util/solveProgression';
@@ -28,13 +28,13 @@ import {
 	useState,
 	type ReactNode,
 } from 'react';
-import loadUserXP from './queries/getUserExperience';
 import applyMockParagraphProgress from './queries/applyMockParagraphProgress';
 import claimCollectionReward, {
 	type ClaimCollectionRewardRequest,
 	type CollectionRewardReceipt,
 } from './queries/claimCollectionReward';
 import getCollectionRewardClaims from './queries/getCollectionRewardClaims';
+import loadUserXP from './queries/getUserExperience';
 import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
 import getUserWordProgress, { type UserWordProgressById } from './queries/getUserWordProgress';
@@ -51,7 +51,7 @@ import {
 } from './queries/writeUserProgress';
 import writeWordOrderAttempt from './queries/writeWordOrderAttempt';
 
-/**
+/*
  * Typing
  */
 type ProgressStatus = 'loading' | 'ready' | 'error';
@@ -84,7 +84,7 @@ interface UserProgressContextProps {
 	reloadProgress: () => Promise<void>;
 }
 
-/**
+/*
  * Initial progress state
  */
 const initialValue: UserProgressContextProps = {
@@ -108,7 +108,7 @@ const initialValue: UserProgressContextProps = {
 
 export const UserProgressContext = createContext<UserProgressContextProps>(initialValue);
 
-/**
+/*
  * Provide the current user's saved progress and XP to the app.
  */
 export function UserProgressProvider({ children, userId }: UserProgressProviderProps) {
@@ -122,7 +122,7 @@ export function UserProgressProvider({ children, userId }: UserProgressProviderP
 	);
 }
 
-/**
+/*
  * Load and save progress for the current user.
  */
 function UserProgressState({ children, userId }: UserProgressProviderProps) {
@@ -130,7 +130,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const { settings } = useAppSettings();
 	const fastSolveUnlocks = settings.fastSolveUnlocks;
 
-	/**
+	/*
 	 * State
 	 */
 	const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
@@ -142,7 +142,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const [status, setStatus] = useState<ProgressStatus>('loading');
 	const isSavingProgress = useRef(false);
 
-	/**
+	/*
 	 * Reloads word levels, collection claims, XP, and Ink to keep progress displays current.
 	 */
 	const refreshProgress = useCallback(async () => {
@@ -198,14 +198,14 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		});
 	}, [collectionClaims, wordProgressById]);
 
-	/**
+	/*
 	 * Load userProgress rows when the database is ready
 	 */
 	useEffect(() => {
 		refreshProgress();
 	}, [refreshProgress]);
 
-	/**
+	/*
 	 * Block another word or userProgress write until the current database progress saves
 	 */
 	const runProgressWrite = useCallback(
@@ -233,7 +233,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[refreshProgress, userId],
 	);
 
-	/**
+	/*
 	 * Applies a mock paragraph state and reloads progress so gems and chapter access update together.
 	 */
 	const recordMockParagraphProgress = useCallback(
@@ -249,7 +249,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/**
+	/*
 	 * Claims collection XP and refreshes progress to update the album and player level.
 	 */
 	const recordCollectionReward = useCallback(
@@ -265,7 +265,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/**
+	/*
 	 * Save a correct answer
 	 */
 	const recordCorrectAnswer = useCallback(
@@ -277,7 +277,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/**
+	/*
 	 * We save incorrect and skipped cards so reopening a deck keeps those results.
 	 */
 	const recordIncorrectAnswer = useCallback(
@@ -293,7 +293,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/**
+	/*
 	 * Save the deck completion bonus and update the player's level
 	 */
 	const recordDeckCompletion = useCallback(
@@ -305,7 +305,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/**
+	/*
 	 * Save that a word was seen
 	 */
 	const recordWordSeen = useCallback(
@@ -318,7 +318,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/**
+	/*
 	 * Write the solve attempt to the db
 	 */
 	const recordSolveAttempt = useCallback(
@@ -335,7 +335,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
-	/**
+	/*
 	 * Submits the Solve++ answer using the current unlock setting, then reloads the player's Ink and gems.
 	 */
 	const recordWordOrderAttempt = useCallback(
@@ -352,7 +352,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
-	/**
+	/*
 	 * Submit a sentence answer and reload the player's ink and gems.
 	 */
 	const recordSentenceAttempt = useCallback(
@@ -369,7 +369,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
-	/**
+	/*
 	 * Context value
 	 */
 	const value = useMemo<UserProgressContextProps>(
@@ -411,7 +411,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		],
 	);
 
-	/**
+	/*
 	 * Render the provider
 	 */
 	return <UserProgressContext.Provider value={value}>{children}</UserProgressContext.Provider>;

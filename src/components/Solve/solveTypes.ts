@@ -2,13 +2,13 @@ import type { CardDeck, CardRarity } from '@/src/components/CardDeck/cardDeckTyp
 import type { SolveAnswerResult } from '@/src/util/solveAnswer';
 import type {
 	CompletedSolveStages,
+	SolveSentenceStage,
 	SolveStage,
 	SolveStageEligibility,
-	SolveSentenceStage,
 	SolveWordStage,
 } from '@/src/util/solveProgression';
 
-/**
+/*
  * Typing
  */
 export type AdditionalSolveStage = Exclude<SolveStage, 1>;

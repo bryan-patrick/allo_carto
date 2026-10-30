@@ -13,7 +13,7 @@ import Spine from './Spine';
 import StoryMeta from './StoryMeta';
 import StorySelectButton from './StorySelectButton';
 
-/**
+/*
  * Typing
  */
 interface StoryProps {
@@ -25,7 +25,7 @@ interface StoryProps {
 	isSelecting: boolean;
 }
 
-/**
+/*
  * Story component
  */
 export default function Story({
@@ -67,7 +67,7 @@ export default function Story({
 		);
 	}
 
-	/**
+	/*
 	 * Render the component
 	 */
 	return (
@@ -123,7 +123,7 @@ export default function Story({
 	);
 }
 
-/**
+/*
  * Styles
  */
 const styles = StyleSheet.create({

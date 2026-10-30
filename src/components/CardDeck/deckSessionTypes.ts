@@ -1,7 +1,7 @@
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import type { CardDeck } from './cardDeckTypes';
 
-/**
+/*
  * Typing
  */
 export interface LoadedFlashcardDeck {

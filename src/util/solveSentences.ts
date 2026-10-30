@@ -4,7 +4,7 @@ import { getSolvePassage, type SolvePassageSegment } from './getSolvePassage';
 import { getSentenceKeywords } from './solveSentenceAnswer';
 import { getWordOrderCards, isCompleteWordOrder } from './solveWordOrder';
 
-/**
+/*
  * Typing
  */
 export interface SolveSentenceWord {
@@ -18,7 +18,7 @@ interface SentencePassage {
 	segments: SolvePassageSegment[];
 }
 
-/**
+/*
  * Keep the sentence's French wording and any other card orders accepted for the paragraph.
  */
 function getFrenchSentenceAnswers(sentence: SentencePassage, deck: CardDeck): string[] {
@@ -46,7 +46,7 @@ function getFrenchSentenceAnswers(sentence: SentencePassage, deck: CardDeck): st
 	return answers;
 }
 
-/**
+/*
  * Splits the French paragraph into sentences and keeps its words and punctuation.
  */
 function splitFrenchSentences(deck: CardDeck): SentencePassage[] {
@@ -95,7 +95,7 @@ function splitFrenchSentences(deck: CardDeck): SentencePassage[] {
 	return sentences;
 }
 
-/**
+/*
  * Builds each sentence's keywords from the meanings already on its word cards.
  */
 function getSentenceCardKeywords(
@@ -148,7 +148,7 @@ function getSentenceCardKeywords(
 	return keywords;
 }
 
-/**
+/*
  * Prepare French sentence prompts and accepted keywords from the paragraph's existing content.
  */
 export function getSolveSentences(deck: CardDeck, words: SolveSentenceWord[]): SolveSentence[] {

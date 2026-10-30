@@ -1,7 +1,7 @@
 import { getUserExperience as getUserXP, type UserExperience } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-/**
+/*
  * Typing
  */
 interface LoadUserXPType {
@@ -9,7 +9,7 @@ interface LoadUserXPType {
 	userId: string;
 }
 
-/**
+/*
  * Get user XP and calculate the current player level
  */
 export default async function loadUserXP({
