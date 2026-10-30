@@ -19,7 +19,7 @@ interface DeckHeaderProps {
 }
 
 /**
- * We use this to show a paragraph's title, word progress, gems, and New badge.
+ * Show a paragraph's title, word progress, gems, and New badge together.
  */
 export default function DeckHeader({
 	title,

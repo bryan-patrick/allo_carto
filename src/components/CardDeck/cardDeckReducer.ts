@@ -15,11 +15,16 @@ export type CardDeckAction =
 	| { type: 'ADD_CORRECT_WORD'; award: WordAnswerAwardProps }
 	| { type: 'ADD_INCORRECT_WORD'; skipped?: boolean }
 	| { type: 'COMPLETE_DECK'; receipt: DeckCompletionReceiptProps }
-	| { type: 'SET_DECK'; payload: CardDeck; session: DeckSessionProps };
+	| {
+			type: 'SET_DECK';
+			payload: CardDeck;
+			session: DeckSessionProps;
+			currentIndex?: number;
+	  };
 
 /**
- * A reducer for deck state.
- * It mostly adds items to existing state arrays.
+ * Track the current flashcard, answers, and completion results.
+ * Restore saved answers and the current card when reopening a deck so the learner can continue.
  */
 export function cardDeckReducer(
 	state: CardDeckStateProps,
@@ -122,16 +127,27 @@ export function cardDeckReducer(
 			};
 		}
 		case 'SET_DECK': {
-			const nextCurrentId = action.payload.words[0]?.id ?? '';
+			const currentIndex = action.currentIndex ?? 0;
+			const nextCurrentId = action.payload.words[currentIndex]?.id ?? '';
+			const correctResults = action.session.results.filter(result => result.outcome === 'correct');
+			const incorrectResults = action.session.results.filter(
+				result => result.outcome !== 'correct',
+			);
+			const correctWordIds = correctResults.map(result => result.wordId);
+			const incorrectWordIds = incorrectResults.map(result => result.wordId);
+			const correctWords = action.payload.words.filter(word => correctWordIds.includes(word.id));
+			const incorrectWords = action.payload.words.filter(word =>
+				incorrectWordIds.includes(word.id),
+			);
 
 			return {
 				...state,
 				cardDeck: action.payload,
 				isComplete: false,
-				currentIndex: 0,
+				currentIndex,
 				currentId: nextCurrentId,
-				correctWords: [],
-				incorrectWords: [],
+				correctWords,
+				incorrectWords,
 				session: action.session,
 			};
 		}

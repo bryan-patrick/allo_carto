@@ -1,10 +1,8 @@
 import shuffleArray from './shuffleArray';
 
 /**
- * We use this to plan all the flashcard decks for one paragraph.
- * We remove repeated word IDs, shuffle the words, and split them into decks of nearly
- * equal size. Every word gets a place, and each deck stays within 1.5 times
- * the target amount of cards.
+ * Remove repeated word IDs, shuffle the words, and split them into nearly equal decks.
+ * Include every word once and keep each deck at or below 1.5 times the target card count.
  */
 export function createFlashcardDecks(wordIds: string[], targetCardsPerDeck: number): string[][] {
 	const uniqueWordIds = [...new Set(wordIds)];

@@ -27,7 +27,7 @@ interface StorySelectorProps {
 }
 
 /**
- * Component: We use this button to show the story selector modal.
+ * Show the current story's name and open the story picker when pressed.
  */
 export default function StorySelector({ story, isExpanded, onPress }: StorySelectorProps) {
 	const accessibilityLabel = `Selected story: ${story.name}`;

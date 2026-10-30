@@ -43,9 +43,11 @@ import writeSolveAttempt from './queries/writeSolveAttempt';
 import {
 	writeCorrectAnswer,
 	writeDeckCompletion,
+	writeIncorrectAnswer,
 	writeWordSeen,
 	type CorrectAnswerRequest,
 	type DeckCompletionRequest,
+	type IncorrectAnswerRequest,
 } from './queries/writeUserProgress';
 import writeWordOrderAttempt from './queries/writeWordOrderAttempt';
 
@@ -71,6 +73,7 @@ interface UserProgressContextProps {
 	progressById: ProgressById;
 	status: ProgressStatus;
 	writeCorrectAnswer: (request: CorrectAnswerRequest) => Promise<WordAnswerAwardProps | false>;
+	writeIncorrectAnswer: (request: IncorrectAnswerRequest) => Promise<boolean>;
 	writeDeckCompletion: (
 		request: DeckCompletionRequest,
 	) => Promise<DeckCompletionReceiptProps | false>;
@@ -94,6 +97,7 @@ const initialValue: UserProgressContextProps = {
 	progressById: {},
 	status: 'loading',
 	writeCorrectAnswer: async () => false,
+	writeIncorrectAnswer: async () => false,
 	writeDeckCompletion: async () => false,
 	writeWordSeen: async () => false,
 	writeSolveAttempt: async () => false,
@@ -274,6 +278,22 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	);
 
 	/**
+	 * We save incorrect and skipped cards so reopening a deck keeps those results.
+	 */
+	const recordIncorrectAnswer = useCallback(
+		async (request: IncorrectAnswerRequest): Promise<boolean> => {
+			return runProgressWrite(() => {
+				return writeIncorrectAnswer({
+					database,
+					userId: userId!,
+					...request,
+				});
+			});
+		},
+		[database, runProgressWrite, userId],
+	);
+
+	/**
 	 * Save the deck completion bonus and update the player's level
 	 */
 	const recordDeckCompletion = useCallback(
@@ -362,6 +382,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			isUpdatingProgress,
 			progressById,
 			writeCorrectAnswer: recordCorrectAnswer,
+			writeIncorrectAnswer: recordIncorrectAnswer,
 			writeDeckCompletion: recordDeckCompletion,
 			writeWordSeen: recordWordSeen,
 			writeSolveAttempt: recordSolveAttempt,
@@ -379,6 +400,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			isUpdatingProgress,
 			progressById,
 			recordCorrectAnswer,
+			recordIncorrectAnswer,
 			recordDeckCompletion,
 			recordWordSeen,
 			recordSolveAttempt,

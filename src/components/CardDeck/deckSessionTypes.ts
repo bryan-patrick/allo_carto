@@ -1,8 +1,15 @@
 import type { WordProgressKey } from '@/src/util/wordProgress';
+import type { CardDeck } from './cardDeckTypes';
 
 /**
  * Typing
  */
+export interface LoadedFlashcardDeck {
+	cardDeck: CardDeck;
+	session: DeckSessionProps;
+	currentIndex: number;
+}
+
 export interface WordAnswerAwardProps {
 	ink: number;
 	xp: number;
@@ -36,5 +43,6 @@ export interface DeckSessionProps {
 	id: string;
 	xpBefore: number;
 	results: DeckWordResultProps[];
+	unseenWordIds?: string[];
 	completion?: DeckCompletionReceiptProps;
 }

@@ -45,7 +45,11 @@ export default function WordCardButton({
 	const { cardState, wordCardUIDispatch } = useWordCardUI();
 	const { cardDeckState, cardDeckDispatch, currentCard } = useCardDeck();
 	const sessionId = cardDeckState.session?.id;
-	const { isUpdatingProgress, writeCorrectAnswer: recordCorrectAnswer } = useUserProgress();
+	const {
+		isUpdatingProgress,
+		writeCorrectAnswer: recordCorrectAnswer,
+		writeIncorrectAnswer: recordIncorrectAnswer,
+	} = useUserProgress();
 	const { settings } = useAppSettings();
 	const playIncorrect = useSoundEffect('incorrect');
 	const lastSoundedAnswer = useRef<string | null>(null);
@@ -71,7 +75,7 @@ export default function WordCardButton({
 	 * Block very fast double presses
 	 */
 	const pressInFlight = useRef(false);
-	const persistedCorrectAnswer = useRef<string | null>(null);
+	const persistedAnswer = useRef<string | null>(null);
 	const isSavingAnswer = useRef(false);
 	const isRevealDisabled =
 		!sessionId || cardState.stage !== 'READY' || isAnswerPending || isUpdatingProgress;
@@ -129,40 +133,85 @@ export default function WordCardButton({
 	}, [currentCard, wordCardUIDispatch]);
 
 	/**
-	 * Save this correct answer once and add its earned XP to the review results.
-	 * Update the button only after the save finishes.
+	 * We save each answer before letting the learner move to the next card.
+	 * Correct cards earn rewards; incorrect and skipped cards keep their results too.
 	 */
-	const persistCorrectAnswer = useCallback(() => {
-		const answerId = `${currentCard.id}:${cardState.attempts}`;
+	const persistAnswer = useCallback(
+		async function persistAnswer() {
+			const answerId = `${currentCard.id}:${cardState.attempts}`;
+			const skipped = cardState.isAnswerRevealed;
+			const isCorrect = cardState.stage === 'CORRECT' && !skipped;
 
-		if (!sessionId || persistedCorrectAnswer.current === answerId || isSavingAnswer.current) {
-			return;
-		}
+			if (!sessionId || persistedAnswer.current === answerId || isSavingAnswer.current) {
+				return;
+			}
 
-		persistedCorrectAnswer.current = answerId;
-		isSavingAnswer.current = true;
+			persistedAnswer.current = answerId;
+			isSavingAnswer.current = true;
 
-		return recordCorrectAnswer({ wordId: currentCard.id, sessionId })
-			.then(
-				award => {
-					if (award) {
-						cardDeckDispatch({ type: 'INCREMENT_WORD_SCORE' });
-						cardDeckDispatch({ type: 'ADD_CORRECT_WORD', award });
+			try {
+				if (isCorrect) {
+					const award = await recordCorrectAnswer({
+						wordId: currentCard.id,
+						sessionId,
+					});
+
+					if (!award) {
+						setHasSaveError(true);
+						return;
+					}
+
+					cardDeckDispatch({
+						type: 'INCREMENT_WORD_SCORE',
+					});
+					cardDeckDispatch({
+						type: 'ADD_CORRECT_WORD',
+						award,
+					});
+					impactAsync(ImpactFeedbackStyle.Light);
+				} else {
+					const didSave = await recordIncorrectAnswer({
+						wordId: currentCard.id,
+						sessionId,
+						skipped,
+					});
+
+					if (!didSave) {
+						setHasSaveError(true);
+						return;
+					}
+
+					cardDeckDispatch({
+						type: 'ADD_INCORRECT_WORD',
+						skipped,
+					});
+
+					if (skipped) {
 						impactAsync(ImpactFeedbackStyle.Light);
 					} else {
-						setHasSaveError(true);
+						notificationAsync(NotificationFeedbackType.Warning);
 					}
-				},
-				() => {
-					setHasSaveError(true);
-				},
-			)
-			.finally(() => {
+				}
+			} catch (error) {
+				console.error('Could not save the flashcard answer:', error);
+				setHasSaveError(true);
+			} finally {
 				isSavingAnswer.current = false;
 				pressInFlight.current = false;
 				setIsAnswerPending(false);
-			});
-	}, [currentCard.id, cardState.attempts, cardDeckDispatch, recordCorrectAnswer, sessionId]);
+			}
+		},
+		[
+			currentCard.id,
+			cardState.attempts,
+			cardState.stage,
+			cardState.isAnswerRevealed,
+			cardDeckDispatch,
+			recordCorrectAnswer,
+			recordIncorrectAnswer,
+			sessionId,
+		],
+	);
 
 	/**
 	 * Sound effects
@@ -201,18 +250,7 @@ export default function WordCardButton({
 		if (cardState.attempts !== 0) {
 			switch (`${cardState.stage}_${cardState.progress}`) {
 				case 'CORRECT_SUCCESS': {
-					if (cardState.isAnswerRevealed) {
-						cardDeckDispatch({ type: 'ADD_INCORRECT_WORD', skipped: true });
-
-						void Promise.resolve(impactAsync(ImpactFeedbackStyle.Light)).finally(() => {
-							pressInFlight.current = false;
-							setIsAnswerPending(false);
-						});
-
-						break;
-					}
-
-					persistCorrectAnswer();
+					persistAnswer();
 
 					break;
 				}
@@ -224,12 +262,7 @@ export default function WordCardButton({
 
 					break;
 				case 'INCORRECT_DANGER':
-					void Promise.resolve(notificationAsync(NotificationFeedbackType.Warning)).finally(() => {
-						pressInFlight.current = false;
-						setIsAnswerPending(false);
-					});
-
-					cardDeckDispatch({ type: 'ADD_INCORRECT_WORD' });
+					persistAnswer();
 
 					break;
 				case 'COMPLETED_DANGER':
@@ -244,7 +277,7 @@ export default function WordCardButton({
 		cardState.stage,
 		cardState.isAnswerRevealed,
 		cardDeckDispatch,
-		persistCorrectAnswer,
+		persistAnswer,
 	]);
 
 	/**
@@ -260,14 +293,14 @@ export default function WordCardButton({
 		setIsAnswerPending(true);
 
 		if (hasSaveError) {
-			persistedCorrectAnswer.current = null;
+			persistedAnswer.current = null;
 			setHasSaveError(false);
-			persistCorrectAnswer();
+			persistAnswer();
 			return;
 		}
 
 		checkAnswer();
-	}, [checkAnswer, isUpdatingProgress, hasSaveError, persistCorrectAnswer]);
+	}, [checkAnswer, isUpdatingProgress, hasSaveError, persistAnswer]);
 
 	const handlePressIn = useCallback(() => {
 		setIsPressed(true);
@@ -318,7 +351,7 @@ export default function WordCardButton({
 	return (
 		<View style={styles.actions}>
 			{hasSaveError && (
-				<Text style={styles.saveError}>Could not save your rewards. Tap to retry.</Text>
+				<Text style={styles.saveError}>Could not save your answer. Tap to retry.</Text>
 			)}
 			{settings.showSkipWordLink && (
 				<Pressable

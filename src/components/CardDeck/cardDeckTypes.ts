@@ -49,9 +49,8 @@ export interface CardDeckDefinition extends Progression {
 }
 
 /**
- * We use this to keep all the paragraph's planned flashcard decks together.
- * Each list holds one deck's word IDs in play order, so we know which cards
- * belong together even while the learner is playing only the first deck.
+ * Hold a paragraph's content, learnable word IDs, and planned flashcard decks.
+ * Each planned deck lists its word IDs in play order to match the learner's saved cycle.
  */
 export interface CardDeck extends CardDeckDefinition {
 	wordIds: string[];

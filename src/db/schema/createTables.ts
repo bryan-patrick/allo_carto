@@ -120,11 +120,37 @@ export default async function createTables(): Promise<void> {
 	await createUserWordsTable();
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
+	await createFlashcardCyclesTable();
 	await createInkTables();
 	await createCollectionRewardClaimsTable();
 	await createSolveTables();
 	await ensureFlashcardsStartedColumn();
 	await ensureParagraphProgressType();
+}
+
+/**
+ * Create storage for each learner's shuffled decks and answers so they can leave and resume.
+ * One saved cycle per paragraph records which deck to open next.
+ */
+async function createFlashcardCyclesTable(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS flashcardCycles (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			cycleId TEXT NOT NULL,
+			decks TEXT NOT NULL,
+			deckIndex INTEGER NOT NULL DEFAULT 0 CHECK (deckIndex >= 0),
+			sessionId TEXT NOT NULL,
+			xpBefore INTEGER NOT NULL CHECK (xpBefore >= 0),
+			unseenWordIds TEXT NOT NULL DEFAULT '[]',
+			results TEXT NOT NULL DEFAULT '[]',
+			PRIMARY KEY (userId, deckId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+	`;
+
+	await database.execAsync(statement);
 }
 
 /**
