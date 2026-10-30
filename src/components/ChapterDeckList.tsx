@@ -156,11 +156,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 				});
 				const unlockCriteria = getUnlockCriteria(deck, progressById);
 				const isLoadingPassage = loadingPassageId === deck.id;
-				const actionLabel = getFlashcardActionLabel({
-					wordCount: deck.wordIds.length,
-					targetCardsPerDeck: cardsPerDeck,
-					savedProgress: progressById[deck.id]?.flashcardProgress,
-				});
+				const actionLabel = getFlashcardActionLabel(progressById[deck.id]?.flashcardProgress);
 
 				return (
 					<View

@@ -85,11 +85,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		deckWordCount: deckCardCount,
 		wordProgressCounts,
 	});
-	const selectText = getFlashcardActionLabel({
-		wordCount: deckCardCount,
-		targetCardsPerDeck: cardsPerDeck,
-		savedProgress: progressById[deck.id]?.flashcardProgress,
-	});
+	const selectText = getFlashcardActionLabel(progressById[deck.id]?.flashcardProgress);
 	const deckMetadata = {
 		cardCount: deckCardCount,
 		CEFRLabel: deckCEFRLabel,

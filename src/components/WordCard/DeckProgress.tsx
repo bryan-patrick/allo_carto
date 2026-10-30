@@ -36,9 +36,6 @@ export default function DeckProgress() {
 						Deck {flashcardProgress.deckIndex + 1} of {flashcardProgress.deckCount}
 					</Text>
 				)}
-				<Text style={styles.progressText}>
-					Card {currentCard}/{totalCards}
-				</Text>
 			</View>
 			<View style={styles.blipContainer}>
 				{
@@ -87,7 +84,6 @@ export default function DeckProgress() {
 const styles = StyleSheet.create({
 	deckProgressContainer: {
 		display: 'flex',
-		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
 		maxWidth: '100%',
@@ -103,7 +99,8 @@ const styles = StyleSheet.create({
 		color: colors.light.background,
 	},
 	progressLabels: {
-		gap: 2,
+		flexDirection: 'row',
+		gap: 8,
 	},
 	blipContainer: {
 		display: 'flex',

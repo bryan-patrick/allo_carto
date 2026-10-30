@@ -1,26 +1,10 @@
 import type { FlashcardDeckProgress } from '@/src/components/CardDeck/cardDeckTypes';
-import { getFlashcardDeckCount } from './createFlashcardDecks';
 
-interface FlashcardActionLabelOptions {
-	wordCount: number;
-	targetCardsPerDeck: number;
-	savedProgress?: FlashcardDeckProgress;
-}
-
-// Build a label like "Flashcards (2/3)" for the deck the learner will play next.
-export function getFlashcardActionLabel({
-	wordCount,
-	targetCardsPerDeck,
-	savedProgress,
-}: FlashcardActionLabelOptions): string {
-	const deckCount =
-		savedProgress?.deckCount ?? getFlashcardDeckCount(wordCount, targetCardsPerDeck);
-	const deckIndex = savedProgress?.deckIndex ?? 0;
-	const deckNumber = deckIndex + 1;
-
-	if (deckCount === 0) {
-		return 'Flashcards';
+// Show Continue while a paragraph has an unfinished flashcard cycle.
+export function getFlashcardActionLabel(savedProgress?: FlashcardDeckProgress): string {
+	if (savedProgress && savedProgress.deckIndex < savedProgress.deckCount) {
+		return 'Continue';
 	}
 
-	return `Flashcards (${deckNumber}/${deckCount})`;
+	return 'Flashcards';
 }
