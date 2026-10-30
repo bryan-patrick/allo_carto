@@ -20,6 +20,7 @@ import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
+import { getFlashcardActionLabel } from '@/src/util/getFlashcardActionLabel';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
@@ -84,8 +85,11 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 		deckWordCount: deckCardCount,
 		wordProgressCounts,
 	});
-	const selectAction = deckCompletionPercent > 0 ? 'Continue' : 'Start';
-	const selectText = `${selectAction} session`;
+	const selectText = getFlashcardActionLabel({
+		wordCount: deckCardCount,
+		targetCardsPerDeck: cardsPerDeck,
+		savedProgress: progressById[deck.id]?.flashcardProgress,
+	});
 	const deckMetadata = {
 		cardCount: deckCardCount,
 		CEFRLabel: deckCEFRLabel,
@@ -320,7 +324,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 										</Animated.View>
 									</Pressable>
 									<LinkButton
-										accessibilityHint={`${selectAction} practicing ${deckTitle}.`}
+										accessibilityHint="Practice the next flashcard deck for this paragraph."
 										accessibilityLabel={`${selectText}: ${deckTitle}`}
 										arrowColor={colors.light.background}
 										color={storyColor}

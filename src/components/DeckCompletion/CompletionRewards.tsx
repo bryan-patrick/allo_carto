@@ -32,6 +32,7 @@ export default function CompletionRewards({
 	const { completion, results } = session;
 	const wordXP = results.reduce((total, result) => total + result.xp, 0);
 	const bonusXP = completion?.bonuses.reduce((total, bonus) => total + bonus.xp, 0) ?? 0;
+	const paragraphBonus = completion?.bonuses.find(bonus => bonus.kind === 'paragraphCompletion');
 	const earnedXP = wordXP + bonusXP;
 	const accentStyle = {
 		color,
@@ -84,6 +85,20 @@ export default function CompletionRewards({
 						{newFlashcardsSeen} ({seenFlashcards}/{totalFlashcards})
 					</Text>
 				</View>
+				{paragraphBonus && (
+					<View style={styles.row}>
+						<View style={styles.rowDetails}>
+							<Text style={styles.label}>Paragraph completion bonus</Text>
+						</View>
+						<CountUp
+							value={paragraphBonus.xp}
+							duration={500}
+							prefix="+"
+							suffix=" XP"
+							style={[styles.amount, accentStyle]}
+						/>
+					</View>
+				)}
 				<View style={styles.row}>
 					<View style={styles.rowDetails}>
 						<Text style={styles.label}>XP earned</Text>

@@ -3,9 +3,7 @@ import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { type CardRarity, Word } from '../CardDeck/cardDeckTypes';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 
-/**
- * DeckProgress component
- */
+// Show the deck number, card number, and marks for correct and incorrect answers.
 export default function DeckProgress() {
 	/**
 	 * State
@@ -23,6 +21,7 @@ export default function DeckProgress() {
 	 */
 	const totalCards = words.length;
 	const currentCard = currentIndex + 1;
+	const flashcardProgress = currentCardDeck.flashcardProgress;
 	const correctWordIds: Set<string> = new Set(correctWords.map(word => word.id));
 	const incorrectWordIds: Set<string> = new Set(incorrectWords.map(word => word.id));
 
@@ -31,9 +30,16 @@ export default function DeckProgress() {
 	 */
 	return (
 		<View style={styles.deckProgressContainer}>
-			<Text style={styles.progressText}>
-				Card {currentCard}/{totalCards}
-			</Text>
+			<View style={styles.progressLabels}>
+				{flashcardProgress && (
+					<Text style={styles.progressText}>
+						Deck {flashcardProgress.deckIndex + 1} of {flashcardProgress.deckCount}
+					</Text>
+				)}
+				<Text style={styles.progressText}>
+					Card {currentCard}/{totalCards}
+				</Text>
+			</View>
 			<View style={styles.blipContainer}>
 				{
 					/**
@@ -95,6 +101,9 @@ const styles = StyleSheet.create({
 		fontFamily: 'azeret-mono-600',
 		fontSize: 11,
 		color: colors.light.background,
+	},
+	progressLabels: {
+		gap: 2,
 	},
 	blipContainer: {
 		display: 'flex',

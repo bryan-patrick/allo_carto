@@ -29,7 +29,7 @@ export interface DeckWordResultProps {
 }
 
 export interface XPBonusProps {
-	kind: 'completion' | 'firstCompletion' | 'perfect';
+	kind: 'completion' | 'firstCompletion' | 'perfect' | 'paragraphCompletion';
 	xp: number;
 }
 
