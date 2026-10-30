@@ -1,7 +1,8 @@
 import type { CardDeck, Word } from '../../components/CardDeck/cardDeckTypes';
-import { createFlashcardDecks } from '../../util/createFlashcardDecks';
+import type { LoadedFlashcardDeck } from '../../components/CardDeck/deckSessionTypes';
 import { getDB } from '../connection';
 import type { WordRow } from '../types';
+import { getFlashcardCycle } from './flashcardCycles';
 import getDeckWordChoices from './getDeckWordChoices';
 
 /**
@@ -10,7 +11,7 @@ import getDeckWordChoices from './getDeckWordChoices';
 interface GetDeckProps {
 	deck: CardDeck;
 	/**
-	 * We use this as the target deck size. A deck can grow to 1.5 times this amount
+	 * The target deck size. A deck can grow to 1.5 times this amount
 	 * so we can spread the paragraph's cards evenly across decks.
 	 */
 	amount: number;
@@ -22,7 +23,9 @@ interface DeckWordRow extends WordRow {
 }
 
 /**
- * We use this to turn a saved word into a flashcard the app can display.
+ * Turn a saved database word into flashcard data the app can display.
+ * Read its English answers as a list, turn the vulgar-word setting into true or false,
+ * and include the learner's word counts, starting at zero when no counts are saved.
  */
 function parseWordRow(row: DeckWordRow): Word {
 	const { englishWords, isVulgar, userCorrectCount, userSeenCount, ...wordFields } = row;
@@ -37,16 +40,15 @@ function parseWordRow(row: DeckWordRow): Word {
 }
 
 /**
- * We use this to prepare a paragraph when the learner selects Flashcards.
- * We load its words and the learner's saved word progress, then shuffle and split the
- * words into decks. We return the first deck to play, plus the full plan of word IDs
- * so we know which words belong to the other decks.
+ * Prepare a paragraph when the learner selects Flashcards.
+ * Load the words, shuffle, then return the current deck and its answers.
+ * The learner continues at the next unanswered card
  */
 export default async function getDeck({
 	deck,
 	amount,
 	userId,
-}: GetDeckProps): Promise<CardDeck | undefined> {
+}: GetDeckProps): Promise<LoadedFlashcardDeck | undefined> {
 	const placeholders = deck.wordIds.map(() => '?').join(',');
 
 	/**
@@ -74,28 +76,61 @@ export default async function getDeck({
 		const words = rows?.map(parseWordRow) ?? [];
 		const wordsById = new Map(words.map(word => [word.id, word]));
 		const wordIds = words.map(word => word.id);
-		const flashcardDecks = createFlashcardDecks(wordIds, amount);
+		const unseenWords = words.filter(word => (word.seenCount ?? 0) === 0);
+		const unseenWordIds = unseenWords.map(word => word.id);
+
+		if (wordIds.length === 0) {
+			return;
+		}
+
+		const cycle = await getFlashcardCycle({
+			database,
+			userId,
+			deckId: deck.id,
+			wordIds,
+			unseenWordIds,
+			targetCardsPerDeck: amount,
+		});
 
 		/**
-		 * The plan holds word IDs. Look up the first deck's full word details in the
-		 * same order so the learner sees the cards in the order we just shuffled.
+		 * Look up the current deck's words in order
 		 */
-		const firstDeckWordIds = flashcardDecks[0] ?? [];
-		const firstDeckWords = firstDeckWordIds.map(wordId => wordsById.get(wordId));
-		const selectedWords = firstDeckWords.filter((word): word is Word => word !== undefined);
+		const currentDeckWordIds = cycle.decks[cycle.deckIndex] ?? [];
+		const currentDeckWords = currentDeckWordIds.map(wordId => wordsById.get(wordId));
+		const selectedWords = currentDeckWords.filter((word): word is Word => word !== undefined);
+
+		const firstUnansweredIndex = selectedWords.findIndex(word => {
+			return !cycle.session.results.some(result => result.wordId === word.id);
+		});
+
+		let currentIndex = firstUnansweredIndex;
+
+		/**
+		 * Its saved answer lets us finish the deck and show results without playing it again.
+		 */
+		if (currentIndex === -1) {
+			currentIndex = Math.max(0, selectedWords.length - 1);
+		}
+
 		const wordChoices = await getDeckWordChoices({
 			wordIds: deck.wordIds,
 		});
 
 		/**
-		 * Use the first deck's words for the flashcards on screen. Keep the whole
-		 * paragraph's word IDs and answer choices for the passage and choice buttons.
+		 * Use the current deck's words for the flashcards on screen.
+		 *
+		 * BUT we keep the whole paragraph's word IDs and
+		 * answer choices for the passage and choice buttons.
 		 */
 		return {
-			...deck,
-			words: selectedWords,
-			wordChoices,
-			flashcardDecks,
+			cardDeck: {
+				...deck,
+				words: selectedWords,
+				wordChoices,
+				flashcardDecks: cycle.decks,
+			},
+			session: cycle.session,
+			currentIndex,
 		};
 	} catch (error) {
 		console.error('Could not retrieve deck:', error);

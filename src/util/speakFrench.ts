@@ -15,7 +15,8 @@ interface SpeechBoundaryEvent {
 let stopCurrentSpeech: (() => Promise<void>) | null = null;
 
 /**
- * We use this for both flashcards and stories
+ * Read French text aloud for flashcards and stories, stopping any earlier speech first.
+ * Return a function that stops this reading when the player leaves or presses Stop.
  */
 export default function speakFrench({
 	text,

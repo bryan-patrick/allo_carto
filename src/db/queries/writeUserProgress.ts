@@ -19,6 +19,7 @@ import getDeckWordProgressCounts from './getDeckWordProgressCounts';
 import { incrementCorrectCount } from './incrementCorrectCount';
 import { incrementSeenCount } from './incrementSeenCount';
 import updateUserProgress from './updateUserProgress';
+import { finishFlashcardDeck, saveFlashcardResult } from './flashcardCycles';
 
 /**
  * Typing
@@ -33,6 +34,15 @@ export interface DeckCompletionRequest {
 export interface CorrectAnswerRequest {
 	wordId: string;
 	sessionId: string;
+}
+
+export interface IncorrectAnswerRequest extends CorrectAnswerRequest {
+	skipped: boolean;
+}
+
+interface WriteIncorrectAnswerOptions extends IncorrectAnswerRequest {
+	database: SQLiteDatabase;
+	userId: string;
 }
 
 interface WriteCorrectAnswerOptions extends CorrectAnswerRequest {
@@ -252,6 +262,16 @@ export async function writeCorrectAnswer({
 			nextAward.nextProgress,
 			nextAward.ink,
 		);
+		await saveFlashcardResult({
+			database,
+			userId,
+			sessionId,
+			result: {
+				wordId,
+				outcome: 'correct',
+				...nextAward,
+			},
+		});
 
 		award = nextAward;
 	});
@@ -261,6 +281,38 @@ export async function writeCorrectAnswer({
 	}
 
 	return award;
+}
+
+/**
+ * Save an incorrect or skipped answer without awarding XP or Ink.
+ * Keep the result when the learner leaves and comes back to the deck.
+ */
+export async function writeIncorrectAnswer({
+	database,
+	userId,
+	wordId,
+	sessionId,
+	skipped,
+}: WriteIncorrectAnswerOptions): Promise<boolean> {
+	if (!sessionId || !wordId) {
+		throw new Error('An answer needs a session and word.');
+	}
+
+	await database.withExclusiveTransactionAsync(async transaction => {
+		await saveFlashcardResult({
+			database: transaction,
+			userId,
+			sessionId,
+			result: {
+				wordId,
+				outcome: skipped ? 'skipped' : 'incorrect',
+				xp: 0,
+				ink: 0,
+			},
+		});
+	});
+
+	return true;
 }
 
 /**
@@ -286,7 +338,7 @@ export async function writeDeckCompletion({
 		`,
 		getPreviousCompletion: `
 			SELECT sessionId FROM deckCompletions
-			WHERE userId = ? AND deckId = ? LIMIT 1;
+			WHERE userId = ? AND deckId = ? AND bonuses <> '[]' LIMIT 1;
 		`,
 		getUserXP: 'SELECT totalXP FROM users WHERE id = ?;',
 		addInk: `
@@ -328,6 +380,17 @@ export async function writeDeckCompletion({
 		}
 
 		/**
+		 * Save the move to the next deck with this deck's rewards and receipt.
+		 * If any part fails, the learner stays on this deck and can safely retry.
+		 */
+		await finishFlashcardDeck({
+			database,
+			userId,
+			deckId,
+			sessionId,
+		});
+
+		/**
 		 * A session without correct cards earns no Ink or completion bonuses.
 		 * It also leaves the first-completion bonus available for a later session.
 		 */
@@ -338,7 +401,21 @@ export async function writeDeckCompletion({
 				throw new Error(`Could not load XP for user ${userId}.`);
 			}
 
-			receipt = { bonuses: [], totalXP: user.totalXP, earnedInk: 0 };
+			await database.runAsync(
+				statements.saveReceipt,
+				userId,
+				sessionId,
+				deckId,
+				JSON.stringify(bonuses),
+				user.totalXP,
+				0,
+			);
+
+			receipt = {
+				bonuses,
+				totalXP: user.totalXP,
+				earnedInk: 0,
+			};
 			return;
 		}
 

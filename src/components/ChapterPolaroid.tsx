@@ -23,8 +23,7 @@ interface ChapterPolaroidProps {
 }
 
 /**
- * We use this to show chapter photos in a small stack of polaroids, with one tilted behind the photo.
- * The bottom border can hold chapter details, and an optional noise image covers just the photo.
+ * Show a chapter photo in a Polaroid frame, with a tilted frame behind it.
  */
 export default function ChapterPolaroid({
 	source,

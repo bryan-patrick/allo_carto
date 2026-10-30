@@ -40,9 +40,10 @@ export default function DeckResultsView() {
 	const seenCardCount = progressById[cardDeck.id]?.seenWordCount ?? 0;
 	const newlySeenCards = cardDeck.words.filter(word => {
 		const previousSeenCount = word.seenCount ?? 0;
+		const wasUnseen = session?.unseenWordIds?.includes(word.id) ?? previousSeenCount === 0;
 		const hasSessionResult = session?.results.some(result => result.wordId === word.id) ?? false;
 
-		return previousSeenCount === 0 && hasSessionResult;
+		return wasUnseen && hasSessionResult;
 	});
 	const newlySeenCardCount = newlySeenCards.length;
 	const headingStyle = {

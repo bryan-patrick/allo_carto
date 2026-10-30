@@ -19,6 +19,7 @@ export default async function resetDB(): Promise<void> {
 		DROP TABLE IF EXISTS solveUnlocks;
 		DROP TABLE IF EXISTS solvePositions;
 		DROP TABLE IF EXISTS flashcardAwards;
+		DROP TABLE IF EXISTS flashcardCycles;
 		DROP TABLE IF EXISTS userInk;
 		DROP TABLE IF EXISTS deckPassageFeedback;
 		DROP TABLE IF EXISTS deckCompletions;
