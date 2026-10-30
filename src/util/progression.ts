@@ -1,4 +1,5 @@
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
+import type { FlashcardDeckProgress } from '@/src/components/CardDeck/cardDeckTypes';
 import type { WordProgressKey } from './wordProgress';
 import type { CompletedSolveStages } from './solveProgression';
 
@@ -30,6 +31,7 @@ export interface UserProgressRow {
 	seenWordCount?: number;
 	wordCount?: number;
 	hasStartedFlashcards?: number;
+	flashcardProgress?: FlashcardDeckProgress;
 	hasFirstGem?: boolean;
 	completedSolveStages?: CompletedSolveStages;
 	completedParagraphCount?: number;

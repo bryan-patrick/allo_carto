@@ -23,6 +23,7 @@ import {
 	isItemUnlocked,
 } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
+import { getFlashcardActionLabel } from '@/src/util/getFlashcardActionLabel';
 import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useRouter } from 'expo-router';
@@ -153,14 +154,13 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 					id: deck.id,
 					progressById,
 				});
-				const completionPercent = Math.floor(progressById[deck.id]?.completionPercentage ?? 0);
 				const unlockCriteria = getUnlockCriteria(deck, progressById);
 				const isLoadingPassage = loadingPassageId === deck.id;
-				let actionLabel = 'Flashcards';
-
-				if (completionPercent > 0) {
-					actionLabel = 'Flashcards';
-				}
+				const actionLabel = getFlashcardActionLabel({
+					wordCount: deck.wordIds.length,
+					targetCardsPerDeck: cardsPerDeck,
+					savedProgress: progressById[deck.id]?.flashcardProgress,
+				});
 
 				return (
 					<View

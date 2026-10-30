@@ -55,6 +55,12 @@ export interface CardDeckDefinition extends Progression {
 export interface CardDeck extends CardDeckDefinition {
 	wordIds: string[];
 	flashcardDecks?: string[][];
+	flashcardProgress?: FlashcardDeckProgress;
+}
+
+export interface FlashcardDeckProgress {
+	deckIndex: number;
+	deckCount: number;
 }
 
 export type ReadingPassage = Pick<CardDeck, 'id' | 'title' | 'passage' | 'wordIds'>;

@@ -76,8 +76,8 @@ interface SavedDeckCompletionRow extends UserXPRow {
 	earnedInk: number;
 }
 
-interface SavedDeckSessionRow {
-	sessionId: string;
+interface SavedDeckBonusesRow {
+	bonuses: string;
 }
 
 /**
@@ -315,9 +315,9 @@ export async function writeIncorrectAnswer({
 	return true;
 }
 
-/**
- * We pay the session's Ink and XP bonuses when the player finishes the deck.
- * The saved receipt keeps retries and reopened results from paying again.
+/*
+ * Save the deck's rewards and move to the next deck. Award the paragraph bonus after
+ * the last deck, and save a receipt so the same rewards cannot be paid twice.
  */
 export async function writeDeckCompletion({
 	database: sqliteDatabase,
@@ -336,9 +336,9 @@ export async function writeDeckCompletion({
 			SELECT COALESCE(SUM(ink), 0) AS pendingInk FROM flashcardAwards
 			WHERE userId = ? AND sessionId = ?;
 		`,
-		getPreviousCompletion: `
-			SELECT sessionId FROM deckCompletions
-			WHERE userId = ? AND deckId = ? AND bonuses <> '[]' LIMIT 1;
+		getPreviousBonuses: `
+			SELECT bonuses FROM deckCompletions
+			WHERE userId = ? AND deckId = ?;
 		`,
 		getUserXP: 'SELECT totalXP FROM users WHERE id = ?;',
 		addInk: `
@@ -353,10 +353,6 @@ export async function writeDeckCompletion({
 	};
 	let receipt: DeckCompletionReceiptProps | undefined;
 
-	/**
-	 * We save the Ink, XP bonuses, and receipt together.
-	 * If one part fails, none of these completion rewards are saved.
-	 */
 	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
 		const savedReceipt = await database.getFirstAsync<SavedDeckCompletionRow>(
 			statements.getReceipt,
@@ -364,6 +360,7 @@ export async function writeDeckCompletion({
 			sessionId,
 		);
 		const bonuses: XPBonusProps[] = [];
+		let earnedInk = 0;
 
 		if (savedReceipt) {
 			if (savedReceipt.deckId !== deckId) {
@@ -379,75 +376,79 @@ export async function writeDeckCompletion({
 			return;
 		}
 
-		/**
-		 * Save the move to the next deck with this deck's rewards and receipt.
-		 * If any part fails, the learner stays on this deck and can safely retry.
-		 */
-		await finishFlashcardDeck({
+		// Save deck progress and rewards together so a failed save can be retried safely.
+		const isParagraphComplete = await finishFlashcardDeck({
 			database,
 			userId,
 			deckId,
 			sessionId,
 		});
 
-		/**
-		 * A session without correct cards earns no Ink or completion bonuses.
-		 * It also leaves the first-completion bonus available for a later session.
+		/*
+		 * Deck rewards require a correct answer. Finishing every deck earns the paragraph
+		 * bonus, even with incorrect or skipped answers.
 		 */
-		if (!correctCount) {
-			const user = await database.getFirstAsync<UserXPRow>(statements.getUserXP, userId);
+		if (correctCount > 0) {
+			// Check whether the learner has already earned a deck completion bonus.
+			const previousCompletions = await database.getAllAsync<SavedDeckBonusesRow>(
+				statements.getPreviousBonuses,
+				userId,
+				deckId,
+			);
+			const hasPreviousDeckReward = previousCompletions.some(completion => {
+				const savedBonuses: XPBonusProps[] = JSON.parse(completion.bonuses);
 
-			if (!user) {
-				throw new Error(`Could not load XP for user ${userId}.`);
-			}
-
-			await database.runAsync(
-				statements.saveReceipt,
+				return savedBonuses.some(bonus => bonus.kind === 'completion');
+			});
+			const sessionInk = await database.getFirstAsync<SessionInkRow>(
+				statements.getPendingInk,
 				userId,
 				sessionId,
-				deckId,
-				JSON.stringify(bonuses),
-				user.totalXP,
-				0,
 			);
+			const inkBalance = await getUserInk({
+				database,
+				userId,
+			});
+			const pendingInk = sessionInk?.pendingInk ?? 0;
+			const remainingInkSpace = inkConfig.maxBalance - inkBalance;
 
-			receipt = {
-				bonuses,
-				totalXP: user.totalXP,
-				earnedInk: 0,
-			};
-			return;
+			earnedInk = Math.min(pendingInk, remainingInkSpace);
+			bonuses.push({
+				kind: 'completion',
+				xp: userExperienceConfig.deckCompletionXP,
+			});
+
+			if (!hasPreviousDeckReward) {
+				bonuses.push({
+					kind: 'firstCompletion',
+					xp: userExperienceConfig.firstDeckCompletionXP,
+				});
+			}
+
+			if (isPerfect) {
+				bonuses.push({
+					kind: 'perfect',
+					xp: userExperienceConfig.perfectDeckXP,
+				});
+			}
 		}
 
-		const previousCompletion = await database.getFirstAsync<SavedDeckSessionRow>(
-			statements.getPreviousCompletion,
-			userId,
-			deckId,
-		);
-		const sessionInk = await database.getFirstAsync<SessionInkRow>(
-			statements.getPendingInk,
-			userId,
-			sessionId,
-		);
-		const inkBalance = await getUserInk({ database, userId });
-		const pendingInk = sessionInk?.pendingInk ?? 0;
-		const remainingInkSpace = inkConfig.maxBalance - inkBalance;
-		const earnedInk = Math.min(pendingInk, remainingInkSpace);
-
-		bonuses.push({ kind: 'completion', xp: userExperienceConfig.deckCompletionXP });
-
-		if (!previousCompletion) {
-			bonuses.push({ kind: 'firstCompletion', xp: userExperienceConfig.firstDeckCompletionXP });
-		}
-
-		if (isPerfect) {
-			bonuses.push({ kind: 'perfect', xp: userExperienceConfig.perfectDeckXP });
+		if (isParagraphComplete) {
+			bonuses.push({
+				kind: 'paragraphCompletion',
+				xp: userExperienceConfig.paragraphCompletionXP,
+			});
 		}
 
 		const bonusXP = bonuses.reduce((total, bonus) => total + bonus.xp, 0);
 
-		await incrementUserXP(database, userId, bonusXP);
-		await database.runAsync(statements.addInk, userId, earnedInk, inkConfig.maxBalance);
+		if (bonusXP > 0) {
+			await incrementUserXP(database, userId, bonusXP);
+		}
+
+		if (earnedInk > 0) {
+			await database.runAsync(statements.addInk, userId, earnedInk, inkConfig.maxBalance);
+		}
 
 		const user = await database.getFirstAsync<UserXPRow>(statements.getUserXP, userId);
 
@@ -465,7 +466,11 @@ export async function writeDeckCompletion({
 			earnedInk,
 		);
 
-		receipt = { bonuses, totalXP: user.totalXP, earnedInk };
+		receipt = {
+			bonuses,
+			totalXP: user.totalXP,
+			earnedInk,
+		};
 	});
 
 	if (!receipt) {

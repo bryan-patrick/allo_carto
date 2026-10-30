@@ -1,4 +1,5 @@
 import { getAtlasCompletionItems } from '@/src/util/atlasCompletion';
+import type { FlashcardDeckProgress } from '@/src/components/CardDeck/cardDeckTypes';
 import type { ProgressById, UserProgressRow } from '@/src/util/progression';
 import type { CompletedSolveStages } from '@/src/util/solveProgression';
 import type { SQLiteDatabase } from 'expo-sqlite';
@@ -16,9 +17,15 @@ interface SolveCompletionRow {
 	completedSolveStages: CompletedSolveStages;
 }
 
-/**
- * We load vocabulary progress and saved puzzle completions separately.
- * Seeing or learning words never counts as solving a paragraph.
+interface FlashcardCycleProgressRow {
+	deckId: string;
+	decks: string;
+	deckIndex: number;
+}
+
+/*
+ * Load word progress, solved puzzles, and flashcard deck counts for the app.
+ * Keep flashcard progress separate from Solve completion.
  */
 export default async function getUserProgress({
 	database,
@@ -31,6 +38,7 @@ export default async function getUserProgress({
 			FROM userProgress WHERE userId = ?;
 		`,
 		getCompletions: 'SELECT deckId, completedSolveStages FROM solveCompletions WHERE userId = ?;',
+		getFlashcardCycles: 'SELECT deckId, decks, deckIndex FROM flashcardCycles WHERE userId = ?;',
 	};
 	const result: ProgressById = {};
 	const rows = await database.getAllAsync<UserProgressRow>(statements.getProgress, userId);
@@ -47,6 +55,15 @@ export default async function getUserProgress({
 	const savedParagraphIds = completions.map(completion => completion.deckId);
 	const completedParagraphs = new Set(savedParagraphIds);
 	const completedStagesByParagraph = new Map<string, CompletedSolveStages>();
+	const flashcardCycles = await database.getAllAsync<FlashcardCycleProgressRow>(
+		statements.getFlashcardCycles,
+		userId,
+	);
+	const flashcardCyclesByParagraph = new Map<string, FlashcardCycleProgressRow>();
+
+	for (const cycle of flashcardCycles) {
+		flashcardCyclesByParagraph.set(cycle.deckId, cycle);
+	}
 
 	for (const completion of completions) {
 		completedStagesByParagraph.set(completion.deckId, completion.completedSolveStages);
@@ -63,6 +80,7 @@ export default async function getUserProgress({
 		const completedParagraphIds = item.paragraphIds.filter(id => completedParagraphs.has(id));
 		const completedParagraphCount = completedParagraphIds.length;
 		const paragraphCount = item.paragraphIds.length;
+		const savedCycle = flashcardCyclesByParagraph.get(item.id);
 		const currentProgress = result[item.id] ?? {
 			userId,
 			id: item.id,
@@ -72,6 +90,24 @@ export default async function getUserProgress({
 		let seenPercentage = 0;
 		let seenWordCount = 0;
 		let completedSolveStages: CompletedSolveStages = paragraphCount > 0 ? 5 : 0;
+		let flashcardProgress: FlashcardDeckProgress | undefined;
+
+		// Keep the saved deck number until the cycle ends or the paragraph's words change.
+		if (savedCycle) {
+			const decks: string[][] = JSON.parse(savedCycle.decks);
+			const savedWordIds = decks.flat();
+			const paragraphWordIds = new Set(item.wordIds);
+			const hasSameWords =
+				savedWordIds.length === paragraphWordIds.size &&
+				savedWordIds.every(wordId => paragraphWordIds.has(wordId));
+
+			if (hasSameWords && savedCycle.deckIndex < decks.length) {
+				flashcardProgress = {
+					deckIndex: savedCycle.deckIndex,
+					deckCount: decks.length,
+				};
+			}
+		}
 
 		for (const paragraphId of item.paragraphIds) {
 			const paragraphStages = completedStagesByParagraph.get(paragraphId) ?? 0;
@@ -98,6 +134,7 @@ export default async function getUserProgress({
 			seenWordCount,
 			wordCount: item.wordIds.length,
 			wordProgressCounts,
+			flashcardProgress,
 			completedParagraphCount,
 			paragraphCount,
 			completedSolveStages,

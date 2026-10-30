@@ -128,6 +128,10 @@ export default async function getDeck({
 				words: selectedWords,
 				wordChoices,
 				flashcardDecks: cycle.decks,
+				flashcardProgress: {
+					deckIndex: cycle.deckIndex,
+					deckCount: cycle.decks.length,
+				},
 			},
 			session: cycle.session,
 			currentIndex,

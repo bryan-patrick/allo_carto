@@ -36,6 +36,10 @@ export default function DeckResultsView() {
 	const chapter = completionPath[1];
 	const storyColor = getDeckStoryColor(cardDeck.id);
 	const hasReview = Boolean(session?.completion);
+	const paragraphBonus = session?.completion?.bonuses.find(
+		bonus => bonus.kind === 'paragraphCompletion',
+	);
+	const flashcardProgress = cardDeck.flashcardProgress;
 	const paragraphCardCount = cardDeck.wordIds.length;
 	const seenCardCount = progressById[cardDeck.id]?.seenWordCount ?? 0;
 	const newlySeenCards = cardDeck.words.filter(word => {
@@ -53,6 +57,15 @@ export default function DeckResultsView() {
 	let description = cardDeck.title;
 	let wordResultsLabel = 'Show word results';
 	let wordResultsIcon = 'expand_more';
+
+	if (flashcardProgress) {
+		title = `Deck ${flashcardProgress.deckIndex + 1} of ${flashcardProgress.deckCount} complete!`;
+	}
+
+	if (paragraphBonus) {
+		title = 'Paragraph complete!';
+		description = `${cardDeck.title}\nYou finished every deck in this cycle.`;
+	}
 
 	if (!hasReview) {
 		title = 'No session results to review';

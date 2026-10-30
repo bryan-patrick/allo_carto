@@ -44,6 +44,7 @@ export const userExperienceConfig = {
 	deckCompletionXP: 50,
 	firstDeckCompletionXP: 15,
 	perfectDeckXP: 50,
+	paragraphCompletionXP: 100,
 };
 
 /**

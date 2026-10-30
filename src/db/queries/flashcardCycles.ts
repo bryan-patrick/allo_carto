@@ -223,15 +223,16 @@ export async function saveFlashcardResult({
 	await database.runAsync(statements.saveResults, JSON.stringify(results), userId, sessionId);
 }
 
-/**
- * Make the next deck available after every card has an answer.
+/*
+ * Move to the next deck once every card has a saved result.
+ * Return true when the last deck in the paragraph is finished.
  */
 export async function finishFlashcardDeck({
 	database,
 	userId,
 	deckId,
 	sessionId,
-}: FinishFlashcardDeckOptions): Promise<void> {
+}: FinishFlashcardDeckOptions): Promise<boolean> {
 	const savedCycle = await database.getFirstAsync<FlashcardCycleRow>(
 		statements.getCycle,
 		userId,
@@ -239,12 +240,13 @@ export async function finishFlashcardDeck({
 	);
 
 	if (!savedCycle || savedCycle.sessionId !== sessionId) {
-		return;
+		return false;
 	}
 
 	const decks: string[][] = JSON.parse(savedCycle.decks);
 	const results: DeckWordResultProps[] = JSON.parse(savedCycle.results);
 	const currentDeck = decks[savedCycle.deckIndex] ?? [];
+	const isParagraphComplete = savedCycle.deckIndex === decks.length - 1;
 	const hasEveryResult =
 		currentDeck.length > 0 &&
 		currentDeck.every(wordId => {
@@ -256,4 +258,6 @@ export async function finishFlashcardDeck({
 	}
 
 	await database.runAsync(statements.advanceDeck, userId, deckId, sessionId);
+
+	return isParagraphComplete;
 }
