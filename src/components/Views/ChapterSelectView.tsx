@@ -1,12 +1,13 @@
-import { chapterSelectBackground } from '@/data/french/storyAtlas';
-import BackgroundImage from '@/src/components/BackgroundImage';
 import ChapterMap from '@/src/components/ChapterMap';
 import Loader from '@/src/components/Loader';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { getSelectedStory } from '@/src/util/getSelectedStory';
+import { ImageBackground } from 'expo-image';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import colors from '../../app/colors';
+
+const chapterSelectBackground = require('@/src/app/assets/images/chapters/background-alt.jpg');
 
 /* Home shows the chapters for the story chosen in its fixed header. */
 export default function ChapterSelectView() {
@@ -30,14 +31,15 @@ export default function ChapterSelectView() {
 	}
 
 	return (
-		<BackgroundImage
+		<ImageBackground
 			style={styles.background}
-			source={selectedStory.image ?? chapterSelectBackground}
+			source={chapterSelectBackground}
+			contentFit="cover"
+			contentPosition="top"
 		>
 			<ScrollView
 				key={selectedStory.id}
 				contentContainerStyle={styles.scrollContentContainer}
-				style={styles.scrollView}
 			>
 				<ChapterMap
 					key={selectedStory.id}
@@ -45,7 +47,7 @@ export default function ChapterSelectView() {
 					progressById={progressById}
 				/>
 			</ScrollView>
-		</BackgroundImage>
+		</ImageBackground>
 	);
 }
 
@@ -56,13 +58,11 @@ const styles = StyleSheet.create({
 	background: {
 		flex: 1,
 		backgroundColor: colors.dark.background,
+		overflow: 'hidden',
 	},
 	scrollContentContainer: {
 		flexGrow: 1,
 		paddingHorizontal: 4,
 		paddingVertical: 8,
-	},
-	scrollView: {
-		backgroundColor: 'rgba(35, 35, 30, 0.25)',
 	},
 });

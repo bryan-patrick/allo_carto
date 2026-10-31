@@ -25,6 +25,7 @@ export interface ChapterMapAnchor {
  */
 interface ChapterSelectRowProps {
 	chapter: DeckChapter;
+	buttonColor: string;
 	index: number;
 	progressById: ProgressById;
 	onMapAnchorChange: (anchor: ChapterMapAnchor) => void;
@@ -36,6 +37,7 @@ interface ChapterSelectRowProps {
  */
 export default function ChapterSelectRow({
 	chapter,
+	buttonColor,
 	index,
 	progressById,
 	onMapAnchorChange,
@@ -60,7 +62,7 @@ export default function ChapterSelectRow({
 	let actionLabel = hasStartedChapter ? 'Continue' : 'Start Chapter';
 
 	if (chapterProgress?.hasFirstGem) {
-		actionLabel = 'Revisit chapter';
+		actionLabel = 'Continue';
 	}
 
 	// We anchor the trail beside the illustration, or the lock when the chapter is locked.
@@ -146,8 +148,10 @@ export default function ChapterSelectRow({
 							accessibilityLabel={`${actionLabel}: ${chapter.name}`}
 							screen="/(routes)/ChapterDetail"
 							params={{ chapterId: chapter.id }}
-							color={colors.light.goldenBorder}
-							arrowColor={colors.dark.text}
+							contentPaddingVertical={6}
+							contentPaddingHorizontal={6}
+							color={buttonColor}
+							arrowColor={colors.light.text}
 							style={styles.actionButton}
 						>
 							<Text style={styles.actionText}>{actionLabel}</Text>
@@ -168,19 +172,19 @@ const styles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		paddingVertical: 8,
+		paddingVertical: 16,
 		minHeight: 250,
 	},
 	reversedRow: {
 		flexDirection: 'row-reverse',
 	},
 	chapterColumn: {
-		width: '65%',
+		width: '55%',
 		paddingHorizontal: 12,
 		marginHorizontal: 12,
 	},
 	pathColumn: {
-		width: '35%',
+		width: '45%',
 	},
 	locked: {
 		marginTop: 8,
@@ -188,7 +192,7 @@ const styles = StyleSheet.create({
 	characterFrame: {
 		alignItems: 'center',
 		width: '100%',
-		marginBottom: 12,
+		marginBottom: 16,
 	},
 	polaroid: {
 		maxWidth: 225,
@@ -223,10 +227,10 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		fontFamily: 'lexend-600',
-		fontSize: 20,
+		fontSize: 18,
 		textAlign: 'center',
 		marginBottom: 4,
-		color: colors.light.secondary,
+		color: colors.dark.text,
 	},
 	polaroidMetadata: {
 		flexDirection: 'row',
@@ -237,11 +241,11 @@ const styles = StyleSheet.create({
 	},
 	progress: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
-		lineHeight: 12,
+		fontSize: 13,
+		lineHeight: 16,
 		textAlign: 'center',
-		color: colors.light.secondary,
-		marginBottom: 12,
+		color: colors.dark.text,
+		marginBottom: 16,
 	},
 	level: {
 		fontFamily: 'lexend-400',
@@ -250,13 +254,9 @@ const styles = StyleSheet.create({
 		color: colors.light.background,
 	},
 	actionButton: {
-		width: '100%',
-		maxWidth: 200,
-		borderWidth: 1,
-		borderColor: colors.dark.border,
-		shadowColor: colors.light.goldenBorder,
+		paddingVertical: 0,
 	},
 	actionText: {
-		color: colors.dark.text,
+		color: colors.light.text,
 	},
 });
