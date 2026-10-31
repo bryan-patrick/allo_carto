@@ -1,4 +1,3 @@
-import { placeholderStampImage } from '@/data/french/collectionAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import type { VocabularyCollectionProgress } from '@/src/util/vocabularyCollections';
@@ -19,7 +18,7 @@ interface CollectionCardProps {
 }
 
 /*
- * Shows a collection's first stamp and learning progress in the overview.
+ * Shows a collection's first stamp and learning progress, or a lock until it is discovered.
  */
 export default function CollectionCard({ progress }: CollectionCardProps) {
 	const router = useRouter();
@@ -37,10 +36,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 			`${nextReward.qualifyingWordCount}/${progress.stamps.length} words at ${rewardLearningLevel.name} | Next reward: ${nextReward.xp} XP`
 		:	undefined;
 	const isReady = section === 'ready';
-	const actionSymbol =
-		!isDiscovered ? 'lock'
-		: isReady ? 'redeem'
-		: 'chevron_right';
+	const actionSymbol = isReady ? 'redeem' : 'chevron_right';
 	const rewardDescription =
 		nextReward ?
 			`${nextReward.qualifyingWordCount} of ${progress.stamps.length} words at learning level ${nextReward.level} or higher. Next reward: ${nextReward.xp} XP.`
@@ -85,12 +81,14 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 					<View style={styles.illustration}>
 						{isDiscovered ?
 							<StampIllustration image={firstStamp?.image} />
-						:	<BackgroundImage
-								accessible={false}
-								source={firstStamp?.image ?? placeholderStampImage}
-								resizeMode="contain"
-								style={styles.lockedIllustration}
-							/>
+						:	<View style={styles.lockedIllustration}>
+								<MaterialSymbol
+									accessible={false}
+									name="lock"
+									size={32}
+									color={colors.wordProgress.unseen}
+								/>
+							</View>
 						}
 					</View>
 					<View style={styles.details}>
@@ -110,11 +108,13 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 							<Text style={styles.reward}>All rewards claimed</Text>
 						)}
 					</View>
-					<MaterialSymbol
-						name={actionSymbol}
-						size={28}
-						color={colors.wordProgress.unseen}
-					/>
+					{isDiscovered && (
+						<MaterialSymbol
+							name={actionSymbol}
+							size={28}
+							color={colors.wordProgress.unseen}
+						/>
+					)}
 				</View>
 			</BackgroundImage>
 		</Pressable>
@@ -150,6 +150,8 @@ const styles = StyleSheet.create({
 	lockedIllustration: {
 		width: '100%',
 		height: 80,
+		alignItems: 'center',
+		justifyContent: 'center',
 		borderWidth: 1,
 		borderStyle: 'dashed',
 		borderColor: colors.light.border,

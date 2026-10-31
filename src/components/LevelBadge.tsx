@@ -8,18 +8,28 @@ import MaterialSymbol from './MaterialSymbol';
 import ProgressBar from './ProgressBar';
 import UserProgressModal from './UserProgressModal';
 
+interface LevelBadgeProps {
+	colorScheme?: 'light' | 'dark';
+}
+
 /*
  * Player level and XP bar for headers
  */
-export default function LevelBadge() {
+export default function LevelBadge({ colorScheme = 'dark' }: LevelBadgeProps) {
 	const { experience, inkBalance, status } = useUserProgress();
 	const [isProgressVisible, setIsProgressVisible] = useState(false);
 	const { level, isMaxLevel, xpIntoLevel, xpForNextLevel, progressPercentage } = experience;
 	const levelLabel = `Lvl. ${level}`;
 	const inkLabel = inkBalance.toLocaleString();
 	const isInkFull = inkBalance >= inkConfig.maxBalance;
-	let inkColor = colors.light.text;
-	let inkIconColor = colors.light.goldenBorder;
+	const isLightBackground = colorScheme === 'light';
+	const textColor = isLightBackground ? colors.dark.text : colors.light.text;
+	const accentColor = isLightBackground ? colors.dark.text : colors.light.goldenBorder;
+	const textStyle = {
+		color: textColor,
+	};
+	let inkColor = textColor;
+	let inkIconColor = accentColor;
 	let inkDescription = `${inkLabel} of ${inkConfig.maxBalance} Ink.`;
 	let progressDescription = `${xpIntoLevel} of ${xpForNextLevel} XP toward level ${level + 1}`;
 
@@ -46,11 +56,15 @@ export default function LevelBadge() {
 	 */
 	return (
 		<View>
-			{/* We give the badge its own background so it looks the same in every header. */}
+			{/* Give the badge its own glass background in each header. */}
 			<GlassView
-				colorScheme="dark"
+				colorScheme={colorScheme}
 				isInteractive
-				style={[styles.surface, !hasLiquidGlass && styles.fallbackSurface]}
+				style={[
+					styles.surface,
+					!hasLiquidGlass && styles.fallbackSurface,
+					!hasLiquidGlass && isLightBackground && styles.lightFallbackSurface,
+				]}
 			>
 				<Pressable
 					accessibilityHint="Opens user progress"
@@ -62,7 +76,7 @@ export default function LevelBadge() {
 					<View style={styles.balanceRow}>
 						<Text
 							numberOfLines={1}
-							style={styles.levelText}
+							style={[styles.levelText, textStyle]}
 						>
 							{levelLabel}
 						</Text>
@@ -74,14 +88,19 @@ export default function LevelBadge() {
 							/>
 							<Text
 								numberOfLines={1}
-								style={[styles.levelText, { color: inkColor }]}
+								style={[
+									styles.levelText,
+									{
+										color: inkColor,
+									},
+								]}
 							>
 								{inkLabel}
 							</Text>
 						</View>
 					</View>
 					<ProgressBar
-						color={colors.light.goldenBorder}
+						color={accentColor}
 						percent={progressPercentage}
 						style={styles.progressBarContainer}
 					/>
@@ -106,6 +125,10 @@ const styles = StyleSheet.create({
 		backgroundColor: '#FFFFFF12',
 		borderColor: '#FFFFFF1F',
 		borderWidth: 1,
+	},
+	lightFallbackSurface: {
+		backgroundColor: '#FFFFFF80',
+		borderColor: colors.light.border,
 	},
 	badge: {
 		alignItems: 'center',

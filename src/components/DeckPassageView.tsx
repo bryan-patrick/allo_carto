@@ -18,7 +18,6 @@ import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 
 interface DeckPassageViewProps {
 	currentWordId?: string;
 	deck: ReadingPassage;
-	minimumPassageHeight?: number;
 	onContentHeightChange?: (contentHeight: number) => void;
 	showLearningControls?: boolean;
 	showProgress?: boolean;
@@ -62,6 +61,7 @@ const learningLevelOpacity: Record<WordProgressKey, number> = {
 const filteredOutWordOpacity = 0.05;
 const passageLineHeight = 32;
 const passageHighlightVerticalInset = 2;
+const passageTextVerticalPadding = 12;
 
 /*
  * Helper functions
@@ -181,7 +181,6 @@ function getPassageSpeech(
 export default function DeckPassageView({
 	currentWordId,
 	deck,
-	minimumPassageHeight = 300,
 	onContentHeightChange,
 	showLearningControls = true,
 	showProgress = true,
@@ -198,6 +197,7 @@ export default function DeckPassageView({
 	 */
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
 	const [spokenCharacterIndex, setSpokenCharacterIndex] = useState<number | null>(null);
+	const [areFiltersExpanded, setAreFiltersExpanded] = useState(false);
 	const passageSpeech = useMemo(
 		() => getPassageSpeech(deck.passage, wordProgressKeyByWordId, showUnseenWords),
 		[deck.passage, wordProgressKeyByWordId, showUnseenWords],
@@ -216,7 +216,6 @@ export default function DeckPassageView({
 	});
 	const hasReportedContentHeight = useRef(false);
 	const hasPassageHeader = showTitle || showProgress || showLearningControls;
-	const passageTextContainerStyle = { minHeight: minimumPassageHeight };
 
 	/*
 	 * Share the exact text and typography between foreground and background.
@@ -332,6 +331,12 @@ export default function DeckPassageView({
 
 		hasReportedContentHeight.current = true;
 		onContentHeightChange?.(contentHeight);
+	}
+
+	// Show or hide the filters and let the modal fit the new height.
+	function handleToggleFilters() {
+		hasReportedContentHeight.current = false;
+		setAreFiltersExpanded(!areFiltersExpanded);
 	}
 
 	/*
@@ -489,7 +494,7 @@ export default function DeckPassageView({
 				showsVerticalScrollIndicator
 				style={styles.passageScrollView}
 			>
-				<View style={[styles.passageTextContainer, passageTextContainerStyle]}>
+				<View style={styles.passageTextContainer}>
 					<View
 						accessible={false}
 						pointerEvents="none"
@@ -573,6 +578,23 @@ export default function DeckPassageView({
 				style={styles.footer}
 			>
 				{showLearningControls && (
+					<Pressable
+						accessibilityRole="button"
+						accessibilityState={{
+							expanded: areFiltersExpanded,
+						}}
+						onPress={handleToggleFilters}
+						style={styles.filterAccordionHeader}
+					>
+						<Text style={styles.filterAccordionTitle}>Filters</Text>
+						<MaterialSymbol
+							color={colors.dark.text}
+							name={areFiltersExpanded ? 'expand_less' : 'expand_more'}
+							size={20}
+						/>
+					</Pressable>
+				)}
+				{showLearningControls && areFiltersExpanded && (
 					<View style={styles.progressLegend}>
 						{wordProgressDefinitions.map(({ key, name, symbolName }) => {
 							const progressColor = getLearningLevelColor(key, useLearningLevelColors);
@@ -703,7 +725,7 @@ const styles = StyleSheet.create({
 		transform: [{ scale: 0.65 }, { translateX: '-35%' }],
 	},
 	passageScrollView: {
-		backgroundColor: `${colors.light.secondary}80`,
+		backgroundColor: '#FFFCF7',
 		flex: 1,
 		borderBottomColor: colors.light.goldenBorder,
 		borderBottomWidth: 1,
@@ -712,14 +734,15 @@ const styles = StyleSheet.create({
 	},
 	passageTextContainer: {
 		position: 'relative',
-		paddingVertical: 8,
+		minHeight: 180,
+		paddingVertical: passageTextVerticalPadding,
 	},
 	passageTextRules: {
 		position: 'absolute',
-		bottom: 0,
+		bottom: passageTextVerticalPadding,
 		left: 0,
 		right: 0,
-		top: 0,
+		top: passageTextVerticalPadding,
 	},
 	passageTextRule: {
 		position: 'absolute',
@@ -764,6 +787,18 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 8,
 		paddingTop: 8,
 	},
+	filterAccordionHeader: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		minHeight: 40,
+		paddingHorizontal: 8,
+	},
+	filterAccordionTitle: {
+		color: colors.dark.text,
+		fontFamily: 'lexend-600',
+		fontSize: 14,
+	},
 	progressLegend: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
@@ -771,7 +806,7 @@ const styles = StyleSheet.create({
 	},
 	progressLegendItem: {
 		alignItems: 'center',
-		backgroundColor: 'rgba(246, 229, 201, 0.55)',
+		backgroundColor: '#FFFCF7',
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
 		borderWidth: 1,

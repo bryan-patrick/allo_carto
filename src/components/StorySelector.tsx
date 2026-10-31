@@ -5,7 +5,7 @@ import { foregroundColor } from '@expo/ui/swift-ui/modifiers';
 import { Platform, StyleSheet, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
-const headingColor = colors.light.background;
+const headingColor = colors.light.text;
 const titleModifiers: ReturnType<typeof foregroundColor>[] = [];
 let storyFontFamily = 'lexend-600';
 

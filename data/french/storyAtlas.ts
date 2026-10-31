@@ -45,7 +45,6 @@ const additionalInformation = require('@/src/app/assets/images/chapters/addition
 const welcomeChapterOne = require('@/src/app/assets/images/chapter-images/welcome-to-allo-carto/CH01.png');
 const welcomeChapterTwo = require('@/src/app/assets/images/chapter-images/welcome-to-allo-carto/CH02.png');
 const welcomeChapterThree = require('@/src/app/assets/images/chapter-images/welcome-to-allo-carto/CH03.png');
-const welcomeStoryBackground = require('@/src/app/assets/images/story_backgrounds/S01.jpg');
 export const chapterSelectBackground = require('@/src/app/assets/images/chapters/chapters-bg.jpg');
 
 /*
@@ -92,7 +91,6 @@ export const storyAtlas: StoryAtlas = {
 			name: 'Welcome to Allô Carto',
 			description: 'Learn how to read stories, study their words, and grow your vocabulary.',
 			category: 'Beginner',
-			image: welcomeStoryBackground,
 			materialSymbolName: 'waving_hand',
 			chapters: [
 				{

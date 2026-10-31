@@ -248,6 +248,14 @@ export default function AppLayout() {
 										<Stack.Screen
 											name="(routes)/ChapterDetail"
 											options={{
+												headerRight: () => <LevelBadge colorScheme="light" />,
+												unstable_headerRightItems: () => [
+													{
+														type: 'custom',
+														element: <LevelBadge colorScheme="light" />,
+														hidesSharedBackground: true,
+													},
+												],
 												headerShown: true,
 												headerTransparent: true,
 												headerBackTitle: 'Back',
