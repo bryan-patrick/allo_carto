@@ -11,9 +11,9 @@ import {
 import colors from '../app/colors';
 
 // TODO really the postcard BG gives it a cleaner look
-const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
+//const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-//const polaroidBackground = require('@/src/app/assets/images/chapter-images/polaroid-bg.jpg');
+const postcardBackground = require('@/src/app/assets/images/chapter-images/polaroid-bg.jpg');
 
 interface ChapterPolaroidProps {
 	source: ImageSourcePropType;
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
 	},
 	paperOverlay: {
 		...StyleSheet.absoluteFill,
-		backgroundColor: 'rgba(255, 254, 250, 0.9)',
+		backgroundColor: 'rgba(255, 255, 255, 0.8)',
 	},
 	footer: {
 		minHeight: 28,

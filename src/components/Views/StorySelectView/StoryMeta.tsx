@@ -69,7 +69,7 @@ export default function StoryMeta({
 		>
 			<StoryProgress
 				color={progressColor}
-				label="paragraphs solved"
+				label="paragraphs"
 				percent={solvedPercent}
 				value={solvedValue}
 			/>
