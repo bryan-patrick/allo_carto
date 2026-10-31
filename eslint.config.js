@@ -6,6 +6,13 @@ module.exports = defineConfig([
 	expoConfig,
 	{
 		ignores: ['dist/*'],
+		settings: {
+			'import/resolver': {
+				typescript: {
+					project: `${__dirname}/tsconfig.json`,
+				},
+			},
+		},
 		rules: {
 			// Show a warning when an effect changes state right away.
 			'react-hooks/set-state-in-effect': 'warn',
