@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialSymbol from './MaterialSymbol';
 import StorySelectView from './Views/StorySelectView';
 
-const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
+const storySelectBackground = require('@/src/app/assets/images/stories/page-background.jpg');
 
 /*
  * Typing
@@ -55,7 +55,7 @@ export default function StorySelectModal({
 			<View style={styles.backdrop}>
 				<BackgroundImage
 					resizeMode="cover"
-					source={postcardBackground}
+					source={storySelectBackground}
 					style={[styles.sheet, sheetStyle]}
 				>
 					<View style={styles.topBar}>
@@ -73,7 +73,7 @@ export default function StorySelectModal({
 							style={styles.closeButton}
 						>
 							<MaterialSymbol
-								color={colors.dark.text}
+								color={colors.light.text}
 								name="close"
 								size={22}
 							/>
@@ -125,6 +125,8 @@ const styles = StyleSheet.create({
 	closeButton: {
 		alignItems: 'center',
 		justifyContent: 'center',
+		backgroundColor: colors.dark.primary,
+		borderRadius: 18,
 		height: 36,
 		width: 36,
 	},

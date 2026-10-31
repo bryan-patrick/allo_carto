@@ -1,4 +1,3 @@
-import { chapterSelectBackground } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import CollectionCard from '@/src/components/Collections/CollectionCard';
@@ -7,6 +6,8 @@ import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import type { CollectionSection } from '@/src/util/vocabularyCollections';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+
+const collectionsPageBackground = require('@/src/app/assets/images/collections/page-background.jpg');
 
 interface CollectionSectionDefinition {
 	key: CollectionSection;
@@ -53,7 +54,8 @@ export default function CollectionsView() {
 
 	return (
 		<BackgroundImage
-			source={chapterSelectBackground}
+			source={collectionsPageBackground}
+			resizeMode="cover"
 			style={styles.background}
 		>
 			<ScrollView contentContainerStyle={styles.content}>
@@ -99,7 +101,7 @@ export default function CollectionsView() {
 const styles = StyleSheet.create({
 	background: {
 		flex: 1,
-		backgroundColor: colors.dark.background,
+		backgroundColor: colors.light.secondary,
 	},
 	content: {
 		flexGrow: 1,
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		lineHeight: 20,
 		textAlign: 'center',
-		color: colors.light.background,
+		color: colors.dark.text,
 	},
 	section: {
 		gap: 10,
@@ -125,7 +127,7 @@ const styles = StyleSheet.create({
 	sectionTitle: {
 		fontFamily: 'lexend-600',
 		fontSize: 20,
-		color: colors.light.secondary,
+		color: colors.dark.text,
 	},
 	count: {
 		fontFamily: 'lexend-600',
@@ -142,6 +144,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		padding: 24,
 		gap: 16,
-		backgroundColor: colors.dark.background,
+		backgroundColor: colors.light.secondary,
 	},
 });

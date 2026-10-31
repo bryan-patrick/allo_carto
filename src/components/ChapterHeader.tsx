@@ -19,7 +19,7 @@ interface ChapterHeaderProps {
  * Chapter heading and passage action
  */
 export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
-	const { label, name, description } = chapter;
+	const { label } = chapter;
 	const { progressById } = useUserProgress();
 	const progress = progressById[chapter.id];
 	const completedParagraphCount = progress?.completedParagraphCount ?? 0;
@@ -46,19 +46,17 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 							style={styles.readLink}
 						/>
 					</View>
-					<Text style={styles.title}>{name}</Text>
+					{paragraphCount > 0 && (
+						<Text style={styles.progress}>
+							{completedParagraphCount} of {paragraphCount} paragraphs solved
+						</Text>
+					)}
 				</View>
 				<BackgroundImage
 					source={postmarkImage}
 					style={styles.postmark}
 				/>
 			</View>
-			{description && <Text style={styles.description}>{description}</Text>}
-			{paragraphCount > 0 && (
-				<Text style={styles.progress}>
-					{completedParagraphCount} of {paragraphCount} paragraphs solved
-				</Text>
-			)}
 		</View>
 	);
 }
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
 	heading: {
 		flex: 2,
 		minWidth: 0,
-		gap: 6,
+		gap: 2,
 	},
 	labelRow: {
 		flexDirection: 'row',
@@ -104,20 +102,8 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		color: colors.dark.text,
 	},
-	title: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-700',
-		fontSize: 18,
-	},
-	description: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-400',
-		fontSize: 15,
-		lineHeight: 20,
-		marginBottom: 8,
-	},
 	postmark: {
-		flex: 1,
+		flex: 1.15,
 		aspectRatio: '12 / 5',
 		opacity: 0.6,
 	},

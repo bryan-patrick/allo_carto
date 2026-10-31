@@ -1,4 +1,3 @@
-import { chapterSelectBackground } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import ChapterPostcard from '@/src/components/ChapterPostcard';
@@ -10,6 +9,8 @@ import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from '../MaterialSymbol';
+
+const pageBackground = require('@/src/app/assets/images/chapters/background-alt.jpg');
 
 /*
  * The chapter details view (shows chapter and paragraph details)
@@ -32,7 +33,7 @@ export default function ChapterDetailView() {
 	if (!location || !hasChapterContent(location.chapter)) {
 		return (
 			<View style={[styles.background, scrollContentStyle]}>
-				<Text style={styles.storyTitle}>Unknown chapter</Text>
+				<Text style={styles.chapterTitle}>Unknown chapter</Text>
 				<Text style={styles.message}>Please go back and select a chapter.</Text>
 			</View>
 		);
@@ -42,21 +43,26 @@ export default function ChapterDetailView() {
 
 	return (
 		<BackgroundImage
-			source={story.image ?? chapterSelectBackground}
+			source={pageBackground}
+			resizeMode="cover"
 			style={styles.background}
 		>
 			<ScrollView
 				key={chapter.id}
 				contentContainerStyle={[styles.scrollContent, scrollContentStyle]}
 				scrollIndicatorInsets={{ top: headerHeight }}
-				style={styles.scrollView}
 			>
 				<MaterialSymbol
-					color={colors.light.goldenBorder}
+					color={colors.dark.text}
 					size={32}
 					name="raven"
 				/>
-				<Text style={styles.storyTitle}>{story.name}</Text>
+				<View style={styles.chapterHeading}>
+					<Text style={styles.chapterTitle}>{chapter.name}</Text>
+					{chapter.description && (
+						<Text style={styles.chapterDescription}>{chapter.description}</Text>
+					)}
+				</View>
 				<ChapterPostcard
 					chapter={chapter}
 					story={story}
@@ -73,10 +79,7 @@ export default function ChapterDetailView() {
 const styles = StyleSheet.create({
 	background: {
 		flex: 1,
-		backgroundColor: colors.dark.background,
-	},
-	scrollView: {
-		backgroundColor: 'rgba(35, 35, 30, 0.25)',
+		backgroundColor: colors.light.secondary,
 	},
 	scrollContent: {
 		flexGrow: 1,
@@ -95,16 +98,27 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: colors.light.goldenBorder,
 	},
-	storyTitle: {
+	chapterHeading: {
+		gap: 8,
+		paddingHorizontal: 12,
+		marginBottom: 16,
+	},
+	chapterTitle: {
 		fontFamily: 'lexend-600',
 		fontSize: 22,
 		textAlign: 'center',
-		color: colors.light.background,
-		marginBottom: 16,
+		color: colors.dark.text,
+	},
+	chapterDescription: {
+		fontFamily: 'lexend-400',
+		fontSize: 15,
+		lineHeight: 20,
+		textAlign: 'center',
+		color: colors.dark.text,
 	},
 	message: {
 		fontFamily: 'lexend-400',
 		textAlign: 'center',
-		color: colors.light.goldenBorder,
+		color: colors.dark.text,
 	},
 });

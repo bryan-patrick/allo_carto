@@ -1,4 +1,3 @@
-import { chapterSelectBackground } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import CollectionClaim from '@/src/components/Collections/CollectionClaim';
@@ -27,6 +26,7 @@ interface CollectionDetailParams extends Record<string, string | string[] | unde
 }
 
 const albumPaper = require('@/src/app/assets/images/postcard-parts/background.jpg');
+const collectionsPageBackground = require('@/src/app/assets/images/collections/page-background.jpg');
 
 /*
  * Shows a discovered collection's stamp album so the player can track words and claim rewards.
@@ -91,7 +91,8 @@ export default function CollectionDetailView() {
 
 	return (
 		<BackgroundImage
-			source={chapterSelectBackground}
+			source={collectionsPageBackground}
+			resizeMode="cover"
 			style={styles.background}
 		>
 			<ScrollView
@@ -154,7 +155,7 @@ export default function CollectionDetailView() {
 const styles = StyleSheet.create({
 	background: {
 		flex: 1,
-		backgroundColor: colors.dark.background,
+		backgroundColor: colors.light.secondary,
 	},
 	scrollContent: {
 		flexGrow: 1,

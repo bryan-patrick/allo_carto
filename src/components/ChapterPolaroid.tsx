@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
 		],
 	},
 	paper: {
+		backgroundColor: '#eee9df',
 		borderColor: colors.dark.border,
 		padding: 8,
 		paddingBottom: 28,
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
 	},
 	paperOverlay: {
 		...StyleSheet.absoluteFill,
-		backgroundColor: 'rgba(255, 255, 255, 0.8)',
+		backgroundColor: 'rgba(255, 250, 250, 0.75)',
 	},
 	footer: {
 		minHeight: 28,
