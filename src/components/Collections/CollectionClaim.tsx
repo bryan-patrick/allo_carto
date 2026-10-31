@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import type { CollectionRewardReceipt } from '@/src/db/queries/claimCollectionReward';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { VocabularyCollectionProgress } from '@/src/util/vocabularyCollections';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -28,9 +29,15 @@ function getClaimFeedback(receipt: CollectionRewardReceipt): string {
  */
 export default function CollectionClaim({ progress }: CollectionClaimProps) {
 	const { claimCollectionReward, isUpdatingProgress } = useUserProgress();
+	const { settings } = useAppSettings();
 	const [feedback, setFeedback] = useState('');
 	const nextReward = progress.nextReward;
-	const canClaim = Boolean(nextReward?.isEligible) && !isUpdatingProgress;
+	const canClaim =
+		Boolean(nextReward?.isEligible) && !isUpdatingProgress && !settings.previewAllStamps;
+	const claimAccessibilityHint =
+		settings.previewAllStamps ?
+			'Turn off Reveal all stamps in Settings to claim rewards.'
+		:	undefined;
 	let actionLabel = '';
 
 	if (nextReward?.isEligible) {
@@ -70,6 +77,7 @@ export default function CollectionClaim({ progress }: CollectionClaimProps) {
 					useArrow={false}
 					color={colors.dark.primary}
 					accessibilityLabel={`Claim ${nextReward.xp} XP for collection learning level ${nextReward.level}`}
+					accessibilityHint={claimAccessibilityHint}
 				>
 					{actionLabel}
 				</LinkButton>

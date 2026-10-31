@@ -9,6 +9,9 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const collectionsPageBackground = require('@/src/app/assets/images/collections/page-background.jpg');
 
+/**
+ * Typing
+ */
 interface CollectionSectionDefinition {
 	key: CollectionSection;
 	title: string;
@@ -98,6 +101,9 @@ export default function CollectionsView() {
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	background: {
 		flex: 1,
@@ -116,17 +122,17 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	section: {
-		gap: 10,
+		gap: 6,
 	},
 	sectionHeader: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		gap: 8,
+		gap: 6,
 	},
 	sectionTitle: {
 		fontFamily: 'lexend-600',
-		fontSize: 20,
+		fontSize: 18,
 		color: colors.dark.text,
 	},
 	count: {

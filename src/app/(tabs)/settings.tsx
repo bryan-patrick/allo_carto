@@ -275,6 +275,26 @@ export default function Settings() {
 			{settings.showDebugOptions && (
 				<View style={styles.section}>
 					<Text style={styles.heading}>Debug</Text>
+					<View style={styles.settingRow}>
+						<View style={styles.settingText}>
+							<Text style={styles.settingLabel}>Reveal all stamps</Text>
+							<Text style={styles.settingDescription}>
+								Treat unseen stamp words as seen once for screenshots. Saved progress stays the
+								same. Turn this off to claim rewards.
+							</Text>
+						</View>
+						<Switch
+							accessibilityLabel="Reveal all stamps"
+							accessibilityHint="Preview all collection stamps without changing saved progress."
+							ios_backgroundColor={colors.dark.border}
+							onValueChange={enabled => setSetting('previewAllStamps', enabled)}
+							trackColor={{
+								false: colors.dark.border,
+								true: colors.dark.primaryActive,
+							}}
+							value={settings.previewAllStamps}
+						/>
+					</View>
 					<MockParagraphProgressSetting disabled={isResettingDB} />
 					<Pressable
 						accessibilityRole="button"

@@ -1,9 +1,9 @@
 import ChapterMap from '@/src/components/ChapterMap';
 import Loader from '@/src/components/Loader';
+import RepeatingBackgroundImage from '@/src/components/RepeatingBackgroundImage';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { getSelectedStory } from '@/src/util/getSelectedStory';
-import { ImageBackground } from 'expo-image';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import colors from '../../app/colors';
 
@@ -31,23 +31,22 @@ export default function ChapterSelectView() {
 	}
 
 	return (
-		<ImageBackground
+		<ScrollView
+			key={selectedStory.id}
 			style={styles.background}
-			source={chapterSelectBackground}
-			contentFit="cover"
-			contentPosition="top"
+			contentContainerStyle={styles.scrollContent}
 		>
-			<ScrollView
-				key={selectedStory.id}
-				contentContainerStyle={styles.scrollContentContainer}
+			<RepeatingBackgroundImage
+				source={chapterSelectBackground}
+				style={styles.scrollContentContainer}
 			>
 				<ChapterMap
 					key={selectedStory.id}
 					story={selectedStory}
 					progressById={progressById}
 				/>
-			</ScrollView>
-		</ImageBackground>
+			</RepeatingBackgroundImage>
+		</ScrollView>
 	);
 }
 
@@ -60,9 +59,12 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.dark.background,
 		overflow: 'hidden',
 	},
+	scrollContent: {
+		flexGrow: 1,
+	},
 	scrollContentContainer: {
 		flexGrow: 1,
 		paddingHorizontal: 4,
-		paddingVertical: 8,
+		paddingVertical: 24,
 	},
 });

@@ -127,7 +127,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 const styles = StyleSheet.create({
 	card: {
 		padding: 4,
-		borderRadius: 2,
+		borderRadius: 8,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		backgroundColor: colors.light.background,
@@ -136,13 +136,13 @@ const styles = StyleSheet.create({
 	cardContent: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 12,
+		gap: 8,
 	},
 	paperImage: {
 		borderRadius: 9,
 	},
 	readyCard: {
-		borderWidth: 2,
+		borderWidth: 1,
 	},
 	illustration: {
 		width: 72,
@@ -159,12 +159,12 @@ const styles = StyleSheet.create({
 	},
 	details: {
 		flex: 1,
-		gap: 6,
+		gap: 4,
 	},
 	title: {
 		flexShrink: 1,
 		fontFamily: 'lexend-600',
-		fontSize: 17,
+		fontSize: 16,
 		color: colors.dark.text,
 	},
 	progressDescription: {

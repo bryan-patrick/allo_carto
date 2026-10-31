@@ -1,6 +1,7 @@
 import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
+import RepeatingBackgroundImage from '@/src/components/RepeatingBackgroundImage';
 import {
 	Modal,
 	Pressable,
@@ -80,11 +81,19 @@ export default function StorySelectModal({
 						</Pressable>
 					</View>
 					<Text style={styles.introduction}>Choose a story to explore its chapters.</Text>
-					<ScrollView style={styles.storyList}>
-						<StorySelectView
-							onSelect={onSelect}
-							isSelecting={isSelecting}
-						/>
+					<ScrollView
+						contentContainerStyle={styles.storyListContent}
+						style={styles.storyList}
+					>
+						<RepeatingBackgroundImage
+							source={storySelectBackground}
+							style={styles.storyListContent}
+						>
+							<StorySelectView
+								onSelect={onSelect}
+								isSelecting={isSelecting}
+							/>
+						</RepeatingBackgroundImage>
 					</ScrollView>
 				</BackgroundImage>
 			</View>
@@ -141,5 +150,8 @@ const styles = StyleSheet.create({
 		borderTopWidth: 1,
 		borderBottomWidth: 1,
 		borderColor: colors.light.border,
+	},
+	storyListContent: {
+		flexGrow: 1,
 	},
 });

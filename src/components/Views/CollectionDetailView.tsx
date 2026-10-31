@@ -8,6 +8,7 @@ import MaterialSymbol from '@/src/components/MaterialSymbol';
 import WordProgressBar from '@/src/components/WordProgressBar';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { wordProgressDefinitions } from '@/src/util/wordProgress';
+import { ImageBackground } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import {
@@ -99,9 +100,12 @@ export default function CollectionDetailView() {
 				contentContainerStyle={[styles.scrollContent, scrollContentStyle]}
 				scrollIndicatorInsets={scrollIndicatorInsets}
 			>
-				<BackgroundImage
+				<ImageBackground
 					source={albumPaper}
-					imageStyle={styles.paperImage}
+					contentFit="cover"
+					contentPosition={{
+						left: '66%',
+					}}
 					style={styles.album}
 				>
 					<View style={styles.heading}>
@@ -146,7 +150,7 @@ export default function CollectionDetailView() {
 							</View>
 						))}
 					</View>
-				</BackgroundImage>
+				</ImageBackground>
 			</ScrollView>
 		</BackgroundImage>
 	);
@@ -160,22 +164,18 @@ const styles = StyleSheet.create({
 	scrollContent: {
 		flexGrow: 1,
 		paddingHorizontal: 12,
-		paddingBottom: 32,
+		paddingBottom: 24,
 	},
 	album: {
 		padding: 16,
-		gap: 14,
+		gap: 12,
 		borderWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 12,
 		backgroundColor: colors.light.background,
+		overflow: 'hidden',
 	},
-	paperImage: {
-		borderRadius: 12,
-	},
-	heading: {
-		gap: 8,
-	},
+	heading: {},
 	title: {
 		flexShrink: 1,
 		fontFamily: 'lexend-600',
@@ -185,14 +185,13 @@ const styles = StyleSheet.create({
 	description: {
 		fontFamily: 'lexend-400',
 		fontSize: 12,
-		lineHeight: 18,
+		lineHeight: 16,
 		color: colors.wordProgress.unseen,
 	},
 	titleRow: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		alignItems: 'center',
-		gap: 8,
 	},
 	infoButton: {
 		alignItems: 'center',
@@ -204,8 +203,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		justifyContent: 'space-between',
-		rowGap: 12,
-		marginVertical: 8,
+		rowGap: 8,
+		marginVertical: 4,
 	},
 	notice: {
 		flex: 1,

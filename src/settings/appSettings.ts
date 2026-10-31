@@ -14,6 +14,7 @@ interface BooleanSettings {
 	useLevelOpacity: boolean;
 	showUnseenWords: boolean;
 	showDebugOptions: boolean;
+	previewAllStamps: boolean;
 	showSkipWordLink: boolean;
 	fastSolveUnlocks: boolean;
 }
@@ -35,6 +36,7 @@ const booleanSettingKeys: BooleanSettingKey[] = [
 	'useLevelOpacity',
 	'showUnseenWords',
 	'showDebugOptions',
+	'previewAllStamps',
 	'showSkipWordLink',
 	'fastSolveUnlocks',
 ];
@@ -66,6 +68,7 @@ export const defaultAppSettings: AppSettings = {
 	useLevelOpacity: false,
 	showUnseenWords: false,
 	showDebugOptions: false,
+	previewAllStamps: false,
 	showSkipWordLink: true,
 	fastSolveUnlocks: true,
 	cardsPerDeck: null,
