@@ -60,7 +60,7 @@ export const defaultAppSettings: AppSettings = {
 	mockParagraphCompletion: 1,
 	soundEffectsEnabled: true,
 	ttsOnCorrectEnabled: true,
-	soundEffectsVolume: 0.5,
+	soundEffectsVolume: 0.1,
 	ttsVolume: 0.5,
 	useLearningLevelColors: false,
 	useLevelOpacity: false,

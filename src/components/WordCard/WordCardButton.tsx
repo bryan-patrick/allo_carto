@@ -133,32 +133,24 @@ export default function WordCardButton({
 	}, [currentCard, wordCardUIDispatch]);
 
 	/*
-	 * We save each answer before letting the learner move to the next card.
-	 * Correct cards earn rewards; incorrect and skipped cards keep their results too.
+	 * Save each answer and its rewards before allowing the next card.
+	 * Update the button when the save finishes, and allow a retry if it fails.
 	 */
 	const persistAnswer = useCallback(
-		async function persistAnswer() {
+		function persistAnswer() {
 			const answerId = `${currentCard.id}:${cardState.attempts}`;
 			const skipped = cardState.isAnswerRevealed;
 			const isCorrect = cardState.stage === 'CORRECT' && !skipped;
 
-			if (!sessionId || persistedAnswer.current === answerId || isSavingAnswer.current) {
-				return;
-			}
-
-			persistedAnswer.current = answerId;
-			isSavingAnswer.current = true;
-
-			try {
+			async function saveAnswer(answerSessionId: string): Promise<boolean> {
 				if (isCorrect) {
 					const award = await recordCorrectAnswer({
 						wordId: currentCard.id,
-						sessionId,
+						sessionId: answerSessionId,
 					});
 
 					if (!award) {
-						setHasSaveError(true);
-						return;
+						return false;
 					}
 
 					cardDeckDispatch({
@@ -172,13 +164,12 @@ export default function WordCardButton({
 				} else {
 					const didSave = await recordIncorrectAnswer({
 						wordId: currentCard.id,
-						sessionId,
+						sessionId: answerSessionId,
 						skipped,
 					});
 
 					if (!didSave) {
-						setHasSaveError(true);
-						return;
+						return false;
 					}
 
 					cardDeckDispatch({
@@ -192,14 +183,30 @@ export default function WordCardButton({
 						notificationAsync(NotificationFeedbackType.Warning);
 					}
 				}
-			} catch (error) {
-				console.error('Could not save the flashcard answer:', error);
-				setHasSaveError(true);
-			} finally {
-				isSavingAnswer.current = false;
-				pressInFlight.current = false;
-				setIsAnswerPending(false);
+
+				return true;
 			}
+
+			if (!sessionId || persistedAnswer.current === answerId || isSavingAnswer.current) {
+				return;
+			}
+
+			persistedAnswer.current = answerId;
+			isSavingAnswer.current = true;
+
+			void saveAnswer(sessionId)
+				.then(didSave => {
+					setHasSaveError(!didSave);
+				})
+				.catch(error => {
+					console.error('Could not save the flashcard answer:', error);
+					setHasSaveError(true);
+				})
+				.finally(() => {
+					isSavingAnswer.current = false;
+					pressInFlight.current = false;
+					setIsAnswerPending(false);
+				});
 		},
 		[
 			currentCard.id,
