@@ -13,6 +13,7 @@ import MaterialSymbol from './MaterialSymbol';
 
 interface LockedSectionProps {
 	circular?: boolean;
+	circleBackgroundColor?: string;
 	color?: string;
 	textColor?: string;
 	unlockCriteria: UnlockCriteria[];
@@ -26,6 +27,7 @@ interface LockedSectionProps {
  */
 export default function LockedSection({
 	circular = false,
+	circleBackgroundColor = `${colors.dark.background}CC`,
 	color = colors.utility.cardBorder,
 	textColor = colors.dark.text,
 	unlockCriteria,
@@ -37,6 +39,9 @@ export default function LockedSection({
 		nextRequirement ? formatUnlockCriterion(nextRequirement) : 'More story content is coming soon.';
 	const borderStyle = {
 		borderColor: color,
+	};
+	const circleBackgroundStyle = {
+		backgroundColor: circleBackgroundColor,
 	};
 	const titleStyle = {
 		color: textColor,
@@ -64,7 +69,7 @@ export default function LockedSection({
 				accessibilityHint="Show how to continue the story."
 				accessibilityRole="button"
 			>
-				<View style={[styles.lockCircle, borderStyle]}>
+				<View style={[styles.lockCircle, borderStyle, circleBackgroundStyle]}>
 					<MaterialSymbol
 						name="lock"
 						color={color}
@@ -99,7 +104,6 @@ const styles = StyleSheet.create({
 		height: 72,
 		borderRadius: 36,
 		borderWidth: 2,
-		backgroundColor: `${colors.dark.background}CC`,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},

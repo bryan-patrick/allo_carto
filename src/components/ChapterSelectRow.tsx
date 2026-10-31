@@ -59,6 +59,9 @@ export default function ChapterSelectRow({
 	const completedParagraphCount = chapterProgress?.completedParagraphCount ?? 0;
 	const paragraphCount = chapterProgress?.paragraphCount ?? 0;
 	const isNew = !isLocked && !hasStartedChapter && hasParagraphs;
+	const lockedLabelStyle = {
+		color: buttonColor,
+	};
 	let actionLabel = hasStartedChapter ? 'Continue' : 'Start Chapter';
 
 	if (chapterProgress?.hasFirstGem) {
@@ -121,7 +124,7 @@ export default function ChapterSelectRow({
 					onLayout={isLocked ? event => setAnchorLayout(event.nativeEvent.layout) : undefined}
 					style={styles.chapterInfo}
 				>
-					{isLocked && <Text style={[styles.label, styles.lockedLabel]}>{chapter.label}</Text>}
+					{isLocked && <Text style={[styles.label, lockedLabelStyle]}>{chapter.label}</Text>}
 					{!isLocked && (
 						<>
 							<Text
@@ -138,7 +141,8 @@ export default function ChapterSelectRow({
 					{isLocked && (
 						<LockedSection
 							circular
-							color={colors.light.goldenBorder}
+							color={buttonColor}
+							circleBackgroundColor="transparent"
 							unlockCriteria={unlockCriteria}
 							style={styles.locked}
 						/>
@@ -210,9 +214,6 @@ const styles = StyleSheet.create({
 		fontFamily: 'shadows-400',
 		fontSize: 18,
 		textTransform: 'none',
-	},
-	lockedLabel: {
-		color: colors.light.goldenBorder,
 	},
 	newLabel: {
 		fontFamily: 'lexend-600',
