@@ -10,7 +10,10 @@ import {
 } from 'react-native';
 import colors from '../app/colors';
 
-const polaroidBackground = require('@/src/app/assets/images/chapter-images/polaroid-bg.jpg');
+// TODO really the postcard BG gives it a cleaner look
+const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
+
+//const polaroidBackground = require('@/src/app/assets/images/chapter-images/polaroid-bg.jpg');
 
 interface ChapterPolaroidProps {
 	source: ImageSourcePropType;
@@ -43,20 +46,26 @@ export default function ChapterPolaroid({
 
 	return (
 		<View style={[styles.stack, style]}>
-			<Image
+			<BackgroundImage
 				accessible={false}
 				pointerEvents="none"
-				source={polaroidBackground}
+				source={postcardBackground}
 				resizeMode="stretch"
 				style={[styles.frame, styles.backPolaroid]}
-			/>
+			>
+				<View style={styles.paperOverlay} />
+			</BackgroundImage>
 			<View style={styles.frame}>
 				<BackgroundImage
 					accessible={false}
-					source={polaroidBackground}
+					source={postcardBackground}
 					resizeMode="stretch"
 					style={[styles.paper, Boolean(footer) && styles.paperWithFooter]}
 				>
+					<View
+						pointerEvents="none"
+						style={styles.paperOverlay}
+					/>
 					<View style={[styles.photo, photoStyle]}>
 						<Image
 							accessible={false}
@@ -94,32 +103,38 @@ const styles = StyleSheet.create({
 		width: '100%',
 		position: 'relative',
 	},
+
 	frame: {
 		width: '100%',
 		backgroundColor: '#eee9df',
-		borderRadius: 2,
-		elevation: 4,
+		elevation: 2,
 		shadowColor: '#000000',
 		shadowOffset: {
 			width: 0,
-			height: 2,
+			height: 1,
 		},
-		shadowRadius: 4,
-		shadowOpacity: 0.6,
+		shadowRadius: 1,
+		shadowOpacity: 0.4,
 	},
 	backPolaroid: {
 		position: 'absolute',
 		top: 0,
 		left: 0,
 		height: '100%',
-		borderWidth: 1,
 		borderColor: colors.dark.border,
-		overflow: 'hidden',
 		transform: [
 			{
 				rotate: '-4deg',
 			},
 		],
+		elevation: 4,
+		shadowColor: '#000000',
+		shadowOffset: {
+			width: 0,
+			height: 1,
+		},
+		shadowRadius: 1,
+		shadowOpacity: 0.4,
 	},
 	cornerBadge: {
 		position: 'absolute',
@@ -133,24 +148,32 @@ const styles = StyleSheet.create({
 		],
 	},
 	paper: {
-		borderWidth: 1,
 		borderColor: colors.dark.border,
-		padding: 10,
+		padding: 8,
 		paddingBottom: 28,
-		borderRadius: 2,
-		overflow: 'hidden',
+		elevation: 2,
+		shadowColor: '#000000',
+		shadowOffset: {
+			width: 0,
+			height: 1,
+		},
+		shadowRadius: 1,
+		shadowOpacity: 0.4,
 	},
 	paperWithFooter: {
 		paddingBottom: 0,
 	},
+	paperOverlay: {
+		...StyleSheet.absoluteFill,
+		backgroundColor: 'rgba(255, 254, 250, 0.9)',
+	},
 	footer: {
 		minHeight: 28,
 		justifyContent: 'center',
-		paddingVertical: 6,
+		paddingVertical: 4,
 	},
 	photo: {
 		width: '100%',
-		overflow: 'hidden',
 	},
 	photoLayer: {
 		...StyleSheet.absoluteFill,

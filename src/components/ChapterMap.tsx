@@ -38,6 +38,8 @@ export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 	const [size, setSize] = useState({ width: 0, height: 0 });
 	const [anchors, setAnchors] = useState<Record<string, ChapterMapAnchor>>({});
 	const chapters = story.chapters.filter(hasChapterContent);
+	const storyColor = colors.category[story.category];
+	const buttonColor = colors.category[story.category];
 
 	const handleAnchorChange = useCallback((anchor: ChapterMapAnchor) => {
 		setAnchors(current => {
@@ -95,7 +97,7 @@ export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 								key={chapter.id}
 								d={getChapterMapCurve({ start, end, width: size.width })}
 								fill="none"
-								stroke={colors.light.goldenBorder}
+								stroke={storyColor}
 								strokeWidth={2}
 								strokeDasharray="1 8"
 								strokeLinecap="round"
@@ -116,7 +118,7 @@ export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 								cx={anchor.x}
 								cy={anchor.y}
 								r={chapterMapDotSize / 2}
-								fill={colors.light.goldenBorder}
+								fill={storyColor}
 								opacity={0.75}
 							/>
 						);
@@ -132,6 +134,7 @@ export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 					<ChapterSelectRow
 						key={chapter.id}
 						chapter={chapter}
+						buttonColor={buttonColor}
 						index={index}
 						progressById={progressById}
 						onMapAnchorChange={handleAnchorChange}
@@ -147,6 +150,6 @@ export default function ChapterMap({ story, progressById }: ChapterMapProps) {
  */
 const styles = StyleSheet.create({
 	map: {
-		gap: 8,
+		gap: 24,
 	},
 });
