@@ -1,3 +1,4 @@
+import BackgroundImage from '@/src/components/BackgroundImage';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
@@ -11,7 +12,7 @@ import {
 } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../colors';
 
 const deckSelectBackgroundImage = require('@/src/app/assets/images/decks/deck-select-bg.jpg');
@@ -71,7 +72,7 @@ export default function CardDeckSelect() {
 	 * Render the card grid
 	 */
 	return (
-		<ImageBackground
+		<BackgroundImage
 			style={styles.background}
 			source={deckSelectBackgroundImage}
 		>
@@ -111,7 +112,7 @@ export default function CardDeckSelect() {
 					</View>
 				)}
 			</ScrollView>
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 

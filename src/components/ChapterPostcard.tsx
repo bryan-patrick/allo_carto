@@ -1,8 +1,9 @@
 import type { DeckChapter, DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import ChapterDeckList from './ChapterDeckList';
 import ChapterHeader from './ChapterHeader';
 import LockedSection from './LockedSection';
@@ -33,12 +34,12 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 
 	return (
 		<View style={styles.stack}>
-			<ImageBackground
+			<BackgroundImage
 				source={borderedPostcardBackground}
 				resizeMode="stretch"
 				style={[styles.postcard, styles.backPostcard]}
 			/>
-			<ImageBackground
+			<BackgroundImage
 				source={postcardBackground}
 				style={styles.postcard}
 			>
@@ -67,7 +68,7 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 					)}
 					{!isLocked && !hasDecks && <Text style={styles.comingSoonText}>Coming soon</Text>}
 				</View>
-			</ImageBackground>
+			</BackgroundImage>
 		</View>
 	);
 }

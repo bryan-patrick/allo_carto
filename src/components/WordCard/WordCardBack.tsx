@@ -1,6 +1,6 @@
+import BackgroundImage from '@/src/components/BackgroundImage';
 import { memo, type ReactNode } from 'react';
 import {
-	ImageBackground,
 	ImageSourcePropType,
 	StyleSheet,
 	Text,
@@ -18,7 +18,7 @@ import { FEEDBACK_TEXT_BACK } from './wordCardContext';
 import WordCardHeader from './WordCardHeader';
 import WordPronunciation from './WordPronunciation';
 
-const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
+const AnimatedBackgroundImage = Animated.createAnimatedComponent(BackgroundImage);
 
 /*
  * Typing
@@ -83,7 +83,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 	 * Render the back of the WordCard
 	 */
 	return (
-		<AnimatedImageBackground
+		<AnimatedBackgroundImage
 			style={[
 				sharedWordCardStyles.wordCardContainer,
 				styles.cardBack,
@@ -144,7 +144,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 					</View>
 				)}
 			</View>
-		</AnimatedImageBackground>
+		</AnimatedBackgroundImage>
 	);
 });
 

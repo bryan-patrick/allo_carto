@@ -1,4 +1,5 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ReadingLink from '@/src/components/ReadingLink';
@@ -28,7 +29,6 @@ import {
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import {
-	ImageBackground,
 	KeyboardAvoidingView,
 	Platform,
 	Pressable,
@@ -433,7 +433,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 			style={[styles.container, containerInsets]}
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 		>
-			<ImageBackground
+			<BackgroundImage
 				source={postcardBackground}
 				style={[styles.postcard, postcardInsets]}
 			>
@@ -607,7 +607,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 						Close
 					</SecondaryButton>
 				</View>
-			</ImageBackground>
+			</BackgroundImage>
 		</KeyboardAvoidingView>
 	);
 }

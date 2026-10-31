@@ -1,5 +1,6 @@
 import { chapterSelectBackground } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import CollectionClaim from '@/src/components/Collections/CollectionClaim';
 import VocabularyStamp from '@/src/components/Collections/VocabularyStamp';
 import LinkButton from '@/src/components/LinkButton';
@@ -12,7 +13,6 @@ import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import {
 	Alert,
-	ImageBackground,
 	Pressable,
 	ScrollView,
 	StyleSheet,
@@ -90,7 +90,7 @@ export default function CollectionDetailView() {
 	}
 
 	return (
-		<ImageBackground
+		<BackgroundImage
 			source={chapterSelectBackground}
 			style={styles.background}
 		>
@@ -98,7 +98,7 @@ export default function CollectionDetailView() {
 				contentContainerStyle={[styles.scrollContent, scrollContentStyle]}
 				scrollIndicatorInsets={scrollIndicatorInsets}
 			>
-				<ImageBackground
+				<BackgroundImage
 					source={albumPaper}
 					imageStyle={styles.paperImage}
 					style={styles.album}
@@ -145,9 +145,9 @@ export default function CollectionDetailView() {
 							</View>
 						))}
 					</View>
-				</ImageBackground>
+				</BackgroundImage>
 			</ScrollView>
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 

@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import BackgroundImage from '@/src/components/BackgroundImage';
+import { StyleSheet, View } from 'react-native';
 
 /*
  * The graphical Crease (of the book)
@@ -9,13 +10,13 @@ export default function Crease() {
 	 * Render the component
 	 */
 	return (
-		<ImageBackground
+		<BackgroundImage
 			resizeMode="stretch"
 			source={require('../../../app/assets/images/book-parts/crease.jpg')}
 			style={styles.crease}
 		>
 			<View style={styles.innerBorder} />
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 

@@ -1,8 +1,9 @@
 import type { StoryCategory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import VerticalText from '@/src/components/VerticalText';
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 /*
  * Typing
@@ -22,7 +23,7 @@ export default function Spine({ color, category, materialSymbolName }: SpineProp
 	 */
 	return (
 		<View style={[styles.spine, { borderColor: `${color}80` }]}>
-			<ImageBackground
+			<BackgroundImage
 				source={require('../../../app/assets/images/book-parts/spine.jpg')}
 				style={styles.spineImage}
 			/>

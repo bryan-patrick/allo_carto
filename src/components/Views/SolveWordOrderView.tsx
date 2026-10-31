@@ -1,4 +1,5 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
@@ -25,7 +26,7 @@ import {
 } from '@/src/util/solveProgression';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SolveWordOrderViewProps {
@@ -345,7 +346,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 
 	return (
 		<View style={[styles.container, containerInsets]}>
-			<ImageBackground
+			<BackgroundImage
 				source={postcardBackground}
 				style={[styles.postcard, postcardInsets]}
 			>
@@ -451,7 +452,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						Close
 					</SecondaryButton>
 				</View>
-			</ImageBackground>
+			</BackgroundImage>
 		</View>
 	);
 }

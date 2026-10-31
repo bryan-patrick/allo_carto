@@ -1,7 +1,8 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import type { CollectionStamp } from '@/src/util/vocabularyCollections';
 import { getWordProgressDefinitionByKey } from '@/src/util/wordProgress';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from '../MaterialSymbol';
 import WordProgressBar from '../WordProgressBar';
 import StampIllustration from './StampIllustration';
@@ -24,7 +25,7 @@ export default function VocabularyStamp({ stamp }: VocabularyStampProps) {
 		:	'Undiscovered word.';
 
 	return (
-		<ImageBackground
+		<BackgroundImage
 			accessible
 			accessibilityLabel={accessibilityLabel}
 			source={isDiscovered ? undefined : stampPaper}
@@ -46,7 +47,7 @@ export default function VocabularyStamp({ stamp }: VocabularyStampProps) {
 					<Text style={styles.hiddenWord}>???</Text>
 				</View>
 			}
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 

@@ -1,7 +1,7 @@
+import BackgroundImage from '@/src/components/BackgroundImage';
 import type { ReactNode } from 'react';
 import {
 	Image,
-	ImageBackground,
 	StyleSheet,
 	View,
 	type ImageSourcePropType,
@@ -51,7 +51,7 @@ export default function ChapterPolaroid({
 				style={[styles.frame, styles.backPolaroid]}
 			/>
 			<View style={styles.frame}>
-				<ImageBackground
+				<BackgroundImage
 					accessible={false}
 					source={polaroidBackground}
 					resizeMode="stretch"
@@ -75,7 +75,7 @@ export default function ChapterPolaroid({
 						)}
 					</View>
 					{Boolean(footer) && <View style={styles.footer}>{footer}</View>}
-				</ImageBackground>
+				</BackgroundImage>
 				{Boolean(badge) && (
 					<View
 						pointerEvents="none"

@@ -1,5 +1,6 @@
 import { chapterSelectBackground } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import ChapterPostcard from '@/src/components/ChapterPostcard';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
@@ -7,7 +8,7 @@ import { findAtlasLocationByChapterId } from '@/src/util/atlasCompletion';
 import { hasChapterContent } from '@/src/util/atlasContent';
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from '../MaterialSymbol';
 
 /*
@@ -40,7 +41,7 @@ export default function ChapterDetailView() {
 	const { chapter, story } = location;
 
 	return (
-		<ImageBackground
+		<BackgroundImage
 			source={story.image ?? chapterSelectBackground}
 			style={styles.background}
 		>
@@ -62,7 +63,7 @@ export default function ChapterDetailView() {
 					progressById={progressById}
 				/>
 			</ScrollView>
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 

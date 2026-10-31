@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import type { ReactNode } from 'react';
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 /*
  * Typing
@@ -17,13 +18,13 @@ export default function Cover({ children }: CoverProps) {
 	 * Render the component
 	 */
 	return (
-		<ImageBackground
+		<BackgroundImage
 			resizeMode="stretch"
 			source={require('../../../app/assets/images/book-parts/cover.jpg')}
 			style={styles.cover}
 		>
 			<View style={styles.coverInner}>{children}</View>
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 
