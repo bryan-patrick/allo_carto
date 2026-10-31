@@ -129,6 +129,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const database = useSQLiteContext();
 	const { settings } = useAppSettings();
 	const fastSolveUnlocks = settings.fastSolveUnlocks;
+	const previewAllStamps = settings.previewAllStamps;
 
 	/*
 	 * State
@@ -189,14 +190,31 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	}, [database, userId]);
 
 	const collections = useMemo(() => {
+		const collectionWordProgressById: UserWordProgressById = {
+			...wordProgressById,
+		};
+
+		// Reveal unseen stamps for screenshots without writing to saved word progress.
+		if (previewAllStamps) {
+			for (const collection of collectionAtlas.collections) {
+				for (const word of collection.words) {
+					const savedProgress = collectionWordProgressById[word.wordId];
+
+					if (!savedProgress || savedProgress === 'unseen') {
+						collectionWordProgressById[word.wordId] = 'new';
+					}
+				}
+			}
+		}
+
 		return collectionAtlas.collections.map(collection => {
 			return getVocabularyCollectionProgress({
 				collection,
-				wordProgressById,
+				wordProgressById: collectionWordProgressById,
 				claims: collectionClaims,
 			});
 		});
-	}, [collectionClaims, wordProgressById]);
+	}, [collectionClaims, wordProgressById, previewAllStamps]);
 
 	/*
 	 * Load userProgress rows when the database is ready
@@ -254,6 +272,10 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const recordCollectionReward = useCallback(
 		async (request: ClaimCollectionRewardRequest): Promise<CollectionRewardReceipt | false> => {
+			if (previewAllStamps) {
+				return false;
+			}
+
 			return runProgressWrite(() => {
 				return claimCollectionReward({
 					database,
@@ -262,7 +284,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 				});
 			});
 		},
-		[database, runProgressWrite, userId],
+		[database, runProgressWrite, userId, previewAllStamps],
 	);
 
 	/*
