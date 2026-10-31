@@ -1,9 +1,10 @@
 import { placeholderStampImage } from '@/data/french/collectionAtlas';
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import type { VocabularyCollectionProgress } from '@/src/util/vocabularyCollections';
 import { wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useRouter } from 'expo-router';
-import { Alert, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import MaterialSymbol from '../MaterialSymbol';
 import WordProgressBar from '../WordProgressBar';
 import StampIllustration from './StampIllustration';
@@ -75,7 +76,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 			}
 			onPress={openCollection}
 		>
-			<ImageBackground
+			<BackgroundImage
 				source={postcardBackground}
 				imageStyle={styles.paperImage}
 				style={[styles.card, isReady && styles.readyCard]}
@@ -84,7 +85,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 					<View style={styles.illustration}>
 						{isDiscovered ?
 							<StampIllustration image={firstStamp?.image} />
-						:	<ImageBackground
+						:	<BackgroundImage
 								accessible={false}
 								source={firstStamp?.image ?? placeholderStampImage}
 								resizeMode="contain"
@@ -115,7 +116,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 						color={colors.wordProgress.unseen}
 					/>
 				</View>
-			</ImageBackground>
+			</BackgroundImage>
 		</Pressable>
 	);
 }

@@ -1,4 +1,5 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import CompletionPassage from '@/src/components/DeckCompletion/CompletionPassage';
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
@@ -8,15 +9,7 @@ import { findCompletionPath } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import {
-	BackHandler,
-	ImageBackground,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native';
+import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import LinkButton from '../LinkButton';
@@ -117,7 +110,7 @@ export default function DeckResultsView() {
 				bottom: 'maximum',
 			}}
 		>
-			<ImageBackground
+			<BackgroundImage
 				source={postcardBackground}
 				style={styles.postcard}
 			>
@@ -217,7 +210,7 @@ export default function DeckResultsView() {
 						</LinkButton>
 					</View>
 				</View>
-			</ImageBackground>
+			</BackgroundImage>
 		</SafeAreaView>
 	);
 }

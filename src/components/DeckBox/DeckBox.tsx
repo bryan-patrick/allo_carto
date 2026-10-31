@@ -1,4 +1,5 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckHeader from '@/src/components/DeckHeader';
@@ -24,7 +25,7 @@ import { getFlashcardActionLabel } from '@/src/util/getFlashcardActionLabel';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { Alert, Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeckBoxModal from './DeckBoxModal';
 
 /*
@@ -221,24 +222,24 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 				/>
 			)}
 			<View style={styles.deckBoxContainer}>
-				<ImageBackground
+				<BackgroundImage
 					source={deckBoxTopImage}
 					style={styles.deckBoxTop}
 					resizeMode="stretch"
 				>
-					<ImageBackground
+					<BackgroundImage
 						source={deckBoxTopMaskImage}
 						style={[styles.deckBoxTop, { zIndex: 1 }]}
 						resizeMode="stretch"
 					/>
-				</ImageBackground>
+				</BackgroundImage>
 				<View style={styles.deckBoxMiddle}>
-					<ImageBackground
+					<BackgroundImage
 						source={deckBoxLeftBorderImage}
 						style={styles.deckBoxLeftBorder}
 						resizeMode="stretch"
 					/>
-					<ImageBackground
+					<BackgroundImage
 						source={deckBoxBg}
 						style={styles.deckBoxContentBackground}
 						resizeMode="stretch"
@@ -339,14 +340,14 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 								/>
 							)}
 						</View>
-					</ImageBackground>
-					<ImageBackground
+					</BackgroundImage>
+					<BackgroundImage
 						source={deckBoxRightBorderImage}
 						style={styles.deckBoxRightBorder}
 						resizeMode="stretch"
 					/>
 				</View>
-				<ImageBackground
+				<BackgroundImage
 					source={deckBoxBottomImage}
 					style={styles.deckBoxBottom}
 					resizeMode="stretch"

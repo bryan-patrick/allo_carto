@@ -1,11 +1,12 @@
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import BackgroundImage from '@/src/components/BackgroundImage';
+import { StyleSheet, View } from 'react-native';
 
 const pagesImg = require('@/src/app/assets/images/book-parts/pages.png');
 
 export default function Pages() {
 	return (
 		<View style={styles.pagesContainer}>
-			<ImageBackground
+			<BackgroundImage
 				source={pagesImg}
 				resizeMode="stretch"
 				style={styles.pages}

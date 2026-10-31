@@ -1,7 +1,8 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import { cardBackgrounds } from '@/src/components/WordCard/cardBackgrounds';
 import type { SolveWordStage } from '@/src/util/solveProgression';
-import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SolvePosition } from './solveTypes';
 
 interface SolveCardProps {
@@ -64,7 +65,7 @@ export default function SolveCard({
 				isSolved && styles.solvedBorder,
 			]}
 		>
-			<ImageBackground
+			<BackgroundImage
 				source={cardBackgrounds[card.rarity]}
 				style={[styles.cardContent, isSolved && styles.solvedBorder]}
 			>
@@ -78,7 +79,7 @@ export default function SolveCard({
 				{isSolved ?
 					<Text style={styles.translation}>✓ {card.acceptedAnswer}</Text>
 				:	<Text style={styles.cost}>{card.inkCost} Ink</Text>}
-			</ImageBackground>
+			</BackgroundImage>
 		</Pressable>
 	);
 }

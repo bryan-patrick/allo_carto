@@ -1,10 +1,11 @@
 import { chapterSelectBackground } from '@/data/french/storyAtlas';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import ChapterMap from '@/src/components/ChapterMap';
 import Loader from '@/src/components/Loader';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { getSelectedStory } from '@/src/util/getSelectedStory';
-import { ImageBackground, ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import colors from '../../app/colors';
 
 /* Home shows the chapters for the story chosen in its fixed header. */
@@ -29,7 +30,7 @@ export default function ChapterSelectView() {
 	}
 
 	return (
-		<ImageBackground
+		<BackgroundImage
 			style={styles.background}
 			source={selectedStory.image ?? chapterSelectBackground}
 		>
@@ -44,7 +45,7 @@ export default function ChapterSelectView() {
 					progressById={progressById}
 				/>
 			</ScrollView>
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 

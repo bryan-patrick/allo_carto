@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import { memo, type ReactNode } from 'react';
 import {
-	ImageBackground,
 	ImageSourcePropType,
 	type LayoutChangeEvent,
 	StyleSheet,
@@ -21,7 +21,7 @@ import { FEEDBACK_TEXT_FRONT } from './wordCardContext';
 import WordCardHeader from './WordCardHeader';
 import WordPronunciation from './WordPronunciation';
 
-const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
+const AnimatedBackgroundImage = Animated.createAnimatedComponent(BackgroundImage);
 
 /*
  * Typing
@@ -95,7 +95,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	 * Render the front of the WordCard
 	 */
 	return (
-		<AnimatedImageBackground
+		<AnimatedBackgroundImage
 			style={[
 				sharedWordCardStyles.wordCardContainer,
 				styles.cardFront,
@@ -183,7 +183,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 					</Text>
 				</View>
 			</View>
-		</AnimatedImageBackground>
+		</AnimatedBackgroundImage>
 	);
 });
 

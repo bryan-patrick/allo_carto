@@ -1,6 +1,7 @@
 import { placeholderStampImage } from '@/data/french/collectionAtlas';
 import colors from '@/src/app/colors';
-import { Image, ImageBackground, StyleSheet, type ImageSourcePropType } from 'react-native';
+import BackgroundImage from '@/src/components/BackgroundImage';
+import { Image, StyleSheet, type ImageSourcePropType } from 'react-native';
 
 const stampFrame = require('@/src/app/assets/images/collections/stamp-frame_200x230.png');
 
@@ -11,7 +12,7 @@ interface StampIllustrationProps {
 // Fit a word's artwork inside the stamp frame while keeping the frame's original shape.
 export default function StampIllustration({ image }: StampIllustrationProps) {
 	return (
-		<ImageBackground
+		<BackgroundImage
 			accessible={false}
 			source={stampFrame}
 			resizeMode="contain"
@@ -23,7 +24,7 @@ export default function StampIllustration({ image }: StampIllustrationProps) {
 				resizeMode="contain"
 				style={styles.artwork}
 			/>
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 

@@ -1,18 +1,12 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import type { ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckPassageView from '@/src/components/DeckPassageView';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useState } from 'react';
-import {
-	ImageBackground,
-	Modal,
-	Pressable,
-	StyleSheet,
-	useWindowDimensions,
-	View,
-} from 'react-native';
+import { Modal, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /*
@@ -79,7 +73,7 @@ export default function DeckBoxModal({
 			visible={modalVisible}
 		>
 			<View style={styles.backdrop}>
-				<ImageBackground
+				<BackgroundImage
 					testID="passage-modal-sheet"
 					imageStyle={styles.backgroundImage}
 					resizeMode="cover"
@@ -118,7 +112,7 @@ export default function DeckBoxModal({
 							wordProgressKeyByWordId={wordProgressKeyByWordId}
 						/>
 					)}
-				</ImageBackground>
+				</BackgroundImage>
 			</View>
 		</Modal>
 	);

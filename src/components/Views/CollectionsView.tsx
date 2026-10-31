@@ -1,11 +1,12 @@
 import { chapterSelectBackground } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import CollectionCard from '@/src/components/Collections/CollectionCard';
 import LinkButton from '@/src/components/LinkButton';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import type { CollectionSection } from '@/src/util/vocabularyCollections';
-import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface CollectionSectionDefinition {
 	key: CollectionSection;
@@ -51,7 +52,7 @@ export default function CollectionsView() {
 	}
 
 	return (
-		<ImageBackground
+		<BackgroundImage
 			source={chapterSelectBackground}
 			style={styles.background}
 		>
@@ -91,7 +92,7 @@ export default function CollectionsView() {
 					<Text style={styles.introduction}>New collections are on their way.</Text>
 				)}
 			</ScrollView>
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 

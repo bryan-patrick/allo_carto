@@ -1,8 +1,9 @@
 import type { DeckChapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import ReadingLink from '@/src/components/ReadingLink';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-postmark.png');
 
@@ -47,7 +48,7 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
 					</View>
 					<Text style={styles.title}>{name}</Text>
 				</View>
-				<ImageBackground
+				<BackgroundImage
 					source={postmarkImage}
 					style={styles.postmark}
 				/>

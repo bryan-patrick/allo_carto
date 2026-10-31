@@ -1,7 +1,7 @@
 import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import {
-	ImageBackground,
 	Modal,
 	Pressable,
 	ScrollView,
@@ -53,7 +53,7 @@ export default function StorySelectModal({
 			visible={visible}
 		>
 			<View style={styles.backdrop}>
-				<ImageBackground
+				<BackgroundImage
 					resizeMode="cover"
 					source={postcardBackground}
 					style={[styles.sheet, sheetStyle]}
@@ -86,7 +86,7 @@ export default function StorySelectModal({
 							isSelecting={isSelecting}
 						/>
 					</ScrollView>
-				</ImageBackground>
+				</BackgroundImage>
 			</View>
 		</Modal>
 	);
