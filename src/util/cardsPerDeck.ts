@@ -1,31 +1,19 @@
-export const minCardsPerDeck = 5;
+export const minCardsPerDeck = 6;
 export const maxCardsPerDeck = 12;
 
 /*
- * Level 8 and all higher levels use the maximum deck size.
+ * Start with six cards and add one per level. Level 7 and higher allow twelve cards.
  */
 export const cardsPerDeckByLevel: Record<number, number> = {
-	1: 5,
-	2: 6,
-	3: 7,
-	4: 8,
-	5: 9,
-	6: 10,
-	7: 11,
-	8: 12,
+	1: minCardsPerDeck,
+	2: 7,
+	3: 8,
+	4: 9,
+	5: 10,
+	6: 11,
+	7: maxCardsPerDeck,
 };
 
-export function isValidCardsPerDeck(amount: unknown): amount is number {
-	return (
-		typeof amount === 'number' &&
-		Number.isInteger(amount) &&
-		amount >= minCardsPerDeck &&
-		amount <= maxCardsPerDeck
-	);
-}
-
-export function getCardsPerDeck(level: number, amount: number | null = null): number {
-	if (isValidCardsPerDeck(amount)) return amount;
-
+export function getCardsPerDeck(level: number): number {
 	return cardsPerDeckByLevel[level] ?? maxCardsPerDeck;
 }

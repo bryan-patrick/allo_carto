@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import speakFrench from '@/src/util/speakFrench';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import speakFrench, { type SpeechPlayback, type SpeechPlaybackState } from '@/src/util/speakFrench';
+import { type Ref, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Pressable } from 'react-native';
 import Animated, { css, useReducedMotion } from 'react-native-reanimated';
 import MaterialSymbol from './MaterialSymbol';
@@ -11,12 +11,20 @@ import MaterialSymbol from './MaterialSymbol';
  */
 interface TTSButtonProps {
 	wordsToSay: string;
+	ref?: Ref<TTSButtonHandle>;
+	rate?: number;
 	autoPlay?: boolean;
 	accessibilityLabel?: string;
 	disabled?: boolean;
 	onBoundary?: (charIndex: number) => void;
 	onPlaybackEnd?: () => void;
+	onPlaybackStateChange?: (state: SpeechPlaybackState) => void;
 	stoppable?: boolean;
+}
+
+export interface TTSButtonHandle {
+	playFrom: (characterIndex: number, rate?: number, startPaused?: boolean) => void;
+	togglePlayback: () => void;
 }
 
 /*
@@ -24,17 +32,21 @@ interface TTSButtonProps {
  */
 export default function TTSButton({
 	wordsToSay,
+	ref,
+	rate,
 	autoPlay = false,
 	accessibilityLabel,
 	disabled = false,
 	onBoundary,
 	onPlaybackEnd,
+	onPlaybackStateChange,
 	stoppable = false,
 }: TTSButtonProps) {
 	const { settings } = useAppSettings();
-	const [isPlaying, setIsPlaying] = useState(false);
+	const [playbackState, setPlaybackState] = useState<SpeechPlaybackState>('stopped');
+	const isPlaying = playbackState === 'playing';
 	const autoPlayedWord = useRef<string | null>(null);
-	const stopPlayback = useRef<(() => Promise<void>) | null>(null);
+	const playback = useRef<SpeechPlayback | null>(null);
 	const reduceMotion = useReducedMotion();
 	const buttonStyles = [
 		styles.button,
@@ -47,25 +59,69 @@ export default function TTSButton({
 
 	if (isPlaying && stoppable) {
 		buttonLabel = 'Stop reading';
+	} else if (playbackState === 'paused') {
+		buttonLabel = 'Resume reading';
 	}
 
-	const speak = useCallback(() => {
-		stopPlayback.current = speakFrench({
-			text: wordsToSay,
-			volume: settings.ttsVolume,
+	const speak = useCallback(
+		(startCharacterIndex = 0, playbackRate = rate ?? settings.ttsRate, startPaused = false) => {
+			const remainingText = wordsToSay.slice(startCharacterIndex);
+
+			playback.current = speakFrench({
+				text: remainingText,
+				volume: settings.ttsVolume,
+				rate: playbackRate,
+				startPaused,
+				onBoundary(characterIndex) {
+					const passageCharacterIndex = startCharacterIndex + characterIndex;
+
+					onBoundary?.(passageCharacterIndex);
+				},
+				onStateChange(state) {
+					setPlaybackState(state);
+					onPlaybackStateChange?.(state);
+
+					if (state === 'stopped') {
+						onPlaybackEnd?.();
+					}
+				},
+			});
+
+			onBoundary?.(startCharacterIndex);
+		},
+		[
+			wordsToSay,
+			rate,
+			settings.ttsVolume,
+			settings.ttsRate,
 			onBoundary,
-			onPlayingChange(playing) {
-				setIsPlaying(playing);
-				if (!playing) {
-					onPlaybackEnd?.();
-				}
-			},
-		});
-	}, [wordsToSay, settings.ttsVolume, onBoundary, onPlaybackEnd]);
+			onPlaybackEnd,
+			onPlaybackStateChange,
+		],
+	);
+
+	const togglePlayback = useCallback(() => {
+		if (playbackState === 'playing') {
+			playback.current?.pause();
+		} else if (playbackState === 'paused') {
+			playback.current?.resume();
+		} else {
+			speak();
+		}
+	}, [playbackState, speak]);
+
+	useImperativeHandle(
+		ref,
+		() => ({
+			playFrom: speak,
+			togglePlayback,
+		}),
+		[speak, togglePlayback],
+	);
 
 	useEffect(() => {
 		return () => {
-			stopPlayback.current?.();
+			playback.current?.stop();
 		};
 	}, [wordsToSay]);
 
@@ -84,7 +140,9 @@ export default function TTSButton({
 
 	function handlePress() {
 		if (isPlaying) {
-			stopPlayback.current?.();
+			playback.current?.stop();
+		} else if (playbackState === 'paused') {
+			playback.current?.resume();
 		} else {
 			speak();
 		}

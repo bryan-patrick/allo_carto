@@ -1,4 +1,3 @@
-import { isValidCardsPerDeck } from '@/src/util/cardsPerDeck';
 import type { CompletedSolveStages } from '@/src/util/solveProgression';
 import { isMockParagraphPreset } from './mockParagraphProgress';
 
@@ -23,7 +22,8 @@ export interface AppSettings extends BooleanSettings {
 	mockParagraphCompletion: CompletedSolveStages;
 	soundEffectsVolume: number;
 	ttsVolume: number;
-	cardsPerDeck: number | null;
+	ttsRate: number;
+	readingSpeechRate: number;
 	pronunciationFormat: PronunciationFormat;
 }
 
@@ -46,6 +46,8 @@ const volumeSettingKeys: ('soundEffectsVolume' | 'ttsVolume')[] = [
 	'ttsVolume',
 ];
 export const maxAudioVolume = 1;
+export const readingSpeechRates = [0.2, 0.5, 1];
+const defaultSpeechRate = 0.8;
 
 export function clampAudioVolume(volume: number): number {
 	if (!Number.isFinite(volume)) {
@@ -53,6 +55,15 @@ export function clampAudioVolume(volume: number): number {
 	}
 
 	return Math.max(0, Math.min(maxAudioVolume, volume));
+}
+
+// Keep speech at a useful pace, using the usual rate if the saved value is invalid.
+export function clampSpeechRate(rate: number): number {
+	if (!Number.isFinite(rate)) {
+		return defaultSpeechRate;
+	}
+
+	return Math.max(0.2, Math.min(1.5, rate));
 }
 
 /*
@@ -64,6 +75,8 @@ export const defaultAppSettings: AppSettings = {
 	ttsOnCorrectEnabled: true,
 	soundEffectsVolume: 0.1,
 	ttsVolume: 0.5,
+	ttsRate: defaultSpeechRate,
+	readingSpeechRate: 1,
 	useLearningLevelColors: false,
 	useLevelOpacity: false,
 	showUnseenWords: false,
@@ -71,7 +84,6 @@ export const defaultAppSettings: AppSettings = {
 	previewAllStamps: false,
 	showSkipWordLink: true,
 	fastSolveUnlocks: true,
-	cardsPerDeck: null,
 	pronunciationFormat: 'readable',
 };
 
@@ -110,8 +122,15 @@ export function readAppSettings(value: string | null): AppSettings {
 		}
 	}
 
-	if (isValidCardsPerDeck(saved.cardsPerDeck)) {
-		settingsCopy.cardsPerDeck = saved.cardsPerDeck;
+	if (typeof saved.ttsRate === 'number' && Number.isFinite(saved.ttsRate)) {
+		settingsCopy.ttsRate = clampSpeechRate(saved.ttsRate);
+	}
+
+	if (
+		typeof saved.readingSpeechRate === 'number' &&
+		readingSpeechRates.includes(saved.readingSpeechRate)
+	) {
+		settingsCopy.readingSpeechRate = saved.readingSpeechRate;
 	}
 
 	if (saved.pronunciationFormat === 'readable' || saved.pronunciationFormat === 'ipa') {

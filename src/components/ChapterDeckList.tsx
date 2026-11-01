@@ -16,7 +16,6 @@ import getDeckWordProgressCounts, {
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { useAppSettings } from '@/src/settings/useAppSettings';
 import {
 	getUnlockCriteria,
 	getVisibleParagraphs,
@@ -55,9 +54,8 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 	 */
 	const { id: userId } = useUserContext() ?? {};
 	const { experience, isUpdatingProgress } = useUserProgress();
-	const { settings } = useAppSettings();
 	const userLevel = experience.level;
-	const cardsPerDeck = getCardsPerDeck(userLevel, settings.cardsPerDeck);
+	const cardsPerDeck = getCardsPerDeck(userLevel);
 	const { cardDeckDispatch } = useCardDeck();
 	const isStartingDeck = useRef(false);
 	const [loadingPassageId, setLoadingPassageId] = useState<string>();

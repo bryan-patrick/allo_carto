@@ -6,13 +6,12 @@ import { getFlashcardCycle } from './flashcardCycles';
 import getDeckWordChoices from './getDeckWordChoices';
 
 /*
- * These are the paragraph, target card count, and learner we need to load flashcards.
+ * These are the paragraph, card limit, and learner we need to load flashcards.
  */
 interface GetDeckProps {
 	deck: CardDeck;
 	/*
-	 * The target deck size. A deck can grow to 1.5 times this amount
-	 * so we can spread the paragraph's cards evenly across decks.
+	 * The maximum cards per deck when starting a new flashcard cycle.
 	 */
 	amount: number;
 	userId: string;
