@@ -9,6 +9,7 @@ export default async function resetDB(): Promise<void> {
 	const database = await getDB();
 
 	await database.execAsync(`
+		DROP TABLE IF EXISTS userNotifications;
 		DROP TABLE IF EXISTS userActivity;
 		DROP TABLE IF EXISTS collectionRewardClaims;
 		DROP TABLE IF EXISTS solveRewards;

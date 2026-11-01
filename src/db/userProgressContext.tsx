@@ -3,20 +3,22 @@ import type {
 	DeckCompletionReceiptProps,
 	WordAnswerAwardProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
+import Toaster from '@/src/components/Toaster';
 import type {
 	SentenceAttemptRequest,
 	SolveAttemptRequest,
 	SolveAttemptResult,
-	SolveRewardRequest,
 	SolveRewardReceipt,
+	SolveRewardRequest,
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getMaxInkBalance } from '@/src/util/ink';
 import type { ProgressById } from '@/src/util/progression';
 import type { CompletedSolveStages } from '@/src/util/solveProgression';
-import type { UserActivity } from '@/src/util/userActivity';
+import type { UserActivity, UserNotification } from '@/src/util/userActivity';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
+import { useSoundEffect } from '@/src/util/useSoundEffect';
 import {
 	getVocabularyCollectionProgress,
 	type CollectionRewardClaim,
@@ -42,9 +44,15 @@ import loadUserXP from './queries/getUserExperience';
 import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
 import getUserWordProgress, { type UserWordProgressById } from './queries/getUserWordProgress';
+import { claimSolveReward } from './queries/solveRewards';
+import { getUserActivity } from './queries/userActivity';
+import {
+	dismissAllUserNotifications,
+	dismissUserNotification,
+	getUserNotifications,
+} from './queries/userNotifications';
 import writeSentenceAttempt from './queries/writeSentenceAttempt';
 import writeSolveAttempt from './queries/writeSolveAttempt';
-import { claimSolveReward } from './queries/solveRewards';
 import {
 	writeCorrectAnswer,
 	writeDeckCompletion,
@@ -55,7 +63,6 @@ import {
 	type IncorrectAnswerRequest,
 } from './queries/writeUserProgress';
 import writeWordOrderAttempt from './queries/writeWordOrderAttempt';
-import { getUserActivity } from './queries/userActivity';
 
 /*
  * Typing
@@ -69,6 +76,9 @@ interface UserProgressProviderProps {
 
 interface UserProgressContextProps {
 	activity: UserActivity[];
+	notifications: UserNotification[];
+	dismissNotification: (notificationId: number) => Promise<boolean>;
+	dismissAllNotifications: () => Promise<boolean>;
 	claimSolveReward: (request: SolveRewardRequest) => Promise<SolveRewardReceipt | false>;
 	applyMockParagraphProgress: (completedStages: CompletedSolveStages) => Promise<number | false>;
 	collections: VocabularyCollectionProgress[];
@@ -98,6 +108,9 @@ interface UserProgressContextProps {
  */
 const initialValue: UserProgressContextProps = {
 	activity: [],
+	notifications: [],
+	dismissNotification: async () => false,
+	dismissAllNotifications: async () => false,
 	claimSolveReward: async () => false,
 	applyMockParagraphProgress: async () => false,
 	collections: [],
@@ -140,6 +153,8 @@ export function UserProgressProvider({ children, userId }: UserProgressProviderP
 function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const database = useSQLiteContext();
 	const { settings } = useAppSettings();
+	const playLevelUp = useSoundEffect('levelUp');
+	const playClaimSound = useSoundEffect('pop');
 	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const previewAllStamps = settings.previewAllStamps;
 
@@ -148,6 +163,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 	const [activity, setActivity] = useState<UserActivity[]>([]);
+	const [notifications, setNotifications] = useState<UserNotification[]>([]);
+	const [toastQueue, setToastQueue] = useState<UserNotification[]>([]);
 	const [progressById, setProgressById] = useState<ProgressById>({});
 	const [wordProgressById, setWordProgressById] = useState<UserWordProgressById>({});
 	const [collectionClaims, setCollectionClaims] = useState<CollectionRewardClaim[]>([]);
@@ -155,8 +172,25 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const [inkBalance, setInkBalance] = useState(0);
 	const [status, setStatus] = useState<ProgressStatus>('loading');
 	const isSavingProgress = useRef(false);
+	const latestNotificationId = useRef<number | null>(null);
+	const previousLevel = useRef<number | null>(null);
 
-	// Reload saved progress, rewards, Ink, and activity to keep the player's displays current.
+	// Play once when saved XP raises the player's level. Loading an existing save stays quiet.
+	useEffect(() => {
+		const lastLevel = previousLevel.current;
+
+		if (status !== 'ready') {
+			return;
+		}
+
+		previousLevel.current = experience.level;
+
+		if (lastLevel !== null && experience.level > lastLevel) {
+			void playLevelUp();
+		}
+	}, [experience.level, playLevelUp, status]);
+
+	// Reload saved progress and notifications, then queue toasts for newly earned rewards.
 	const refreshProgress = useCallback(async () => {
 		if (!userId) {
 			return;
@@ -167,32 +201,59 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 				database,
 				userId,
 			});
-			const [nextProgress, nextExperience, nextInkBalance, nextCollectionClaims, nextActivity] =
-				await Promise.all([
-					getUserProgress({
-						database,
-						userId,
-						wordProgressById: nextWordProgressById,
-					}),
-					loadUserXP({
-						database,
-						userId,
-					}),
-					getUserInk({
-						database,
-						userId,
-					}),
-					getCollectionRewardClaims({
-						database,
-						userId,
-					}),
-					getUserActivity({
-						database,
-						userId,
-					}),
-				]);
+			const [
+				nextProgress,
+				nextExperience,
+				nextInkBalance,
+				nextCollectionClaims,
+				nextActivity,
+				nextNotifications,
+			] = await Promise.all([
+				getUserProgress({
+					database,
+					userId,
+					wordProgressById: nextWordProgressById,
+				}),
+				loadUserXP({
+					database,
+					userId,
+				}),
+				getUserInk({
+					database,
+					userId,
+				}),
+				getCollectionRewardClaims({
+					database,
+					userId,
+				}),
+				getUserActivity({
+					database,
+					userId,
+				}),
+				getUserNotifications({
+					database,
+					userId,
+				}),
+			]);
+			const newestNotificationId = nextNotifications[0]?.id ?? 0;
+			const previousNotificationId = latestNotificationId.current;
+
+			// Keep saved notifications on launch without replaying their toasts.
+			if (previousNotificationId !== null) {
+				const newNotifications = nextNotifications.filter(notification => {
+					return notification.id > previousNotificationId;
+				});
+				const chronologicalNotifications = newNotifications.reverse();
+
+				if (chronologicalNotifications.length > 0) {
+					setToastQueue(currentQueue => [...currentQueue, ...chronologicalNotifications]);
+				}
+			}
+
+			latestNotificationId.current = Math.max(previousNotificationId ?? 0, newestNotificationId);
 
 			setActivity(nextActivity);
+			setNotifications(nextNotifications);
 			setProgressById(nextProgress);
 			setWordProgressById(nextWordProgressById);
 			setCollectionClaims(nextCollectionClaims);
@@ -266,6 +327,52 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		},
 		[refreshProgress, userId],
 	);
+
+	// Closing a toast leaves its saved notification in the Notifications tab.
+	const closeToast = useCallback((notificationId: number) => {
+		setToastQueue(currentQueue => {
+			return currentQueue.filter(notification => notification.id !== notificationId);
+		});
+	}, []);
+
+	// Dismiss one saved notification and remove its toast if it is still waiting.
+	const dismissNotification = useCallback(
+		async (notificationId: number): Promise<boolean> => {
+			return runProgressWrite(async () => {
+				await dismissUserNotification({
+					database,
+					userId: userId!,
+					notificationId,
+				});
+
+				closeToast(notificationId);
+				return true;
+			});
+		},
+		[closeToast, database, runProgressWrite, userId],
+	);
+
+	// Clear the saved notifications currently listed without removing any activity.
+	const dismissAllNotifications = useCallback(async (): Promise<boolean> => {
+		const newestNotificationId = notifications[0]?.id;
+
+		if (newestNotificationId === undefined) {
+			return false;
+		}
+
+		return runProgressWrite(async () => {
+			await dismissAllUserNotifications({
+				database,
+				userId: userId!,
+				latestNotificationId: newestNotificationId,
+			});
+
+			setToastQueue(currentQueue => {
+				return currentQueue.filter(notification => notification.id > newestNotificationId);
+			});
+			return true;
+		});
+	}, [database, notifications, runProgressWrite, userId]);
 
 	/*
 	 * Applies a mock paragraph state and reloads progress so gems and chapter access update together.
@@ -407,10 +514,12 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
-	// Claim puzzle XP and refresh the player's level and earned gems.
+	// Play the claim sound, save puzzle XP, and refresh the player's level and earned gems.
 	const recordSolveReward = useCallback(
 		async (request: SolveRewardRequest): Promise<SolveRewardReceipt | false> => {
 			return runProgressWrite(() => {
+				void playClaimSound();
+
 				return claimSolveReward({
 					database,
 					userId: userId!,
@@ -418,7 +527,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 				});
 			});
 		},
-		[database, runProgressWrite, userId],
+		[database, playClaimSound, runProgressWrite, userId],
 	);
 
 	/*
@@ -427,6 +536,9 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const value = useMemo<UserProgressContextProps>(
 		() => ({
 			activity,
+			notifications,
+			dismissNotification,
+			dismissAllNotifications,
 			claimSolveReward: recordSolveReward,
 			applyMockParagraphProgress: recordMockParagraphProgress,
 			collections,
@@ -448,6 +560,9 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		}),
 		[
 			activity,
+			notifications,
+			dismissNotification,
+			dismissAllNotifications,
 			recordSolveReward,
 			recordMockParagraphProgress,
 			collections,
@@ -471,5 +586,13 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	/*
 	 * Render the provider
 	 */
-	return <UserProgressContext.Provider value={value}>{children}</UserProgressContext.Provider>;
+	return (
+		<UserProgressContext.Provider value={value}>
+			{children}
+			<Toaster
+				notification={toastQueue[0]}
+				onClose={closeToast}
+			/>
+		</UserProgressContext.Provider>
+	);
 }

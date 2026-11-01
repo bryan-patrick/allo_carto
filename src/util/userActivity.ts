@@ -12,6 +12,7 @@ export type UserActivityType =
 	| 'puzzleCompleted'
 	| 'gemEarned'
 	| 'gemsUpgraded'
+	| 'stampUnlocked'
 	| 'storyUnlocked'
 	| 'chapterUnlocked'
 	| 'paragraphUnlocked'
@@ -23,6 +24,34 @@ export interface UserActivity {
 	type: UserActivityType;
 	description: string;
 	createdAt: number;
+}
+
+export type UserNotificationType =
+	| 'levelUp'
+	| 'stampUnlocked'
+	| 'storyUnlocked'
+	| 'chapterUnlocked'
+	| 'paragraphUnlocked'
+	| 'gemEarned'
+	| 'gemsUpgraded';
+
+export interface UserNotification extends UserActivity {
+	type: UserNotificationType;
+}
+
+const notificationActivityTypes: ReadonlySet<UserActivityType> = new Set<UserActivityType>([
+	'levelUp',
+	'stampUnlocked',
+	'storyUnlocked',
+	'chapterUnlocked',
+	'paragraphUnlocked',
+	'gemEarned',
+	'gemsUpgraded',
+]);
+
+// Choose which saved rewards and unlocks also appear in Notifications.
+export function isUserNotificationType(type: UserActivityType): type is UserNotificationType {
+	return notificationActivityTypes.has(type);
 }
 
 interface UserActivityDisplay {
@@ -56,6 +85,10 @@ export const userActivityDisplay: Record<UserActivityType, UserActivityDisplay> 
 	gemsUpgraded: {
 		title: 'Gems upgraded',
 		icon: 'diamond',
+	},
+	stampUnlocked: {
+		title: 'Stamp unlocked',
+		icon: 'local_post_office',
 	},
 	storyUnlocked: {
 		title: 'Story unlocked',

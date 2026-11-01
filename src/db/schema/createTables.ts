@@ -126,8 +126,28 @@ export default async function createTables(): Promise<void> {
 	await createSolveTables();
 	await createSolveRewardsTable();
 	await createUserActivityTable();
+	await createUserNotificationsTable();
 	await ensureFlashcardsStartedColumn();
 	await ensureParagraphProgressType();
+}
+
+// Keep new notifications until the player dismisses them, even when older activity is removed.
+async function createUserNotificationsTable(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS userNotifications (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			userId TEXT NOT NULL,
+			type TEXT NOT NULL,
+			description TEXT NOT NULL,
+			createdAt INTEGER NOT NULL,
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+		CREATE INDEX IF NOT EXISTS userNotificationsByUser
+			ON userNotifications (userId, id DESC);
+	`;
+
+	await database.execAsync(statement);
 }
 
 // Keep a short saved history of the player's rewards, completed activities, and unlocks.

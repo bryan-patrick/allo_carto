@@ -31,8 +31,10 @@ export default function RepeatingBackgroundImage({
 		height: 0,
 	});
 	const imageSize = Image.resolveAssetSource(source);
-	const imageScale = backgroundSize.width / imageSize.width;
-	const tileHeight = imageSize.height * imageScale;
+	const imageWidth = imageSize?.width ?? 0;
+	const imageHeight = imageSize?.height ?? 0;
+	const imageScale = imageWidth > 0 ? backgroundSize.width / imageWidth : 0;
+	const tileHeight = imageHeight * imageScale;
 	const tileCount = tileHeight > 0 ? Math.ceil(backgroundSize.height / tileHeight) : 0;
 	const tileIndexes = Array.from(
 		{

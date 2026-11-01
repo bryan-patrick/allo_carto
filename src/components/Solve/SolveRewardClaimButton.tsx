@@ -1,7 +1,8 @@
 import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
+import { useSolveXPFeedback, type SolveXPFeedbackOrigin } from './SolveXPFeedback';
 import type { SolveReward } from './solveTypes';
 
 /*
@@ -14,7 +15,10 @@ interface SolveRewardClaimButtonProps {
 	onClaimed?: (reward: SolveReward) => void;
 }
 
-// Claim saved puzzle XP and keep the button available if the save needs another try.
+/*
+ * Claim saved puzzle XP and show the earned amount above the button after a successful save.
+ * Keep the button available if the save needs another try.
+ */
 export default function SolveRewardClaimButton({
 	deckId,
 	reward,
@@ -22,6 +26,7 @@ export default function SolveRewardClaimButton({
 	onClaimed,
 }: SolveRewardClaimButtonProps) {
 	const { claimSolveReward, isUpdatingProgress } = useUserProgress();
+	const showXPFeedback = useSolveXPFeedback();
 	const [isClaiming, setIsClaiming] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 	const isBusy = useRef(false);
@@ -29,7 +34,12 @@ export default function SolveRewardClaimButton({
 	const label = isClaiming ? 'Claiming…' : 'Claim!';
 	const accessibilityLabel = isClaiming ? label : `Claim ${reward.xp} XP`;
 
-	async function handleClaim() {
+	async function handleClaim(event: GestureResponderEvent) {
+		const feedbackOrigin: SolveXPFeedbackOrigin = {
+			centerX: event.nativeEvent.pageX,
+			top: event.nativeEvent.pageY,
+		};
+
 		if (isDisabled || isBusy.current) {
 			return;
 		}
@@ -49,6 +59,13 @@ export default function SolveRewardClaimButton({
 			if (!receipt || !receipt.reward) {
 				setErrorMessage('Could not claim. Please try again.');
 				return;
+			}
+
+			if (receipt.status === 'claimed') {
+				showXPFeedback({
+					...feedbackOrigin,
+					xp: receipt.reward.xp,
+				});
 			}
 
 			onClaimed?.(receipt.reward);
