@@ -205,6 +205,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 								<SolveButton
 									deckId={deck.id}
 									color={storyColor}
+									style={styles.solveActionButton}
 								/>
 								<LinkButton
 									accessibilityLabel={`${actionLabel} for paragraph: ${deck.title}`}
@@ -214,13 +215,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 									contentPaddingVertical={8}
 									handler={() => handleSelectDeck(deck)}
 									disabled={isUpdatingProgress}
-									showInnerBorder={false}
-									showShadow={false}
-									style={[
-										styles.actionButton,
-										styles.primaryActionButton,
-										{ borderColor: storyColor },
-									]}
+									style={styles.flashcardActionButton}
 								>
 									<Text style={styles.actionText}>{actionLabel}</Text>
 								</LinkButton>
@@ -267,11 +262,18 @@ const styles = StyleSheet.create({
 	},
 	actions: {
 		flexDirection: 'row',
-		alignItems: 'flex-start',
+		justifyContent: 'center',
+		alignContent: 'center',
+		alignItems: 'stretch',
 		gap: 8,
 	},
-	actionButton: {
-		flex: 1,
+	solveActionButton: {
+		// Leave the same space below both buttons for the link button's shadow.
+		marginBottom: 2,
+	},
+	flashcardActionButton: {
+		flex: 2,
+		shadowOpacity: 0,
 	},
 	actionText: {
 		fontSize: 16,
@@ -285,10 +287,6 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		fontSize: 16,
 		textDecorationLine: 'underline',
-	},
-	primaryActionButton: {
-		flex: 2,
-		borderBottomWidth: 2,
 	},
 	loadingButton: {
 		opacity: 0.5,
