@@ -76,8 +76,8 @@ const WordCardBack = memo(function WordCardBackMemo({
 		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(' ');
 	const shouldShowMetadataDivider = Boolean(partOfSpeech && form);
-	const shouldShowFeedback = !cardState.isAnswerRevealed;
-	const feedbackText = FEEDBACK_TEXT_BACK[cardState.feedbackKey] ?? '';
+	const feedbackKey = cardState.isAnswerRevealed ? 'REVEALED_ANSWER' : cardState.feedbackKey;
+	const feedbackText = FEEDBACK_TEXT_BACK[feedbackKey] ?? '';
 
 	/*
 	 * Render the back of the WordCard
@@ -138,11 +138,9 @@ const WordCardBack = memo(function WordCardBackMemo({
 						{displayedWord}
 					</Animated.Text>
 				</View>
-				{shouldShowFeedback && (
-					<View style={sharedWordCardStyles.feedbackContainer}>
-						<Text style={[sharedWordCardStyles.feedbackText, feedbackStyle]}>{feedbackText}</Text>
-					</View>
-				)}
+				<View style={sharedWordCardStyles.feedbackContainer}>
+					<Text style={[sharedWordCardStyles.feedbackText, feedbackStyle]}>{feedbackText}</Text>
+				</View>
 			</View>
 		</AnimatedBackgroundImage>
 	);

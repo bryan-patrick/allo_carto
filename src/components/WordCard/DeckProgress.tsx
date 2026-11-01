@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		paddingHorizontal: 8,
 		paddingVertical: 2,
-		backgroundColor: colors.dark.text,
 		gap: 8,
 	},
 	progressText: {
