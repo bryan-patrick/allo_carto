@@ -1,6 +1,5 @@
 import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { inkConfig } from '@/src/util/ink';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -16,12 +15,12 @@ interface LevelBadgeProps {
  * Player level and XP bar for headers
  */
 export default function LevelBadge({ colorScheme = 'dark' }: LevelBadgeProps) {
-	const { experience, inkBalance, status } = useUserProgress();
+	const { experience, inkBalance, maxInkBalance, status } = useUserProgress();
 	const [isProgressVisible, setIsProgressVisible] = useState(false);
 	const { level, isMaxLevel, xpIntoLevel, xpForNextLevel, progressPercentage } = experience;
 	const levelLabel = `Lvl. ${level}`;
 	const inkLabel = inkBalance.toLocaleString();
-	const isInkFull = inkBalance >= inkConfig.maxBalance;
+	const isInkFull = inkBalance >= maxInkBalance;
 	const isLightBackground = colorScheme === 'light';
 	const textColor = isLightBackground ? colors.dark.text : colors.light.text;
 	const accentColor = isLightBackground ? colors.dark.text : colors.light.goldenBorder;
@@ -30,7 +29,7 @@ export default function LevelBadge({ colorScheme = 'dark' }: LevelBadgeProps) {
 	};
 	let inkColor = textColor;
 	let inkIconColor = accentColor;
-	let inkDescription = `${inkLabel} of ${inkConfig.maxBalance} Ink.`;
+	let inkDescription = `${inkLabel} of ${maxInkBalance} Ink.`;
 	let progressDescription = `${xpIntoLevel} of ${xpForNextLevel} XP toward level ${level + 1}`;
 
 	if (isInkFull) {

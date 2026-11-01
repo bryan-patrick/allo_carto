@@ -18,7 +18,6 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
-import { inkConfig } from '@/src/util/ink';
 import type { UserProgressRow } from '@/src/util/progression';
 import {
 	getCompletedSolveStages,
@@ -126,8 +125,14 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const router = useRouter();
 	const { top, bottom } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
-	const { progressById, experience, inkBalance, isUpdatingProgress, writeSentenceAttempt } =
-		useUserProgress();
+	const {
+		progressById,
+		experience,
+		inkBalance,
+		maxInkBalance,
+		isUpdatingProgress,
+		writeSentenceAttempt,
+	} = useUserProgress();
 	const { settings } = useAppSettings();
 	const [puzzle, setPuzzle] = useState<SolveSentencePuzzle>();
 	const [selectedPosition, setSelectedPosition] = useState(0);
@@ -491,7 +496,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 						color={inkColor}
 					/>
 					<Text style={[styles.text, balanceColor]}>
-						{inkBalance} / {inkConfig.maxBalance}
+						{inkBalance} / {maxInkBalance}
 					</Text>
 				</View>
 				<ScrollView

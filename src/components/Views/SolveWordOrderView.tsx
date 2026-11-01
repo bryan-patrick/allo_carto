@@ -18,7 +18,6 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
-import { inkConfig } from '@/src/util/ink';
 import {
 	getCompletedSolveStages,
 	getSolveStageEligibility,
@@ -86,8 +85,14 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const router = useRouter();
 	const { top, bottom } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
-	const { progressById, experience, inkBalance, isUpdatingProgress, writeWordOrderAttempt } =
-		useUserProgress();
+	const {
+		progressById,
+		experience,
+		inkBalance,
+		maxInkBalance,
+		isUpdatingProgress,
+		writeWordOrderAttempt,
+	} = useUserProgress();
 	const { settings } = useAppSettings();
 	const [puzzle, setPuzzle] = useState<SolveWordOrderPuzzle>();
 	const [positions, setPositions] = useState<number[]>([]);
@@ -428,7 +433,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						color={inkColor}
 					/>
 					<Text style={[styles.text, balanceColor]}>
-						{inkBalance} / {inkConfig.maxBalance}
+						{inkBalance} / {maxInkBalance}
 					</Text>
 				</View>
 				{!puzzle ?

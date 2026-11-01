@@ -5,11 +5,12 @@ import type {
 	XPBonusProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
-import { inkConfig } from '@/src/util/ink';
+import { getMaxInkBalance, inkConfig } from '@/src/util/ink';
 import { getCompletionPercentage } from '@/src/util/progression';
 import {
 	correctAnswerXPByRarity,
 	correctAnswerXPMultiplierByCEFR,
+	getUserExperience,
 	userExperienceConfig,
 } from '@/src/util/userExperience';
 import { getWordProgressKeyFromCounts } from '@/src/util/wordProgress';
@@ -360,6 +361,7 @@ export async function writeDeckCompletion({
 			sessionId,
 		);
 		const bonuses: XPBonusProps[] = [];
+		let pendingInk = 0;
 		let earnedInk = 0;
 
 		if (savedReceipt) {
@@ -405,14 +407,8 @@ export async function writeDeckCompletion({
 				userId,
 				sessionId,
 			);
-			const inkBalance = await getUserInk({
-				database,
-				userId,
-			});
-			const pendingInk = sessionInk?.pendingInk ?? 0;
-			const remainingInkSpace = inkConfig.maxBalance - inkBalance;
 
-			earnedInk = Math.min(pendingInk, remainingInkSpace);
+			pendingInk = sessionInk?.pendingInk ?? 0;
 			bonuses.push({
 				kind: 'completion',
 				xp: userExperienceConfig.deckCompletionXP,
@@ -446,14 +442,27 @@ export async function writeDeckCompletion({
 			await incrementUserXP(database, userId, bonusXP);
 		}
 
-		if (earnedInk > 0) {
-			await database.runAsync(statements.addInk, userId, earnedInk, inkConfig.maxBalance);
-		}
-
 		const user = await database.getFirstAsync<UserXPRow>(statements.getUserXP, userId);
 
 		if (!user) {
 			throw new Error(`Could not load XP for user ${userId}.`);
+		}
+
+		if (pendingInk > 0) {
+			const experience = getUserExperience(user.totalXP);
+			const maxInkBalance = getMaxInkBalance(experience.level);
+			const inkBalance = await getUserInk({
+				database,
+				userId,
+			});
+			const remainingInkSpace = maxInkBalance - inkBalance;
+
+			// Completion XP can unlock more Ink space before this reward is paid.
+			earnedInk = Math.min(pendingInk, remainingInkSpace);
+
+			if (earnedInk > 0) {
+				await database.runAsync(statements.addInk, userId, earnedInk, maxInkBalance);
+			}
 		}
 
 		await database.runAsync(

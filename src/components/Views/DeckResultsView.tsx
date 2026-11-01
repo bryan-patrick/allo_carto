@@ -21,7 +21,7 @@ const postcardBackground = require('@/src/app/assets/images/postcard-parts/backg
  */
 export default function DeckResultsView() {
 	const router = useRouter();
-	const { inkBalance, isUpdatingProgress, progressById } = useUserProgress();
+	const { inkBalance, maxInkBalance, isUpdatingProgress, progressById } = useUserProgress();
 	const { cardDeckState } = useCardDeck();
 	const { cardDeck, session } = cardDeckState;
 	const [showWordResults, setShowWordResults] = useState(false);
@@ -160,6 +160,7 @@ export default function DeckResultsView() {
 										session={session}
 										color={storyColor}
 										inkBalance={inkBalance}
+										maxInkBalance={maxInkBalance}
 										newFlashcardsSeen={newlySeenCardCount}
 										seenFlashcards={seenCardCount}
 										totalFlashcards={paragraphCardCount}

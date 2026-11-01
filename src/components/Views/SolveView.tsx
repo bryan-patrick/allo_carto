@@ -24,7 +24,6 @@ import {
 	getParagraphNumber,
 } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
-import { inkConfig } from '@/src/util/ink';
 import {
 	getCompletedSolveStages,
 	getSolveStageEligibility,
@@ -113,8 +112,14 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const router = useRouter();
 	const { bottom, top } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
-	const { experience, progressById, inkBalance, isUpdatingProgress, writeSolveAttempt } =
-		useUserProgress();
+	const {
+		experience,
+		progressById,
+		inkBalance,
+		maxInkBalance,
+		isUpdatingProgress,
+		writeSolveAttempt,
+	} = useUserProgress();
 	const { settings } = useAppSettings();
 	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const stageDefinition = solveStages[stage];
@@ -521,7 +526,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 							color={inkColor}
 						/>
 						<Text style={[styles.text, balanceColor]}>
-							{inkBalance} / {inkConfig.maxBalance}
+							{inkBalance} / {maxInkBalance}
 						</Text>
 					</View>
 				</View>
