@@ -127,8 +127,8 @@ const styles = StyleSheet.create({
 		borderColor: colors.dark.border,
 		borderRadius: 4,
 		borderWidth: 1,
-		margin: 3,
-		padding: 4,
+		margin: 2,
+		padding: 2,
 	},
 	card: {
 		width: '30%',
@@ -137,10 +137,10 @@ const styles = StyleSheet.create({
 	},
 	wordCardContainer: {
 		borderColor: colors.light.goldenBorder,
-		padding: 3,
 		borderRadius: 8,
 		borderWidth: 2,
 		overflow: 'hidden',
+		padding: 2,
 	},
 	cardContent: {
 		flex: 1,

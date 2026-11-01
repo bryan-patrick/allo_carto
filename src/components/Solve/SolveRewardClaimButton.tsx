@@ -4,6 +4,9 @@ import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SolveReward } from './solveTypes';
 
+/*
+ * Typing
+ */
 interface SolveRewardClaimButtonProps {
 	deckId: string;
 	reward: SolveReward;
@@ -87,18 +90,20 @@ export default function SolveRewardClaimButton({
 	);
 }
 
+/*
+ * Styles
+ */
 const styles = StyleSheet.create({
 	container: {
 		alignItems: 'center',
 		gap: 4,
 	},
 	button: {
-		backgroundColor: colors.dark.primary,
-		borderRadius: 6,
-		minHeight: 32,
 		justifyContent: 'center',
-		paddingHorizontal: 10,
-		paddingVertical: 4,
+		paddingHorizontal: 12,
+		paddingVertical: 8,
+		borderRadius: 6,
+		backgroundColor: colors.dark.primary,
 	},
 	pressed: {
 		backgroundColor: colors.dark.primaryActive,
@@ -109,8 +114,8 @@ const styles = StyleSheet.create({
 	label: {
 		color: colors.light.text,
 		fontFamily: 'lexend-700',
-		fontSize: 16,
 		textAlign: 'center',
+		fontSize: 14,
 	},
 	xp: {
 		color: colors.light.text,
@@ -121,7 +126,7 @@ const styles = StyleSheet.create({
 	error: {
 		color: colors.dark.danger,
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 11,
 		textAlign: 'center',
 	},
 });
