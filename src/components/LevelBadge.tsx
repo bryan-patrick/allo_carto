@@ -9,12 +9,13 @@ import UserProgressModal from './UserProgressModal';
 
 interface LevelBadgeProps {
 	colorScheme?: 'light' | 'dark';
+	onPress?: () => void;
 }
 
 /*
  * Player level and XP bar for headers
  */
-export default function LevelBadge({ colorScheme = 'dark' }: LevelBadgeProps) {
+export default function LevelBadge({ colorScheme = 'dark', onPress }: LevelBadgeProps) {
 	const { experience, inkBalance, maxInkBalance, status } = useUserProgress();
 	const [isProgressVisible, setIsProgressVisible] = useState(false);
 	const { level, isMaxLevel, xpIntoLevel, xpForNextLevel, progressPercentage } = experience;
@@ -44,6 +45,11 @@ export default function LevelBadge({ colorScheme = 'dark' }: LevelBadgeProps) {
 
 	const accessibilityLabel = `Level ${level}. ${progressDescription}. ${inkDescription}`;
 
+	function handleOpenProgress() {
+		onPress?.();
+		setIsProgressVisible(true);
+	}
+
 	if (status !== 'ready') {
 		return null;
 	}
@@ -69,7 +75,7 @@ export default function LevelBadge({ colorScheme = 'dark' }: LevelBadgeProps) {
 					accessibilityHint="Opens your notifications and activity log"
 					accessibilityLabel={accessibilityLabel}
 					accessibilityRole="button"
-					onPress={() => setIsProgressVisible(true)}
+					onPress={handleOpenProgress}
 					style={({ pressed }) => [styles.badge, pressed && styles.pressedBadge]}
 				>
 					<View style={styles.balanceRow}>

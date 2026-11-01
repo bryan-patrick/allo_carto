@@ -23,6 +23,7 @@ import saveSelectedStory from '../db/queries/saveSelectedStory';
 import { UserContext } from '../db/userContext';
 import { UserProgressProvider } from '../db/userProgressContext';
 import { AppSettingsProvider } from '../settings/appSettingsContext';
+import { SoftTapSoundProvider } from '../util/softTapSound';
 import alloTheme from './alloTheme';
 
 /*
@@ -177,144 +178,146 @@ export default function AppLayout() {
 					}}
 				>
 					<AppSettingsProvider>
-						<Suspense fallback={<Loader />}>
-							<SQLiteProvider
-								databaseName="allo_carto.db"
-								onInit={initDB}
-								useSuspense
-							>
-								<UserProgressProvider userId={user?.id}>
-									<Stack
-										screenOptions={{
-											headerTransparent: false,
-											headerTitleStyle: Platform.select({
-												ios: alloTheme.fonts.bold,
-												default: alloTheme.fonts.medium,
-											}),
-											headerBackTitleStyle: alloTheme.fonts.regular,
-											headerRight: () => <LevelBadge />,
-											// The badge supplies its own glass background in both header layouts.
-											unstable_headerRightItems: () => [
-												{ type: 'custom', element: <LevelBadge />, hidesSharedBackground: true },
-											],
-										}}
-									>
-										<Stack.Screen
-											name="(tabs)"
-											options={({ route }) => getTabHeaderOptions(route)}
-										/>
-										<Stack.Screen
-											name="(routes)/CollectionDetail"
-											options={{
-												headerRight: () => <LevelBadge colorScheme="light" />,
+						<SoftTapSoundProvider>
+							<Suspense fallback={<Loader />}>
+								<SQLiteProvider
+									databaseName="allo_carto.db"
+									onInit={initDB}
+									useSuspense
+								>
+									<UserProgressProvider userId={user?.id}>
+										<Stack
+											screenOptions={{
+												headerTransparent: false,
+												headerTitleStyle: Platform.select({
+													ios: alloTheme.fonts.bold,
+													default: alloTheme.fonts.medium,
+												}),
+												headerBackTitleStyle: alloTheme.fonts.regular,
+												headerRight: () => <LevelBadge />,
+												// The badge supplies its own glass background in both header layouts.
 												unstable_headerRightItems: () => [
-													{
-														type: 'custom',
-														element: <LevelBadge colorScheme="light" />,
-														hidesSharedBackground: true,
-													},
+													{ type: 'custom', element: <LevelBadge />, hidesSharedBackground: true },
 												],
-												headerShown: true,
-												headerTransparent: true,
-												headerBackTitle: 'Collections',
-												headerBackButtonDisplayMode: 'minimal',
-												headerTitle: '',
 											}}
-										/>
-										<Stack.Screen
-											name="(routes)/CardDeck"
-											options={{
-												headerShown: true,
-												headerTransparent: true,
-												headerShadowVisible: false,
-												headerBackTitle: 'Back',
-												headerBackButtonDisplayMode: 'minimal',
-												headerTitle: () => <DeckProgress />,
-											}}
-										/>
-										<Stack.Screen
-											name="(routes)/StorySelect"
-											options={{
-												headerShown: true,
-												headerTransparent: true,
-												headerBackTitle: 'Home',
-												headerBackButtonDisplayMode: 'minimal',
-												headerTitle: '',
-											}}
-										/>
-										<Stack.Screen
-											name="(routes)/ChapterSelect"
-											options={{
-												headerShown: true,
-												headerTransparent: true,
-												headerBackTitle: 'Back',
-												headerTitle: '',
-												headerBackButtonDisplayMode: 'minimal',
-												scrollEdgeEffects: {
-													top: 'hidden',
-												},
-											}}
-										/>
-										<Stack.Screen
-											name="(routes)/ChapterDetail"
-											options={{
-												headerRight: () => <LevelBadge colorScheme="light" />,
-												unstable_headerRightItems: () => [
-													{
-														type: 'custom',
-														element: <LevelBadge colorScheme="light" />,
-														hidesSharedBackground: true,
+										>
+											<Stack.Screen
+												name="(tabs)"
+												options={({ route }) => getTabHeaderOptions(route)}
+											/>
+											<Stack.Screen
+												name="(routes)/CollectionDetail"
+												options={{
+													headerRight: () => <LevelBadge colorScheme="light" />,
+													unstable_headerRightItems: () => [
+														{
+															type: 'custom',
+															element: <LevelBadge colorScheme="light" />,
+															hidesSharedBackground: true,
+														},
+													],
+													headerShown: true,
+													headerTransparent: true,
+													headerBackTitle: 'Collections',
+													headerBackButtonDisplayMode: 'minimal',
+													headerTitle: '',
+												}}
+											/>
+											<Stack.Screen
+												name="(routes)/CardDeck"
+												options={{
+													headerShown: true,
+													headerTransparent: true,
+													headerShadowVisible: false,
+													headerBackTitle: 'Back',
+													headerBackButtonDisplayMode: 'minimal',
+													headerTitle: () => <DeckProgress />,
+												}}
+											/>
+											<Stack.Screen
+												name="(routes)/StorySelect"
+												options={{
+													headerShown: true,
+													headerTransparent: true,
+													headerBackTitle: 'Home',
+													headerBackButtonDisplayMode: 'minimal',
+													headerTitle: '',
+												}}
+											/>
+											<Stack.Screen
+												name="(routes)/ChapterSelect"
+												options={{
+													headerShown: true,
+													headerTransparent: true,
+													headerBackTitle: 'Back',
+													headerTitle: '',
+													headerBackButtonDisplayMode: 'minimal',
+													scrollEdgeEffects: {
+														top: 'hidden',
 													},
-												],
-												headerShown: true,
-												headerTransparent: true,
-												headerBackTitle: 'Back',
-												headerTitle: '',
-												headerBackButtonDisplayMode: 'minimal',
-												scrollEdgeEffects: {
-													top: 'hidden',
-												},
-											}}
-										/>
-										<Stack.Screen
-											name="(routes)/CardDeckSelect"
-											options={{
-												headerShown: true,
-												headerTransparent: true,
-												headerBackTitle: 'Back',
-												headerTitle: '',
-												headerBackButtonDisplayMode: 'minimal',
-											}}
-										/>
-										<Stack.Screen
-											name="(routes)/ViewCards"
-											options={{
-												headerShown: true,
-												headerBackTitle: 'Back',
-												headerBackButtonDisplayMode: 'minimal',
-												headerTitle: 'View cards',
-											}}
-										/>
-										<Stack.Screen
-											name="(routes)/DeckResults"
-											options={{
-												headerShown: true,
-												headerTitle: '',
-												headerBackVisible: false,
-												gestureEnabled: false,
-											}}
-										/>
-										<Stack.Screen
-											name="(routes)/Solve"
-											options={{
-												presentation: 'fullScreenModal',
-												headerShown: false,
-											}}
-										/>
-									</Stack>
-								</UserProgressProvider>
-							</SQLiteProvider>
-						</Suspense>
+												}}
+											/>
+											<Stack.Screen
+												name="(routes)/ChapterDetail"
+												options={{
+													headerRight: () => <LevelBadge colorScheme="light" />,
+													unstable_headerRightItems: () => [
+														{
+															type: 'custom',
+															element: <LevelBadge colorScheme="light" />,
+															hidesSharedBackground: true,
+														},
+													],
+													headerShown: true,
+													headerTransparent: true,
+													headerBackTitle: 'Back',
+													headerTitle: '',
+													headerBackButtonDisplayMode: 'minimal',
+													scrollEdgeEffects: {
+														top: 'hidden',
+													},
+												}}
+											/>
+											<Stack.Screen
+												name="(routes)/CardDeckSelect"
+												options={{
+													headerShown: true,
+													headerTransparent: true,
+													headerBackTitle: 'Back',
+													headerTitle: '',
+													headerBackButtonDisplayMode: 'minimal',
+												}}
+											/>
+											<Stack.Screen
+												name="(routes)/ViewCards"
+												options={{
+													headerShown: true,
+													headerBackTitle: 'Back',
+													headerBackButtonDisplayMode: 'minimal',
+													headerTitle: 'View cards',
+												}}
+											/>
+											<Stack.Screen
+												name="(routes)/DeckResults"
+												options={{
+													headerShown: true,
+													headerTitle: '',
+													headerBackVisible: false,
+													gestureEnabled: false,
+												}}
+											/>
+											<Stack.Screen
+												name="(routes)/Solve"
+												options={{
+													presentation: 'fullScreenModal',
+													headerShown: false,
+												}}
+											/>
+										</Stack>
+									</UserProgressProvider>
+								</SQLiteProvider>
+							</Suspense>
+						</SoftTapSoundProvider>
 					</AppSettingsProvider>
 				</CardDeckContext>
 			</ThemeProvider>

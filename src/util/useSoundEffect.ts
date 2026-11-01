@@ -7,6 +7,7 @@ const sounds: Record<string, AudioSource> = {
 	incorrect: require('@/src/app/assets/sounds/incorrect.m4a'),
 	levelUp: require('@/src/app/assets/sounds/level-up.m4a'),
 	pop: require('@/src/app/assets/sounds/pop.wav'),
+	softTap: require('@/src/app/assets/sounds/soft-tap.mp3'),
 	tap: require('@/src/app/assets/sounds/tap.wav'),
 };
 

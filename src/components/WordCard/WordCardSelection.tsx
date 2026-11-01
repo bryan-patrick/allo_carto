@@ -1,3 +1,4 @@
+import { useSoftTapSound } from '@/src/util/softTapSound';
 import { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MappedWords from './MappedWords';
@@ -16,19 +17,28 @@ interface WordCardSelectionProps {
  */
 export default function WordCardSelection({ articleWords, fillerWords }: WordCardSelectionProps) {
 	const { cardState, wordCardUIDispatch } = useWordCardUI();
+	const playSoftTap = useSoftTapSound();
 
 	const handleArticlePressToggle = useCallback(
 		(word: string) => {
-			wordCardUIDispatch({ type: 'SELECT_ARTICLE', word });
+			void playSoftTap();
+			wordCardUIDispatch({
+				type: 'SELECT_ARTICLE',
+				word,
+			});
 		},
-		[wordCardUIDispatch],
+		[playSoftTap, wordCardUIDispatch],
 	);
 
 	const handleWordPressToggle = useCallback(
 		(word: string) => {
-			wordCardUIDispatch({ type: 'SELECT_WORD', word });
+			void playSoftTap();
+			wordCardUIDispatch({
+				type: 'SELECT_WORD',
+				word,
+			});
 		},
-		[wordCardUIDispatch],
+		[playSoftTap, wordCardUIDispatch],
 	);
 
 	/*

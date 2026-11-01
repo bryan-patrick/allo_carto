@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckBoxModal from '@/src/components/DeckBox/DeckBoxModal';
+import LevelBadge from '@/src/components/LevelBadge';
 import Loader from '@/src/components/Loader';
 import CardDeckView from '@/src/components/Views/CardDeckView';
 import { sharedWordCardStyles } from '@/src/components/WordCard/sharedWordCardStyles';
@@ -13,7 +14,9 @@ import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import formatOtherWordForm from '@/src/util/formatOtherWordForm';
+import { useSoftTapSound } from '@/src/util/softTapSound';
 import type { WordProgressKey } from '@/src/util/wordProgress';
+import { Stack, useNavigation } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -32,6 +35,8 @@ interface OtherFormsAvailability {
  * Deck view - A route wrapper in (routes)
  */
 export default function CardDeck() {
+	const navigation = useNavigation();
+	const playSoftTap = useSoftTapSound();
 	const { cardDeckState, currentCard } = useCardDeck();
 	const { cardDeck } = cardDeckState;
 	const { id: userId } = useUserContext() ?? {};
@@ -50,6 +55,12 @@ export default function CardDeck() {
 		otherFormsAvailability?.wordId === currentWordId &&
 		otherFormsAvailability?.lemmaId === currentLemmaId &&
 		otherFormsAvailability?.hasOtherForms === true;
+
+	// Play the tap sound and keep the native Back button's usual navigation.
+	function handleBack() {
+		void playSoftTap();
+		navigation.goBack();
+	}
 
 	/*
 	 * Check availability for the current word and ignore stale requests.
@@ -150,6 +161,21 @@ export default function CardDeck() {
 	 */
 	return (
 		<>
+			<Stack.Screen
+				options={{
+					headerRight: () => <LevelBadge onPress={playSoftTap} />,
+					unstable_headerRightItems: () => [
+						{
+							type: 'custom',
+							element: <LevelBadge onPress={playSoftTap} />,
+							hidesSharedBackground: true,
+						},
+					],
+					unstable_nativeProps: {
+						onHeaderBackButtonClicked: handleBack,
+					},
+				}}
+			/>
 			<CardDeckView
 				currentCard={currentCard}
 				wordActions={
