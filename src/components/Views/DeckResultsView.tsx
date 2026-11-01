@@ -1,5 +1,4 @@
 import colors from '@/src/app/colors';
-import BackgroundImage from '@/src/components/BackgroundImage';
 import CompletionPassage from '@/src/components/DeckCompletion/CompletionPassage';
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
@@ -7,6 +6,7 @@ import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findCompletionPath } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
+import { ImageBackground } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -110,8 +110,9 @@ export default function DeckResultsView() {
 				bottom: 'maximum',
 			}}
 		>
-			<BackgroundImage
+			<ImageBackground
 				source={postcardBackground}
+				contentFit="cover"
 				style={styles.postcard}
 			>
 				<View style={styles.postcardBorder}>
@@ -210,7 +211,7 @@ export default function DeckResultsView() {
 						</LinkButton>
 					</View>
 				</View>
-			</BackgroundImage>
+			</ImageBackground>
 		</SafeAreaView>
 	);
 }
@@ -227,7 +228,6 @@ const styles = StyleSheet.create({
 	postcard: {
 		flex: 1,
 		width: '100%',
-		maxWidth: 600,
 		alignSelf: 'center',
 		padding: 6,
 		borderWidth: 1,

@@ -6,9 +6,9 @@ import { StyleSheet } from 'react-native';
  */
 export const sharedWordCardStyles = StyleSheet.create({
 	wordCardContainer: {
-		borderRadius: 12,
-		borderWidth: 3,
-		borderColor: colors.light.border,
+		borderRadius: 13,
+		borderWidth: 2,
+		borderColor: colors.light.goldenBorder,
 		overflow: 'hidden',
 	},
 	wordCardInner: {
@@ -18,6 +18,7 @@ export const sharedWordCardStyles = StyleSheet.create({
 		justifyContent: 'center',
 		overflow: 'hidden',
 		borderWidth: 1,
+		margin: 4,
 		borderColor: colors.dark.border,
 		borderRadius: 9,
 	},
