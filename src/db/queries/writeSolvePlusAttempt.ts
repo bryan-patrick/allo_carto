@@ -3,6 +3,7 @@ import { checkFrenchSolveAnswer } from '@/src/util/solveAnswer';
 import { solveStages } from '@/src/util/solveProgression';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolvePuzzle from './getSolvePuzzle';
+import { getSolveRewards, saveSolveCardReward, saveSolveGemReward } from './solveRewards';
 
 /*
  * Typing
@@ -25,7 +26,7 @@ interface SavedSolvePlusAttempt {
 }
 
 /*
- * Check a French answer and save its Ink charge, solved card, and second gem together.
+ * Check a French answer and save its Ink charge, solved card, and pending rewards together.
  */
 export default async function writeSolvePlusAttempt({
 	database,
@@ -54,10 +55,6 @@ export default async function writeSolvePlusAttempt({
 			VALUES (?, ?, 2, ?, ?, ?)
 			ON CONFLICT(userId, deckId, stage, position)
 			DO UPDATE SET wordId = excluded.wordId, acceptedAnswer = excluded.acceptedAnswer;
-		`,
-		saveSecondGem: `
-			UPDATE solveCompletions SET completedSolveStages = 2
-			WHERE userId = ? AND deckId = ? AND completedSolveStages = 1;
 		`,
 		saveReceipt: `
 			INSERT INTO solveStageAttempts (
@@ -97,17 +94,24 @@ export default async function writeSolvePlusAttempt({
 				throw new Error('This attempt was already used for another answer.');
 			}
 
+			const rewards = await getSolveRewards({
+				database: transaction,
+				userId,
+				deckId,
+				stage: 2,
+			});
+
 			result = {
 				status: receipt.status,
 				acceptedAnswer: receipt.acceptedAnswer,
 				inkSpent: receipt.inkSpent,
 				firstGemEarned: false,
 				stageCompleted: Boolean(receipt.stageCompleted),
+				rewards,
 			};
 			return;
 		}
 
-		let stageCompleted = false;
 		const puzzle = await getSolvePuzzle({
 			database: transaction,
 			userId,
@@ -127,6 +131,7 @@ export default async function writeSolvePlusAttempt({
 		if (card.acceptedAnswer !== null) {
 			result.status = 'alreadySolved';
 			result.acceptedAnswer = card.acceptedAnswer;
+			result.rewards = puzzle.rewards;
 			return;
 		}
 
@@ -164,14 +169,22 @@ export default async function writeSolvePlusAttempt({
 				checkedAnswer.acceptedAnswer,
 			);
 
+			await saveSolveCardReward({
+				database: transaction,
+				userId,
+				deckId,
+				stage: 2,
+				position,
+				wordId: card.wordId,
+			});
+
 			if (remainingCards.length === 0) {
-				const completion = await transaction.runAsync(statements.saveSecondGem, userId, deckId);
-
-				if (completion.changes !== 1) {
-					throw new Error('Could not save the second gem.');
-				}
-
-				stageCompleted = true;
+				await saveSolveGemReward({
+					database: transaction,
+					userId,
+					deckId,
+					stage: 2,
+				});
 			}
 		}
 
@@ -185,14 +198,22 @@ export default async function writeSolvePlusAttempt({
 			checkedAnswer.status,
 			checkedAnswer.acceptedAnswer,
 			inkSpent,
-			stageCompleted ? 1 : 0,
+			0,
 		);
+
+		const rewards = await getSolveRewards({
+			database: transaction,
+			userId,
+			deckId,
+			stage: 2,
+		});
 
 		result = {
 			...checkedAnswer,
 			inkSpent,
 			firstGemEarned: false,
-			stageCompleted,
+			stageCompleted: false,
+			rewards,
 		};
 	});
 

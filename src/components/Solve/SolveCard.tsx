@@ -3,9 +3,13 @@ import BackgroundImage from '@/src/components/BackgroundImage';
 import { cardBackgrounds } from '@/src/components/WordCard/cardBackgrounds';
 import type { SolveWordStage } from '@/src/util/solveProgression';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import type { SolvePosition } from './solveTypes';
+import SolveRewardClaimButton from './SolveRewardClaimButton';
+import type { SolvePosition, SolveReward } from './solveTypes';
 
 interface SolveCardProps {
+	deckId: string;
+	reward?: SolveReward;
+	onRewardClaimed: (reward: SolveReward) => void;
 	card: SolvePosition;
 	stage: SolveWordStage;
 	isSelected: boolean;
@@ -18,6 +22,9 @@ interface SolveCardProps {
  * Returns a French/English word (card props) in Solve
  */
 export default function SolveCard({
+	deckId,
+	reward,
+	onRewardClaimed,
 	card,
 	stage,
 	isSelected,
@@ -25,8 +32,9 @@ export default function SolveCard({
 	storyColor,
 	onSelect,
 }: SolveCardProps) {
-	const isSolved = card.acceptedAnswer !== null;
-	const isDisabled = disabled || isSolved;
+	const hasPendingReward = reward?.claimedAt === null;
+	const isSolved = card.acceptedAnswer !== null && !hasPendingReward;
+	const isDisabled = disabled || card.acceptedAnswer !== null;
 	const prompt = stage === 2 ? card.englishPrompt : card.text;
 	const wordColor = {
 		color: storyColor,
@@ -36,7 +44,9 @@ export default function SolveCard({
 	};
 	let accessibilityLabel = `${prompt}, card ${card.position + 1}, solve for ${card.inkCost} Ink`;
 
-	if (isSolved) {
+	if (hasPendingReward) {
+		accessibilityLabel = `${prompt}, solved, XP ready to claim`;
+	} else if (isSolved) {
 		accessibilityLabel = `${prompt}, solved: ${card.acceptedAnswer}`;
 	}
 
@@ -49,15 +59,7 @@ export default function SolveCard({
 	}
 
 	return (
-		<Pressable
-			accessibilityRole="button"
-			accessibilityLabel={accessibilityLabel}
-			accessibilityState={{
-				selected: isSelected,
-				disabled: isDisabled,
-			}}
-			disabled={isDisabled}
-			onPress={() => onSelect(card.position)}
+		<View
 			style={[
 				styles.wordCardContainer,
 				styles.card,
@@ -65,48 +67,92 @@ export default function SolveCard({
 				isSolved && styles.solvedBorder,
 			]}
 		>
-			<BackgroundImage
-				source={cardBackgrounds[card.rarity]}
-				style={[styles.cardContent, isSolved && styles.solvedBorder]}
+			<Pressable
+				accessibilityElementsHidden={hasPendingReward}
+				importantForAccessibility={hasPendingReward ? 'no-hide-descendants' : 'auto'}
+				accessibilityRole="button"
+				accessibilityLabel={accessibilityLabel}
+				accessibilityState={{
+					selected: isSelected,
+					disabled: isDisabled,
+				}}
+				disabled={isDisabled}
+				onPress={() => onSelect(card.position)}
+				style={[styles.selectCard, hasPendingReward && styles.hiddenCard]}
 			>
-				{isSolved && (
-					<View
-						pointerEvents="none"
-						style={styles.solvedOverlay}
+				<BackgroundImage
+					source={cardBackgrounds[card.rarity]}
+					style={[styles.cardContent, isSolved && styles.solvedBorder]}
+				>
+					{isSolved && (
+						<View
+							pointerEvents="none"
+							style={styles.solvedOverlay}
+						/>
+					)}
+					<Text style={[styles.word, wordColor]}>{prompt}</Text>
+					{hasPendingReward ?
+						<Text style={styles.cost}>Solved!</Text>
+					: isSolved ?
+						<Text style={styles.translation}>✓ {card.acceptedAnswer}</Text>
+					:	<Text style={styles.cost}>{card.inkCost} Ink</Text>}
+				</BackgroundImage>
+			</Pressable>
+			{hasPendingReward && reward && (
+				<View style={styles.claimOverlay}>
+					<SolveRewardClaimButton
+						deckId={deckId}
+						reward={reward}
+						disabled={disabled}
+						onClaimed={onRewardClaimed}
 					/>
-				)}
-				<Text style={[styles.word, wordColor]}>{prompt}</Text>
-				{isSolved ?
-					<Text style={styles.translation}>✓ {card.acceptedAnswer}</Text>
-				:	<Text style={styles.cost}>{card.inkCost} Ink</Text>}
-			</BackgroundImage>
-		</Pressable>
+				</View>
+			)}
+		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	selectCard: {
+		flex: 1,
+	},
+	hiddenCard: {
+		opacity: 0,
+	},
+	claimOverlay: {
+		...StyleSheet.absoluteFill,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: colors.light.background,
+		borderColor: colors.dark.border,
+		borderRadius: 4,
+		borderWidth: 1,
+		margin: 3,
+		padding: 4,
+	},
 	card: {
 		width: '30%',
 		flexGrow: 1,
 		maxWidth: 120,
 	},
 	wordCardContainer: {
-		borderColor: colors.light.border,
-		padding: 2,
+		borderColor: colors.light.goldenBorder,
+		padding: 3,
 		borderRadius: 8,
-		borderWidth: 3,
+		borderWidth: 2,
+		overflow: 'hidden',
 	},
 	cardContent: {
-		borderTopWidth: 1,
-		borderBottomWidth: 1,
-		borderColor: colors.light.border,
 		flex: 1,
+		borderWidth: 1,
+		borderColor: colors.light.border,
+		borderRadius: 4,
+		overflow: 'hidden',
 		alignContent: 'center',
-		padding: 6,
-		marginVertical: 4,
 		justifyContent: 'center',
-		gap: 2,
 		minHeight: 65,
+		padding: 6,
+		gap: 2,
 	},
 	exemptCard: {
 		minHeight: 70,
@@ -115,7 +161,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		backgroundColor: 'transparent',
 		borderColor: 'transparent',
-		borderWidth: 3,
+		borderWidth: 2,
 	},
 	solvedBorder: {
 		backgroundColor: colors.light.success,

@@ -40,6 +40,8 @@ export const correctAnswerXPMultiplierByCEFR: Record<CEFR, number> = {
 };
 
 export const userExperienceConfig = {
+	solveCardXPMultiplier: 2,
+	solveGemXP: 200,
 	learningLevelBonusMultiplier: 3,
 	deckCompletionXP: 50,
 	firstDeckCompletionXP: 15,

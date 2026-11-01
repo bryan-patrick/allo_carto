@@ -6,6 +6,7 @@ import { solveStages } from '@/src/util/solveProgression';
 import { checkWordOrderAnswer, isCompleteWordOrder } from '@/src/util/solveWordOrder';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolveWordOrderPuzzle from './getSolveWordOrderPuzzle';
+import { getSolveRewards, saveSolveGemReward } from './solveRewards';
 
 /*
  * Typing
@@ -27,7 +28,7 @@ interface WordOrderReceiptRow {
 }
 
 /*
- * Charges Ink to check a Solve++ arrangement and awards the third gem if it is correct.
+ * Charge Ink to check a Solve++ arrangement and prepare a gem claim if it is correct.
  * Saves the result and charge together so a failed save or retry cannot charge the player twice.
  */
 export default async function writeWordOrderAttempt({
@@ -53,10 +54,6 @@ export default async function writeWordOrderAttempt({
 		saveAnswer: `
 			INSERT INTO solveStagePositions (userId, deckId, stage, position, acceptedAnswer)
 			VALUES (?, ?, 3, 0, ?);
-		`,
-		saveThirdGem: `
-			UPDATE solveCompletions SET completedSolveStages = 3
-			WHERE userId = ? AND deckId = ? AND completedSolveStages = 2;
 		`,
 		saveReceipt: `
 			INSERT INTO solveStageAttempts (
@@ -100,12 +97,20 @@ export default async function writeWordOrderAttempt({
 				throw new Error('This submission ID was already used for another answer.');
 			}
 
+			const rewards = await getSolveRewards({
+				database: transaction,
+				userId,
+				deckId,
+				stage: 3,
+			});
+
 			result = {
 				status: receipt.status,
 				acceptedAnswer: null,
 				inkSpent: receipt.inkSpent,
 				firstGemEarned: false,
 				stageCompleted: Boolean(receipt.stageCompleted),
+				rewards,
 			};
 			return;
 		}
@@ -117,8 +122,9 @@ export default async function writeWordOrderAttempt({
 			fastSolveUnlocks,
 		});
 
-		if (puzzle.completedSolveStages >= 3) {
+		if (puzzle.completedSolveStages >= 3 || puzzle.rewards.some(reward => reward.kind === 'gem')) {
 			result.status = 'alreadySolved';
+			result.rewards = puzzle.rewards;
 			return;
 		}
 
@@ -142,11 +148,12 @@ export default async function writeWordOrderAttempt({
 		if (isCorrect) {
 			await transaction.runAsync(statements.saveAnswer, userId, deckId, answer);
 
-			const completion = await transaction.runAsync(statements.saveThirdGem, userId, deckId);
-
-			if (completion.changes !== 1) {
-				throw new Error('Could not save the third gem.');
-			}
+			await saveSolveGemReward({
+				database: transaction,
+				userId,
+				deckId,
+				stage: 3,
+			});
 
 			await transaction.runAsync(statements.clearDraft, userId, deckId);
 		}
@@ -160,15 +167,23 @@ export default async function writeWordOrderAttempt({
 			status,
 			acceptedAnswer,
 			inkCost,
-			isCorrect ? 1 : 0,
+			0,
 		);
+
+		const rewards = await getSolveRewards({
+			database: transaction,
+			userId,
+			deckId,
+			stage: 3,
+		});
 
 		result = {
 			status,
 			acceptedAnswer: null,
 			inkSpent: inkCost,
 			firstGemEarned: false,
-			stageCompleted: isCorrect,
+			stageCompleted: false,
+			rewards,
 		};
 	});
 

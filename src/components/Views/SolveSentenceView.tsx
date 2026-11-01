@@ -5,6 +5,7 @@ import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
+import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import type {
 	SentenceAttemptRequest,
 	SolveAttemptResult,
@@ -15,7 +16,7 @@ import getSolveSentencePuzzle from '@/src/db/queries/getSolveSentencePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findCompletionPath } from '@/src/util/atlasCompletion';
+import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { inkConfig } from '@/src/util/ink';
 import type { UserProgressRow } from '@/src/util/progression';
@@ -158,6 +159,9 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const promptText = isFrenchAnswer ? selectedSentence?.englishText : selectedSentence?.frenchText;
 	const solvedCount = sentences.filter(sentence => sentence.acceptedAnswer !== null).length;
 	const isComplete = completedStages >= stage;
+	const pendingGem = puzzle?.rewards.find(
+		reward => reward.kind === 'gem' && reward.claimedAt === null,
+	);
 	const isSentenceSolved = Boolean(selectedSentence && selectedSentence.acceptedAnswer !== null);
 	const eligibility = getSolveStageEligibility({
 		stage,
@@ -183,6 +187,8 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const navigationDisabled = disabled || needsRetry;
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
 	const storyColor = getDeckStoryColor(deckId);
+	const paragraphNumber = getParagraphNumber(deckId);
+	const puzzleTitle = paragraphNumber ? `Solve Paragraph ${paragraphNumber}` : 'Solve';
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
@@ -355,6 +361,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		setPuzzle({
 			...puzzle,
 			sentences: updatedSentences,
+			rewards: result.rewards ?? puzzle.rewards,
 			completedSolveStages: result.stageCompleted ? stage : puzzle.completedSolveStages,
 		});
 		setAnswer('');
@@ -461,7 +468,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 						accessibilityRole="header"
 						style={[styles.title, titleColor]}
 					>
-						{stageDefinition.label}
+						{puzzleTitle}
 					</Text>
 					<Pressable
 						accessibilityRole="button"
@@ -478,7 +485,6 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					</Pressable>
 				</View>
 				<View style={styles.details}>
-					<Text style={[styles.text, styles.paragraphTitle]}>{puzzle?.deck.title}</Text>
 					<MaterialSymbol
 						name="water_drop"
 						size={18}
@@ -504,6 +510,12 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 							<Text style={styles.title}>{stageText.completionTitle}</Text>
 							<Text style={[styles.text, styles.centeredText]}>{stageText.completionMessage}</Text>
 						</View>
+					: pendingGem ?
+						<SolveGemClaim
+							deckId={deckId}
+							reward={pendingGem}
+							disabled={disabled}
+						/>
 					: !isEligible ?
 						<Text style={styles.text}>{unlockMessage}</Text>
 					: selectedSentence ?
@@ -602,7 +614,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					:	null}
 				</ScrollView>
 				<View style={styles.footer}>
-					{puzzle && !isComplete && (
+					{puzzle && !isComplete && !pendingGem && (
 						<>
 							{feedback && (
 								<Text
@@ -612,32 +624,40 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 									<Text style={feedbackStyle}>{feedback.text}</Text>
 								</Text>
 							)}
-							<LinkButton
-								handler={handleSubmit}
-								disabled={submitDisabled}
-								accessibilityLabel={submitLabel}
-								accessibilityState={{
-									disabled: submitDisabled,
-									busy: isSaving,
-								}}
-								color={submitDisabled ? colors.dark.border : inkColor}
-								style={submitDisabled && styles.disabled}
-								useArrow={false}
-								fullwidth
-							>
-								{submitLabel}
-							</LinkButton>
 						</>
 					)}
-					<SecondaryButton
-						onPress={handleClose}
-						disabled={disabled}
-						color={storyColor}
-						type="outline"
-						fullwidth
-					>
-						Close
-					</SecondaryButton>
+					<View style={styles.actions}>
+						<View style={styles.actionButton}>
+							<SecondaryButton
+								onPress={handleClose}
+								disabled={disabled}
+								color={storyColor}
+								type="outline"
+								fullwidth
+							>
+								Close
+							</SecondaryButton>
+						</View>
+						{puzzle && !isComplete && !pendingGem && (
+							<View style={styles.solveActionButton}>
+								<LinkButton
+									handler={handleSubmit}
+									disabled={submitDisabled}
+									accessibilityLabel={submitLabel}
+									accessibilityState={{
+										disabled: submitDisabled,
+										busy: isSaving,
+									}}
+									color={submitDisabled ? colors.dark.border : inkColor}
+									style={submitDisabled && styles.disabled}
+									useArrow={false}
+									fullwidth
+								>
+									{submitLabel}
+								</LinkButton>
+							</View>
+						)}
+					</View>
 				</View>
 			</BackgroundImage>
 		</KeyboardAvoidingView>
@@ -665,7 +685,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 8,
-		padding: 12,
+		paddingHorizontal: 12,
+		paddingVertical: 4,
 	},
 	title: {
 		fontFamily: 'lexend-600',
@@ -681,14 +702,14 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	details: {
+		borderBottomColor: colors.light.goldenBorder,
+		borderBottomWidth: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'flex-end',
 		gap: 6,
 		paddingHorizontal: 12,
-		paddingBottom: 12,
-	},
-	paragraphTitle: {
-		flex: 1,
+		paddingBottom: 8,
 	},
 	body: {
 		flexGrow: 1,
@@ -741,7 +762,7 @@ const styles = StyleSheet.create({
 		maxHeight: 160,
 		padding: 10,
 		textAlignVertical: 'top',
-		backgroundColor: colors.light.primary,
+		backgroundColor: '#FFFFFF',
 		borderWidth: 1,
 		borderColor: colors.light.border,
 		borderRadius: 8,
@@ -766,6 +787,17 @@ const styles = StyleSheet.create({
 		gap: 8,
 		borderTopWidth: 1,
 		borderColor: colors.light.goldenBorder,
+	},
+	actions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	actionButton: {
+		flex: 1,
+	},
+	solveActionButton: {
+		flex: 2,
 	},
 	disabled: {
 		opacity: 0.5,

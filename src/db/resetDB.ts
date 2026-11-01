@@ -10,6 +10,7 @@ export default async function resetDB(): Promise<void> {
 
 	await database.execAsync(`
 		DROP TABLE IF EXISTS collectionRewardClaims;
+		DROP TABLE IF EXISTS solveRewards;
 		DROP TABLE IF EXISTS solveWordOrderDrafts;
 		DROP TABLE IF EXISTS solveStageAttempts;
 		DROP TABLE IF EXISTS solveStagePositions;

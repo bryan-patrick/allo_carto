@@ -3,6 +3,7 @@ import { solveStages } from '@/src/util/solveProgression';
 import { checkFrenchSentenceAnswer, checkSentenceAnswer } from '@/src/util/solveSentenceAnswer';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolveSentencePuzzle from './getSolveSentencePuzzle';
+import { getSolveRewards, saveSolveGemReward } from './solveRewards';
 
 /*
  * Typings
@@ -25,7 +26,7 @@ interface SentenceReceiptRow {
 }
 
 /*
- * Charge for a sentence answer and award the stage after every sentence is solved.
+ * Charge for a sentence answer and prepare a gem claim after every sentence is solved.
  */
 export default async function writeSentenceAttempt({
 	database,
@@ -56,10 +57,6 @@ export default async function writeSentenceAttempt({
 			ON CONFLICT(userId, deckId, stage, position)
 			DO UPDATE SET acceptedAnswer = excluded.acceptedAnswer;
 		`,
-		saveCompletion: `
-			UPDATE solveCompletions SET completedSolveStages = ?
-			WHERE userId = ? AND deckId = ? AND completedSolveStages = ?;
-		`,
 		saveReceipt: `
 			INSERT INTO solveStageAttempts (
 				userId, attemptId, deckId, stage, position, answer,
@@ -88,7 +85,6 @@ export default async function writeSentenceAttempt({
 			userId,
 			attemptId,
 		);
-		let stageCompleted = false;
 
 		if (receipt) {
 			if (
@@ -100,12 +96,20 @@ export default async function writeSentenceAttempt({
 				throw new Error('This submission ID was already used for another answer.');
 			}
 
+			const rewards = await getSolveRewards({
+				database: transaction,
+				userId,
+				deckId,
+				stage,
+			});
+
 			result = {
 				status: receipt.status,
 				acceptedAnswer: receipt.acceptedAnswer,
 				inkSpent: receipt.inkSpent,
 				firstGemEarned: false,
 				stageCompleted: Boolean(receipt.stageCompleted),
+				rewards,
 			};
 			return;
 		}
@@ -129,6 +133,7 @@ export default async function writeSentenceAttempt({
 		if (sentence.acceptedAnswer !== null) {
 			result.status = 'alreadySolved';
 			result.acceptedAnswer = sentence.acceptedAnswer;
+			result.rewards = puzzle.rewards;
 			return;
 		}
 
@@ -165,19 +170,12 @@ export default async function writeSentenceAttempt({
 			);
 
 			if (remainingSentences.length === 0) {
-				const completion = await transaction.runAsync(
-					statements.saveCompletion,
-					stage,
+				await saveSolveGemReward({
+					database: transaction,
 					userId,
 					deckId,
-					stage - 1,
-				);
-
-				if (completion.changes !== 1) {
-					throw new Error('Could not save the sentence stage completion.');
-				}
-
-				stageCompleted = true;
+					stage,
+				});
 			}
 		}
 
@@ -192,14 +190,22 @@ export default async function writeSentenceAttempt({
 			checkedAnswer.status,
 			checkedAnswer.acceptedAnswer,
 			inkCost,
-			stageCompleted ? 1 : 0,
+			0,
 		);
+
+		const rewards = await getSolveRewards({
+			database: transaction,
+			userId,
+			deckId,
+			stage,
+		});
 
 		result = {
 			...checkedAnswer,
 			inkSpent: inkCost,
 			firstGemEarned: false,
-			stageCompleted,
+			stageCompleted: false,
+			rewards,
 		};
 	});
 

@@ -17,6 +17,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolveStageProgress from './getSolveStageProgress';
 import loadUserXP from './getUserExperience';
 import getUserProgress from './getUserProgress';
+import { getSolveRewards } from './solveRewards';
 
 /*
  * Typing
@@ -165,8 +166,16 @@ export default async function getSolvePuzzle({
 		});
 	}
 
+	const rewards = await getSolveRewards({
+		database,
+		userId,
+		deckId,
+		stage,
+	});
+
 	return {
 		...eligibility,
+		rewards,
 		deck,
 		stage,
 		completedSolveStages,

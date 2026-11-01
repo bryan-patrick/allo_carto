@@ -124,8 +124,29 @@ export default async function createTables(): Promise<void> {
 	await createInkTables();
 	await createCollectionRewardClaimsTable();
 	await createSolveTables();
+	await createSolveRewardsTable();
 	await ensureFlashcardsStartedColumn();
 	await ensureParagraphProgressType();
+}
+
+// Remember each puzzle reward until it is claimed, including the XP already paid.
+async function createSolveRewardsTable(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS solveRewards (
+			userId TEXT NOT NULL,
+			deckId TEXT NOT NULL,
+			stage INTEGER NOT NULL CHECK (stage BETWEEN 1 AND 5),
+			kind TEXT NOT NULL CHECK (kind IN ('card', 'gem')),
+			position INTEGER NOT NULL CHECK (position >= 0),
+			xp INTEGER NOT NULL CHECK (xp > 0),
+			claimedAt INTEGER,
+			PRIMARY KEY (userId, deckId, stage, kind, position),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+	`;
+
+	await database.execAsync(statement);
 }
 
 /*
