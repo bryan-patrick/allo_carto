@@ -15,7 +15,6 @@ import getDeckWordProgressCounts, {
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { UnlockCriteria } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
@@ -59,8 +58,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	 */
 	const { id: userId } = useUserContext() ?? {};
 	const { experience, isUpdatingProgress, progressById } = useUserProgress();
-	const { settings } = useAppSettings();
-	const cardsPerDeck = getCardsPerDeck(experience.level, settings.cardsPerDeck);
+	const cardsPerDeck = getCardsPerDeck(experience.level);
 	const { cardDeckDispatch } = useCardDeck();
 	const isStartingDeck = useRef(false);
 	const [wordProgressCounts, setWordProgressCounts] = useState<DeckWordProgressCounts>(

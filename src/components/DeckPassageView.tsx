@@ -3,11 +3,13 @@ import type { PassageSegment, ReadingPassage } from '@/src/components/CardDeck/c
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import PassageHighlightLayer from '@/src/components/PassageHighlightLayer';
 import ProgressBar from '@/src/components/ProgressBar';
-import TTSButton from '@/src/components/TTSButton';
+import TTSButton, { type TTSButtonHandle } from '@/src/components/TTSButton';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
+import { readingSpeechRates } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
+import type { SpeechPlaybackState } from '@/src/util/speakFrench';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
@@ -189,7 +191,12 @@ export default function DeckPassageView({
 	wordProgressKeyByWordId,
 }: DeckPassageViewProps) {
 	const {
-		settings: { useLearningLevelColors, useLevelOpacity, showUnseenWords },
+		settings: {
+			useLearningLevelColors,
+			useLevelOpacity,
+			showUnseenWords,
+			readingSpeechRate: speechRate,
+		},
 		setSetting,
 	} = useAppSettings();
 	/*
@@ -197,11 +204,16 @@ export default function DeckPassageView({
 	 */
 	const [passageLineMetrics, setPassageLineMetrics] = useState<PassageLineMetric[]>([]);
 	const [spokenCharacterIndex, setSpokenCharacterIndex] = useState<number | null>(null);
+	const [speechPlaybackState, setSpeechPlaybackState] = useState<SpeechPlaybackState>('stopped');
+	const isSpeechPlaying = speechPlaybackState === 'playing';
+	const speechButtonRef = useRef<TTSButtonHandle | null>(null);
 	const [areFiltersExpanded, setAreFiltersExpanded] = useState(false);
 	const passageSpeech = useMemo(
 		() => getPassageSpeech(deck.passage, wordProgressKeyByWordId, showUnseenWords),
 		[deck.passage, wordProgressKeyByWordId, showUnseenWords],
 	);
+	const spokenWordRanges = passageSpeech.wordRanges.filter(range => range.end > range.start);
+	const hasSpokenWords = spokenWordRanges.length > 0;
 	const [activeWordProgressFilter, setActiveWordProgressFilter] = useState<WordProgressKey | null>(
 		null,
 	);
@@ -249,12 +261,12 @@ export default function DeckPassageView({
 		displayOpacity = opacity;
 
 		if (isCurrentWord) {
-			backgroundColor = '#FFFFAAFF';
+			backgroundColor = '#FFE9A6';
 			displayOpacity = 1;
 		}
 
 		if (isSpokenWord) {
-			backgroundColor = '#FFFFCC';
+			backgroundColor = '#FFE082';
 			displayOpacity = 1;
 		}
 
@@ -274,10 +286,13 @@ export default function DeckPassageView({
 
 	const speechButton = (
 		<TTSButton
+			ref={speechButtonRef}
 			accessibilityLabel="Read story aloud"
-			disabled={!passageSpeech.wordRanges.some(range => range.end > range.start)}
+			disabled={!hasSpokenWords}
 			onBoundary={setSpokenCharacterIndex}
 			onPlaybackEnd={() => setSpokenCharacterIndex(null)}
+			onPlaybackStateChange={setSpeechPlaybackState}
+			rate={speechRate}
 			stoppable
 			wordsToSay={passageSpeech.text}
 		/>
@@ -309,6 +324,49 @@ export default function DeckPassageView({
 
 	if (totalWordCount > 0) {
 		seenPercent = (wordsSeenCount / totalWordCount) * 100;
+	}
+
+	// Change the reading speed at the current word, keeping a paused reading paused.
+	function handleSpeechRateChange(rate: number) {
+		const currentWordRange = spokenWordRanges.find(range => {
+			return spokenCharacterIndex !== null && spokenCharacterIndex < range.end;
+		});
+
+		if (rate === speechRate) {
+			return;
+		}
+
+		setSetting('readingSpeechRate', rate);
+
+		if (currentWordRange) {
+			speechButtonRef.current?.playFrom(currentWordRange.start, rate, !isSpeechPlaying);
+		}
+	}
+
+	/*
+	 * Move to the previous word and read from there to the end.
+	 * When stopped, Back starts at the last word.
+	 */
+	function handlePreviousWord() {
+		const lastWordIndex = spokenWordRanges.length - 1;
+		const currentWordIndex = spokenWordRanges.findIndex(range => {
+			return spokenCharacterIndex !== null && spokenCharacterIndex < range.end;
+		});
+		let nextWordIndex = lastWordIndex;
+
+		if (!hasSpokenWords) {
+			return;
+		}
+
+		if (currentWordIndex !== -1) {
+			const adjacentWordIndex = currentWordIndex - 1;
+
+			nextWordIndex = Math.max(0, Math.min(lastWordIndex, adjacentWordIndex));
+		}
+
+		const nextWordRange = spokenWordRanges[nextWordIndex];
+
+		speechButtonRef.current?.playFrom(nextWordRange.start, speechRate);
 	}
 
 	/*
@@ -577,6 +635,93 @@ export default function DeckPassageView({
 				onLayout={({ nativeEvent }) => handleHeightMeasurement('footer', nativeEvent.layout.height)}
 				style={styles.footer}
 			>
+				<View style={styles.speechControls}>
+					<View
+						accessibilityRole="radiogroup"
+						accessibilityLabel="TTS speed"
+						style={styles.speechControlGroup}
+					>
+						<Text style={styles.speechControlLabel}>Speed</Text>
+						{readingSpeechRates.map(rate => {
+							const isSelected = speechRate === rate;
+							const rateLabel = rate.toFixed(1);
+
+							return (
+								<Pressable
+									key={rate}
+									accessibilityLabel={`TTS speed ${rateLabel} times`}
+									accessibilityRole="radio"
+									accessibilityState={{
+										checked: isSelected,
+									}}
+									onPress={() => handleSpeechRateChange(rate)}
+									style={[styles.speechControlButton, isSelected && styles.activeSpeechControl]}
+								>
+									<Text
+										style={[
+											styles.speechControlLabel,
+											isSelected && styles.activeSpeechControlLabel,
+										]}
+									>
+										{rateLabel}
+									</Text>
+								</Pressable>
+							);
+						})}
+					</View>
+					<View style={styles.speechControlsDivider} />
+					<View style={styles.speechControlGroup}>
+						<Text style={styles.speechControlLabel}>Controls</Text>
+						<Pressable
+							accessibilityLabel="Read from previous word"
+							accessibilityHint="When stopped, reads the last word."
+							accessibilityRole="button"
+							accessibilityState={{
+								disabled: !hasSpokenWords,
+							}}
+							disabled={!hasSpokenWords}
+							onPress={handlePreviousWord}
+							style={({ pressed }) => [
+								styles.speechControlButton,
+								styles.speechSkipButton,
+								pressed && styles.activeSpeechControl,
+								!hasSpokenWords && styles.disabledSpeechControl,
+							]}
+						>
+							{({ pressed }) => (
+								<MaterialSymbol
+									color={pressed ? colors.light.text : colors.dark.text}
+									name="fast_rewind"
+									size={20}
+								/>
+							)}
+						</Pressable>
+						<Pressable
+							accessibilityLabel={isSpeechPlaying ? 'Pause reading' : 'Play reading'}
+							accessibilityHint="Resumes a paused reading or starts at the first word."
+							accessibilityRole="button"
+							accessibilityState={{
+								disabled: !hasSpokenWords,
+							}}
+							disabled={!hasSpokenWords}
+							onPress={() => speechButtonRef.current?.togglePlayback()}
+							style={({ pressed }) => [
+								styles.speechControlButton,
+								styles.speechSkipButton,
+								pressed && styles.activeSpeechControl,
+								!hasSpokenWords && styles.disabledSpeechControl,
+							]}
+						>
+							{({ pressed }) => (
+								<MaterialSymbol
+									color={pressed ? colors.light.text : colors.dark.text}
+									name={isSpeechPlaying ? 'pause' : 'play_arrow'}
+									size={20}
+								/>
+							)}
+						</Pressable>
+					</View>
+				</View>
 				{showLearningControls && (
 					<Pressable
 						accessibilityRole="button"
@@ -786,6 +931,54 @@ const styles = StyleSheet.create({
 	footer: {
 		paddingHorizontal: 8,
 		paddingTop: 8,
+	},
+	speechControls: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'space-evenly',
+		gap: 12,
+		paddingHorizontal: 8,
+		paddingBottom: 8,
+	},
+	speechControlGroup: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		gap: 8,
+	},
+	speechControlLabel: {
+		color: colors.dark.text,
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+	},
+	speechControlButton: {
+		alignItems: 'center',
+		borderColor: colors.light.goldenBorder,
+		borderRadius: 6,
+		borderWidth: 1,
+		justifyContent: 'center',
+		minHeight: 32,
+		minWidth: 36,
+		paddingHorizontal: 6,
+		paddingVertical: 4,
+	},
+	speechSkipButton: {
+		paddingHorizontal: 12,
+	},
+	activeSpeechControl: {
+		backgroundColor: colors.dark.primaryActive,
+		borderColor: colors.dark.primaryActive,
+	},
+	activeSpeechControlLabel: {
+		color: colors.light.text,
+	},
+	speechControlsDivider: {
+		backgroundColor: colors.light.border,
+		height: 24,
+		width: 1,
+	},
+	disabledSpeechControl: {
+		opacity: 0.35,
 	},
 	filterAccordionHeader: {
 		alignItems: 'center',

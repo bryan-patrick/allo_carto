@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
 		borderTopRightRadius: 24,
 		borderTopWidth: 1,
 		paddingVertical: 16,
-		paddingHorizontal: 8,
+		paddingHorizontal: 4,
 		overflow: 'hidden',
 	},
 	topBar: {

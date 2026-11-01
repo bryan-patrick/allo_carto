@@ -10,16 +10,12 @@ export function getFlashcardDeckCount(wordCount: number, targetCardsPerDeck: num
 		return 0;
 	}
 
-	const maximumCardsPerDeck = Math.floor(targetCardsPerDeck * 1.5);
-	const deckCountForTarget = Math.floor(wordCount / targetCardsPerDeck);
-	const deckCountForMaximum = Math.ceil(wordCount / maximumCardsPerDeck);
-
-	return Math.max(1, deckCountForTarget, deckCountForMaximum);
+	return Math.ceil(wordCount / targetCardsPerDeck);
 }
 
 /*
  * Shuffle the paragraph's words into evenly sized decks.
- * Include each word once and cap each deck at 1.5 times the target size.
+ * Include each word once and keep every deck within the learner's card limit.
  */
 export function createFlashcardDecks(wordIds: string[], targetCardsPerDeck: number): string[][] {
 	const uniqueWordIds = [...new Set(wordIds)];
