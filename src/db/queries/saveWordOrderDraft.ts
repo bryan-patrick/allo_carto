@@ -1,5 +1,11 @@
 import { findParagraphById } from '@/src/util/atlasCompletion';
-import { getWordOrderCards, isCompleteWordOrder } from '@/src/util/solveWordOrder';
+import {
+	getWordOrderCards,
+	isCompleteWordOrder,
+	readWordOrder,
+	shuffleWordOrder,
+} from '@/src/util/solveWordOrder';
+import { splitFrenchSentences } from '@/src/util/splitFrenchSentences';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 /*
@@ -9,16 +15,23 @@ interface SaveWordOrderDraftOptions {
 	database: SQLiteDatabase;
 	userId: string;
 	deckId: string;
+	position: number;
 	positions: number[];
 }
 
+interface WordOrderDraftRow {
+	positions: string;
+}
+
 /*
- * Saves the current card order so the player can leave Solve++ and resume later.
+ * Saves this sentence's card order and keeps the other sentences' arrangements.
+ * This lets the player leave Solve++ and resume later.
  */
 export default async function saveWordOrderDraft({
 	database,
 	userId,
 	deckId,
+	position,
 	positions,
 }: SaveWordOrderDraftOptions): Promise<void> {
 	const statement = `
@@ -30,14 +43,36 @@ export default async function saveWordOrderDraft({
 		ON CONFLICT(userId, deckId) DO UPDATE SET positions = excluded.positions;
 	`;
 	const deck = findParagraphById(deckId);
-	const cards = deck ? getWordOrderCards(deck) : [];
-	const savedPositions = JSON.stringify(positions);
+	const cards = deck ? getWordOrderCards(deck, position) : [];
+	const getDraftStatement = `
+		SELECT positions FROM solveWordOrderDrafts
+		WHERE userId = ? AND deckId = ?;
+	`;
 
-	if (!isCompleteWordOrder(positions, cards)) {
-		throw new Error('The arrangement must contain every card once.');
+	if (!deck || !isCompleteWordOrder(positions, cards)) {
+		throw new Error('The arrangement must contain every card in this sentence once.');
 	}
 
 	await database.withExclusiveTransactionAsync(async transaction => {
+		const savedDraft = await transaction.getFirstAsync<WordOrderDraftRow>(
+			getDraftStatement,
+			userId,
+			deckId,
+		);
+		const paragraphCards = getWordOrderCards(deck);
+		const savedParagraphPositions =
+			savedDraft ? readWordOrder(savedDraft.positions, paragraphCards) : null;
+		const paragraphPositions =
+			savedParagraphPositions ??
+			splitFrenchSentences(deck).flatMap((_sentence, sentencePosition) => {
+				return shuffleWordOrder(deck, sentencePosition);
+			});
+		const sentenceCardIds = new Set(cards.map(card => card.id));
+		const otherSentencePositions = paragraphPositions.filter(
+			cardId => !sentenceCardIds.has(cardId),
+		);
+		const nextPositions = [...otherSentencePositions, ...positions];
+		const savedPositions = JSON.stringify(nextPositions);
 		const saved = await transaction.runAsync(
 			statement,
 			userId,

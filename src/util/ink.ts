@@ -4,7 +4,7 @@ interface InkConfig {
 	correctFlashcard: number;
 	cardCostByRarity: Record<CardRarity, number>;
 	incorrectSolveAttempt: number;
-	maxBalance: number;
+	baseMaxBalance: number;
 }
 
 /*
@@ -19,5 +19,12 @@ export const inkConfig: InkConfig = {
 		Legendary: 5,
 	},
 	incorrectSolveAttempt: 1,
-	maxBalance: 20,
+	baseMaxBalance: 20,
 };
+
+// Start with 20 Ink of space and add one for each level gained after level 1.
+export function getMaxInkBalance(playerLevel: number): number {
+	const levelsGained = Math.max(0, playerLevel - 1);
+
+	return inkConfig.baseMaxBalance + levelsGained;
+}

@@ -2,7 +2,6 @@ import colors from '@/src/app/colors';
 import type { DeckSessionProps } from '@/src/components/CardDeck/deckSessionTypes';
 import CountUp from '@/src/components/CountUp';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import { inkConfig } from '@/src/util/ink';
 import { StyleSheet, Text, View } from 'react-native';
 import CompletionXPProgress from './CompletionXPProgress';
 
@@ -13,6 +12,7 @@ interface CompletionRewardsProps {
 	session: DeckSessionProps;
 	color: string;
 	inkBalance: number;
+	maxInkBalance: number;
 	newFlashcardsSeen: number;
 	seenFlashcards: number;
 	totalFlashcards: number;
@@ -25,6 +25,7 @@ export default function CompletionRewards({
 	session,
 	color,
 	inkBalance,
+	maxInkBalance,
 	newFlashcardsSeen,
 	seenFlashcards,
 	totalFlashcards,
@@ -38,8 +39,8 @@ export default function CompletionRewards({
 		color,
 	};
 	const earnedInk = completion?.earnedInk ?? 0;
-	const isInkFull = inkBalance >= inkConfig.maxBalance;
-	let balanceDescription = `Ink balance: ${inkBalance} of ${inkConfig.maxBalance}.`;
+	const isInkFull = inkBalance >= maxInkBalance;
+	let balanceDescription = `Ink balance: ${inkBalance} of ${maxInkBalance}.`;
 
 	if (isInkFull) {
 		balanceDescription += ' Ink is full. Correct answers still earn XP.';
@@ -64,7 +65,7 @@ export default function CompletionRewards({
 							color={color}
 						/>
 						<Text style={styles.label}>
-							Ink earned ({inkBalance}/{inkConfig.maxBalance})
+							Ink earned ({inkBalance}/{maxInkBalance})
 						</Text>
 					</View>
 					<CountUp

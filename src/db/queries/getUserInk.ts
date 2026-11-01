@@ -1,4 +1,5 @@
-import { inkConfig } from '@/src/util/ink';
+import { getMaxInkBalance } from '@/src/util/ink';
+import { getUserExperience } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 interface GetUserInkOptions {
@@ -8,14 +9,15 @@ interface GetUserInkOptions {
 
 interface UserInkRow {
 	inkBalance: number;
+	totalXP: number;
 }
 
 /*
- * Loads the user's ink! Ink is used to solve our paragraph puzzles
+ * Load the player's saved Ink and limit it to the space allowed by their level.
  */
 export default async function getUserInk({ database, userId }: GetUserInkOptions): Promise<number> {
 	const statement = `
-		SELECT COALESCE(userInk.balance, 0) AS inkBalance
+		SELECT COALESCE(userInk.balance, 0) AS inkBalance, users.totalXP
 		FROM users
 		LEFT JOIN userInk ON userInk.userId = users.id
 		WHERE users.id = ?;
@@ -27,5 +29,8 @@ export default async function getUserInk({ database, userId }: GetUserInkOptions
 		throw new Error(`Could not load Ink for user ${userId}.`);
 	}
 
-	return Math.min(user.inkBalance, inkConfig.maxBalance);
+	const experience = getUserExperience(user.totalXP);
+	const maxInkBalance = getMaxInkBalance(experience.level);
+
+	return Math.min(user.inkBalance, maxInkBalance);
 }

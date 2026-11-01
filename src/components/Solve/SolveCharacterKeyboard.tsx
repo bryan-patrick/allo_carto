@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
 		minHeight: 40,
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: colors.light.primary,
+		backgroundColor: colors.light.text,
 		borderColor: colors.light.goldenBorder,
 		borderWidth: 1,
 		borderRadius: 6,

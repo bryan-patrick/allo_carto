@@ -12,6 +12,7 @@ import type {
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
 import { useAppSettings } from '@/src/settings/useAppSettings';
+import { getMaxInkBalance } from '@/src/util/ink';
 import type { ProgressById } from '@/src/util/progression';
 import type { CompletedSolveStages } from '@/src/util/solveProgression';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
@@ -72,6 +73,7 @@ interface UserProgressContextProps {
 		request: ClaimCollectionRewardRequest,
 	) => Promise<CollectionRewardReceipt | false>;
 	inkBalance: number;
+	maxInkBalance: number;
 	experience: UserExperience;
 	isUpdatingProgress: boolean;
 	progressById: ProgressById;
@@ -97,6 +99,7 @@ const initialValue: UserProgressContextProps = {
 	collections: [],
 	claimCollectionReward: async () => false,
 	inkBalance: 0,
+	maxInkBalance: getMaxInkBalance(1),
 	experience: getUserExperience(0),
 	isUpdatingProgress: false,
 	progressById: {},
@@ -420,6 +423,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			collections,
 			claimCollectionReward: recordCollectionReward,
 			inkBalance,
+			maxInkBalance: getMaxInkBalance(experience.level),
 			experience,
 			isUpdatingProgress,
 			progressById,

@@ -5,7 +5,9 @@ import type {
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getCompletedSolveStages, getSolveStageEligibility } from '@/src/util/solveProgression';
 import { getWordOrderCards, readWordOrder, shuffleWordOrder } from '@/src/util/solveWordOrder';
+import { splitFrenchSentences } from '@/src/util/splitFrenchSentences';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import getSolveStageProgress from './getSolveStageProgress';
 import loadUserXP from './getUserExperience';
 import getUserProgress from './getUserProgress';
 import { getSolveRewards } from './solveRewards';
@@ -31,7 +33,8 @@ interface WordOrderAttemptRow {
 }
 
 /*
- * Loads a paragraph's Solve++ cards, saved arrangement, last result, and unlock requirements.
+ * Loads the next unfinished sentence, its saved card order, and the Solve++ unlock requirements.
+ * Older paragraph arrangements still supply the saved order for each sentence.
  */
 export default async function getSolveWordOrderPuzzle({
 	database,
@@ -46,7 +49,7 @@ export default async function getSolveWordOrderPuzzle({
 		`,
 		getLastAttempt: `
 			SELECT answer, inkSpent, status FROM solveStageAttempts
-			WHERE userId = ? AND deckId = ? AND stage = 3
+			WHERE userId = ? AND deckId = ? AND stage = 3 AND position = ?
 			ORDER BY rowid DESC LIMIT 1;
 		`,
 	};
@@ -58,7 +61,34 @@ export default async function getSolveWordOrderPuzzle({
 		throw new Error('This paragraph could not be found.');
 	}
 
-	const cards = getWordOrderCards(deck);
+	const paragraphCards = getWordOrderCards(deck);
+	const sentenceDefinitions = splitFrenchSentences(deck);
+
+	if (sentenceDefinitions.length === 0) {
+		throw new Error('This paragraph has no sentences to solve.');
+	}
+
+	const savedStage = await getSolveStageProgress({
+		database,
+		userId,
+		deckId,
+		stage: 3,
+	});
+	const legacyAnswer = savedStage.solvedPositions.find(answer => {
+		return answer.position === 0 && readWordOrder(answer.acceptedAnswer, paragraphCards) !== null;
+	});
+	const solvedSentences = sentenceDefinitions.map((_sentence, position) => {
+		const savedAnswer = savedStage.solvedPositions.find(answer => answer.position === position);
+		const sentenceCards = getWordOrderCards(deck, position);
+
+		return Boolean(
+			legacyAnswer || (savedAnswer && readWordOrder(savedAnswer.acceptedAnswer, sentenceCards)),
+		);
+	});
+	const nextSentencePosition = solvedSentences.findIndex(isSolved => !isSolved);
+	const sentencePosition = nextSentencePosition === -1 ? 0 : nextSentencePosition;
+	const cards = getWordOrderCards(deck, sentencePosition);
+	const solvedSentenceCount = solvedSentences.filter(isSolved => isSolved).length;
 	const progressById = await getUserProgress({
 		database,
 		userId,
@@ -91,9 +121,13 @@ export default async function getSolveWordOrderPuzzle({
 		statements.getLastAttempt,
 		userId,
 		deckId,
+		sentencePosition,
 	);
-	const savedPositions = savedDraft ? readWordOrder(savedDraft.positions, cards) : null;
-	const positions = savedPositions ?? shuffleWordOrder(deck);
+	const savedParagraphPositions =
+		savedDraft ? readWordOrder(savedDraft.positions, paragraphCards) : null;
+	const sentenceCardIds = new Set(cards.map(card => card.id));
+	const savedPositions = savedParagraphPositions?.filter(position => sentenceCardIds.has(position));
+	const positions = savedPositions ?? shuffleWordOrder(deck, sentencePosition);
 	const attemptedPositions = savedAttempt ? readWordOrder(savedAttempt.answer, cards) : null;
 
 	if (savedAttempt && attemptedPositions) {
@@ -118,6 +152,9 @@ export default async function getSolveWordOrderPuzzle({
 		isUnlocked: isParagraphUnlocked,
 		cards,
 		positions,
+		sentencePosition,
+		sentenceCount: sentenceDefinitions.length,
+		solvedSentenceCount,
 		completedSolveStages,
 		lastAttempt,
 	};
