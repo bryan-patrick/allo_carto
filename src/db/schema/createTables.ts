@@ -125,8 +125,30 @@ export default async function createTables(): Promise<void> {
 	await createCollectionRewardClaimsTable();
 	await createSolveTables();
 	await createSolveRewardsTable();
+	await createUserActivityTable();
 	await ensureFlashcardsStartedColumn();
 	await ensureParagraphProgressType();
+}
+
+// Keep a short saved history of the player's rewards, completed activities, and unlocks.
+async function createUserActivityTable(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS userActivity (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			userId TEXT NOT NULL,
+			type TEXT NOT NULL,
+			description TEXT NOT NULL,
+			createdAt INTEGER NOT NULL,
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+		CREATE INDEX IF NOT EXISTS userActivityByUser
+			ON userActivity (userId, id DESC);
+
+		DELETE FROM userActivity WHERE type IN ('xpEarned', 'deckCompleted');
+	`;
+
+	await database.execAsync(statement);
 }
 
 // Remember each puzzle reward until it is claimed, including the XP already paid.

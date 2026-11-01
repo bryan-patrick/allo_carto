@@ -15,6 +15,7 @@ import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getMaxInkBalance } from '@/src/util/ink';
 import type { ProgressById } from '@/src/util/progression';
 import type { CompletedSolveStages } from '@/src/util/solveProgression';
+import type { UserActivity } from '@/src/util/userActivity';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import {
 	getVocabularyCollectionProgress,
@@ -54,6 +55,7 @@ import {
 	type IncorrectAnswerRequest,
 } from './queries/writeUserProgress';
 import writeWordOrderAttempt from './queries/writeWordOrderAttempt';
+import { getUserActivity } from './queries/userActivity';
 
 /*
  * Typing
@@ -66,6 +68,7 @@ interface UserProgressProviderProps {
 }
 
 interface UserProgressContextProps {
+	activity: UserActivity[];
 	claimSolveReward: (request: SolveRewardRequest) => Promise<SolveRewardReceipt | false>;
 	applyMockParagraphProgress: (completedStages: CompletedSolveStages) => Promise<number | false>;
 	collections: VocabularyCollectionProgress[];
@@ -94,6 +97,7 @@ interface UserProgressContextProps {
  * Initial progress state
  */
 const initialValue: UserProgressContextProps = {
+	activity: [],
 	claimSolveReward: async () => false,
 	applyMockParagraphProgress: async () => false,
 	collections: [],
@@ -143,6 +147,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 * State
 	 */
 	const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
+	const [activity, setActivity] = useState<UserActivity[]>([]);
 	const [progressById, setProgressById] = useState<ProgressById>({});
 	const [wordProgressById, setWordProgressById] = useState<UserWordProgressById>({});
 	const [collectionClaims, setCollectionClaims] = useState<CollectionRewardClaim[]>([]);
@@ -151,9 +156,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const [status, setStatus] = useState<ProgressStatus>('loading');
 	const isSavingProgress = useRef(false);
 
-	/*
-	 * Reloads word levels, collection claims, XP, and Ink to keep progress displays current.
-	 */
+	// Reload saved progress, rewards, Ink, and activity to keep the player's displays current.
 	const refreshProgress = useCallback(async () => {
 		if (!userId) {
 			return;
@@ -164,7 +167,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 				database,
 				userId,
 			});
-			const [nextProgress, nextExperience, nextInkBalance, nextCollectionClaims] =
+			const [nextProgress, nextExperience, nextInkBalance, nextCollectionClaims, nextActivity] =
 				await Promise.all([
 					getUserProgress({
 						database,
@@ -183,8 +186,13 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 						database,
 						userId,
 					}),
+					getUserActivity({
+						database,
+						userId,
+					}),
 				]);
 
+			setActivity(nextActivity);
 			setProgressById(nextProgress);
 			setWordProgressById(nextWordProgressById);
 			setCollectionClaims(nextCollectionClaims);
@@ -418,6 +426,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 */
 	const value = useMemo<UserProgressContextProps>(
 		() => ({
+			activity,
 			claimSolveReward: recordSolveReward,
 			applyMockParagraphProgress: recordMockParagraphProgress,
 			collections,
@@ -438,6 +447,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			status,
 		}),
 		[
+			activity,
 			recordSolveReward,
 			recordMockParagraphProgress,
 			collections,

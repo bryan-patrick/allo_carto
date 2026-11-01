@@ -7,6 +7,7 @@ import type {
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { getMaxInkBalance, inkConfig } from '@/src/util/ink';
 import { getCompletionPercentage } from '@/src/util/progression';
+import { getActivityItemLabel } from '@/src/util/userActivity';
 import {
 	correctAnswerXPByRarity,
 	correctAnswerXPMultiplierByCEFR,
@@ -21,6 +22,7 @@ import getUserInk from './getUserInk';
 import { incrementCorrectCount } from './incrementCorrectCount';
 import { incrementSeenCount } from './incrementSeenCount';
 import updateUserProgress from './updateUserProgress';
+import { recordXPActivity, saveUserActivity } from './userActivity';
 
 /*
  * Typing
@@ -94,6 +96,12 @@ async function incrementUserXP(database: SQLiteDatabase, userId: string, amount:
 	if (result.changes !== 1) {
 		throw new Error(`Could not award experience to user ${userId}.`);
 	}
+
+	await recordXPActivity({
+		database,
+		userId,
+		xp: amount,
+	});
 }
 
 /*
@@ -361,6 +369,7 @@ export async function writeDeckCompletion({
 			sessionId,
 		);
 		const bonuses: XPBonusProps[] = [];
+		const paragraphLabel = getActivityItemLabel(deckId);
 		let pendingInk = 0;
 		let earnedInk = 0;
 
@@ -474,6 +483,15 @@ export async function writeDeckCompletion({
 			user.totalXP,
 			earnedInk,
 		);
+
+		if (isParagraphComplete) {
+			await saveUserActivity({
+				database,
+				userId,
+				type: 'paragraphFlashcardsCompleted',
+				description: paragraphLabel,
+			});
+		}
 
 		receipt = {
 			bonuses,
