@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 	glow: {
 		...StyleSheet.absoluteFill,
 		borderRadius: 4,
-		boxShadow: `0 0 8px 1px ${colors.light.text}`,
+		boxShadow: `0 0 8px 1px ${colors.light.goldenBorder}`,
 	},
 	clip: {
 		flex: 1,

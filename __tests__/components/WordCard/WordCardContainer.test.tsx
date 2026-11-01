@@ -54,15 +54,26 @@ describe('<WordCardContainer />', () => {
 		mockRecordWordSeen.mockReset();
 		mockRecordWordSeen.mockResolvedValue(true);
 		mockUseUserProgress.mockReturnValue({
+			activity: [],
+			notifications: [],
+			dismissNotification: jest.fn(),
+			dismissAllNotifications: jest.fn(),
+			claimSolveReward: jest.fn(),
+			applyMockParagraphProgress: jest.fn(),
+			collections: [],
+			claimCollectionReward: jest.fn(),
 			experience: getUserExperience(0),
 			inkBalance: 0,
+			maxInkBalance: 0,
 			isUpdatingProgress: false,
 			progressById: {},
 			writeCorrectAnswer: jest.fn(),
+			writeIncorrectAnswer: jest.fn(),
 			writeDeckCompletion: jest.fn(),
 			writeWordSeen: mockRecordWordSeen,
 			writeSolveAttempt: jest.fn(),
-			unlockItem: jest.fn(),
+			writeWordOrderAttempt: jest.fn(),
+			writeSentenceAttempt: jest.fn(),
 			reloadProgress: jest.fn(),
 			status: 'ready',
 		});

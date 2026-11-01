@@ -143,7 +143,6 @@ describe('saved Solve progression', () => {
 
 		expect(await getSolveStageProgress(options)).toEqual({
 			stage: 2,
-			unlockedPositions: [],
 			solvedPositions: [],
 		});
 
@@ -167,7 +166,7 @@ describe('saved Solve progression', () => {
 			stage: 4,
 		});
 
-		expect(savedWords.unlockedPositions).toHaveLength(2);
+		expect(savedWords.solvedPositions).toHaveLength(2);
 		expect(savedWords.solvedPositions).toEqual([
 			{
 				position: 0,

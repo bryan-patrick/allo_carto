@@ -1,17 +1,17 @@
-export const minCardsPerDeck = 6;
-export const maxCardsPerDeck = 12;
+export const minCardsPerDeck = 8;
+export const maxCardsPerDeck = 16;
 
-/*
- * Start with six cards and add one per level. Level 7 and higher allow twelve cards.
- */
+// Start with eight cards and add one per level. Level 9 and higher allow sixteen cards.
 export const cardsPerDeckByLevel: Record<number, number> = {
 	1: minCardsPerDeck,
-	2: 7,
-	3: 8,
-	4: 9,
-	5: 10,
-	6: 11,
-	7: maxCardsPerDeck,
+	2: 9,
+	3: 10,
+	4: 11,
+	5: 12,
+	6: 13,
+	7: 14,
+	8: 15,
+	9: maxCardsPerDeck,
 };
 
 export function getCardsPerDeck(level: number): number {

@@ -1,9 +1,11 @@
+import { collectionAtlas } from '@/data/french/collectionAtlas';
 import { getAtlasCompletionItems, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getMaxInkBalance } from '@/src/util/ink';
 import type { ProgressById, ProgressType } from '@/src/util/progression';
 import { getCompletedSolveStages, type SolveStage } from '@/src/util/solveProgression';
 import {
 	getActivityItemLabel,
+	isUserNotificationType,
 	userActivityLimit,
 	type UserActivity,
 	type UserActivityType,
@@ -11,6 +13,7 @@ import {
 import { getUserExperience } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getUserProgress from './getUserProgress';
+import { saveUserNotification } from './userNotifications';
 
 interface UserActivityOptions {
 	database: SQLiteDatabase;
@@ -36,6 +39,14 @@ interface RecordSolveProgressActivityOptions extends UserActivityOptions {
 	previousProgress: ProgressById;
 }
 
+interface RecordStampUnlockActivityOptions extends UserActivityOptions {
+	wordId: string;
+}
+
+interface StampWordRow {
+	frenchWord: string;
+}
+
 const unlockActivityTypes: Record<ProgressType, UserActivityType> = {
 	story: 'storyUnlocked',
 	chapter: 'chapterUnlocked',
@@ -59,6 +70,7 @@ const statements = {
 		);
 	`,
 	getUserXP: 'SELECT totalXP FROM users WHERE id = ?;',
+	getStampWord: 'SELECT frenchWord FROM words WHERE id = ?;',
 };
 
 // Load the player's latest activity with the newest entries first.
@@ -70,8 +82,8 @@ export async function getUserActivity({
 }
 
 /*
- * Save an event alongside the progress change that caused it.
- * Remove older entries so each player keeps at most 50.
+ * Save activity and any notification alongside the progress change that caused them.
+ * Keep the latest 50 activity entries and leave notifications until they are dismissed.
  */
 export async function saveUserActivity({
 	database,
@@ -82,7 +94,46 @@ export async function saveUserActivity({
 	const createdAt = Date.now();
 
 	await database.runAsync(statements.saveActivity, userId, type, description, createdAt);
+
+	if (isUserNotificationType(type)) {
+		await saveUserNotification({
+			database,
+			userId,
+			type,
+			description,
+			createdAt,
+		});
+	}
+
 	await database.runAsync(statements.removeOldActivity, userId, userId, userActivityLimit);
+}
+
+// Record a newly revealed stamp with its word and collection name.
+export async function recordStampUnlockActivity({
+	database,
+	userId,
+	wordId,
+}: RecordStampUnlockActivityOptions): Promise<void> {
+	const collection = collectionAtlas.collections.find(entry => {
+		return entry.words.some(word => word.wordId === wordId);
+	});
+
+	if (!collection) {
+		return;
+	}
+
+	const word = await database.getFirstAsync<StampWordRow>(statements.getStampWord, wordId);
+
+	if (!word) {
+		throw new Error('Could not load the word for its new stamp.');
+	}
+
+	await saveUserActivity({
+		database,
+		userId,
+		type: 'stampUnlocked',
+		description: `${word.frenchWord} · ${collection.name}`,
+	});
 }
 
 /*
@@ -175,7 +226,7 @@ export async function recordSolveProgressActivity({
 			progressById: nextProgress,
 		});
 
-		if (nextStages > previousStages && nextStages > 0) {
+		if (nextStages > previousStages && nextStages !== 0) {
 			await saveUserActivity({
 				database,
 				userId,

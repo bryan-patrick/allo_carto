@@ -22,7 +22,7 @@ import getUserInk from './getUserInk';
 import { incrementCorrectCount } from './incrementCorrectCount';
 import { incrementSeenCount } from './incrementSeenCount';
 import updateUserProgress from './updateUserProgress';
-import { recordXPActivity, saveUserActivity } from './userActivity';
+import { recordStampUnlockActivity, recordXPActivity, saveUserActivity } from './userActivity';
 
 /*
  * Typing
@@ -56,6 +56,18 @@ interface WriteCorrectAnswerOptions extends CorrectAnswerRequest {
 interface WriteDeckCompletionOptions extends DeckCompletionRequest {
 	database: SQLiteDatabase;
 	userId: string;
+}
+
+interface WriteWordSeenOptions {
+	database: SQLiteDatabase;
+	userId: string;
+	wordId: string;
+	deckId?: string;
+}
+
+interface WordProgressCountsRow {
+	correctCount: number;
+	seenCount: number;
 }
 
 interface WordProgressForAward {
@@ -255,6 +267,14 @@ export async function writeCorrectAnswer({
 		 */
 		await incrementCorrectCount(userId, wordId, database);
 		await incrementUserXP(database, userId, nextAward.xp);
+
+		if (nextAward.previousProgress === 'unseen') {
+			await recordStampUnlockActivity({
+				database,
+				userId,
+				wordId,
+			});
+		}
 
 		if (nextAward.previousProgress !== nextAward.nextProgress) {
 			await updateUserProgressTableItems({ database, userId, wordId });
@@ -508,19 +528,15 @@ export async function writeDeckCompletion({
 }
 
 /*
- * Save that a word was seen
+ * Save that a flashcard was seen and update its paragraph's progress.
+ * A collection word also reveals its stamp the first time it is seen.
  */
 export async function writeWordSeen({
 	database: sqliteDatabase,
 	userId,
 	wordId,
 	deckId,
-}: {
-	database: SQLiteDatabase;
-	userId: string;
-	wordId: string;
-	deckId?: string;
-}): Promise<void> {
+}: WriteWordSeenOptions): Promise<void> {
 	/*
 	 * Seen writes use the same lock
 	 */
@@ -528,10 +544,7 @@ export async function writeWordSeen({
 		/*
 		 * Get the word's progress before the seenCount changes
 		 */
-		const previousProgress = await database.getFirstAsync<{
-			correctCount: number;
-			seenCount: number;
-		}>(
+		const previousProgress = await database.getFirstAsync<WordProgressCountsRow>(
 			`SELECT correctCount, seenCount
 			FROM userWords
 			WHERE userId = ? AND wordId = ?;`,
@@ -546,6 +559,14 @@ export async function writeWordSeen({
 		});
 
 		await incrementSeenCount(userId, wordId, database);
+
+		if (previousWordProgress === 'unseen') {
+			await recordStampUnlockActivity({
+				database,
+				userId,
+				wordId,
+			});
+		}
 
 		if (deckId) {
 			await database.runAsync(
