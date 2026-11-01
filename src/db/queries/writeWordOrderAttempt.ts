@@ -28,13 +28,14 @@ interface WordOrderReceiptRow {
 }
 
 /*
- * Charge Ink to check a Solve++ arrangement and prepare a gem claim if it is correct.
- * Saves the result and charge together so a failed save or retry cannot charge the player twice.
+ * Save correct sentences and prepare the third gem after every sentence is solved.
+ * Save each result and Ink charge together so retrying cannot charge the player twice.
  */
 export default async function writeWordOrderAttempt({
 	database,
 	userId,
 	deckId,
+	position,
 	positions,
 	attemptId,
 	fastSolveUnlocks,
@@ -53,13 +54,13 @@ export default async function writeWordOrderAttempt({
 		`,
 		saveAnswer: `
 			INSERT INTO solveStagePositions (userId, deckId, stage, position, acceptedAnswer)
-			VALUES (?, ?, 3, 0, ?);
+			VALUES (?, ?, 3, ?, ?);
 		`,
 		saveReceipt: `
 			INSERT INTO solveStageAttempts (
 				userId, attemptId, deckId, stage, position, answer,
 				status, acceptedAnswer, inkSpent, stageCompleted
-			) VALUES (?, ?, ?, 3, 0, ?, ?, ?, ?, ?);
+			) VALUES (?, ?, ?, 3, ?, ?, ?, ?, ?, ?);
 		`,
 		clearDraft: 'DELETE FROM solveWordOrderDrafts WHERE userId = ? AND deckId = ?;',
 	};
@@ -91,7 +92,7 @@ export default async function writeWordOrderAttempt({
 			if (
 				receipt.stage !== 3 ||
 				receipt.deckId !== deckId ||
-				receipt.position !== 0 ||
+				receipt.position !== position ||
 				receipt.answer !== answer
 			) {
 				throw new Error('This submission ID was already used for another answer.');
@@ -128,13 +129,18 @@ export default async function writeWordOrderAttempt({
 			return;
 		}
 
-		if (!puzzle.isEligible || !isCompleteWordOrder(positions, puzzle.cards)) {
+		if (
+			!puzzle.isEligible ||
+			position !== puzzle.sentencePosition ||
+			!isCompleteWordOrder(positions, puzzle.cards)
+		) {
 			return;
 		}
 
 		const isCorrect = checkWordOrderAnswer({
 			deck: puzzle.deck,
 			positions,
+			sentencePosition: position,
 		});
 		const status = isCorrect ? 'exact' : 'incorrect';
 		const acceptedAnswer = isCorrect ? answer : null;
@@ -146,16 +152,18 @@ export default async function writeWordOrderAttempt({
 		}
 
 		if (isCorrect) {
-			await transaction.runAsync(statements.saveAnswer, userId, deckId, answer);
+			await transaction.runAsync(statements.saveAnswer, userId, deckId, position, answer);
 
-			await saveSolveGemReward({
-				database: transaction,
-				userId,
-				deckId,
-				stage: 3,
-			});
+			if (puzzle.solvedSentenceCount + 1 === puzzle.sentenceCount) {
+				await saveSolveGemReward({
+					database: transaction,
+					userId,
+					deckId,
+					stage: 3,
+				});
 
-			await transaction.runAsync(statements.clearDraft, userId, deckId);
+				await transaction.runAsync(statements.clearDraft, userId, deckId);
+			}
 		}
 
 		await transaction.runAsync(
@@ -163,6 +171,7 @@ export default async function writeWordOrderAttempt({
 			userId,
 			attemptId,
 			deckId,
+			position,
 			answer,
 			status,
 			acceptedAnswer,

@@ -96,6 +96,7 @@ export interface SolveWordOrderCard {
 
 export interface WordOrderAttemptRequest {
 	deckId: string;
+	position: number;
 	positions: number[];
 	attemptId: string;
 }
@@ -112,6 +113,9 @@ export interface SolveWordOrderPuzzle extends SolveStageEligibility {
 	isUnlocked: boolean;
 	cards: SolveWordOrderCard[];
 	positions: number[];
+	sentencePosition: number;
+	sentenceCount: number;
+	solvedSentenceCount: number;
 	completedSolveStages: CompletedSolveStages;
 	lastAttempt: SavedWordOrderAttempt | null;
 }

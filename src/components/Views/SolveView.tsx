@@ -222,7 +222,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	if (stage === 2) {
-		completionMessage = 'All French word cards solved. Your second gem is saved.';
+		completionMessage = 'You earned your second gem. Awesome!';
 	}
 
 	if (selectedCard) {

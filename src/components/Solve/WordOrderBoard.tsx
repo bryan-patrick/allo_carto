@@ -44,7 +44,7 @@ interface WordOrderDrag {
 }
 
 /*
- * Lets the player put a paragraph's French cards in order for Solve++.
+ * Lets the player put one sentence's French cards in order for Solve++.
  * Cards can move by dragging, tapping a new position, or using the move buttons.
  */
 export default function WordOrderBoard({
@@ -419,6 +419,7 @@ const styles = StyleSheet.create({
 	},
 	instructions: {
 		paddingHorizontal: 12,
+		paddingTop: 12,
 		fontFamily: 'lexend-400',
 		fontSize: 13,
 		color: colors.dark.text,

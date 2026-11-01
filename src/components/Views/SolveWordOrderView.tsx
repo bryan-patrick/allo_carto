@@ -46,9 +46,13 @@ const postcardBackground = require('@/src/app/assets/images/postcard-parts/backg
  * Gives the player feedback after submitting a Word Order puzzle.
  */
 function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
+	const hasGemReward = result.rewards?.some(reward => reward.kind === 'gem');
 	const messages: Partial<Record<SolveAttemptResult['status'], WordOrderFeedback>> = {
 		exact: {
-			text: 'Correct! Claim your third gem.',
+			text:
+				hasGemReward ?
+					'Correct! Claim your third gem.'
+				:	'Sentence correct! Arrange the next sentence.',
 			backgroundColor: colors.light.success,
 		},
 		incorrect: {
@@ -75,8 +79,8 @@ function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 }
 
 /*
- * Lets the player arrange a whole French paragraph and submit it in Solve++.
- * Save each move for later and prepare a gem claim after a correct paid submission.
+ * Lets the player arrange one French sentence at a time in Solve++.
+ * Save each move and advance after a correct answer until the third gem is ready.
  */
 export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) {
 	const router = useRouter();
@@ -181,13 +185,15 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					const lastAttempt = savedPuzzle.lastAttempt;
 					const attemptedOrder =
 						lastAttempt?.status === 'incorrect' ? JSON.stringify(lastAttempt.positions) : null;
+					const hasPendingGem = savedPuzzle.rewards.some(reward => reward.kind === 'gem');
 					let savedFeedback: WordOrderFeedback | null = null;
 
-					if (savedPuzzle.isEligible) {
+					if (savedPuzzle.isEligible && !hasPendingGem) {
 						await saveWordOrderDraft({
 							database,
 							userId,
 							deckId,
+							position: savedPuzzle.sentencePosition,
 							positions: savedPuzzle.positions,
 						});
 					}
@@ -231,6 +237,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	async function handleReorder(nextPositions: number[]): Promise<boolean> {
 		if (
 			!userId ||
+			!puzzle ||
 			!isEligible ||
 			isComplete ||
 			needsRetry ||
@@ -250,6 +257,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 				database,
 				userId,
 				deckId,
+				position: puzzle.sentencePosition,
 				positions: nextPositions,
 			});
 
@@ -277,7 +285,13 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	async function handleSubmit() {
 		let attempt = pendingAttempt.current;
 
-		if (submitDisabled || isBusy.current || (!needsRetry && pendingAttempt.current)) {
+		if (
+			!puzzle ||
+			!userId ||
+			submitDisabled ||
+			isBusy.current ||
+			(!needsRetry && pendingAttempt.current)
+		) {
 			return;
 		}
 
@@ -288,6 +302,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		if (!attempt) {
 			attempt = {
 				deckId,
+				position: puzzle.sentencePosition,
 				positions: [...positions],
 				attemptId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
 			};
@@ -312,20 +327,39 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 			if (result.status === 'incorrect') {
 				setLastSubmittedOrder(JSON.stringify(attempt.positions));
 			} else if (result.status === 'exact' || result.status === 'alreadySolved') {
-				setPuzzle(current => {
-					if (!current) {
-						return current;
-					}
-
-					return {
-						...current,
-						rewards: result.rewards ?? current.rewards,
-						completedSolveStages: result.stageCompleted ? 3 : current.completedSolveStages,
-					};
+				const database = await getDB();
+				const nextPuzzle = await getSolveWordOrderPuzzle({
+					database,
+					userId,
+					deckId,
+					fastSolveUnlocks,
 				});
+				const hasPendingGem = nextPuzzle.rewards.some(reward => reward.kind === 'gem');
+
+				if (nextPuzzle.isEligible && !hasPendingGem) {
+					await saveWordOrderDraft({
+						database,
+						userId,
+						deckId,
+						position: nextPuzzle.sentencePosition,
+						positions: nextPuzzle.positions,
+					});
+				}
+
+				setPuzzle(nextPuzzle);
+				setPositions(nextPuzzle.positions);
+				setLastSubmittedOrder(null);
+				pendingAttempt.current = null;
 			} else {
 				pendingAttempt.current = null;
 			}
+		} catch (error) {
+			console.error('Could not load the next Word Order sentence:', error);
+			setNeedsRetry(true);
+			setFeedback({
+				text: 'The submission could not be loaded. Retry to recover the same attempt.',
+				backgroundColor: colors.light.warning,
+			});
 		} finally {
 			isBusy.current = false;
 			setIsSaving(false);
@@ -383,6 +417,11 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					</Pressable>
 				</View>
 				<View style={styles.details}>
+					{puzzle && isEligible && !isComplete && !pendingGem && (
+						<Text style={[styles.text, styles.sentenceProgress]}>
+							Sentence {puzzle.sentencePosition + 1} of {puzzle.sentenceCount}
+						</Text>
+					)}
 					<MaterialSymbol
 						name="water_drop"
 						size={18}
@@ -413,6 +452,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					/>
 				: isEligible ?
 					<WordOrderBoard
+						key={`${deckId}-${puzzle.sentencePosition}`}
 						cards={puzzle.cards}
 						positions={positions}
 						disabled={boardDisabled}
@@ -526,6 +566,9 @@ const styles = StyleSheet.create({
 		gap: 6,
 		paddingHorizontal: 12,
 		paddingBottom: 8,
+	},
+	sentenceProgress: {
+		flex: 1,
 	},
 	text: {
 		fontFamily: 'lexend-400',

@@ -2,6 +2,7 @@ import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveWordOrderCard } from '@/src/components/Solve/solveTypes';
 import { getSolvePassage } from './getSolvePassage';
 import shuffleArray from './shuffleArray';
+import { splitFrenchSentences } from './splitFrenchSentences';
 
 /*
  * Typing
@@ -9,13 +10,17 @@ import shuffleArray from './shuffleArray';
 export interface CheckWordOrderAnswerOptions {
 	deck: CardDeck;
 	positions: number[];
+	sentencePosition?: number;
 }
 
 /*
- * Builds the French cards that the player arranges in Solve++.
+ * Builds the French cards for a sentence, or the full paragraph when reading older saves.
  */
-export function getWordOrderCards(deck: CardDeck): SolveWordOrderCard[] {
-	const passage = getSolvePassage(deck.passage);
+export function getWordOrderCards(deck: CardDeck, sentencePosition?: number): SolveWordOrderCard[] {
+	const passage =
+		sentencePosition === undefined ?
+			getSolvePassage(deck.passage)
+		:	(splitFrenchSentences(deck)[sentencePosition]?.segments ?? []);
 	const cards: SolveWordOrderCard[] = [];
 
 	for (const segment of passage) {
@@ -74,13 +79,28 @@ export function readWordOrder(value: string, cards: SolveWordOrderCard[]): numbe
 }
 
 /*
- * Checks whether the player's arrangement matches the paragraph or another accepted answer.
+ * Checks the card order against the original wording and any other accepted wording.
  */
-export function checkWordOrderAnswer({ deck, positions }: CheckWordOrderAnswerOptions): boolean {
-	const cards = getWordOrderCards(deck);
+export function checkWordOrderAnswer({
+	deck,
+	positions,
+	sentencePosition,
+}: CheckWordOrderAnswerOptions): boolean {
+	const cards = getWordOrderCards(deck, sentencePosition);
+	const paragraphCards = getWordOrderCards(deck);
 	const cardsById = new Map(cards.map(card => [card.id, card.text]));
 	const originalOrder = cards.map(card => card.id);
-	const acceptedOrders = [originalOrder, ...(deck.acceptedWordOrders ?? [])];
+	const acceptedOrders = [originalOrder];
+
+	for (const paragraphOrder of deck.acceptedWordOrders ?? []) {
+		if (!isCompleteWordOrder(paragraphOrder, paragraphCards)) {
+			throw new Error(`An accepted Solve++ order for ${deck.title} is missing or repeating cards.`);
+		}
+
+		const sentenceOrder = paragraphOrder.filter(cardId => cardsById.has(cardId));
+
+		acceptedOrders.push(sentenceOrder);
+	}
 
 	if (!isCompleteWordOrder(positions, cards)) {
 		return false;
@@ -106,8 +126,8 @@ export function checkWordOrderAnswer({ deck, positions }: CheckWordOrderAnswerOp
 /*
  * Creates a shuffled starting order for Solve++.
  */
-export function shuffleWordOrder(deck: CardDeck): number[] {
-	const cards = getWordOrderCards(deck);
+export function shuffleWordOrder(deck: CardDeck, sentencePosition?: number): number[] {
+	const cards = getWordOrderCards(deck, sentencePosition);
 	const cardIds = cards.map(card => card.id);
 	const positions = shuffleArray(cardIds);
 	const cardsById = new Map(cards.map(card => [card.id, card.text]));
@@ -118,6 +138,7 @@ export function shuffleWordOrder(deck: CardDeck): number[] {
 		checkWordOrderAnswer({
 			deck,
 			positions,
+			sentencePosition,
 		}) &&
 		differentCardIndex > 0
 	) {
