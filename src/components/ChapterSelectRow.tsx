@@ -183,12 +183,12 @@ const styles = StyleSheet.create({
 		flexDirection: 'row-reverse',
 	},
 	chapterColumn: {
-		width: '55%',
+		width: '58%',
 		paddingHorizontal: 12,
 		marginHorizontal: 12,
 	},
 	pathColumn: {
-		width: '45%',
+		width: '42%',
 	},
 	locked: {
 		marginTop: 8,
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
 	characterFrame: {
 		alignItems: 'center',
 		width: '100%',
-		marginBottom: 16,
+		marginBottom: 12,
 	},
 	polaroid: {
 		maxWidth: 225,
@@ -217,14 +217,14 @@ const styles = StyleSheet.create({
 	},
 	newLabel: {
 		fontFamily: 'lexend-600',
-		fontSize: 10,
+		fontSize: 11,
 		color: colors.light.text,
 		backgroundColor: colors.dark.success,
 		borderWidth: 1,
 		borderColor: colors.light.success,
 		borderRadius: 4,
-		paddingHorizontal: 8,
-		paddingVertical: 3,
+		paddingHorizontal: 12,
+		paddingVertical: 4,
 	},
 	title: {
 		fontFamily: 'lexend-600',
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
 		lineHeight: 16,
 		textAlign: 'center',
 		color: colors.dark.text,
-		marginBottom: 16,
+		marginBottom: 12,
 	},
 	level: {
 		fontFamily: 'lexend-400',
