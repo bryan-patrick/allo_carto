@@ -225,6 +225,8 @@ export default function AppLayout() {
 											name="(routes)/CardDeck"
 											options={{
 												headerShown: true,
+												headerTransparent: true,
+												headerShadowVisible: false,
 												headerBackTitle: 'Back',
 												headerBackButtonDisplayMode: 'minimal',
 												headerTitle: () => <DeckProgress />,

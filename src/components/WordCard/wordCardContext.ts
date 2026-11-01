@@ -24,9 +24,10 @@ export const FEEDBACK_TEXT_FRONT: Partial<Record<FeedbackKey, string>> = {
 	INCORRECT_DANGER_ARTICLE: 'That is the wrong article!',
 };
 
-export const FEEDBACK_TEXT_BACK: Partial<Record<FeedbackKey, string>> = {
+export const FEEDBACK_TEXT_BACK: Partial<Record<FeedbackKey | 'REVEALED_ANSWER', string>> = {
 	READY_PENDING_NONE: '',
 	CORRECT_SUCCESS_NONE: 'Correct! Great Job!',
+	REVEALED_ANSWER: "Don't give up!",
 };
 
 export type FeedbackKey = `${CardStage}_${CardProgress}_${CardMistake}`;

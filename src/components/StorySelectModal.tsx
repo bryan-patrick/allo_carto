@@ -1,16 +1,7 @@
 import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
-import RepeatingBackgroundImage from '@/src/components/RepeatingBackgroundImage';
-import {
-	Modal,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	useWindowDimensions,
-	View,
-} from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialSymbol from './MaterialSymbol';
 import StorySelectView from './Views/StorySelectView';
@@ -40,6 +31,8 @@ export default function StorySelectModal({
 	const { height: windowHeight } = useWindowDimensions();
 	const sheetStyle = {
 		height: Math.min(windowHeight * 0.82, windowHeight - top - 8),
+	};
+	const storyListPaddingStyle = {
 		paddingBottom: Math.max(bottom, 16),
 	};
 
@@ -55,17 +48,14 @@ export default function StorySelectModal({
 		>
 			<View style={styles.backdrop}>
 				<BackgroundImage
-					resizeMode="cover"
 					source={storySelectBackground}
+					resizeMode="cover"
 					style={[styles.sheet, sheetStyle]}
 				>
-					<View style={styles.topBar}>
-						<Text
-							accessibilityRole="header"
-							style={styles.title}
-						>
-							Choose a Story
-						</Text>
+					<View
+						pointerEvents="box-none"
+						style={styles.topBar}
+					>
 						<Pressable
 							accessibilityLabel="Close story selection"
 							accessibilityRole="button"
@@ -80,20 +70,14 @@ export default function StorySelectModal({
 							/>
 						</Pressable>
 					</View>
-					<Text style={styles.introduction}>Choose a story to explore its chapters.</Text>
 					<ScrollView
-						contentContainerStyle={styles.storyListContent}
+						contentContainerStyle={[styles.storyListContent, storyListPaddingStyle]}
 						style={styles.storyList}
 					>
-						<RepeatingBackgroundImage
-							source={storySelectBackground}
-							style={styles.storyListContent}
-						>
-							<StorySelectView
-								onSelect={onSelect}
-								isSelecting={isSelecting}
-							/>
-						</RepeatingBackgroundImage>
+						<StorySelectView
+							onSelect={onSelect}
+							isSelecting={isSelecting}
+						/>
 					</ScrollView>
 				</BackgroundImage>
 			</View>
@@ -111,45 +95,38 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	sheet: {
-		backgroundColor: colors.light.secondary,
+		backgroundColor: '#F8F1E7',
 		borderColor: colors.light.goldenBorder,
 		borderTopLeftRadius: 24,
 		borderTopRightRadius: 24,
 		borderTopWidth: 1,
-		paddingTop: 8,
+		paddingVertical: 16,
+		paddingHorizontal: 8,
 		overflow: 'hidden',
 	},
 	topBar: {
+		position: 'absolute',
+		top: 8,
+		left: 0,
+		right: 0,
+		zIndex: 1,
 		alignItems: 'center',
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		minHeight: 44,
+		justifyContent: 'flex-end',
 		paddingHorizontal: 20,
-	},
-	title: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 22,
 	},
 	closeButton: {
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.dark.primary,
-		borderRadius: 18,
+		borderWidth: 2,
+		borderColor: colors.light.border,
+		borderRadius: 4,
 		height: 36,
 		width: 36,
 	},
-	introduction: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-400',
-		fontSize: 14,
-		paddingHorizontal: 20,
-		paddingBottom: 12,
-	},
 	storyList: {
-		borderTopWidth: 1,
-		borderBottomWidth: 1,
-		borderColor: colors.light.border,
+		flex: 1,
 	},
 	storyListContent: {
 		flexGrow: 1,
