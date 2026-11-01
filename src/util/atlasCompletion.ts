@@ -311,6 +311,26 @@ export function findParagraphById(
 	}
 }
 
+// Find the paragraph's number within its chapter, matching the paragraph list.
+export function getParagraphNumber(
+	deckId: string,
+	atlas: StoryAtlas = storyAtlas,
+): number | undefined {
+	const path = findCompletionPath({
+		atlas,
+		id: deckId,
+	});
+	const chapter = findChapterById(path[1]?.id, atlas);
+	const paragraphs = chapter?.decks.filter(hasParagraphContent) ?? [];
+	const paragraphIndex = paragraphs.findIndex(paragraph => paragraph.id === deckId);
+
+	if (paragraphIndex === -1) {
+		return undefined;
+	}
+
+	return paragraphIndex + 1;
+}
+
 /*
  * The next reading action stays within this story and skips unwritten content.
  */

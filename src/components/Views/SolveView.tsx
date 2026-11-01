@@ -6,17 +6,23 @@ import ReadingLink from '@/src/components/ReadingLink';
 import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
+import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import type {
 	SolveAttemptRequest,
 	SolveAttemptResult,
 	SolvePuzzle,
+	SolveReward,
 } from '@/src/components/Solve/solveTypes';
 import { getDB } from '@/src/db/interface';
 import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findCompletionPath, findNextParagraph } from '@/src/util/atlasCompletion';
+import {
+	findCompletionPath,
+	findNextParagraph,
+	getParagraphNumber,
+} from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { inkConfig } from '@/src/util/ink';
 import {
@@ -135,6 +141,11 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const completedStages =
 		savedCompletedStages >= puzzleCompletedStages ? savedCompletedStages : puzzleCompletedStages;
 	const isComplete = cards.length > 0 && solvedCount === cards.length && completedStages >= stage;
+	const rewards = puzzle?.rewards ?? [];
+	const hasPendingCardRewards = rewards.some(
+		reward => reward.kind === 'card' && reward.claimedAt === null,
+	);
+	const pendingGem = rewards.find(reward => reward.kind === 'gem' && reward.claimedAt === null);
 	const eligibility = getSolveStageEligibility({
 		stage,
 		completedStages,
@@ -165,6 +176,8 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const submitColor = isSubmitDisabled ? colors.dark.border : inkColor;
 	const needsInk = hasUnsolvedCard && !hasEnoughInk && !needsRetry;
 	const storyColor = getDeckStoryColor(deckId);
+	const paragraphNumber = getParagraphNumber(deckId);
+	const puzzleTitle = paragraphNumber ? `Solve Paragraph ${paragraphNumber}` : 'Solve';
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
@@ -347,9 +360,32 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 			return {
 				...current,
 				positions,
+				rewards: result.rewards ?? current.rewards,
 				hasFirstGem: current.hasFirstGem || result.firstGemEarned,
 				completedSolveStages:
 					result.stageCompleted || result.firstGemEarned ? stage : current.completedSolveStages,
+			};
+		});
+	}
+
+	// Show the solved card's usual success appearance after its XP has been claimed.
+	function handleCardRewardClaimed(reward: SolveReward) {
+		setPuzzle(current => {
+			if (!current) {
+				return current;
+			}
+
+			const updatedRewards = current.rewards.map(saved => {
+				if (saved.kind === reward.kind && saved.position === reward.position) {
+					return reward;
+				}
+
+				return saved;
+			});
+
+			return {
+				...current,
+				rewards: updatedRewards,
 			};
 		});
 	}
@@ -442,12 +478,21 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 					style={[StyleSheet.absoluteFill, parchmentTint]}
 				/>
 				<View style={styles.header}>
-					<Text
-						accessibilityRole="header"
-						style={[styles.title, wordColor]}
-					>
-						{stageDefinition.label} this paragraph
-					</Text>
+					<View style={styles.titleRow}>
+						<Text
+							accessibilityRole="header"
+							style={[styles.title, wordColor]}
+						>
+							{puzzleTitle}
+						</Text>
+						{puzzle?.isUnlocked && (stage === 1 || isComplete) && (
+							<ReadingLink
+								item={puzzle.deck}
+								color={storyColor}
+								style={styles.readLink}
+							/>
+						)}
+					</View>
 					<Pressable
 						accessibilityRole="button"
 						accessibilityLabel={`Close ${stageDefinition.label}`}
@@ -463,18 +508,12 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 						/>
 					</Pressable>
 				</View>
-				<View style={styles.details}>
-					<View style={styles.paragraphDetails}>
-						<Text style={styles.paragraphTitle}>{puzzle?.deck.title}</Text>
-						{puzzle?.isUnlocked && (stage === 1 || isComplete) && (
-							<ReadingLink
-								item={puzzle.deck}
-								color={storyColor}
-								label="Read paragraph"
-								style={styles.readLink}
-							/>
-						)}
-					</View>
+				<View style={styles.progressHeader}>
+					{isEligible && (
+						<Text style={styles.progress}>
+							{solvedCount} / {cards.length} cards solved
+						</Text>
+					)}
 					<View style={styles.ink}>
 						<MaterialSymbol
 							name="water_drop"
@@ -493,9 +532,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 				)}
 				{isEligible && (
 					<>
-						<Text style={styles.progress}>
-							{solvedCount} / {cards.length} cards solved
-						</Text>
 						<ScrollView
 							style={styles.scroll}
 							contentContainerStyle={styles.grid}
@@ -504,6 +540,11 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 							{puzzle?.positions.map(card => (
 								<SolveCard
 									key={card.position}
+									deckId={deckId}
+									reward={rewards.find(
+										reward => reward.kind === 'card' && reward.position === card.position,
+									)}
+									onRewardClaimed={handleCardRewardClaimed}
 									card={card}
 									stage={stage}
 									isSelected={card.position === selectedPosition}
@@ -530,6 +571,16 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 									<Text style={styles.word}>{gemTitle}</Text>
 									<Text style={styles.text}>{completionMessage}</Text>
 								</View>
+							: pendingGem && !hasPendingCardRewards ?
+								<SolveGemClaim
+									deckId={deckId}
+									reward={pendingGem}
+									disabled={disabled}
+								/>
+							: pendingGem ?
+								<Text style={styles.text}>
+									Claim the XP on your solved cards to reveal your gem.
+								</Text>
 							:	<>
 									<Text style={styles.text}>{prompt}</Text>
 									{Boolean(statusMessage) && (
@@ -578,7 +629,22 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 									)}
 								</>
 							}
-							{!isComplete && (
+						</>
+					)}
+					<View style={styles.actions}>
+						<View style={styles.actionButton}>
+							<SecondaryButton
+								onPress={handleClose}
+								disabled={disabled}
+								color={storyColor}
+								type="outline"
+								fullwidth
+							>
+								Close
+							</SecondaryButton>
+						</View>
+						{isEligible && !isComplete && !pendingGem && (
+							<View style={styles.solveActionButton}>
 								<LinkButton
 									handler={handleSubmit}
 									disabled={isSubmitDisabled}
@@ -594,18 +660,9 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 								>
 									{submitLabel}
 								</LinkButton>
-							)}
-						</>
-					)}
-					<SecondaryButton
-						onPress={handleClose}
-						disabled={disabled}
-						color={storyColor}
-						type="outline"
-						fullwidth
-					>
-						Close
-					</SecondaryButton>
+							</View>
+						)}
+					</View>
 				</View>
 			</BackgroundImage>
 		</KeyboardAvoidingView>
@@ -639,7 +696,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 8,
-		padding: 12,
+		paddingHorizontal: 12,
+		paddingVertical: 4,
 	},
 	closeButton: {
 		width: 44,
@@ -647,37 +705,28 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	details: {
+	titleRow: {
+		flex: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
-		paddingHorizontal: 12,
-		paddingBottom: 8,
+		gap: 12,
 	},
 	title: {
-		flex: 1,
+		flexShrink: 1,
 		fontFamily: 'lexend-600',
 		fontSize: 18,
 	},
-	paragraphDetails: {
-		flex: 1,
-		gap: 4,
-	},
-	paragraphTitle: {
-		fontFamily: 'lexend-400',
-		fontSize: 14,
-		color: colors.dark.text,
-	},
 	readLink: {
-		fontFamily: 'lexend-400',
 		fontSize: 14,
 	},
 	ink: {
+		marginLeft: 'auto',
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 4,
-		padding: 6,
+		paddingHorizontal: 6,
+		paddingVertical: 2,
 		borderRadius: 8,
+		gap: 4,
 	},
 	text: {
 		fontFamily: 'lexend-400',
@@ -691,12 +740,18 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 		fontSize: 16,
 	},
-	progress: {
+	progressHeader: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		borderBottomColor: colors.light.goldenBorder,
+		borderBottomWidth: 1,
 		paddingHorizontal: 12,
-		paddingBottom: 12,
+		paddingBottom: 4,
+	},
+	progress: {
 		fontFamily: 'lexend-400',
 		fontSize: 14,
-		alignSelf: 'flex-end',
 	},
 	scroll: {
 		flex: 1,
@@ -718,6 +773,17 @@ const styles = StyleSheet.create({
 		borderTopWidth: 1,
 		borderColor: colors.light.goldenBorder,
 	},
+	actions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	actionButton: {
+		flex: 1,
+	},
+	solveActionButton: {
+		flex: 2,
+	},
 	completion: {
 		alignItems: 'center',
 		gap: 8,
@@ -733,7 +799,7 @@ const styles = StyleSheet.create({
 	input: {
 		minHeight: 44,
 		padding: 10,
-		backgroundColor: colors.light.primary,
+		backgroundColor: '#FFFFFF',
 		borderColor: colors.light.border,
 		borderWidth: 1,
 		borderRadius: 8,
@@ -742,7 +808,6 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	disabledInput: {
-		backgroundColor: colors.light.background,
 		opacity: 0.6,
 	},
 });

@@ -8,6 +8,7 @@ import { getWordOrderCards, readWordOrder, shuffleWordOrder } from '@/src/util/s
 import type { SQLiteDatabase } from 'expo-sqlite';
 import loadUserXP from './getUserExperience';
 import getUserProgress from './getUserProgress';
+import { getSolveRewards } from './solveRewards';
 
 /*
  * Typing
@@ -103,8 +104,16 @@ export default async function getSolveWordOrderPuzzle({
 		};
 	}
 
+	const rewards = await getSolveRewards({
+		database,
+		userId,
+		deckId,
+		stage: 3,
+	});
+
 	return {
 		...eligibility,
+		rewards,
 		deck,
 		isUnlocked: isParagraphUnlocked,
 		cards,

@@ -4,6 +4,7 @@ import { checkSolveAnswer } from '@/src/util/solveAnswer';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolvePuzzle from './getSolvePuzzle';
 import getUserInk from './getUserInk';
+import { getSolveRewards, saveSolveCardReward, saveSolveGemReward } from './solveRewards';
 import writeSolvePlusAttempt from './writeSolvePlusAttempt';
 
 /*
@@ -51,11 +52,6 @@ export default async function writeSolveAttempt({
 				userId, attemptId, deckId, position, status, acceptedAnswer, inkSpent, firstGemEarned
 			) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 		`,
-		saveFirstGem: `
-			INSERT INTO solveCompletions (userId, deckId, completedAt)
-			VALUES (?, ?, ?)
-			ON CONFLICT(userId, deckId) DO NOTHING;
-		`,
 	};
 	let result: SolveAttemptResult = {
 		status: 'unavailable',
@@ -86,18 +82,25 @@ export default async function writeSolveAttempt({
 			userId,
 			attemptId,
 		);
-		let firstGemEarned = false;
 
 		if (receipt) {
 			if (receipt.deckId !== deckId || receipt.position !== position) {
 				throw new Error('This attempt was already used for another card.');
 			}
 
+			const rewards = await getSolveRewards({
+				database: transaction,
+				userId,
+				deckId,
+				stage: 1,
+			});
+
 			result = {
 				status: receipt.status,
 				acceptedAnswer: receipt.acceptedAnswer,
 				inkSpent: receipt.inkSpent,
 				firstGemEarned: Boolean(receipt.firstGemEarned),
+				rewards,
 			};
 			return;
 		}
@@ -119,6 +122,7 @@ export default async function writeSolveAttempt({
 		if (card.acceptedAnswer !== null) {
 			result.status = 'alreadySolved';
 			result.acceptedAnswer = card.acceptedAnswer;
+			result.rewards = puzzle.rewards;
 			return;
 		}
 
@@ -164,18 +168,23 @@ export default async function writeSolveAttempt({
 				checkedAnswer.acceptedAnswer,
 			);
 
-			/*
-			 * Save the first gem with the last answer so the next paragraph opens only after both save.
-			 */
+			await saveSolveCardReward({
+				database: transaction,
+				userId,
+				deckId,
+				stage: 1,
+				position,
+				wordId: card.wordId,
+			});
+
+			// Keep the gem hidden until the player claims it after the last card.
 			if (remainingCards.length === 0 && !puzzle.hasFirstGem) {
-				const completion = await transaction.runAsync(
-					statements.saveFirstGem,
+				await saveSolveGemReward({
+					database: transaction,
 					userId,
 					deckId,
-					Date.now(),
-				);
-
-				firstGemEarned = completion.changes === 1;
+					stage: 1,
+				});
 			}
 		}
 
@@ -188,13 +197,21 @@ export default async function writeSolveAttempt({
 			checkedAnswer.status,
 			checkedAnswer.acceptedAnswer,
 			inkSpent,
-			firstGemEarned ? 1 : 0,
+			0,
 		);
+
+		const rewards = await getSolveRewards({
+			database: transaction,
+			userId,
+			deckId,
+			stage: 1,
+		});
 
 		result = {
 			...checkedAnswer,
 			inkSpent,
-			firstGemEarned,
+			firstGemEarned: false,
+			rewards,
 		};
 	});
 

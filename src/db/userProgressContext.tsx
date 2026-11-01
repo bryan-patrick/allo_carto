@@ -7,6 +7,8 @@ import type {
 	SentenceAttemptRequest,
 	SolveAttemptRequest,
 	SolveAttemptResult,
+	SolveRewardRequest,
+	SolveRewardReceipt,
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
 import { useAppSettings } from '@/src/settings/useAppSettings';
@@ -40,6 +42,7 @@ import getUserProgress from './queries/getUserProgress';
 import getUserWordProgress, { type UserWordProgressById } from './queries/getUserWordProgress';
 import writeSentenceAttempt from './queries/writeSentenceAttempt';
 import writeSolveAttempt from './queries/writeSolveAttempt';
+import { claimSolveReward } from './queries/solveRewards';
 import {
 	writeCorrectAnswer,
 	writeDeckCompletion,
@@ -62,6 +65,7 @@ interface UserProgressProviderProps {
 }
 
 interface UserProgressContextProps {
+	claimSolveReward: (request: SolveRewardRequest) => Promise<SolveRewardReceipt | false>;
 	applyMockParagraphProgress: (completedStages: CompletedSolveStages) => Promise<number | false>;
 	collections: VocabularyCollectionProgress[];
 	claimCollectionReward: (
@@ -88,6 +92,7 @@ interface UserProgressContextProps {
  * Initial progress state
  */
 const initialValue: UserProgressContextProps = {
+	claimSolveReward: async () => false,
 	applyMockParagraphProgress: async () => false,
 	collections: [],
 	claimCollectionReward: async () => false,
@@ -391,11 +396,26 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
+	// Claim puzzle XP and refresh the player's level and earned gems.
+	const recordSolveReward = useCallback(
+		async (request: SolveRewardRequest): Promise<SolveRewardReceipt | false> => {
+			return runProgressWrite(() => {
+				return claimSolveReward({
+					database,
+					userId: userId!,
+					...request,
+				});
+			});
+		},
+		[database, runProgressWrite, userId],
+	);
+
 	/*
 	 * Context value
 	 */
 	const value = useMemo<UserProgressContextProps>(
 		() => ({
+			claimSolveReward: recordSolveReward,
 			applyMockParagraphProgress: recordMockParagraphProgress,
 			collections,
 			claimCollectionReward: recordCollectionReward,
@@ -414,6 +434,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			status,
 		}),
 		[
+			recordSolveReward,
 			recordMockParagraphProgress,
 			collections,
 			recordCollectionReward,

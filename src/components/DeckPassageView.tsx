@@ -266,7 +266,7 @@ export default function DeckPassageView({
 		}
 
 		if (isSpokenWord) {
-			backgroundColor = '#FFE082';
+			backgroundColor = `#30C5A570`;
 			displayOpacity = 1;
 		}
 

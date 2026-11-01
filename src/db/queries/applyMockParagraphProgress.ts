@@ -64,6 +64,7 @@ const statements = {
 };
 
 const clearSolveStatements = [
+	'DELETE FROM solveRewards WHERE userId = ?;',
 	'DELETE FROM solveStageAttempts WHERE userId = ?;',
 	'DELETE FROM solveStagePositions WHERE userId = ?;',
 	'DELETE FROM solveStageUnlocks WHERE userId = ?;',

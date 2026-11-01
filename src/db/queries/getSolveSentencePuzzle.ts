@@ -12,6 +12,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolveStageProgress from './getSolveStageProgress';
 import loadUserXP from './getUserExperience';
 import getUserProgress from './getUserProgress';
+import { getSolveRewards } from './solveRewards';
 
 interface GetSolveSentencePuzzleOptions {
 	database: SQLiteDatabase;
@@ -123,8 +124,16 @@ export default async function getSolveSentencePuzzle({
 		throw new Error('This paragraph needs matching English sentences before Solve++++ can open.');
 	}
 
+	const rewards = await getSolveRewards({
+		database,
+		userId,
+		deckId,
+		stage,
+	});
+
 	return {
 		...eligibility,
+		rewards,
 		deck,
 		isUnlocked,
 		sentences,

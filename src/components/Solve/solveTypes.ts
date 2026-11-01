@@ -8,6 +8,28 @@ import type {
 	SolveWordStage,
 } from '@/src/util/solveProgression';
 
+export type SolveRewardKind = 'card' | 'gem';
+
+export interface SolveReward {
+	stage: SolveStage;
+	kind: SolveRewardKind;
+	position: number;
+	xp: number;
+	claimedAt: number | null;
+}
+
+export interface SolveRewardRequest {
+	deckId: string;
+	stage: SolveStage;
+	kind: SolveRewardKind;
+	position: number;
+}
+
+export interface SolveRewardReceipt {
+	status: 'claimed' | 'alreadyClaimed' | 'notReady';
+	reward: SolveReward | null;
+}
+
 /*
  * Typing
  */
@@ -37,6 +59,7 @@ export interface SolvePosition {
 }
 
 export interface SolvePuzzle extends SolveStageEligibility {
+	rewards: SolveReward[];
 	deck: CardDeck;
 	stage: SolveWordStage;
 	completedSolveStages: CompletedSolveStages;
@@ -58,6 +81,7 @@ export interface SolveAttemptRequest extends SolveCardRequest {
 }
 
 export interface SolveAttemptResult {
+	rewards?: SolveReward[];
 	status: SolveAnswerResult['status'] | 'notEnoughInk' | 'alreadySolved' | 'unavailable';
 	acceptedAnswer: string | null;
 	inkSpent: number;
@@ -83,6 +107,7 @@ export interface SavedWordOrderAttempt {
 }
 
 export interface SolveWordOrderPuzzle extends SolveStageEligibility {
+	rewards: SolveReward[];
 	deck: CardDeck;
 	isUnlocked: boolean;
 	cards: SolveWordOrderCard[];
@@ -105,6 +130,7 @@ export interface SolveSentence {
 }
 
 export interface SolveSentencePuzzle extends SolveStageEligibility {
+	rewards: SolveReward[];
 	deck: CardDeck;
 	isUnlocked: boolean;
 	sentences: SolveSentence[];

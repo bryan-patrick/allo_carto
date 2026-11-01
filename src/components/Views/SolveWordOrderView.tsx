@@ -3,6 +3,7 @@ import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
+import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import WordOrderBoard from '@/src/components/Solve/WordOrderBoard';
 import type {
 	SolveAttemptResult,
@@ -15,7 +16,7 @@ import saveWordOrderDraft from '@/src/db/queries/saveWordOrderDraft';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findCompletionPath } from '@/src/util/atlasCompletion';
+import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { inkConfig } from '@/src/util/ink';
 import {
@@ -47,7 +48,7 @@ const postcardBackground = require('@/src/app/assets/images/postcard-parts/backg
 function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 	const messages: Partial<Record<SolveAttemptResult['status'], WordOrderFeedback>> = {
 		exact: {
-			text: 'Correct! Third gem earned.',
+			text: 'Correct! Claim your third gem.',
 			backgroundColor: colors.light.success,
 		},
 		incorrect: {
@@ -75,7 +76,7 @@ function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 
 /*
  * Lets the player arrange a whole French paragraph and submit it in Solve++.
- * Saves each move for later and awards the third gem after a correct paid submission.
+ * Save each move for later and prepare a gem claim after a correct paid submission.
  */
 export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) {
 	const router = useRouter();
@@ -102,6 +103,9 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const completedStages =
 		savedCompletedStages >= puzzleCompletedStages ? savedCompletedStages : puzzleCompletedStages;
 	const isComplete = completedStages >= 3;
+	const pendingGem = puzzle?.rewards.find(
+		reward => reward.kind === 'gem' && reward.claimedAt === null,
+	);
 	const eligibility = getSolveStageEligibility({
 		stage: 3,
 		completedStages,
@@ -127,6 +131,8 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const boardDisabled = isSaving || isUpdatingProgress || needsRetry || !isEligible;
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
 	const storyColor = getDeckStoryColor(deckId);
+	const paragraphNumber = getParagraphNumber(deckId);
+	const puzzleTitle = paragraphNumber ? `Solve Paragraph ${paragraphNumber}` : 'Solve';
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
@@ -305,7 +311,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 
 			if (result.status === 'incorrect') {
 				setLastSubmittedOrder(JSON.stringify(attempt.positions));
-			} else if (result.stageCompleted || result.status === 'alreadySolved') {
+			} else if (result.status === 'exact' || result.status === 'alreadySolved') {
 				setPuzzle(current => {
 					if (!current) {
 						return current;
@@ -313,7 +319,8 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 
 					return {
 						...current,
-						completedSolveStages: 3,
+						rewards: result.rewards ?? current.rewards,
+						completedSolveStages: result.stageCompleted ? 3 : current.completedSolveStages,
 					};
 				});
 			} else {
@@ -359,7 +366,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						accessibilityRole="header"
 						style={[styles.title, titleColor]}
 					>
-						Solve++: Word Order
+						{puzzleTitle}
 					</Text>
 					<Pressable
 						accessibilityRole="button"
@@ -376,7 +383,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					</Pressable>
 				</View>
 				<View style={styles.details}>
-					<Text style={[styles.text, styles.paragraphTitle]}>{puzzle?.deck.title}</Text>
 					<MaterialSymbol
 						name="water_drop"
 						size={18}
@@ -399,6 +405,12 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						<Text style={styles.title}>Third gem earned!</Text>
 						<Text style={styles.text}>All three gems are earned for this paragraph.</Text>
 					</View>
+				: pendingGem ?
+					<SolveGemClaim
+						deckId={deckId}
+						reward={pendingGem}
+						disabled={disabled}
+					/>
 				: isEligible ?
 					<WordOrderBoard
 						cards={puzzle.cards}
@@ -409,7 +421,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					/>
 				:	<Text style={styles.notice}>{unlockMessage}</Text>}
 				<View style={styles.footer}>
-					{puzzle && !isComplete && (
+					{puzzle && !isComplete && !pendingGem && (
 						<>
 							{isEligible && !hasEnoughInk && !feedback?.needsInk && (
 								<Text style={styles.text}>
@@ -425,32 +437,40 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 									<Text style={feedbackStyle}>{feedback.text}</Text>
 								</Text>
 							)}
-							<LinkButton
-								handler={handleSubmit}
-								disabled={submitDisabled}
-								accessibilityLabel={submitLabel}
-								accessibilityState={{
-									disabled: submitDisabled,
-									busy: isSaving,
-								}}
-								color={submitDisabled ? colors.dark.border : inkColor}
-								style={submitDisabled && styles.disabled}
-								useArrow={false}
-								fullwidth
-							>
-								{submitLabel}
-							</LinkButton>
 						</>
 					)}
-					<SecondaryButton
-						onPress={handleClose}
-						disabled={disabled}
-						color={storyColor}
-						type="outline"
-						fullwidth
-					>
-						Close
-					</SecondaryButton>
+					<View style={styles.actions}>
+						<View style={styles.actionButton}>
+							<SecondaryButton
+								onPress={handleClose}
+								disabled={disabled}
+								color={storyColor}
+								type="outline"
+								fullwidth
+							>
+								Close
+							</SecondaryButton>
+						</View>
+						{puzzle && !isComplete && !pendingGem && (
+							<View style={styles.solveActionButton}>
+								<LinkButton
+									handler={handleSubmit}
+									disabled={submitDisabled}
+									accessibilityLabel={submitLabel}
+									accessibilityState={{
+										disabled: submitDisabled,
+										busy: isSaving,
+									}}
+									color={submitDisabled ? colors.dark.border : inkColor}
+									style={submitDisabled && styles.disabled}
+									useArrow={false}
+									fullwidth
+								>
+									{submitLabel}
+								</LinkButton>
+							</View>
+						)}
+					</View>
 				</View>
 			</BackgroundImage>
 		</View>
@@ -481,7 +501,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 8,
-		padding: 12,
+		paddingHorizontal: 12,
+		paddingVertical: 4,
 	},
 	title: {
 		fontFamily: 'lexend-600',
@@ -497,14 +518,14 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	details: {
+		borderBottomColor: colors.light.goldenBorder,
+		borderBottomWidth: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'flex-end',
 		gap: 6,
 		paddingHorizontal: 12,
-		paddingBottom: 12,
-	},
-	paragraphTitle: {
-		flex: 1,
+		paddingBottom: 8,
 	},
 	text: {
 		fontFamily: 'lexend-400',
@@ -530,6 +551,17 @@ const styles = StyleSheet.create({
 		gap: 8,
 		borderTopWidth: 1,
 		borderColor: colors.light.goldenBorder,
+	},
+	actions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	actionButton: {
+		flex: 1,
+	},
+	solveActionButton: {
+		flex: 2,
 	},
 	disabled: {
 		opacity: 0.6,

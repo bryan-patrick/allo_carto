@@ -127,8 +127,7 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 	},
 	icon: {
-		height: 18,
-		lineHeight: 18,
+		includeFontPadding: false,
 	},
 	gradient: {
 		...StyleSheet.absoluteFill,
