@@ -5,6 +5,7 @@ import {
 } from '@/src/util/vocabularyCollections';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getUserWordProgress from './getUserWordProgress';
+import { recordXPActivity } from './userActivity';
 
 export interface ClaimCollectionRewardRequest {
 	collectionId: string;
@@ -101,6 +102,14 @@ export default async function claimCollectionReward({
 			reward.xp,
 			Date.now(),
 		);
+
+		await recordXPActivity({
+			database: transaction,
+			userId,
+			xp: reward.xp,
+			source: `${collection.name} · ${requiredWordProgress} collection reward`,
+			isClaim: true,
+		});
 
 		receipt = {
 			status: 'claimed',

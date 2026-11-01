@@ -66,7 +66,7 @@ export default function LevelBadge({ colorScheme = 'dark' }: LevelBadgeProps) {
 				]}
 			>
 				<Pressable
-					accessibilityHint="Opens user progress"
+					accessibilityHint="Opens your activity log"
 					accessibilityLabel={accessibilityLabel}
 					accessibilityRole="button"
 					onPress={() => setIsProgressVisible(true)}

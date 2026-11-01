@@ -4,13 +4,21 @@ import type {
 	SolveRewardReceipt,
 	SolveRewardRequest,
 } from '@/src/components/Solve/solveTypes';
-import type { CompletedSolveStages, SolveStage } from '@/src/util/solveProgression';
+import type { ProgressById } from '@/src/util/progression';
+import {
+	solveStages,
+	type CompletedSolveStages,
+	type SolveStage,
+} from '@/src/util/solveProgression';
+import { getActivityItemLabel } from '@/src/util/userActivity';
 import {
 	correctAnswerXPByRarity,
 	correctAnswerXPMultiplierByCEFR,
 	userExperienceConfig,
 } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import getUserProgress from './getUserProgress';
+import { recordSolveProgressActivity, recordXPActivity, saveUserActivity } from './userActivity';
 
 interface SolveRewardsOptions {
 	database: SQLiteDatabase;
@@ -108,7 +116,7 @@ export async function saveSolveGemReward({
 	deckId,
 	stage,
 }: SolveRewardsOptions): Promise<void> {
-	await database.runAsync(
+	const savedReward = await database.runAsync(
 		statements.saveReward,
 		userId,
 		deckId,
@@ -117,6 +125,17 @@ export async function saveSolveGemReward({
 		0,
 		userExperienceConfig.solveGemXP,
 	);
+	const paragraphLabel = getActivityItemLabel(deckId);
+	const puzzleLabel = solveStages[stage].label;
+
+	if (savedReward.changes === 1) {
+		await saveUserActivity({
+			database,
+			userId,
+			type: 'puzzleCompleted',
+			description: `${puzzleLabel} · ${paragraphLabel}`,
+		});
+	}
 }
 
 /*
@@ -145,6 +164,10 @@ export async function claimSolveReward({
 		});
 		const reward = rewards.find(saved => saved.kind === kind && saved.position === position);
 		const claimedAt = Date.now();
+		const paragraphLabel = getActivityItemLabel(deckId);
+		const puzzleLabel = solveStages[stage].label;
+		const rewardLabel = kind === 'card' ? `Card ${position + 1}` : 'Gem reward';
+		let previousProgress: ProgressById | undefined;
 
 		if (!reward) {
 			return;
@@ -172,6 +195,11 @@ export async function claimSolveReward({
 			if (hasPendingCards || completedStages !== stage - 1) {
 				return;
 			}
+
+			previousProgress = await getUserProgress({
+				database: transaction,
+				userId,
+			});
 
 			if (stage === 1) {
 				await transaction.runAsync(statements.saveFirstGem, userId, deckId, claimedAt);
@@ -203,6 +231,22 @@ export async function claimSolveReward({
 
 		if (claim.changes !== 1 || award.changes !== 1) {
 			throw new Error('Could not save the claimed puzzle XP.');
+		}
+
+		await recordXPActivity({
+			database: transaction,
+			userId,
+			xp: reward.xp,
+			source: `${puzzleLabel} · ${rewardLabel} · ${paragraphLabel}`,
+			isClaim: true,
+		});
+
+		if (previousProgress) {
+			await recordSolveProgressActivity({
+				database: transaction,
+				userId,
+				previousProgress,
+			});
 		}
 
 		receipt = {
