@@ -98,6 +98,9 @@ export default function ChapterPolaroid({
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	stack: {
 		width: '100%',
