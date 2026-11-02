@@ -4,6 +4,7 @@ import DeckBoxModal from '@/src/components/DeckBox/DeckBoxModal';
 import LevelBadge from '@/src/components/LevelBadge';
 import Loader from '@/src/components/Loader';
 import CardDeckView from '@/src/components/Views/CardDeckView';
+import DeckPreviewView from '@/src/components/Views/DeckPreviewView';
 import { sharedWordCardStyles } from '@/src/components/WordCard/sharedWordCardStyles';
 import { getDB, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
@@ -42,6 +43,9 @@ export default function CardDeck() {
 	const { id: userId } = useUserContext() ?? {};
 	const { isUpdatingProgress, progressById, status } = useUserProgress();
 	const isOpeningWordDetails = useRef(false);
+	const [isDeckPreviewVisible, setIsDeckPreviewVisible] = useState(
+		Boolean(cardDeckState.session && cardDeckState.session.results.length === 0),
+	);
 	const [isPassageVisible, setIsPassageVisible] = useState(false);
 	const [passageProgress, setPassageProgress] = useState<PassageProgress>();
 	const [otherFormsAvailability, setOtherFormsAvailability] = useState<OtherFormsAvailability>();
@@ -60,6 +64,11 @@ export default function CardDeck() {
 	function handleBack() {
 		void playSoftTap();
 		navigation.goBack();
+	}
+
+	// Open the first flashcard after the player finishes reading the deck preview.
+	function handleStartFlashcards() {
+		setIsDeckPreviewVisible(false);
 	}
 
 	/*
@@ -176,48 +185,58 @@ export default function CardDeck() {
 					},
 				}}
 			/>
-			<CardDeckView
-				currentCard={currentCard}
-				wordActions={
-					<View style={sharedWordCardStyles.wordMetaContainer}>
-						<Pressable
-							accessibilityLabel="View word in passage"
-							accessibilityRole="button"
-							accessibilityState={{ disabled: isPassageDisabled }}
-							disabled={isPassageDisabled}
-							hitSlop={8}
-							onPress={handleShowPassage}
-							style={styles.wordLink}
-						>
-							<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
-								View paragraph
-							</Text>
-						</Pressable>
-						{shouldShowOtherForms && (
-							<>
-								<View
-									accessible={false}
-									style={sharedWordCardStyles.wordDetailDivider}
-								/>
-								<Pressable
-									accessibilityLabel="Other forms of this word"
-									accessibilityRole="button"
-									hitSlop={8}
-									onPress={handleShowOtherForms}
-									style={styles.wordLink}
-								>
-									<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
-										Other forms
-									</Text>
-								</Pressable>
-							</>
-						)}
-					</View>
-				}
-			/>
+			{isDeckPreviewVisible ?
+				<DeckPreviewView
+					deck={cardDeck}
+					isReadDisabled={isPassageDisabled}
+					onRead={handleShowPassage}
+					onStart={handleStartFlashcards}
+				/>
+			:	<CardDeckView
+					currentCard={currentCard}
+					wordActions={
+						<View style={sharedWordCardStyles.wordMetaContainer}>
+							<Pressable
+								accessibilityLabel="View word in passage"
+								accessibilityRole="button"
+								accessibilityState={{
+									disabled: isPassageDisabled,
+								}}
+								disabled={isPassageDisabled}
+								hitSlop={8}
+								onPress={handleShowPassage}
+								style={styles.wordLink}
+							>
+								<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
+									View paragraph
+								</Text>
+							</Pressable>
+							{shouldShowOtherForms && (
+								<>
+									<View
+										accessible={false}
+										style={sharedWordCardStyles.wordDetailDivider}
+									/>
+									<Pressable
+										accessibilityLabel="Other forms of this word"
+										accessibilityRole="button"
+										hitSlop={8}
+										onPress={handleShowOtherForms}
+										style={styles.wordLink}
+									>
+										<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
+											Other forms
+										</Text>
+									</Pressable>
+								</>
+							)}
+						</View>
+					}
+				/>
+			}
 			{passageProgress && (
 				<DeckBoxModal
-					currentWordId={currentCard.id}
+					currentWordId={isDeckPreviewVisible ? undefined : currentCard.id}
 					deck={cardDeck}
 					modalVisible={isPassageVisible}
 					setModalVisible={setIsPassageVisible}
