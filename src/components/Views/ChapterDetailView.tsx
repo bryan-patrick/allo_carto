@@ -2,24 +2,29 @@ import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import ChapterPostcard from '@/src/components/ChapterPostcard';
 import Loader from '@/src/components/Loader';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
+import ReadingLink from '@/src/components/ReadingLink';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findAtlasLocationByChapterId } from '@/src/util/atlasCompletion';
 import { hasChapterContent } from '@/src/util/atlasContent';
 import { useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import MaterialSymbol from '../MaterialSymbol';
 
 const pageBackground = require('@/src/app/assets/images/chapters/background-alt.jpg');
 
-/*
- * The chapter details view (shows chapter and paragraph details)
- */
+interface ChapterDetailParams extends Record<string, string | string[] | undefined> {
+	chapterId?: string;
+}
+
+// Show the chapter's introduction above a postcard with its progress and paragraphs.
 export default function ChapterDetailView() {
-	const { chapterId } = useLocalSearchParams<{ chapterId?: string }>();
+	const { chapterId } = useLocalSearchParams<ChapterDetailParams>();
 	const { progressById, status } = useUserProgress();
 	const headerHeight = useHeaderHeight();
-	const scrollContentStyle = { paddingTop: headerHeight + 16 };
+	const scrollContentStyle = {
+		paddingTop: headerHeight + 8,
+	};
 	const location = findAtlasLocationByChapterId(chapterId);
 
 	if (status === 'loading') {
@@ -49,19 +54,29 @@ export default function ChapterDetailView() {
 		>
 			<ScrollView
 				key={chapter.id}
+				contentInsetAdjustmentBehavior="never"
+				automaticallyAdjustContentInsets={false}
 				contentContainerStyle={[styles.scrollContent, scrollContentStyle]}
-				scrollIndicatorInsets={{ top: headerHeight }}
+				scrollIndicatorInsets={{
+					top: headerHeight,
+				}}
 			>
-				<MaterialSymbol
-					color={colors.dark.text}
-					size={32}
-					name="raven"
-				/>
 				<View style={styles.chapterHeading}>
-					<Text style={styles.chapterTitle}>{chapter.name}</Text>
+					<MaterialSymbol
+						color={colors.dark.text}
+						size={32}
+						name="raven"
+					/>
+					<Text style={styles.chapterTitle}>{chapter.label}</Text>
 					{chapter.description && (
 						<Text style={styles.chapterDescription}>{chapter.description}</Text>
 					)}
+					<ReadingLink
+						item={chapter}
+						color={colors.category[story.category]}
+						label="Read chapter"
+						style={styles.readChapterLink}
+					/>
 				</View>
 				<ChapterPostcard
 					chapter={chapter}
@@ -85,28 +100,23 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		justifyContent: 'flex-start',
 		paddingHorizontal: 8,
-		marginTop: 24,
+		paddingBottom: 32,
 	},
-	storyMetaRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: 8,
-	},
-	readStoryLink: {
-		fontFamily: 'lexend-600',
-		fontSize: 14,
-		color: colors.light.goldenBorder,
+	readChapterLink: {
+		fontFamily: 'lexend-400',
+		fontSize: 15,
 	},
 	chapterHeading: {
-		gap: 8,
+		alignItems: 'center',
+		gap: 12,
 		paddingHorizontal: 12,
-		marginBottom: 16,
+		marginBottom: 24,
 	},
 	chapterTitle: {
 		fontFamily: 'lexend-600',
-		fontSize: 22,
+		fontSize: 15,
 		textAlign: 'center',
+		textTransform: 'uppercase',
 		color: colors.dark.text,
 	},
 	chapterDescription: {
@@ -118,6 +128,7 @@ const styles = StyleSheet.create({
 	},
 	message: {
 		fontFamily: 'lexend-400',
+		fontSize: 15,
 		textAlign: 'center',
 		color: colors.dark.text,
 	},

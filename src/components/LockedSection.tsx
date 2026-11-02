@@ -19,6 +19,7 @@ interface LockedSectionProps {
 	unlockCriteria: UnlockCriteria[];
 	style?: StyleProp<ViewStyle>;
 	fontSizeOffset?: number;
+	fontSize?: number;
 }
 
 /*
@@ -33,6 +34,7 @@ export default function LockedSection({
 	unlockCriteria,
 	style,
 	fontSizeOffset = 0,
+	fontSize,
 }: LockedSectionProps) {
 	const nextRequirement = unlockCriteria.find(criterion => !criterion.isUnlocked);
 	const description =
@@ -45,15 +47,15 @@ export default function LockedSection({
 	};
 	const titleStyle = {
 		color: textColor,
-		fontSize: 14 + fontSizeOffset,
+		fontSize: fontSize ?? 14 + fontSizeOffset,
 	};
 	const hintStyle = {
 		color: textColor,
-		fontSize: 12 + fontSizeOffset,
+		fontSize: fontSize ?? 12 + fontSizeOffset,
 	};
 	const circularLabelStyle = {
 		color,
-		fontSize: 12 + fontSizeOffset,
+		fontSize: fontSize ?? 12 + fontSizeOffset,
 	};
 
 	function showRequirements() {

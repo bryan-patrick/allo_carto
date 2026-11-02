@@ -91,10 +91,10 @@ export default function DeckPreviewView({
 	const headingStyle = {
 		color: storyColor,
 	};
-	let deckLabel = `Deck ${currentDeckNumber}/${deckCount}`;
+	let deckLabel = `Deck ${currentDeckNumber} of ${deckCount}`;
 
 	if (paragraphNumber !== undefined) {
-		deckLabel += ` · Paragraph ${paragraphNumber}`;
+		deckLabel = `Paragraph ${paragraphNumber}  -  ${deckLabel}`;
 	}
 
 	return (
@@ -128,7 +128,7 @@ export default function DeckPreviewView({
 											accessibilityRole="header"
 											style={[styles.title, headingStyle]}
 										>
-											Paragraph Words
+											Flashcards
 										</Text>
 										<Pressable
 											accessibilityRole="button"
@@ -156,7 +156,6 @@ export default function DeckPreviewView({
 								Here are all the words you will see in this deck.
 							</Text>
 							<Text style={styles.description}>
-								{' '}
 								Don&apos;t worry, you don&apos;t have to memorize these!
 							</Text>
 						</View>
@@ -250,7 +249,7 @@ const styles = StyleSheet.create({
 		gap: 4,
 	},
 	readLinkText: {
-		fontSize: 14,
+		fontSize: 16,
 		fontFamily: 'lexend-600',
 		textDecorationLine: 'underline',
 	},
@@ -258,9 +257,9 @@ const styles = StyleSheet.create({
 		opacity: 0.5,
 	},
 	deckLabel: {
-		fontSize: 12,
-		lineHeight: 18,
-		fontFamily: 'lexend-600',
+		fontSize: 13,
+		lineHeight: 20,
+		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
 	description: {

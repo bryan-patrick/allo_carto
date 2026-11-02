@@ -16,6 +16,7 @@ interface DeckHeaderProps {
 	children?: ReactNode;
 	titleStyle?: StyleProp<TextStyle>;
 	fontSizeOffset?: number;
+	fontSize?: number;
 }
 
 /*
@@ -30,18 +31,27 @@ export default function DeckHeader({
 	children,
 	titleStyle,
 	fontSizeOffset = 0,
+	fontSize,
 }: DeckHeaderProps) {
 	const showNewBadge = !progress?.hasStartedFlashcards;
-	const subtitleTextSize = { fontSize: styles.subtitle.fontSize + fontSizeOffset };
-	const titleTextSize = { fontSize: styles.title.fontSize + fontSizeOffset };
-	const badgeTextSize = { fontSize: styles.newBadgeText.fontSize + fontSizeOffset };
+	const subtitleTextSize = {
+		fontSize: fontSize ?? styles.subtitle.fontSize + fontSizeOffset,
+	};
+	const titleTextSize = {
+		fontSize: fontSize ?? styles.title.fontSize + fontSizeOffset,
+	};
+	const badgeTextSize = {
+		fontSize: fontSize ?? styles.newBadgeText.fontSize + fontSizeOffset,
+	};
 
 	return (
 		<View style={styles.container}>
 			{(subtitle || showNewBadge) && (
 				<View style={styles.labelRow}>
 					<View style={styles.labelDetails}>
-						{subtitle && <Text style={[styles.subtitle, subtitleTextSize]}>{subtitle}</Text>}
+						{subtitle && (
+							<Text style={[styles.subtitle, subtitleTextSize, titleTextSize]}>{subtitle}</Text>
+						)}
 						{subtitleAction}
 						{showNewBadge && (
 							<View style={styles.newBadge}>

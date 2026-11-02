@@ -1,8 +1,7 @@
 import type { DeckChapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
-import ReadingLink from '@/src/components/ReadingLink';
-import { useUserProgress } from '@/src/db/useUserProgress';
+import type { ProgressById } from '@/src/util/progression';
 import { StyleSheet, Text, View } from 'react-native';
 
 const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-postmark.png');
@@ -12,51 +11,30 @@ const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-pos
  */
 interface ChapterHeaderProps {
 	chapter: DeckChapter;
-	color: string;
+	progressById: ProgressById;
 }
 
-/*
- * Chapter heading and passage action
- */
-export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
-	const { label } = chapter;
-	const { progressById } = useUserProgress();
+// Show solved paragraph progress beside the postcard's postmark and stamp.
+export default function ChapterHeader({ chapter, progressById }: ChapterHeaderProps) {
 	const progress = progressById[chapter.id];
 	const completedParagraphCount = progress?.completedParagraphCount ?? 0;
 	const paragraphCount = progress?.paragraphCount ?? 0;
 
 	return (
 		<View style={styles.header}>
-			<View style={styles.headingRow}>
-				<View style={styles.heading}>
-					<View style={styles.labelRow}>
-						<Text
-							style={[
-								styles.label,
-								{
-									color,
-								},
-							]}
-						>
-							{label}
-						</Text>
-						<ReadingLink
-							item={chapter}
-							color={color}
-							style={styles.readLink}
-						/>
-					</View>
-					{paragraphCount > 0 && (
-						<Text style={styles.progress}>
-							{completedParagraphCount} of {paragraphCount} paragraphs solved
-						</Text>
-					)}
-				</View>
-				<BackgroundImage
-					source={postmarkImage}
-					style={styles.postmark}
-				/>
+			<View style={styles.heading}>
+				{paragraphCount > 0 && (
+					<Text style={styles.progress}>
+						{completedParagraphCount} of {paragraphCount} paragraphs solved
+					</Text>
+				)}
 			</View>
+			<BackgroundImage
+				accessible={false}
+				source={postmarkImage}
+				resizeMode="contain"
+				style={styles.postmark}
+			/>
 		</View>
 	);
 }
@@ -66,44 +44,26 @@ export default function ChapterHeader({ chapter, color }: ChapterHeaderProps) {
  */
 const styles = StyleSheet.create({
 	header: {
-		marginHorizontal: 12,
-		paddingBottom: 12,
-	},
-	headingRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		paddingVertical: 6,
-		gap: 2,
+		paddingHorizontal: 8,
+		paddingVertical: 0,
+		gap: 12,
+		borderColor: colors.light.goldenBorder,
 	},
 	heading: {
-		flex: 2,
-		minWidth: 0,
-		gap: 2,
-	},
-	labelRow: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		alignItems: 'center',
-		borderColor: colors.light.goldenBorder,
-		gap: 8,
-	},
-	label: {
-		fontFamily: 'lexend-700',
-		fontSize: 14,
-		textTransform: 'uppercase',
-	},
-	readLink: {
-		fontFamily: 'lexend-400',
-		fontSize: 16,
+		flex: 1,
 	},
 	progress: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 14,
+		lineHeight: 14,
 		color: colors.dark.text,
 	},
 	postmark: {
-		flex: 1.15,
+		flex: 1,
+		maxWidth: 120,
 		aspectRatio: '12 / 5',
 		opacity: 0.6,
 	},
