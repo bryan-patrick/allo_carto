@@ -20,9 +20,7 @@ interface ChapterPostcardProps {
 	progressById: ProgressById;
 }
 
-/*
- * The chapter component. It shows chapter info and the different paragraphs in that chapter.
- */
+// Show the chapter's progress and paragraphs on a postcard, or explain how to unlock it.
 export default function ChapterPostcard({ chapter, story, progressById }: ChapterPostcardProps) {
 	const color = colors.category[story.category];
 	const isLocked = !isItemUnlocked({
@@ -44,18 +42,16 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 				style={styles.postcard}
 			>
 				<View style={styles.border}>
-					{(isLocked || !hasDecks) && (
-						<ChapterHeader
-							chapter={chapter}
-							color={color}
-						/>
-					)}
+					<ChapterHeader
+						chapter={chapter}
+						progressById={progressById}
+					/>
 					{isLocked && (
 						<View style={styles.lockedInner}>
 							<LockedSection
 								color={color}
 								unlockCriteria={unlockCriteria}
-								fontSizeOffset={2}
+								fontSize={15}
 							/>
 						</View>
 					)}
@@ -99,10 +95,9 @@ const styles = StyleSheet.create({
 		width: '100%',
 	},
 	border: {
-		borderWidth: 1,
+		borderWidth: 0,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
-		gap: 2,
 	},
 	lockedInner: {
 		paddingVertical: 16,
@@ -111,7 +106,7 @@ const styles = StyleSheet.create({
 	comingSoonText: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
-		fontSize: 16,
+		fontSize: 15,
 		paddingVertical: 16,
 	},
 });

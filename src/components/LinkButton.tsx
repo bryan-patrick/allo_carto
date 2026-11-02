@@ -7,6 +7,7 @@ import {
 	StyleProp,
 	StyleSheet,
 	Text,
+	TextStyle,
 	View,
 	ViewStyle,
 } from 'react-native';
@@ -43,6 +44,7 @@ interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> {
 	showInnerBorder?: boolean;
 	showShadow?: boolean;
 	style?: StyleProp<ViewStyle>;
+	textStyle?: StyleProp<TextStyle>;
 	type?: 'fill' | 'outline';
 }
 
@@ -95,6 +97,7 @@ function Button({
 	children,
 	SVGElement,
 	style,
+	textStyle,
 	props,
 	useArrow = true,
 	arrowSize = 18,
@@ -224,7 +227,7 @@ function Button({
 					},
 				]}
 			>
-				<Text style={[styles.linkText, outlineTextStyle]}>{children}</Text>
+				<Text style={[styles.linkText, outlineTextStyle, textStyle]}>{children}</Text>
 				{iconElement}
 			</View>
 		</AnimatedPressable>

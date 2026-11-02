@@ -2,7 +2,6 @@ import type { DeckChapter, DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import type { CardDeck, ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
-import ChapterHeader from '@/src/components/ChapterHeader';
 import DeckBoxModal from '@/src/components/DeckBox/DeckBoxModal';
 import DeckHeader from '@/src/components/DeckHeader';
 import LinkButton from '@/src/components/LinkButton';
@@ -142,10 +141,6 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 	 */
 	return (
 		<View style={styles.deckList}>
-			<ChapterHeader
-				chapter={chapter}
-				color={storyColor}
-			/>
 			{visibleParagraphs.map((deck, index) => {
 				const isFirstDeck = index === 0;
 				const isLocked = !isItemUnlocked({
@@ -164,48 +159,63 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 						{!isLocked && (
 							<DeckHeader
 								subtitle={`Paragraph ${index + 1}`}
-								subtitleAction={
-									<Pressable
-										accessibilityRole="button"
-										accessibilityLabel={`Read paragraph: ${deck.title}`}
-										accessibilityState={{
-											disabled: Boolean(loadingPassageId),
-											busy: isLoadingPassage,
-										}}
-										disabled={Boolean(loadingPassageId)}
-										onPress={() => handleShowPassage(deck)}
-										hitSlop={8}
-										style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
-									>
-										<Text style={[styles.readLinkText, { color: storyColor }]}>Read</Text>
-										<MaterialSymbol
-											name="menu_book"
-											size={16}
-											color={storyColor}
-										/>
-									</Pressable>
-								}
 								title={deck.title}
 								progress={progressById[deck.id]}
 								wordCount={new Set(deck.wordIds).size}
-								fontSizeOffset={2}
+								fontSize={15}
 							/>
+						)}
+						{!isLocked && (
+							<Pressable
+								accessibilityRole="button"
+								accessibilityLabel={`Read paragraph: ${deck.title}`}
+								accessibilityState={{
+									disabled: Boolean(loadingPassageId),
+									busy: isLoadingPassage,
+								}}
+								disabled={Boolean(loadingPassageId)}
+								onPress={() => handleShowPassage(deck)}
+								hitSlop={8}
+								style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
+							>
+								<Text
+									style={[
+										styles.readLinkText,
+										{
+											color: storyColor,
+										},
+									]}
+								>
+									Read paragraph
+								</Text>
+								<MaterialSymbol
+									name="menu_book"
+									size={16}
+									color={storyColor}
+								/>
+							</Pressable>
 						)}
 
 						{isLocked && (
 							<LockedSection
 								color={storyColor}
 								unlockCriteria={unlockCriteria}
-								fontSizeOffset={2}
+								fontSize={15}
 							/>
 						)}
-						{!isLocked && <SolveEligibilityHint deck={deck} />}
+						{!isLocked && (
+							<SolveEligibilityHint
+								deck={deck}
+								textStyle={styles.helpText}
+							/>
+						)}
 						{!isLocked && (
 							<View style={styles.actions}>
 								<SolveButton
 									deckId={deck.id}
 									color={storyColor}
 									style={styles.solveActionButton}
+									textStyle={styles.actionText}
 								/>
 								<LinkButton
 									accessibilityLabel={`${actionLabel} for paragraph: ${deck.title}`}
@@ -216,8 +226,9 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 									handler={() => handleSelectDeck(deck)}
 									disabled={isUpdatingProgress}
 									style={styles.flashcardActionButton}
+									textStyle={styles.actionText}
 								>
-									<Text style={styles.actionText}>{actionLabel}</Text>
+									{actionLabel}
 								</LinkButton>
 							</View>
 						)}
@@ -241,29 +252,18 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
  * Styles
  */
 const styles = StyleSheet.create({
-	deckList: {},
+	deckList: {
+		margin: 8,
+	},
 	deckRow: {
-		borderWidth: 1,
-		borderColor: colors.light.goldenBorder,
-		borderRightWidth: 0,
-		borderBottomWidth: 0,
-		paddingHorizontal: 12,
-		paddingVertical: 12,
-		marginLeft: 12,
+		borderTopWidth: 1,
+		borderColor: colors.light.border,
+		padding: 12,
 		gap: 12,
-	},
-	firstDeckRow: {
-		borderTopLeftRadius: 8,
-	},
-	paragraphLabel: {
-		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 14,
 	},
 	actions: {
 		flexDirection: 'row',
 		justifyContent: 'center',
-		alignContent: 'center',
 		alignItems: 'stretch',
 		gap: 8,
 	},
@@ -276,16 +276,22 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0,
 	},
 	actionText: {
-		fontSize: 16,
+		fontSize: 15,
+	},
+	helpText: {
+		fontSize: 15,
+		lineHeight: 20,
 	},
 	readLink: {
+		alignSelf: 'flex-start',
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 4,
 	},
 	readLinkText: {
 		fontFamily: 'lexend-400',
-		fontSize: 16,
+		fontSize: 15,
+		lineHeight: 20,
 		textDecorationLine: 'underline',
 	},
 	loadingButton: {

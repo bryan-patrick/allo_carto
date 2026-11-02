@@ -7,7 +7,7 @@ import { findParagraphById } from '@/src/util/atlasCompletion';
 import { solveStages } from '@/src/util/solveProgression';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 /*
  * Typing
@@ -17,12 +17,19 @@ interface SolveButtonProps {
 	color: string;
 	disabled?: boolean;
 	style?: StyleProp<ViewStyle>;
+	textStyle?: StyleProp<TextStyle>;
 }
 
 /*
  * Opens the next unfinished Solve puzzle for a paragraph.
  */
-export default function SolveButton({ deckId, color, disabled = false, style }: SolveButtonProps) {
+export default function SolveButton({
+	deckId,
+	color,
+	disabled = false,
+	style,
+	textStyle,
+}: SolveButtonProps) {
 	const router = useRouter();
 	const { id: userId } = useUserContext() ?? {};
 	const { status, isUpdatingProgress } = useUserProgress();
@@ -70,6 +77,7 @@ export default function SolveButton({ deckId, color, disabled = false, style }: 
 				type="outline"
 				disabled={isDisabled}
 				style={[styles.button, isDisabled && !isMastered && styles.disabledButton]}
+				textStyle={textStyle}
 				background={
 					(!isDisabled || isMastered) && (
 						<LinearGradient
