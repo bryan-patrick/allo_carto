@@ -65,7 +65,10 @@ function PreviewWordRow({ word }: PreviewWordRowProps) {
 				>
 					{word.CEFR}
 				</Text>
-				<TTSButton wordsToSay={frenchWord} />
+				<TTSButton
+					wordsToSay={frenchWord}
+					rate={1}
+				/>
 			</View>
 		</View>
 	);

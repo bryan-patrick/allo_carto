@@ -110,7 +110,10 @@ const WordCardFront = memo(function WordCardFrontMemo({
 				<View style={sharedWordCardStyles.cardMain}>
 					<View style={sharedWordCardStyles.wordIdContainer}>
 						<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
-						<TTSButton wordsToSay={displayedFrenchWord} />
+						<TTSButton
+							wordsToSay={displayedFrenchWord}
+							rate={1}
+						/>
 					</View>
 					<WordPronunciation
 						pronunciation={currentCard.pronunciation}

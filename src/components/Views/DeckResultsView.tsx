@@ -3,13 +3,16 @@ import CompletionPassage from '@/src/components/DeckCompletion/CompletionPassage
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import { getDeck } from '@/src/db/interface';
+import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findCompletionPath } from '@/src/util/atlasCompletion';
+import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { ImageBackground } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import LinkButton from '../LinkButton';
@@ -17,14 +20,16 @@ import LinkButton from '../LinkButton';
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /*
- * Show the flashcard results and return to the chapter when the player finishes.
+ * Show flashcard results with actions to finish or read the next deck's definitions.
  */
 export default function DeckResultsView() {
 	const router = useRouter();
-	const { inkBalance, maxInkBalance, isUpdatingProgress } = useUserProgress();
-	const { cardDeckState } = useCardDeck();
+	const { id: userId } = useUserContext() ?? {};
+	const { experience, inkBalance, maxInkBalance, isUpdatingProgress } = useUserProgress();
+	const { cardDeckState, cardDeckDispatch } = useCardDeck();
 	const { cardDeck, session } = cardDeckState;
 	const [showWordResults, setShowWordResults] = useState(false);
+	const [isStartingNextDeck, setIsStartingNextDeck] = useState(false);
 	const completionPath = findCompletionPath({ id: cardDeck.id });
 	const chapter = completionPath[1];
 	const storyColor = getDeckStoryColor(cardDeck.id);
@@ -33,6 +38,10 @@ export default function DeckResultsView() {
 		bonus => bonus.kind === 'paragraphCompletion',
 	);
 	const flashcardProgress = cardDeck.flashcardProgress;
+	const hasNextDeck =
+		hasReview &&
+		Boolean(flashcardProgress && flashcardProgress.deckIndex + 1 < flashcardProgress.deckCount);
+	const areActionsDisabled = isUpdatingProgress || isStartingNextDeck;
 	const headingStyle = {
 		color: storyColor,
 	};
@@ -74,6 +83,43 @@ export default function DeckResultsView() {
 
 		router.replace('/(tabs)');
 	}, [chapter, router]);
+
+	// Load the next saved deck and open its definitions before starting the flashcards.
+	async function handleContinue() {
+		const cardsPerDeck = getCardsPerDeck(experience.level);
+
+		if (!userId || !hasNextDeck || areActionsDisabled) {
+			return;
+		}
+
+		setIsStartingNextDeck(true);
+
+		try {
+			const nextDeck = await getDeck({
+				deck: cardDeck,
+				amount: cardsPerDeck,
+				userId,
+			});
+
+			if (!nextDeck || nextDeck.cardDeck.words.length === 0) {
+				Alert.alert('Could not start session', 'Please try again.');
+				return;
+			}
+
+			cardDeckDispatch({
+				type: 'SET_DECK',
+				payload: nextDeck.cardDeck,
+				session: nextDeck.session,
+				currentIndex: nextDeck.currentIndex,
+			});
+			router.replace('/CardDeck');
+		} catch (error) {
+			console.error('Could not start session:', error);
+			Alert.alert('Could not start session', 'Please try again.');
+		} finally {
+			setIsStartingNextDeck(false);
+		}
+	}
 
 	function handleToggleWordResults() {
 		setShowWordResults(!showWordResults);
@@ -187,16 +233,32 @@ export default function DeckResultsView() {
 					<View style={styles.footer}>
 						<LinkButton
 							handler={handleFinish}
-							disabled={isUpdatingProgress}
+							disabled={areActionsDisabled}
 							color={storyColor}
 							contentPaddingHorizontal={8}
 							contentPaddingVertical={8}
 							type="outline"
 							showShadow={false}
-							fullwidth
+							useArrow={!hasNextDeck}
+							style={styles.footerButton}
+							textStyle={styles.footerButtonText}
 						>
 							Finish
 						</LinkButton>
+						{hasNextDeck && (
+							<LinkButton
+								handler={handleContinue}
+								disabled={areActionsDisabled || !userId}
+								color={storyColor}
+								contentPaddingHorizontal={8}
+								contentPaddingVertical={8}
+								type="fill"
+								style={styles.footerButton}
+								textStyle={styles.footerButtonText}
+							>
+								Continue
+							</LinkButton>
+						)}
 					</View>
 				</View>
 			</ImageBackground>
@@ -264,8 +326,16 @@ const styles = StyleSheet.create({
 	},
 	wordResultsToggle: {},
 	footer: {
+		flexDirection: 'row',
+		gap: 8,
 		padding: 12,
 		borderTopWidth: 1,
 		borderTopColor: colors.light.goldenBorder,
+	},
+	footerButton: {
+		flex: 1,
+	},
+	footerButtonText: {
+		paddingHorizontal: 0,
 	},
 });
