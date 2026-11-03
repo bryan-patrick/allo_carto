@@ -18,6 +18,7 @@ import LevelBadge from '../components/LevelBadge';
 import Loader from '../components/Loader';
 import DeckProgress from '../components/WordCard/DeckProgress';
 import { getTables, setDB } from '../db/interface';
+import completeGettingStarted from '../db/queries/completeGettingStarted';
 import getMonHomme, { UserRow } from '../db/queries/getMonHomme';
 import saveSelectedStory from '../db/queries/saveSelectedStory';
 import { UserContext } from '../db/userContext';
@@ -72,6 +73,29 @@ export default function AppLayout() {
 	const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
 	const [user, setUser] = useState<UserRow | null>(null);
 	const userId = user?.id;
+
+	// Save the finished tutorial and keep the header in step with the player's saved choice.
+	const finishGettingStarted = useCallback(async (): Promise<void> => {
+		if (!userId) {
+			return;
+		}
+
+		try {
+			await completeGettingStarted(userId);
+			setUser(currentUser => {
+				if (!currentUser) {
+					return null;
+				}
+
+				return {
+					...currentUser,
+					hasCompletedGettingStarted: 1,
+				};
+			});
+		} catch (error) {
+			console.error('Could not save the completed getting started tutorial:', error);
+		}
+	}, [userId]);
 
 	const selectStory = useCallback(
 		async (storyId: string): Promise<boolean> => {
@@ -169,7 +193,17 @@ export default function AppLayout() {
 	 * difficult to debug. Don't put context inside of it.
 	 */
 	return (
-		<UserContext value={user ? { ...user, selectStory } : null}>
+		<UserContext
+			value={
+				user ?
+					{
+						...user,
+						selectStory,
+						completeGettingStarted: finishGettingStarted,
+					}
+				:	null
+			}
+		>
 			<ThemeProvider value={alloTheme}>
 				<CardDeckContext
 					value={{

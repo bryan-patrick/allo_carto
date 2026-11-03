@@ -24,6 +24,7 @@ export interface UserRow {
 	id: string;
 	name: string | null;
 	isMonHomme: number;
+	hasCompletedGettingStarted: number;
 	selectedStoryId?: string | null;
 }
 
@@ -44,6 +45,7 @@ export default async function getMonHomme() {
 			id,
 			name,
 			isMonHomme,
+			hasCompletedGettingStarted,
 			selectedStoryId
 		FROM users
 		WHERE isMonHomme = 1
