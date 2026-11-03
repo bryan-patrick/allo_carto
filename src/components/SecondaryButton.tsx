@@ -19,7 +19,6 @@ import Animated, {
 import colors from '../app/colors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-const secondaryButtonShadowHeight = 0;
 
 interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'> {
 	SVGElement?: ReactNode;
@@ -75,13 +74,8 @@ export default function SecondaryButton({
 	 * Animation vars
 	 */
 	const top = useSharedValue(0);
-	const shadowOffsetHeight = useSharedValue(secondaryButtonShadowHeight);
 	const animatedButtonStyle = useAnimatedStyle(() => ({
 		top: top.get(),
-		shadowOffset: {
-			width: 0,
-			height: shadowOffsetHeight.get(),
-		},
 	}));
 
 	/*
@@ -95,18 +89,10 @@ export default function SecondaryButton({
 					easing: Easing.inOut(Easing.ease),
 				}),
 			);
-
-			shadowOffsetHeight.set(
-				withTiming(0, {
-					duration: 100,
-					easing: Easing.inOut(Easing.ease),
-				}),
-			);
 		} else {
 			top.set(0);
-			shadowOffsetHeight.set(secondaryButtonShadowHeight);
 		}
-	}, [isPressed, shadowOffsetHeight, top]);
+	}, [isPressed, top]);
 
 	/*
 	 * Handlers
@@ -155,13 +141,8 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		paddingHorizontal: 8,
 		paddingVertical: 12,
-		shadowOpacity: 1,
-		shadowRadius: 0,
 		borderWidth: 1,
-		shadowOffset: { width: 0, height: secondaryButtonShadowHeight },
 		backgroundColor: colors.light.background,
-		shadowColor: colors.dark.border,
-		marginBottom: secondaryButtonShadowHeight,
 		color: colors.dark.primary,
 		gap: 8,
 	},

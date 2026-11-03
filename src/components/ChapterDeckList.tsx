@@ -142,7 +142,6 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 	return (
 		<View style={styles.deckList}>
 			{visibleParagraphs.map((deck, index) => {
-				const isFirstDeck = index === 0;
 				const isLocked = !isItemUnlocked({
 					id: deck.id,
 					progressById,
@@ -154,7 +153,7 @@ export default function ChapterDeckList({ chapter, progressById, story }: Chapte
 				return (
 					<View
 						key={deck.id}
-						style={[styles.deckRow, isFirstDeck && styles.firstDeckRow]}
+						style={styles.deckRow}
 					>
 						{!isLocked && (
 							<DeckHeader

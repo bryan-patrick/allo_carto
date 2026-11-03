@@ -1,21 +1,10 @@
 import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
-import { Button, Host, Text as NativeText, RNHostView, Row } from '@expo/ui';
-import { foregroundColor } from '@expo/ui/swift-ui/modifiers';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import BackgroundImage from './BackgroundImage';
 import MaterialSymbol from './MaterialSymbol';
 
-const headingColor = colors.light.text;
-const titleModifiers: ReturnType<typeof foregroundColor>[] = [];
-let storyFontFamily = 'lexend-600';
-
-if (Platform.OS === 'ios') {
-	storyFontFamily = 'Lexend-SemiBold';
-	/*
-	 * Use the color modifier supported by the native Expo Go runtime.
-	 */
-	titleModifiers.push(foregroundColor(headingColor));
-}
+const storyPaperBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /*
  * Typing
@@ -26,65 +15,45 @@ interface StorySelectorProps {
 	onPress: () => void;
 }
 
-/*
- * Show the current story's name and open the story picker when pressed.
- */
+// Show the story title, category, and level on a paper tab that opens the story picker.
 export default function StorySelector({ story, isExpanded, onPress }: StorySelectorProps) {
 	const accessibilityLabel = `Selected story: ${story.name}`;
-	const storyColor = colors.categoryLight[story.category];
+	const storyColor = colors.category[story.category];
+	const categoryTextStyle = {
+		color: storyColor,
+	};
 
 	return (
 		<View style={styles.selector}>
-			<View
-				accessible
-				accessibilityActions={[{ name: 'activate' }]}
-				accessibilityHint="Choose a different story"
-				accessibilityRole="button"
-				accessibilityLabel={accessibilityLabel}
-				accessibilityState={{ expanded: isExpanded }}
-				onAccessibilityAction={onPress}
-				onAccessibilityTap={onPress}
+			<BackgroundImage
+				source={storyPaperBackground}
+				resizeMode="cover"
+				style={styles.paperTab}
+				imageStyle={styles.paperCorners}
 			>
-				<View
-					accessibilityElementsHidden
-					importantForAccessibility="no-hide-descendants"
+				<Pressable
+					accessibilityHint="Choose a different story"
+					accessibilityRole="button"
+					accessibilityLabel={accessibilityLabel}
+					accessibilityState={{
+						expanded: isExpanded,
+					}}
+					onPress={onPress}
+					style={({ pressed }) => [styles.tabContent, pressed && styles.pressed]}
 				>
-					<Host
-						matchContents
-						ignoreSafeArea="all"
-						colorScheme="dark"
-						seedColor={storyColor}
-					>
-						<Button
-							onPress={onPress}
-							variant="text"
-						>
-							<Row
-								alignment="center"
-								spacing={2}
-							>
-								<NativeText
-									modifiers={titleModifiers}
-									textStyle={styles.name}
-								>
-									{story.name}
-								</NativeText>
-								<Row style={styles.chevron}>
-									<RNHostView matchContents>
-										<MaterialSymbol
-											accessible={false}
-											color={headingColor}
-											name="expand_more"
-											size={24}
-											style={styles.chevron}
-										/>
-									</RNHostView>
-								</Row>
-							</Row>
-						</Button>
-					</Host>
-				</View>
-			</View>
+					<View style={styles.titleRow}>
+						<Text style={[styles.name, categoryTextStyle]}>{story.name}</Text>
+						<MaterialSymbol
+							name="expand_more"
+							color={storyColor}
+							size={18}
+						/>
+					</View>
+					<Text style={[styles.changeStoryText, categoryTextStyle]}>
+						{story.category}&nbsp;&nbsp;|&nbsp;&nbsp;Level {story.requiredLevel}
+					</Text>
+				</Pressable>
+			</BackgroundImage>
 		</View>
 	);
 }
@@ -94,16 +63,54 @@ export default function StorySelector({ story, isExpanded, onPress }: StorySelec
  */
 const styles = StyleSheet.create({
 	selector: {
-		alignItems: 'flex-start',
+		alignItems: 'center',
+		alignSelf: 'center',
+		maxWidth: '100%',
 	},
-	chevron: {
-		width: 24,
-		height: 24,
+	paperTab: {
+		backgroundColor: colors.light.background,
+		borderBottomLeftRadius: 16,
+		borderBottomRightRadius: 16,
+		maxWidth: '100%',
+		elevation: 2,
+		shadowColor: '#000000',
+		shadowOffset: {
+			width: 0,
+			height: 1,
+		},
+		shadowRadius: 1,
+		shadowOpacity: 0.4,
+	},
+	paperCorners: {
+		borderBottomLeftRadius: 16,
+		borderBottomRightRadius: 16,
+	},
+	tabContent: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 0,
+		paddingHorizontal: 24,
+		paddingVertical: 4,
+	},
+	titleRow: {
+		alignItems: 'center',
+		flexDirection: 'row',
+		maxWidth: '100%',
+		gap: 4,
 	},
 	name: {
-		color: headingColor,
-		fontFamily: storyFontFamily,
-		fontSize: 18,
+		flexShrink: 1,
+		fontFamily: 'lexend-600',
+		fontSize: 16,
+		lineHeight: 22,
 		textAlign: 'center',
+	},
+	changeStoryText: {
+		fontFamily: 'lexend-400',
+		fontSize: 11,
+		lineHeight: 12,
+	},
+	pressed: {
+		opacity: 0.65,
 	},
 });

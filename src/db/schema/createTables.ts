@@ -1,9 +1,15 @@
 import { getDB, logThisIfItFails } from '../connection';
 
+/*
+ * Typing
+ */
 interface DatabaseColumn {
 	name: string;
 }
 
+/*
+ * Off we go again
+ */
 const createUserProgressTableSQL = `
 	CREATE TABLE IF NOT EXISTS userProgress (
 		userId TEXT NOT NULL,
@@ -73,6 +79,7 @@ async function createUsersTable(): Promise<void> {
 					id TEXT PRIMARY KEY,
 					name TEXT,
 					isMonHomme INTEGER NOT NULL DEFAULT 1,
+					hasCompletedGettingStarted INTEGER NOT NULL DEFAULT 0,
 					selectedStoryId TEXT,
 					totalXP INTEGER NOT NULL DEFAULT 0 CHECK (totalXP >= 0)
 				);
@@ -116,6 +123,7 @@ export default async function createTables(): Promise<void> {
 	await createWordsTable();
 	await ensureWordsFormColumn();
 	await createUsersTable();
+	await ensureGettingStartedColumn();
 	await ensureSelectedStoryColumn();
 	await createUserWordsTable();
 	await createUserProgressTable();
@@ -131,7 +139,34 @@ export default async function createTables(): Promise<void> {
 	await ensureParagraphProgressType();
 }
 
-// Keep new notifications until the player dismisses them, even when older activity is removed.
+/*
+ * Keep the tutorial automatic for new players while leaving existing players' saves alone.
+ */
+async function ensureGettingStartedColumn(): Promise<void> {
+	const database = await getDB();
+	const columns = await database.getAllAsync<DatabaseColumn>('PRAGMA table_info(users);');
+	const hasGettingStartedColumn = columns.some(
+		column => column.name === 'hasCompletedGettingStarted',
+	);
+	const addColumnStatement = `
+		ALTER TABLE users
+		ADD COLUMN hasCompletedGettingStarted INTEGER NOT NULL DEFAULT 0;
+	`;
+	const updateExistingPlayersStatement = `
+		UPDATE users SET hasCompletedGettingStarted = 1;
+	`;
+
+	if (!hasGettingStartedColumn) {
+		await database.withExclusiveTransactionAsync(async transaction => {
+			await transaction.execAsync(addColumnStatement);
+			await transaction.execAsync(updateExistingPlayersStatement);
+		});
+	}
+}
+
+/*
+ * Keep new notifications until the player dismisses them, even when older activity is removed.
+ */
 async function createUserNotificationsTable(): Promise<void> {
 	const database = await getDB();
 	const statement = `
@@ -150,7 +185,9 @@ async function createUserNotificationsTable(): Promise<void> {
 	await database.execAsync(statement);
 }
 
-// Keep a short saved history of the player's rewards, completed activities, and unlocks.
+/*
+ * Keep a short saved history of the player's rewards, completed activities, and unlocks.
+ */
 async function createUserActivityTable(): Promise<void> {
 	const database = await getDB();
 	const statement = `
@@ -171,7 +208,9 @@ async function createUserActivityTable(): Promise<void> {
 	await database.execAsync(statement);
 }
 
-// Remember each puzzle reward until it is claimed, including the XP already paid.
+/*
+ * Remember each puzzle reward until it is claimed, including the XP already paid.
+ */
 async function createSolveRewardsTable(): Promise<void> {
 	const database = await getDB();
 	const statement = `

@@ -21,7 +21,7 @@ const postcardBackground = require('@/src/app/assets/images/postcard-parts/backg
  */
 export default function DeckResultsView() {
 	const router = useRouter();
-	const { inkBalance, maxInkBalance, isUpdatingProgress, progressById } = useUserProgress();
+	const { inkBalance, maxInkBalance, isUpdatingProgress } = useUserProgress();
 	const { cardDeckState } = useCardDeck();
 	const { cardDeck, session } = cardDeckState;
 	const [showWordResults, setShowWordResults] = useState(false);
@@ -33,21 +33,11 @@ export default function DeckResultsView() {
 		bonus => bonus.kind === 'paragraphCompletion',
 	);
 	const flashcardProgress = cardDeck.flashcardProgress;
-	const paragraphCardCount = cardDeck.wordIds.length;
-	const seenCardCount = progressById[cardDeck.id]?.seenWordCount ?? 0;
-	const newlySeenCards = cardDeck.words.filter(word => {
-		const previousSeenCount = word.seenCount ?? 0;
-		const wasUnseen = session?.unseenWordIds?.includes(word.id) ?? previousSeenCount === 0;
-		const hasSessionResult = session?.results.some(result => result.wordId === word.id) ?? false;
-
-		return wasUnseen && hasSessionResult;
-	});
-	const newlySeenCardCount = newlySeenCards.length;
 	const headingStyle = {
 		color: storyColor,
 	};
 	let title = 'You finished the flashcards!';
-	let description = cardDeck.title;
+	let description = '';
 	let wordResultsLabel = 'Show word results';
 	let wordResultsIcon = 'expand_more';
 
@@ -57,7 +47,7 @@ export default function DeckResultsView() {
 
 	if (paragraphBonus) {
 		title = 'Paragraph complete!';
-		description = `${cardDeck.title}\nYou finished every deck in this cycle.`;
+		description = 'You completed every flashcard!';
 	}
 
 	if (!hasReview) {
@@ -129,7 +119,7 @@ export default function DeckResultsView() {
 							>
 								{title}
 							</Text>
-							<Text style={styles.description}>{description}</Text>
+							{description && <Text style={styles.description}>{description}</Text>}
 						</View>
 					</View>
 					<ScrollView>
@@ -161,9 +151,6 @@ export default function DeckResultsView() {
 										color={storyColor}
 										inkBalance={inkBalance}
 										maxInkBalance={maxInkBalance}
-										newFlashcardsSeen={newlySeenCardCount}
-										seenFlashcards={seenCardCount}
-										totalFlashcards={paragraphCardCount}
 									/>
 								</View>
 								<View style={styles.section}>

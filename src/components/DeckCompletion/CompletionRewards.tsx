@@ -13,27 +13,18 @@ interface CompletionRewardsProps {
 	color: string;
 	inkBalance: number;
 	maxInkBalance: number;
-	newFlashcardsSeen: number;
-	seenFlashcards: number;
-	totalFlashcards: number;
 }
 
-/*
- * List the session's Ink, new flashcards, and XP above the player's level progress.
- */
+// Show the session's Ink and XP rewards above the player's level progress.
 export default function CompletionRewards({
 	session,
 	color,
 	inkBalance,
 	maxInkBalance,
-	newFlashcardsSeen,
-	seenFlashcards,
-	totalFlashcards,
 }: CompletionRewardsProps) {
 	const { completion, results } = session;
 	const wordXP = results.reduce((total, result) => total + result.xp, 0);
 	const bonusXP = completion?.bonuses.reduce((total, bonus) => total + bonus.xp, 0) ?? 0;
-	const paragraphBonus = completion?.bonuses.find(bonus => bonus.kind === 'paragraphCompletion');
 	const earnedXP = wordXP + bonusXP;
 	const accentStyle = {
 		color,
@@ -75,31 +66,6 @@ export default function CompletionRewards({
 						style={[styles.amount, accentStyle]}
 					/>
 				</View>
-				<View style={styles.row}>
-					<View style={styles.rowDetails}>
-						<Text style={styles.label}>New flashcards seen</Text>
-					</View>
-					<Text
-						style={[styles.amount, accentStyle]}
-						accessibilityLabel={`${newFlashcardsSeen} new flashcards seen this session. ${seenFlashcards} of ${totalFlashcards} flashcards seen in this paragraph.`}
-					>
-						{newFlashcardsSeen} ({seenFlashcards}/{totalFlashcards})
-					</Text>
-				</View>
-				{paragraphBonus && (
-					<View style={styles.row}>
-						<View style={styles.rowDetails}>
-							<Text style={styles.label}>Paragraph completion bonus</Text>
-						</View>
-						<CountUp
-							value={paragraphBonus.xp}
-							duration={500}
-							prefix="+"
-							suffix=" XP"
-							style={[styles.amount, accentStyle]}
-						/>
-					</View>
-				)}
 				<View style={styles.row}>
 					<View style={styles.rowDetails}>
 						<Text style={styles.label}>XP earned</Text>

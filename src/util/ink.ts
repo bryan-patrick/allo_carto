@@ -19,10 +19,10 @@ export const inkConfig: InkConfig = {
 		Legendary: 5,
 	},
 	incorrectSolveAttempt: 1,
-	baseMaxBalance: 20,
+	baseMaxBalance: 30,
 };
 
-// Start with 20 Ink of space and add one for each level gained after level 1.
+// Start with 30 Ink of space and add one for each level gained after level 1.
 export function getMaxInkBalance(playerLevel: number): number {
 	const levelsGained = Math.max(0, playerLevel - 1);
 

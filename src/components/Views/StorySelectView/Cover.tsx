@@ -1,7 +1,7 @@
-import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { bookStyles } from './bookStyles';
 
 /*
  * Typing
@@ -10,20 +10,22 @@ interface CoverProps {
 	children: ReactNode;
 }
 
-/*
- * The "cover" of the book. This includes the story details.
- */
+// Show the story on a rounded cover with a border along its top, right, and bottom edges.
 export default function Cover({ children }: CoverProps) {
-	/*
-	 * Render the component
-	 */
 	return (
 		<BackgroundImage
 			resizeMode="stretch"
 			source={require('../../../app/assets/images/book-parts/cover.jpg')}
-			style={styles.cover}
+			style={[styles.cover, bookStyles.coverCorners]}
+			imageStyle={bookStyles.coverCorners}
 		>
-			<View style={styles.coverInner}>{children}</View>
+			{children}
+			{/* Draw the border above the cover image so it stays visible at the corners. */}
+			<View
+				accessible={false}
+				pointerEvents="none"
+				style={bookStyles.coverBorder}
+			/>
 		</BackgroundImage>
 	);
 }
@@ -37,16 +39,5 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		padding: 8,
 		paddingLeft: 0,
-		borderTopRightRadius: 0,
-		borderBottomRightRadius: 0,
-		overflow: 'hidden',
-	},
-	coverInner: {
-		flexGrow: 1,
-		borderWidth: 2,
-		borderBottomRightRadius: 8,
-		borderTopRightRadius: 0,
-		borderLeftWidth: 0,
-		borderColor: colors.utility.cardBorder,
 	},
 });

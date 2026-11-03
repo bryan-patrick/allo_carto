@@ -1,35 +1,28 @@
-import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getSelectedStory } from '@/src/util/getSelectedStory';
 import { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import GettingStartedModal from './getting-started/GettingStartedModal';
 import LevelBadge from './LevelBadge';
-import ReadingDescription from './ReadingDescription';
-import StorySelectModal from './StorySelectModal';
-import StorySelector from './StorySelector';
+import MaterialSymbol from './MaterialSymbol';
 
-/*
- * Component header that shows the story select, user level, and story meta
- */
+// Show the player level and a guide that opens automatically for new players.
 export default function ChapterSelectHeader() {
 	const insets = useSafeAreaInsets();
 	const user = useUserContext();
 	const { progressById, status } = useUserProgress();
-	const [isStoryModalVisible, setIsStoryModalVisible] = useState(false);
-	const [isSelectingStory, setIsSelectingStory] = useState(false);
+	// Follow saved progress until the player opens or finishes the guide.
+	const [gettingStartedVisibility, setGettingStartedVisibility] = useState<boolean | null>(null);
+	const hasCompletedGettingStarted = user?.hasCompletedGettingStarted;
 	const selectedStory = getSelectedStory({
 		selectedStoryId: user?.selectedStoryId,
 		progressById,
 	});
 	const storyColor =
 		selectedStory ? colors.categoryLight[selectedStory.category] : colors.light.primary;
-	const categoryTextStyle = {
-		color: storyColor,
-	};
 	const headerBorderStyle = {
 		borderBottomColor: `${storyColor}30`,
 	};
@@ -39,63 +32,44 @@ export default function ChapterSelectHeader() {
 		paddingRight: Math.max(insets.right, 12),
 	};
 	const isReady = status === 'ready' && selectedStory;
+	const isGettingStartedVisible =
+		gettingStartedVisibility ?? (status === 'ready' && hasCompletedGettingStarted === 0);
 
-	async function handleSelectStory(story: DeckStory) {
-		if (
-			!user ||
-			isSelectingStory ||
-			!isItemUnlocked({
-				id: story.id,
-				progressById,
-			})
-		) {
-			return;
+	function handleFinishGettingStarted() {
+		setGettingStartedVisibility(false);
+
+		if (hasCompletedGettingStarted === 0) {
+			void user?.completeGettingStarted();
 		}
-
-		setIsSelectingStory(true);
-		const didSave = await user.selectStory(story.id);
-		setIsSelectingStory(false);
-
-		if (!didSave) {
-			Alert.alert('Story not selected', 'Could not save your story choice. Please try again.');
-			return;
-		}
-
-		setIsStoryModalVisible(false);
 	}
 
 	return (
 		<View style={[styles.header, insetStyle, headerBorderStyle]}>
-			<View style={styles.topRow}>
-				<View style={styles.storySelector}>
+			<View style={styles.headerRow}>
+				<View style={styles.guideColumn}>
 					{isReady && (
-						<StorySelector
-							story={selectedStory}
-							isExpanded={isStoryModalVisible}
-							onPress={() => setIsStoryModalVisible(true)}
-						/>
+						<Pressable
+							accessibilityLabel="Getting started"
+							accessibilityRole="button"
+							onPress={() => setGettingStartedVisibility(true)}
+							style={styles.gettingStartedLink}
+						>
+							<Text style={styles.gettingStartedText}>Getting started</Text>
+							<MaterialSymbol
+								name="help"
+								color={colors.light.text}
+								size={20}
+							/>
+						</Pressable>
 					)}
 				</View>
-				<LevelBadge />
-			</View>
-			{isReady && (
-				<View style={styles.detailsRow}>
-					<ReadingDescription
-						item={selectedStory}
-						color={storyColor}
-						style={styles.readStoryLink}
-						showDescription={false}
-					/>
-					<View style={styles.progressRow}>
-						<Text style={[styles.category, categoryTextStyle]}>{selectedStory.category}</Text>
-					</View>
+				<View style={styles.levelColumn}>
+					<LevelBadge />
 				</View>
-			)}
-			<StorySelectModal
-				visible={isStoryModalVisible}
-				onRequestClose={() => setIsStoryModalVisible(false)}
-				onSelect={handleSelectStory}
-				isSelecting={isSelectingStory}
+			</View>
+			<GettingStartedModal
+				visible={isGettingStartedVisible}
+				onFinish={handleFinishGettingStarted}
 			/>
 		</View>
 	);
@@ -107,36 +81,31 @@ export default function ChapterSelectHeader() {
 const styles = StyleSheet.create({
 	header: {
 		backgroundColor: colors.dark.background,
-		borderBottomWidth: 1,
-		paddingBottom: 12,
-		gap: 4,
+		marginBottom: 8,
 	},
-	topRow: {
+	headerRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		gap: 12,
 	},
-	storySelector: {
+	guideColumn: {
 		flex: 1,
 		minWidth: 0,
 	},
-	detailsRow: {
-		flexDirection: 'row',
+	levelColumn: {
+		flexShrink: 0,
+	},
+	gettingStartedLink: {
+		alignSelf: 'flex-start',
 		alignItems: 'center',
+		flexDirection: 'row',
 		justifyContent: 'flex-start',
-		gap: 12,
+		gap: 4,
 	},
-	progressRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-	},
-	category: {
-		fontFamily: 'lexend-600',
-		fontSize: 12,
-		textTransform: 'uppercase',
-	},
-	readStoryLink: {
+	gettingStartedText: {
+		color: colors.light.text,
 		fontFamily: 'lexend-400',
-		fontSize: 16,
+		fontSize: 14,
+		textDecorationLine: 'underline',
 	},
 });

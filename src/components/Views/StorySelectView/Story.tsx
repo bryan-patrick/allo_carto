@@ -2,15 +2,14 @@ import type { DeckStory } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import CollectionGems from '@/src/components/CollectionGems';
 import LockedSection from '@/src/components/LockedSection';
-import ReadingDescription from '@/src/components/ReadingDescription';
+import ReadingLink from '@/src/components/ReadingLink';
 import { getUnlockCriteria } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
 import { StyleSheet, Text, View } from 'react-native';
 import Book from './Book';
 import Cover from './Cover';
-import Crease from './Crease';
 import Spine from './Spine';
-import StoryMeta from './StoryMeta';
+// import StoryMeta from './StoryMeta';
 import StorySelectButton from './StorySelectButton';
 
 /*
@@ -36,13 +35,16 @@ export default function Story({
 	onSelect,
 	isSelecting,
 }: StoryProps) {
-	const { category, name, materialSymbolName } = story;
+	const { category, name, materialSymbolName, requiredLevel } = story;
 	const color = colors.category[category];
+	const categoryTextStyle = {
+		color,
+	};
 	const storyProgress = progressById[story.id];
 	const seenWordCount = storyProgress?.seenWordCount ?? 0;
-	const wordCount = storyProgress?.wordCount ?? 0;
+	// const wordCount = storyProgress?.wordCount ?? 0;
 	const completedParagraphCount = storyProgress?.completedParagraphCount ?? 0;
-	const paragraphCount = storyProgress?.paragraphCount ?? 0;
+	// const paragraphCount = storyProgress?.paragraphCount ?? 0;
 	const hasStarted = seenWordCount > 0 || completedParagraphCount > 0;
 
 	if (isLocked) {
@@ -52,8 +54,8 @@ export default function Story({
 					color={color}
 					category={category}
 					materialSymbolName={materialSymbolName}
+					requiredLevel={requiredLevel}
 				/>
-				<Crease />
 				<Cover>
 					<View style={styles.lockedStory}>
 						<LockedSection
@@ -76,40 +78,43 @@ export default function Story({
 				color={color}
 				materialSymbolName={materialSymbolName}
 				category={category}
+				requiredLevel={requiredLevel}
 			/>
-			<Crease />
 			<Cover>
 				<View style={styles.storyContainerInner}>
 					<View style={styles.storyTitleContainer}>
 						<View style={styles.storyLabelRow}>
 							<View style={styles.categoryRow}>
-								<Text style={[styles.category, { color }]}>{category}</Text>
-								<CollectionGems
-									title={name}
-									progress={progressById[story.id]}
-									size={16}
-								/>
+								<Text style={[styles.category, categoryTextStyle]}>{category}</Text>
 							</View>
+							<CollectionGems
+								title={name}
+								progress={progressById[story.id]}
+								size={16}
+							/>
 						</View>
 						<Text style={styles.storyTitle}>{name}</Text>
 						<View style={styles.separatorContainer}>
 							<View style={[styles.separatorBox, { backgroundColor: color }]} />
 							<View style={styles.separatorLine} />
 						</View>
-						<ReadingDescription
+						<Text style={styles.storyDescription}>{story.description}</Text>
+						<ReadingLink
 							item={story}
 							color={color}
+							label="Read story"
 							style={styles.storyDescription}
 						/>
 					</View>
 					<View style={styles.storyImageContainer} />
-					<StoryMeta
+					{/* We're on the fence about keeping this paragraph and word progress row. */}
+					{/* <StoryMeta
 						completedParagraphCount={completedParagraphCount}
 						paragraphCount={paragraphCount}
 						progressColor={color}
 						seenWordCount={seenWordCount}
 						wordCount={wordCount}
-					/>
+					/> */}
 					<StorySelectButton
 						story={story}
 						isSelected={isSelected}
@@ -133,6 +138,7 @@ const styles = StyleSheet.create({
 	},
 	lockedSection: {
 		flexGrow: 1,
+		minHeight: 200,
 	},
 	storyContainerInner: {
 		padding: 12,
@@ -165,15 +171,15 @@ const styles = StyleSheet.create({
 	storyTitle: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
-		fontSize: 18,
+		fontSize: 17,
 	},
 	separatorContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
 		marginVertical: 4,
 		marginRight: 4,
+		gap: 6,
 	},
 	separatorBox: {
 		height: 6,

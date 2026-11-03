@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
 		top: 0,
 	},
 	shadow: {
+		backgroundColor: colors.light.secondary,
 		borderRadius: 14,
 		elevation: 8,
 		maxWidth: 520,

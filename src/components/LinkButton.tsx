@@ -114,7 +114,9 @@ function Button({
 }: ButtonProps) {
 	const playTapSound = useSoundEffect('tap');
 	const [isPressed, setIsPressed] = useState(false);
-	const buttonShadowHeight = showShadow ? linkButtonShadowHeight : 0;
+	// Keep the raised shadow on filled buttons so outline buttons stay transparent.
+	const shouldShowShadow = showShadow && type === 'fill';
+	const buttonShadowHeight = shouldShowShadow ? linkButtonShadowHeight : 0;
 	const top = useSharedValue(0);
 	const shadowOffsetHeight = useSharedValue(buttonShadowHeight);
 	const animatedButtonStyle = useAnimatedStyle(() => ({
@@ -212,7 +214,7 @@ function Button({
 				animatedButtonStyle,
 				fullwidth && styles.fullwidth,
 				typeStyle,
-				!showShadow && styles.withoutShadow,
+				!shouldShowShadow && styles.withoutShadow,
 				style,
 			]}
 			disabled={disabled}

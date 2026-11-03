@@ -1,47 +1,58 @@
 import type { StoryCategory } from '@/data/french/storyAtlas';
-import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import VerticalText from '@/src/components/VerticalText';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { bookStyles } from './bookStyles';
 
 /*
  * Typing
  */
 interface SpineProps {
 	category: StoryCategory;
+	requiredLevel: number;
 	color?: string;
 	materialSymbolName?: string;
 }
 
-/*
- * The spine graphic component (of the book)
- */
-export default function Spine({ color, category, materialSymbolName }: SpineProps) {
-	/*
-	 * Render the component
-	 */
+// Center the story level, icon, and category together on the spine.
+export default function Spine({ color, category, materialSymbolName, requiredLevel }: SpineProps) {
+	const paddedLevel = String(requiredLevel).padStart(2, '0');
+
 	return (
-		<View style={[styles.spine, { borderColor: `${color}80` }]}>
+		<View style={[styles.spine, bookStyles.spineCorners]}>
 			<BackgroundImage
 				source={require('../../../app/assets/images/book-parts/spine.jpg')}
 				style={styles.spineImage}
+				imageStyle={bookStyles.spineCorners}
 			/>
 			{color && (
 				<View
 					pointerEvents="none"
-					style={[styles.spineColor, { backgroundColor: color }]}
+					style={[
+						styles.spineColor,
+						bookStyles.spineCorners,
+						{
+							backgroundColor: color,
+						},
+					]}
 					testID="spine-color-overlay"
 				/>
 			)}
-			<View style={styles.spineInner}>
-				<View style={styles.borderContainer}>
+			<View style={[styles.spineInner, bookStyles.spineCorners]}>
+				<View style={styles.categoryContainer}>
 					<MaterialSymbol
 						color={'rgba(255, 255, 255, 0.6)'}
 						name={materialSymbolName ?? 'flight'}
 						size={16}
 						style={styles.icon}
 					/>
+					<Text
+						accessibilityLabel={`Story level ${requiredLevel}`}
+						style={styles.level}
+					>
+						{paddedLevel}
+					</Text>
 					<VerticalText
 						word={category}
 						textStyle={styles.category}
@@ -58,8 +69,6 @@ export default function Spine({ color, category, materialSymbolName }: SpineProp
 const styles = StyleSheet.create({
 	spine: {
 		width: 55,
-		borderTopLeftRadius: 4,
-		overflow: 'hidden', // the image doesn't support border radius
 	},
 	spineImage: {
 		bottom: 0,
@@ -67,8 +76,6 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		right: 0,
 		top: 0,
-		borderRightWidth: 1,
-		borderColor: colors.dark.border,
 	},
 	spineColor: {
 		position: 'absolute',
@@ -82,43 +89,37 @@ const styles = StyleSheet.create({
 		backgroundColor: 'rgba(0, 0, 0, 0.4)',
 		flexGrow: 1,
 		padding: 8,
-		paddingRight: 0,
+		gap: 4,
 	},
-	borderContainer: {
+	level: {
+		color: 'rgba(255, 255, 255, 0.6)',
+		fontFamily: 'azeret-mono-600',
+		fontSize: 11,
+		lineHeight: 11,
+		paddingBottom: 8,
+		marginBottom: 4,
+		borderBottomWidth: 1,
+		borderColor: 'rgba(255, 255, 255, 0.6)',
+		textAlign: 'center',
+	},
+	categoryContainer: {
 		display: 'flex',
 		flexGrow: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
 		alignContent: 'center',
-		borderWidth: 2,
-		borderRightWidth: 0,
-		borderTopLeftRadius: 8,
-		borderBottomLeftRadius: 8,
-		borderColor: colors.utility.cardBorder,
 		width: '100%',
 		gap: 4,
-		shadowColor: colors.dark.border,
 		paddingVertical: 16,
-		minHeight: 225,
-		shadowOffset: {
-			width: 0,
-			height: 0,
-		},
-		shadowOpacity: 1,
-		shadowRadius: 2,
 	},
 	icon: {
-		shadowOffset: {
+		textShadowOffset: {
 			height: 0,
 			width: 0,
 		},
-		shadowOpacity: 1,
-		shadowColor: '#000000',
-		shadowRadius: 1,
-		borderBottomWidth: 1,
-		paddingBottom: 4,
-		marginBottom: 4,
-		borderColor: 'rgba(255, 255, 255, 0.2)',
+		textShadowColor: '#000000',
+		textShadowRadius: 1,
+		marginBottom: 2,
 	},
 	category: {
 		color: 'rgba(255, 255, 255, 0.6)',

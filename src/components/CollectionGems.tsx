@@ -183,8 +183,8 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 							style={[styles.row, styles.glowRow, glowRowPosition]}
 						>
 							{glowGemColors.map((gemColor, index) => {
-								const shadowColor = {
-									shadowColor: gemColor,
+								const glowColor = {
+									textShadowColor: gemColor,
 								};
 
 								return (
@@ -196,7 +196,7 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 											name="diamond"
 											size={glowGemSize}
 											color={gemColor}
-											style={[styles.glowGem, glowGemStyle, shadowColor]}
+											style={[styles.glowGem, glowGemStyle, glowColor]}
 											filled
 										/>
 									</View>
@@ -263,12 +263,11 @@ const styles = StyleSheet.create({
 	glowGem: {
 		position: 'absolute',
 		opacity: 0.2,
-		shadowOffset: {
+		textShadowOffset: {
 			width: 0,
 			height: 0,
 		},
-		shadowOpacity: 1,
-		shadowRadius: 1,
+		textShadowRadius: 1,
 	},
 	unfilled: {
 		opacity: 0.4,

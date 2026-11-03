@@ -2,6 +2,9 @@ import colors from '@/src/app/colors';
 import ProgressBar from '@/src/components/ProgressBar';
 import { StyleSheet, Text, View } from 'react-native';
 
+/*
+ * Typing
+ */
 interface StoryMetaProps {
 	progressColor: string;
 	completedParagraphCount: number;
@@ -38,7 +41,6 @@ function StoryProgress({ color, label, percent, value }: StoryProgressProps) {
 
 /*
  * Solved paragraphs show how far the player has moved through the story.
- * Words seen are still useful, but they do not count as completed puzzles.
  */
 export default function StoryMeta({
 	progressColor,
@@ -84,6 +86,9 @@ export default function StoryMeta({
 	);
 }
 
+/*
+ * Styles
+ */
 const styles = StyleSheet.create({
 	metaRow: {
 		flexDirection: 'row',

@@ -82,7 +82,7 @@ export const defaultAppSettings: AppSettings = {
 	showUnseenWords: false,
 	showDebugOptions: false,
 	previewAllStamps: false,
-	showSkipWordLink: true,
+	showSkipWordLink: false,
 	fastSolveUnlocks: true,
 	pronunciationFormat: 'readable',
 };
