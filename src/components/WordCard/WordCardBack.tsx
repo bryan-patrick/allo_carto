@@ -101,6 +101,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 						<Text style={sharedWordCardStyles.wordId}>{displayedFrenchWord}</Text>
 						<TTSButton
 							wordsToSay={displayedFrenchWord}
+							rate={1}
 							autoPlay={cardState.stage === 'CORRECT' && !cardState.isAnswerRevealed}
 						/>
 					</View>
