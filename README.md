@@ -6,11 +6,11 @@ Hello! Allô Carto is a story drive mobile flashcard app I've been building focu
 
 ## A note about AI (I need an artist!)
 
-Illustrations are created with AI and are meant to be placeholders while I create original illustrations.
+Illustrations are created with AI and are placeholders while I create original illustrations.
 
-The art is a difficult challenge. If you are an artist and are interested in helping with the app please let me know. message.bryan.gh@outlook.com
+The art is a difficult challenge...for me, ha. If you are an artist and are interested in helping with the app please let me know. message.bryan.gh@outlook.com
 
-AI has been used in a few parts of the project. Some of my own photographs were transformed into stylized artwork with AI tools, and copilot helped with portions of the backend data stuff and for writing tests and a lot of the refactoring.
+AI has been used in a few parts of the project. Some of my own photographs were transformed into stylized artwork with AI tools in Affinity, and copilot helped with portions of the backend data stuff and for writing tests and a lot of the refactoring.
 
 ## Built with
 
