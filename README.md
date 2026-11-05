@@ -2,11 +2,7 @@
 
 ![App preview](preview.jpg)
 
-Allô Carto is a flashcard app I’m building to help people (including me) learn Québec French through stories. The other language apps had a hard time keeping my attention so I started building my own.
-
-The basic idea is that instead of studying a bunch of completely disconnected things, the cards in Allô Carto are tied to stories. You can read through a story without knowing everything, study the decks associated with it, and then come back and understand more of what you read. The better you know the vocabulary, the more the story starts to make sense.
-
-It's still very much a work in progress. Eventually I'd like to polish it up and put it on the App Store.
+Hello! Allô Carto is a story drive mobile flashcard app I've been building focused around progressing users through stories one paragraph at a time using flashcards and solving puzzles to learn Quebec French.
 
 ## Built with
 
@@ -15,35 +11,11 @@ It's still very much a work in progress. Eventually I'd like to polish it up and
 - SQLite for on-device vocabulary and progress data
 - Jest and React Native Testing Library for tests
 
-## Roadmap
+## A note about AI (I need an artist!)
 
-- Chapter select redesign. I'm going to implement a new view for chapter selects. As much as I love the postcard, I'd like a dotted line / map approach with illustrations and minimal chapter data.
-- Collections and collectible cards
-- Unlockables and achievements
-- More ways to study a deck, including reverse and english-to-french multiple choice modes. Also prestiging a mastered word is on the list
-- Collections will also include grammar rules, unlocked by learning word sequences that have that apply that grammar rule
-- We need a toast system to alert users to collectables
-- A more technical issue, once a deck is started we need to lock that progress. Currently, exiting a deck will allow a reset of it.
+Illustrations are created with AI and are meant to be placeholders while I create original illustrations.
 
-### Implemented
-
-- ~~Add `fr CA` TTS with a speaker button~~
-- ~~IPA pronunciations~~
-- ~~We probably need two progress bars per deck or chapter, words known and words unique to this deck. Sometimes that'll be 0 and that's OK, but it would be cool for a user to be able to say, "oh snap this deck has 13 words I've never seen!"~~
-- ~~Add user levels and XP~~
-- ~~Lock stories/decks behind level requirements and group them into level ranges~~
-- ~~Make early decks much shorter~~
-- ~~Add small circular level/XP indicator across major screens~~
-- ~~Award XP per correct card,~~ then tally and animate it on the results screen
-- ~~Add deck completion XP bonuses~~
-- Add collections for discovered words, including learning level and completion bonuses
-
-### I made a new design for the results view, these need to be done to implement it
-
-- Show new collection discoveries during results
-- Add collection detail/word views
-
-## A note about AI
+The art is a difficult challenge. If you are an artist and are interested in helping with the app please let me know. message.bryan.gh@outlook.com
 
 AI has been used in a few parts of the project. Some of my own photographs were transformed into stylized artwork with AI tools, and copilot helped with portions of the backend data stuff and for writing tests and a lot of the refactoring.
 
