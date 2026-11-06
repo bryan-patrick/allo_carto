@@ -10,6 +10,7 @@ import { getSolveSentences, type SolveSentenceWord } from '@/src/util/solveSente
 import { getWordOrderCards } from '@/src/util/solveWordOrder';
 import { userExperienceConfig } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getUserProgress from './getUserProgress';
 import updateUserProgress from './updateUserProgress';
 
@@ -196,7 +197,7 @@ export default async function applyMockParagraphProgress({
 		}
 	}
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		for (const statement of clearSolveStatements) {
 			await transaction.runAsync(statement, userId);
 		}

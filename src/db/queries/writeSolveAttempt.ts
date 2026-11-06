@@ -2,6 +2,7 @@ import type { SolveAttemptRequest, SolveAttemptResult } from '@/src/components/S
 import { inkConfig } from '@/src/util/ink';
 import { checkSolveAnswer } from '@/src/util/solveAnswer';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getSolvePuzzle from './getSolvePuzzle';
 import getUserInk from './getUserInk';
 import { getSolveRewards, saveSolveCardReward, saveSolveGemReward } from './solveRewards';
@@ -76,7 +77,7 @@ export default async function writeSolveAttempt({
 		throw new Error('A Solve attempt needs an ID before it can be saved.');
 	}
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		const receipt = await transaction.getFirstAsync<SavedSolveAttempt>(
 			statements.getReceipt,
 			userId,

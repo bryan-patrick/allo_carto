@@ -1,4 +1,5 @@
 import { getDB, logThisIfItFails } from '../connection';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 
 /*
  * Typing
@@ -157,7 +158,7 @@ async function ensureGettingStartedColumn(): Promise<void> {
 	`;
 
 	if (!hasGettingStartedColumn) {
-		await database.withExclusiveTransactionAsync(async transaction => {
+		await runDatabaseTransaction(database, async transaction => {
 			await transaction.execAsync(addColumnStatement);
 			await transaction.execAsync(updateExistingPlayersStatement);
 		});
@@ -448,7 +449,7 @@ async function ensureParagraphProgressType(): Promise<void> {
 	const hasDeckProgressType = table?.sql.includes("'deck'");
 
 	if (hasDeckProgressType) {
-		await database.withExclusiveTransactionAsync(async transaction => {
+		await runDatabaseTransaction(database, async transaction => {
 			await transaction.execAsync(statements.renameOldTable);
 			await transaction.execAsync(createUserProgressTableSQL);
 			await transaction.execAsync(statements.copyProgress);
@@ -468,7 +469,7 @@ async function ensureFlashcardsStartedColumn(): Promise<void> {
 		return;
 	}
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		await transaction.execAsync(`
 			ALTER TABLE userProgress ADD COLUMN hasStartedFlashcards INTEGER NOT NULL DEFAULT 0;
 			INSERT INTO userProgress (userId, id, type, completionPercentage, hasStartedFlashcards)

@@ -5,6 +5,7 @@ import type {
 import { createDeckSession } from '@/src/util/createDeckSession';
 import { createFlashcardDecks } from '@/src/util/createFlashcardDecks';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 
 /*
  * Typing
@@ -103,7 +104,7 @@ export async function getFlashcardCycle({
 }: FlashcardCycleOptions): Promise<FlashcardCycle> {
 	let cycle: FlashcardCycle | undefined;
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		const savedCycle = await transaction.getFirstAsync<FlashcardCycleRow>(
 			statements.getCycle,
 			userId,

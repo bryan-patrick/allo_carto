@@ -47,6 +47,7 @@ export default function TabsLayout({ size = 28 }) {
 			<Tabs.Screen
 				name="achievements"
 				options={{
+					href: null,
 					title: 'Achievements',
 					tabBarIcon: ({ color }) => (
 						<MaterialSymbol

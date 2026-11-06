@@ -5,6 +5,7 @@ import type {
 import { solveStages } from '@/src/util/solveProgression';
 import { checkWordOrderAnswer, isCompleteWordOrder } from '@/src/util/solveWordOrder';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getSolveWordOrderPuzzle from './getSolveWordOrderPuzzle';
 import { getSolveRewards, saveSolveGemReward } from './solveRewards';
 
@@ -79,7 +80,7 @@ export default async function writeWordOrderAttempt({
 		throw new Error('The Solve++ submission needs an ID and an Ink price.');
 	}
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		const receipt = await transaction.getFirstAsync<WordOrderReceiptRow>(
 			statements.getReceipt,
 			userId,

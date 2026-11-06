@@ -6,7 +6,7 @@ const description = `Some words belong to collections. Visit the Collections pag
 export default function CollectionsPage() {
 	return (
 		<GettingStartedPage
-			title="You can collect stamps"
+			title="Find stamps."
 			imageSource={require('@/src/app/assets/images/getting-started/stamps.png')}
 			imageLabel="Léo’s Kitchen collection with a discovered croissant stamp circled"
 			description={description}

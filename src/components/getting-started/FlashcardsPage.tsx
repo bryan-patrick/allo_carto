@@ -7,7 +7,7 @@ Solving puzzles unlocks more paragraphs.`;
 export default function FlashcardsPage() {
 	return (
 		<GettingStartedPage
-			title="How it works"
+			title="How it works."
 			imageSource={require('@/src/app/assets/images/getting-started/flashcards.png')}
 			imageLabel="Paragraph postcard with the Flashcards button circled"
 			description={description}
