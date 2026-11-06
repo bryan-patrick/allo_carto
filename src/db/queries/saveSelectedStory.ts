@@ -1,4 +1,5 @@
 import { getDB } from '../connection';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 
 interface SaveSelectedStoryProps {
 	userId: string;
@@ -12,13 +13,13 @@ interface SaveSelectedStoryProps {
  */
 export default async function saveSelectedStory({ userId, storyId }: SaveSelectedStoryProps) {
 	const database = await getDB();
-	const result = await database.runAsync(
-		'UPDATE users SET selectedStoryId = ? WHERE id = ?;',
-		storyId,
-		userId,
-	);
+	const statement = 'UPDATE users SET selectedStoryId = ? WHERE id = ?;';
 
-	if (result.changes !== 1) {
-		throw new Error('Could not save the selected story.');
-	}
+	await runDatabaseTransaction(database, async function saveStory(transaction) {
+		const result = await transaction.runAsync(statement, storyId, userId);
+
+		if (result.changes !== 1) {
+			throw new Error('Could not save the selected story.');
+		}
+	});
 }

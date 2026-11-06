@@ -16,6 +16,7 @@ import {
 } from '@/src/util/userExperience';
 import { getWordProgressKeyFromCounts } from '@/src/util/wordProgress';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import { finishFlashcardDeck, saveFlashcardResult } from './flashcardCycles';
 import getDeckWordProgressCounts from './getDeckWordProgressCounts';
 import getUserInk from './getUserInk';
@@ -233,7 +234,7 @@ export async function writeCorrectAnswer({
 		throw new Error('A correct answer needs a session and word.');
 	}
 
-	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
+	await runDatabaseTransaction(sqliteDatabase, async database => {
 		const savedAward = await database.getFirstAsync<WordAnswerAwardProps>(
 			statements.getSavedAward,
 			userId,
@@ -327,7 +328,7 @@ export async function writeIncorrectAnswer({
 		throw new Error('An answer needs a session and word.');
 	}
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		await saveFlashcardResult({
 			database: transaction,
 			userId,
@@ -382,7 +383,7 @@ export async function writeDeckCompletion({
 	};
 	let receipt: DeckCompletionReceiptProps | undefined;
 
-	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
+	await runDatabaseTransaction(sqliteDatabase, async database => {
 		const savedReceipt = await database.getFirstAsync<SavedDeckCompletionRow>(
 			statements.getReceipt,
 			userId,
@@ -537,10 +538,8 @@ export async function writeWordSeen({
 	wordId,
 	deckId,
 }: WriteWordSeenOptions): Promise<void> {
-	/*
-	 * Seen writes use the same lock
-	 */
-	await sqliteDatabase.withExclusiveTransactionAsync(async database => {
+	// Wait for other saves before recording this card's progress.
+	await runDatabaseTransaction(sqliteDatabase, async database => {
 		/*
 		 * Get the word's progress before the seenCount changes
 		 */

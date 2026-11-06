@@ -2,6 +2,7 @@ import type { SolveAttemptRequest, SolveAttemptResult } from '@/src/components/S
 import { checkFrenchSolveAnswer } from '@/src/util/solveAnswer';
 import { solveStages } from '@/src/util/solveProgression';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getSolvePuzzle from './getSolvePuzzle';
 import { getSolveRewards, saveSolveCardReward, saveSolveGemReward } from './solveRewards';
 
@@ -75,7 +76,7 @@ export default async function writeSolvePlusAttempt({
 		throw new Error('A Solve+ attempt needs an ID before it can be saved.');
 	}
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		const receipt = await transaction.getFirstAsync<SavedSolvePlusAttempt>(
 			statements.getReceipt,
 			userId,

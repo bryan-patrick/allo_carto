@@ -122,14 +122,17 @@ export interface SolveWordOrderPuzzle extends SolveStageEligibility {
 
 export interface SolveSentenceKeyword {
 	englishWords: string[];
+	isProperNoun?: boolean;
 }
 
 export interface SolveSentence {
 	position: number;
 	frenchText: string;
 	frenchAnswers: string[];
+	frenchArticleFreeAnswers?: string[];
 	englishText: string | null;
 	keywords: SolveSentenceKeyword[];
+	properNouns?: string[];
 	acceptedAnswer: string | null;
 }
 

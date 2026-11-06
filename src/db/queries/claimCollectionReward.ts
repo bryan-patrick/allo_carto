@@ -4,6 +4,7 @@ import {
 	type CollectionRewardClaim,
 } from '@/src/util/vocabularyCollections';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getUserWordProgress from './getUserWordProgress';
 import { recordXPActivity } from './userActivity';
 
@@ -55,7 +56,7 @@ export default async function claimCollectionReward({
 		throw new Error(`Collection ${collectionId} does not exist.`);
 	}
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		const savedClaim = await transaction.getFirstAsync<CollectionRewardClaim>(
 			statements.getClaim,
 			userId,

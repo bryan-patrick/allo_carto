@@ -17,6 +17,7 @@ import {
 	userExperienceConfig,
 } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getUserProgress from './getUserProgress';
 import { recordSolveProgressActivity, recordXPActivity, saveUserActivity } from './userActivity';
 
@@ -155,7 +156,7 @@ export async function claimSolveReward({
 		reward: null,
 	};
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		const rewards = await getSolveRewards({
 			database: transaction,
 			userId,

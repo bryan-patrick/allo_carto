@@ -301,7 +301,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	}, [refreshProgress]);
 
 	/*
-	 * Block another word or userProgress write until the current database progress saves
+	 * Keep progress buttons busy until the save and screen refresh finish.
+	 * The shared database queue keeps this save from overlapping deck setup or puzzle drafts.
 	 */
 	const runProgressWrite = useCallback(
 		async function saveProgress<T>(write: () => Promise<T>): Promise<T | false> {

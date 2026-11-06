@@ -1,5 +1,6 @@
 import type { UserNotification, UserNotificationType } from '@/src/util/userActivity';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 
 interface UserNotificationsOptions {
 	database: SQLiteDatabase;
@@ -58,7 +59,9 @@ export async function dismissUserNotification({
 	userId,
 	notificationId,
 }: DismissUserNotificationOptions): Promise<void> {
-	await database.runAsync(statements.dismissNotification, userId, notificationId);
+	await runDatabaseTransaction(database, async function removeNotification(transaction) {
+		await transaction.runAsync(statements.dismissNotification, userId, notificationId);
+	});
 }
 
 // Clear the listed notifications while keeping any that arrived after the player tapped.
@@ -67,5 +70,7 @@ export async function dismissAllUserNotifications({
 	userId,
 	latestNotificationId,
 }: DismissAllUserNotificationsOptions): Promise<void> {
-	await database.runAsync(statements.dismissAllNotifications, userId, latestNotificationId);
+	await runDatabaseTransaction(database, async function removeNotifications(transaction) {
+		await transaction.runAsync(statements.dismissAllNotifications, userId, latestNotificationId);
+	});
 }

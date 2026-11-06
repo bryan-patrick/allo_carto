@@ -2,6 +2,7 @@ import type { SentenceAttemptRequest, SolveAttemptResult } from '@/src/component
 import { solveStages } from '@/src/util/solveProgression';
 import { checkFrenchSentenceAnswer, checkSentenceAnswer } from '@/src/util/solveSentenceAnswer';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getSolveSentencePuzzle from './getSolveSentencePuzzle';
 import { getSolveRewards, saveSolveGemReward } from './solveRewards';
 
@@ -77,7 +78,7 @@ export default async function writeSentenceAttempt({
 		throw new Error('The sentence submission needs an ID and an Ink price.');
 	}
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		const receipt = await transaction.getFirstAsync<SentenceReceiptRow>(
 			statements.getReceipt,
 			userId,

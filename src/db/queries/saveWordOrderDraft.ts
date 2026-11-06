@@ -7,6 +7,7 @@ import {
 } from '@/src/util/solveWordOrder';
 import { splitFrenchSentences } from '@/src/util/splitFrenchSentences';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { runDatabaseTransaction } from '../runDatabaseTransaction';
 
 /*
  * Typing
@@ -53,7 +54,7 @@ export default async function saveWordOrderDraft({
 		throw new Error('The arrangement must contain every card in this sentence once.');
 	}
 
-	await database.withExclusiveTransactionAsync(async transaction => {
+	await runDatabaseTransaction(database, async transaction => {
 		const savedDraft = await transaction.getFirstAsync<WordOrderDraftRow>(
 			getDraftStatement,
 			userId,

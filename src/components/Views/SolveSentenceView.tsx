@@ -22,6 +22,11 @@ import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompleti
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import type { UserProgressRow } from '@/src/util/progression';
 import {
+	reviewSentenceAnswer,
+	type SentenceAnswerReview,
+	type SentenceAnswerWordStatus,
+} from '@/src/util/solveSentenceAnswer';
+import {
 	getCompletedSolveStages,
 	getSolveStageEligibility,
 	getSolveUnlockMessage,
@@ -41,6 +46,7 @@ import {
 	View,
 	type TextInputInstance,
 	type TextInputSelectionChangeEvent,
+	type TextStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -68,6 +74,20 @@ interface SentenceFeedback {
 }
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
+const sentenceAnswerInstructions =
+	'Prepositions are required. Articles, accents, and punctuation are optional. Names and proper nouns do not need exact spelling.';
+const answerReviewWordStyles: Record<SentenceAnswerWordStatus, TextStyle> = {
+	correct: {
+		color: colors.ink.available,
+	},
+	incorrect: {
+		color: colors.gems.first,
+		textDecorationLine: 'underline',
+	},
+	neutral: {
+		color: colors.dark.text,
+	},
+};
 const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 	4: {
 		promptLanguage: 'French',
@@ -146,6 +166,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	});
 	const [loadError, setLoadError] = useState('');
 	const [feedback, setFeedback] = useState<SentenceFeedback | null>(null);
+	const [answerReview, setAnswerReview] = useState<SentenceAnswerReview>();
 	const [isSaving, setIsSaving] = useState(false);
 	const [needsRetry, setNeedsRetry] = useState(false);
 	const isBusy = useRef(false);
@@ -190,8 +211,12 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const hasEnoughInk = inkBalance >= inkCost;
 	const disabled = isSaving || isUpdatingProgress;
 	const inputDisabled = disabled || needsRetry || !isEligible || !hasEnoughInk || isSentenceSolved;
+	const hasUnchangedSubmission = Boolean(pendingAttempt.current) && !needsRetry;
 	const submitDisabled =
-		disabled || isComplete || (!needsRetry && (inputDisabled || !answer.trim()));
+		disabled ||
+		isComplete ||
+		hasUnchangedSubmission ||
+		(!needsRetry && (inputDisabled || !answer.trim()));
 	const navigationDisabled = disabled || needsRetry;
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
 	const storyColor = getDeckStoryColor(deckId);
@@ -265,6 +290,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 							end: 0,
 						});
 						setFeedback(null);
+						setAnswerReview(undefined);
 						setNeedsRetry(false);
 						pendingAttempt.current = null;
 					}
@@ -291,7 +317,11 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		}
 
 		setAnswer(nextAnswer);
-		setFeedback(null);
+
+		if (!answerReview) {
+			setFeedback(null);
+		}
+
 		pendingAttempt.current = null;
 	}
 
@@ -328,12 +358,13 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		}
 
 		setSelectedPosition(sentence.position);
-		setAnswer('');
+		setAnswer(sentence.acceptedAnswer ?? '');
 		setAnswerSelection({
 			start: 0,
 			end: 0,
 		});
 		setFeedback(null);
+		setAnswerReview(undefined);
 		pendingAttempt.current = null;
 	}
 
@@ -345,9 +376,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		selectSentence(selectedIndex + 1);
 	}
 
-	/*
-	 * Save the accepted sentence on screen and move to the next unfinished one.
-	 */
+	// Keep the accepted answer visible until the player chooses another sentence.
 	function updateSavedSentence(position: number, result: SolveAttemptResult) {
 		const acceptedAnswer = result.acceptedAnswer;
 
@@ -365,23 +394,17 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 				acceptedAnswer,
 			};
 		});
-		const nextUnsolved = updatedSentences.find(sentence => sentence.acceptedAnswer === null);
-
 		setPuzzle({
 			...puzzle,
 			sentences: updatedSentences,
 			rewards: result.rewards ?? puzzle.rewards,
 			completedSolveStages: result.stageCompleted ? stage : puzzle.completedSolveStages,
 		});
-		setAnswer('');
+		setAnswer(acceptedAnswer);
 		setAnswerSelection({
-			start: 0,
-			end: 0,
+			start: acceptedAnswer.length,
+			end: acceptedAnswer.length,
 		});
-
-		if (nextUnsolved) {
-			setSelectedPosition(nextUnsolved.position);
-		}
 	}
 
 	/*
@@ -397,6 +420,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		isBusy.current = true;
 		setIsSaving(true);
 		setFeedback(null);
+		setAnswerReview(undefined);
 
 		if (!attempt) {
 			attempt = {
@@ -426,11 +450,13 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 			updateSavedSentence(attempt.position, result);
 
 			if (result.status === 'incorrect') {
-				setAnswer('');
-				setAnswerSelection({
-					start: 0,
-					end: 0,
-				});
+				setAnswerReview(
+					reviewSentenceAnswer({
+						answer: attempt.answer,
+						sentence: selectedSentence,
+						language: isFrenchAnswer ? 'french' : 'english',
+					}),
+				);
 			} else {
 				pendingAttempt.current = null;
 			}
@@ -520,17 +546,29 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 							<Text style={[styles.text, styles.centeredText]}>{stageText.completionMessage}</Text>
 						</View>
 					: pendingGem ?
-						<SolveGemClaim
-							deckId={deckId}
-							reward={pendingGem}
-							disabled={disabled}
-							onClaimed={setClaimedGem}
-						/>
+						<>
+							{answer !== '' && (
+								<View style={styles.savedAnswer}>
+									<Text style={styles.text}>✓ Sentence solved</Text>
+									<Text style={styles.text}>{answer}</Text>
+								</View>
+							)}
+							<SolveGemClaim
+								deckId={deckId}
+								reward={pendingGem}
+								disabled={disabled}
+								onClaimed={setClaimedGem}
+							/>
+						</>
 					: !isEligible ?
 						<Text style={styles.text}>{unlockMessage}</Text>
 					: selectedSentence ?
 						<>
-							{!isSentenceSolved && <Text style={styles.text}>{stageText.instruction}</Text>}
+							{!isSentenceSolved && (
+								<Text style={styles.text}>
+									{stageText.instruction} {sentenceAnswerInstructions}
+								</Text>
+							)}
 							<View style={styles.sentenceCard}>
 								<Text
 									style={styles.sentencePrompt}
@@ -627,12 +665,40 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					{puzzle && !isComplete && !pendingGem && (
 						<>
 							{feedback && (
-								<Text
-									accessibilityLiveRegion="polite"
-									style={styles.text}
+								<ScrollView
+									style={styles.feedbackScroll}
+									contentContainerStyle={styles.feedbackContent}
+									keyboardShouldPersistTaps="handled"
 								>
-									<Text style={feedbackStyle}>{feedback.text}</Text>
-								</Text>
+									<Text
+										accessibilityLiveRegion="polite"
+										style={styles.text}
+									>
+										<Text style={feedbackStyle}>{feedback.text}</Text>
+									</Text>
+									{answerReview && (
+										<>
+											<Text style={styles.reviewLegend}>Last submitted answer</Text>
+											<Text style={styles.answerReview}>
+												{answerReview.words.map((word, index) => (
+													<Text
+														key={index}
+														style={answerReviewWordStyles[word.status]}
+													>
+														{word.text}
+													</Text>
+												))}
+											</Text>
+											{answerReview.missingWordCount > 0 && (
+												<Text style={styles.text}>Some required words are missing.</Text>
+											)}
+											<Text style={styles.reviewLegend}>
+												Green words match. Underlined red words need another look. Names and words
+												that are not graded stay uncolored.
+											</Text>
+										</>
+									)}
+								</ScrollView>
 							)}
 						</>
 					)}
@@ -804,6 +870,25 @@ const styles = StyleSheet.create({
 		gap: 8,
 		borderTopWidth: 1,
 		borderColor: colors.light.goldenBorder,
+	},
+	feedbackScroll: {
+		maxHeight: 180,
+		flexGrow: 0,
+	},
+	feedbackContent: {
+		gap: 8,
+	},
+	answerReview: {
+		fontFamily: 'lexend-400',
+		fontSize: 16,
+		lineHeight: 24,
+		color: colors.dark.text,
+	},
+	reviewLegend: {
+		fontFamily: 'lexend-400',
+		fontSize: 12,
+		lineHeight: 18,
+		color: colors.dark.text,
 	},
 	actions: {
 		flexDirection: 'row',

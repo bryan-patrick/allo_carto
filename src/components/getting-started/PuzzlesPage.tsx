@@ -6,7 +6,7 @@ const description = `Unlock the first puzzle by seeing all flashcards in a parag
 export default function PuzzlesPage() {
 	return (
 		<GettingStartedPage
-			title="Proof is in the puzzles"
+			title="The proof is in the puzzles."
 			imageSource={require('@/src/app/assets/images/getting-started/solve.png')}
 			imageLabel="Paragraph postcard with the Solve button circled"
 			description={description}

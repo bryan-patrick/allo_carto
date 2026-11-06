@@ -10,6 +10,9 @@ import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
+/*
+ * Typing
+ */
 interface SolveGemCelebrationProps {
 	deck: ReadingPassage;
 	stage: SolveStage;
@@ -23,7 +26,7 @@ interface PassageProgress {
 
 /*
  * Load the paragraph's saved word progress and open it half a second after a gem claim.
- * Keep this outside the claim section so the reader stays open when that section disappears.
+ * We want the user to be nudged to read the paragraph after claiming one.
  */
 export default function SolveGemCelebration({ deck, stage, onClose }: SolveGemCelebrationProps) {
 	const { id: userId } = useUserContext() ?? {};
