@@ -17,7 +17,7 @@ export default function MockParagraphProgressSetting({
 	const { settings, setSetting } = useAppSettings();
 	const { applyMockParagraphProgress, isUpdatingProgress, status } = useUserProgress();
 	const selectedPreset = mockParagraphPresets.find(preset => {
-		return preset.completedStages === settings.mockParagraphCompletion;
+		return preset.value === settings.mockParagraphCompletion;
 	});
 	const isDisabled = disabled || isUpdatingProgress || status === 'loading';
 	const actionLabel = isUpdatingProgress ? 'Saving progress…' : 'Apply preset';
@@ -27,7 +27,7 @@ export default function MockParagraphProgressSetting({
 			return;
 		}
 
-		const paragraphCount = await applyMockParagraphProgress(selectedPreset.completedStages);
+		const paragraphCount = await applyMockParagraphProgress(selectedPreset.value);
 
 		if (paragraphCount === false) {
 			Alert.alert(
@@ -77,7 +77,7 @@ export default function MockParagraphProgressSetting({
 				style={styles.options}
 			>
 				{mockParagraphPresets.map(preset => {
-					const isSelected = preset.completedStages === settings.mockParagraphCompletion;
+					const isSelected = preset.value === settings.mockParagraphCompletion;
 					const accessibilityState = {
 						checked: isSelected,
 						disabled: isDisabled,
@@ -85,11 +85,11 @@ export default function MockParagraphProgressSetting({
 
 					return (
 						<Pressable
-							key={preset.completedStages}
+							key={preset.value}
 							accessibilityRole="radio"
 							accessibilityState={accessibilityState}
 							disabled={isDisabled}
-							onPress={() => setSetting('mockParagraphCompletion', preset.completedStages)}
+							onPress={() => setSetting('mockParagraphCompletion', preset.value)}
 							style={[styles.option, isSelected && styles.selectedOption]}
 						>
 							<Text style={styles.text}>{preset.label}</Text>

@@ -4,9 +4,11 @@ import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
+import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
 import WordOrderBoard from '@/src/components/Solve/WordOrderBoard';
 import type {
 	SolveAttemptResult,
+	SolveReward,
 	SolveWordOrderPuzzle,
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
@@ -95,6 +97,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	} = useUserProgress();
 	const { settings } = useAppSettings();
 	const [puzzle, setPuzzle] = useState<SolveWordOrderPuzzle>();
+	const [claimedGem, setClaimedGem] = useState<SolveReward>();
 	const [positions, setPositions] = useState<number[]>([]);
 	const [lastSubmittedOrder, setLastSubmittedOrder] = useState<string | null>(null);
 	const [loadError, setLoadError] = useState('');
@@ -176,6 +179,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 				}
 
 				setPuzzle(undefined);
+				setClaimedGem(undefined);
 				setLoadError('');
 
 				try {
@@ -454,6 +458,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						deckId={deckId}
 						reward={pendingGem}
 						disabled={disabled}
+						onClaimed={setClaimedGem}
 					/>
 				: isEligible ?
 					<WordOrderBoard
@@ -518,6 +523,13 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					</View>
 				</View>
 			</BackgroundImage>
+			{puzzle && claimedGem && (
+				<SolveGemCelebration
+					deck={puzzle.deck}
+					stage={claimedGem.stage}
+					onClose={() => setClaimedGem(undefined)}
+				/>
+			)}
 		</View>
 	);
 }

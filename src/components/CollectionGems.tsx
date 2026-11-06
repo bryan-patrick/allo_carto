@@ -1,9 +1,14 @@
 import colors from '@/src/app/colors';
 import type { ProgressType, UserProgressRow } from '@/src/util/progression';
-import { getCompletedSolveStages, type CompletedSolveStages } from '@/src/util/solveProgression';
+import {
+	getCompletedSolveStages,
+	type CompletedSolveStages,
+	type SolveStage,
+} from '@/src/util/solveProgression';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
 /*
@@ -13,6 +18,8 @@ interface CollectionGemsProps {
 	title: string;
 	progress?: UserProgressRow;
 	size?: number;
+	celebrationStage?: SolveStage;
+	celebrationReady?: boolean;
 }
 
 interface GemResponse {
@@ -25,6 +32,8 @@ interface PrismaticGemProps {
 	size: number;
 }
 
+const gemSpinDuration = 4000;
+const gemSpinDegrees = 10 * 360;
 const gemColors = [colors.gems.first, colors.gems.second, colors.gems.third];
 const glowGemColors = [colors.glowGems.first, colors.glowGems.second, colors.glowGems.third];
 const prismaticGemColors = [
@@ -134,12 +143,27 @@ function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStage
 	};
 }
 
-export default function CollectionGems({ title, progress, size = 18 }: CollectionGemsProps) {
+// Show earned gems and celebrate a new claim with a spin and a shrinking backdrop gem.
+export default function CollectionGems({
+	title,
+	progress,
+	size = 18,
+	celebrationStage,
+	celebrationReady = true,
+}: CollectionGemsProps) {
+	const rotation = useRef(new Animated.Value(0)).current;
+	const backdropScale = useRef(new Animated.Value(8)).current;
+	const [hasRevealedGem, setHasRevealedGem] = useState(!celebrationStage);
 	const responses = getGemResponses(progress);
 	const completedStages = getCompletedSolveStages(progress);
 	const response = responses[completedStages];
-	const hasGlowingGems = completedStages >= 4;
-	const hasPrismaticGems = completedStages === 5;
+	const displayedStages =
+		celebrationStage && !hasRevealedGem ?
+			((celebrationStage - 1) as CompletedSolveStages)
+		:	completedStages;
+	const displayedResponse = responses[displayedStages];
+	const hasGlowingGems = displayedStages >= 4;
+	const hasPrismaticGems = displayedStages === 5;
 	const appearanceDescription = gemAppearanceDescriptions[completedStages] ?? '';
 	const glowGemSize = size * 1.5;
 	const glowGemOffset = (size - glowGemSize) / 2;
@@ -160,6 +184,61 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 		top: glowGemOffset,
 		left: glowGemOffset,
 	};
+	const backdropGemStyle = {
+		opacity: 0.5,
+		transform: [
+			{
+				perspective: 300,
+			},
+			{
+				rotateY: rotation.interpolate({
+					inputRange: [0, gemSpinDegrees],
+					outputRange: ['0deg', `${gemSpinDegrees / 3}deg`],
+				}),
+			},
+			{
+				scale: backdropScale,
+			},
+		],
+	};
+
+	/*
+	 * Spin and shrink the backdrop while the small gem stays still.
+	 * Reveal the earned gem and remove its backdrop as soon as the backdrop reaches normal size.
+	 */
+	useEffect(() => {
+		const spin = Animated.timing(rotation, {
+			toValue: gemSpinDegrees,
+			duration: gemSpinDuration,
+			easing: Easing.out(Easing.quad),
+			useNativeDriver: true,
+		});
+		const shrinkBackdrop = Animated.timing(backdropScale, {
+			toValue: 1,
+			duration: gemSpinDuration / 2,
+			easing: Easing.out(Easing.quad),
+			useNativeDriver: true,
+		});
+
+		if (!celebrationStage || !celebrationReady) {
+			return;
+		}
+
+		rotation.setValue(0);
+		backdropScale.setValue(8);
+		setHasRevealedGem(false);
+		spin.start();
+		shrinkBackdrop.start(({ finished }) => {
+			if (finished) {
+				setHasRevealedGem(true);
+			}
+		});
+
+		return () => {
+			shrinkBackdrop.stop();
+			spin.stop();
+		};
+	}, [celebrationStage, celebrationReady, rotation, backdropScale]);
 
 	function showProgress() {
 		Alert.alert(`${title} (${response.label})`, response.description);
@@ -175,6 +254,40 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 		>
 			<View style={styles.masteryRow}>
 				<View style={styles.container}>
+					{celebrationStage && celebrationReady && !hasRevealedGem && (
+						<View
+							pointerEvents="none"
+							accessibilityElementsHidden
+							importantForAccessibility="no-hide-descendants"
+							style={[styles.row, StyleSheet.absoluteFill]}
+						>
+							{gemColors.map((gemColor, index) => {
+								const isAffectedGem = celebrationStage >= 4 || index === celebrationStage - 1;
+
+								return (
+									<View
+										key={index}
+										style={gemSlotStyle}
+									>
+										{isAffectedGem && (
+											<Animated.View style={[gemSlotStyle, backdropGemStyle]}>
+												{celebrationStage === 5 ?
+													<PrismaticGem size={size} />
+												:	<MaterialSymbol
+														name="diamond"
+														size={size}
+														filled
+														color={gemColor}
+														style={[gemSlotStyle, gemTextStyle]}
+													/>
+												}
+											</Animated.View>
+										)}
+									</View>
+								);
+							})}
+						</View>
+					)}
 					{hasGlowingGems && (
 						<View
 							pointerEvents="none"
@@ -206,35 +319,34 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
 					)}
 					<View style={styles.row}>
 						{gemColors.map((gemColor, index) => {
-							const filled = index < response.filledCount;
-
-							if (hasPrismaticGems) {
-								return (
-									<PrismaticGem
-										key={index}
-										size={size}
-									/>
-								);
-							}
+							const filled = index < displayedResponse.filledCount;
 
 							return (
-								<MaterialSymbol
+								<View
 									key={index}
-									name="diamond"
-									size={size}
-									filled={filled}
-									color={filled ? gemColor : colors.gems.unsolved}
-									style={[gemSlotStyle, gemTextStyle, !filled && styles.unfilled]}
-								/>
+									style={gemSlotStyle}
+								>
+									{hasPrismaticGems ?
+										<PrismaticGem size={size} />
+									:	<MaterialSymbol
+											name="diamond"
+											size={size}
+											filled={filled}
+											color={filled ? gemColor : colors.gems.unsolved}
+											style={[gemSlotStyle, gemTextStyle, !filled && styles.unfilled]}
+										/>
+									}
+								</View>
 							);
 						})}
 					</View>
 				</View>
-				{hasPrismaticGems && (
+				{completedStages === 5 && (
 					<MaterialSymbol
 						name="check"
 						size={size}
 						color={colors.wordProgress.mastered}
+						style={!hasPrismaticGems && styles.hiddenCheck}
 					/>
 				)}
 			</View>
@@ -246,6 +358,9 @@ export default function CollectionGems({ title, progress, size = 18 }: Collectio
  * Styles
  */
 const styles = StyleSheet.create({
+	hiddenCheck: {
+		opacity: 0,
+	},
 	masteryRow: {
 		flexDirection: 'row',
 		alignItems: 'center',

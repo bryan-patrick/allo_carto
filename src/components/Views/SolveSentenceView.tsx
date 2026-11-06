@@ -6,9 +6,11 @@ import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
+import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
 import type {
 	SentenceAttemptRequest,
 	SolveAttemptResult,
+	SolveReward,
 	SolveSentencePuzzle,
 } from '@/src/components/Solve/solveTypes';
 import { getDB } from '@/src/db/interface';
@@ -135,6 +137,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	} = useUserProgress();
 	const { settings } = useAppSettings();
 	const [puzzle, setPuzzle] = useState<SolveSentencePuzzle>();
+	const [claimedGem, setClaimedGem] = useState<SolveReward>();
 	const [selectedPosition, setSelectedPosition] = useState(0);
 	const [answer, setAnswer] = useState('');
 	const [answerSelection, setAnswerSelection] = useState<SentenceAnswerSelection>({
@@ -237,6 +240,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 				}
 
 				setPuzzle(undefined);
+				setClaimedGem(undefined);
 				setLoadError('');
 
 				try {
@@ -520,6 +524,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 							deckId={deckId}
 							reward={pendingGem}
 							disabled={disabled}
+							onClaimed={setClaimedGem}
 						/>
 					: !isEligible ?
 						<Text style={styles.text}>{unlockMessage}</Text>
@@ -665,6 +670,13 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					</View>
 				</View>
 			</BackgroundImage>
+			{puzzle && claimedGem && (
+				<SolveGemCelebration
+					deck={puzzle.deck}
+					stage={claimedGem.stage}
+					onClose={() => setClaimedGem(undefined)}
+				/>
+			)}
 		</KeyboardAvoidingView>
 	);
 }

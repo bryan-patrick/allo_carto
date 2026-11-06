@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
 		borderTopWidth: 1,
 		borderColor: colors.light.border,
 		padding: 12,
-		gap: 12,
+		gap: 8,
 	},
 	actions: {
 		flexDirection: 'row',

@@ -5,6 +5,7 @@ import DeckPassageView from '@/src/components/DeckPassageView';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import type { WordProgressKey } from '@/src/util/wordProgress';
+import type { SolveStage } from '@/src/util/solveProgression';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,10 +21,16 @@ const postcardBackground = require('@/src/app/assets/images/postcard-parts/backg
 interface DeckBoxModalProps {
 	currentWordId?: string;
 	deck: ReadingPassage;
+	celebrationStage?: SolveStage;
 	modalVisible: boolean;
 	setModalVisible: (modalVisible: boolean) => void;
 	wordProgressCounts: DeckWordProgressCounts;
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
+}
+
+interface PassageMeasurement {
+	deckId: string;
+	height: number;
 }
 
 /*
@@ -32,6 +39,7 @@ interface DeckBoxModalProps {
 export default function DeckBoxModal({
 	currentWordId,
 	deck,
+	celebrationStage,
 	modalVisible,
 	setModalVisible,
 	wordProgressCounts,
@@ -39,10 +47,8 @@ export default function DeckBoxModal({
 }: DeckBoxModalProps) {
 	const { bottom, top } = useSafeAreaInsets();
 	const { height: windowHeight } = useWindowDimensions();
-	const [passageMeasurement, setPassageMeasurement] = useState<{
-		deckId: string;
-		height: number;
-	}>();
+	const [passageMeasurement, setPassageMeasurement] = useState<PassageMeasurement>();
+	const [isPresented, setIsPresented] = useState(false);
 	const contentHeight =
 		passageMeasurement?.deckId === deck.id ? passageMeasurement.height : undefined;
 
@@ -66,6 +72,7 @@ export default function DeckBoxModal({
 		<Modal
 			accessibilityViewIsModal
 			animationType="slide"
+			onShow={() => setIsPresented(true)}
 			onRequestClose={() => setModalVisible(false)}
 			presentationStyle="overFullScreen"
 			statusBarTranslucent
@@ -107,7 +114,14 @@ export default function DeckBoxModal({
 							key={deck.id}
 							currentWordId={currentWordId}
 							deck={deck}
-							onContentHeightChange={height => setPassageMeasurement({ deckId: deck.id, height })}
+							celebrationStage={celebrationStage}
+							celebrationReady={isPresented}
+							onContentHeightChange={height =>
+								setPassageMeasurement({
+									deckId: deck.id,
+									height,
+								})
+							}
 							wordProgressCounts={wordProgressCounts}
 							wordProgressKeyByWordId={wordProgressKeyByWordId}
 						/>

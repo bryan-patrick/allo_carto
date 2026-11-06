@@ -13,9 +13,9 @@ import type {
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
 import { useAppSettings } from '@/src/settings/useAppSettings';
+import type { MockParagraphPresetValue } from '@/src/settings/mockParagraphProgress';
 import { getMaxInkBalance } from '@/src/util/ink';
 import type { ProgressById } from '@/src/util/progression';
-import type { CompletedSolveStages } from '@/src/util/solveProgression';
 import type { UserActivity, UserNotification } from '@/src/util/userActivity';
 import { getUserExperience, type UserExperience } from '@/src/util/userExperience';
 import { useSoundEffect } from '@/src/util/useSoundEffect';
@@ -80,7 +80,7 @@ interface UserProgressContextProps {
 	dismissNotification: (notificationId: number) => Promise<boolean>;
 	dismissAllNotifications: () => Promise<boolean>;
 	claimSolveReward: (request: SolveRewardRequest) => Promise<SolveRewardReceipt | false>;
-	applyMockParagraphProgress: (completedStages: CompletedSolveStages) => Promise<number | false>;
+	applyMockParagraphProgress: (preset: MockParagraphPresetValue) => Promise<number | false>;
 	collections: VocabularyCollectionProgress[];
 	claimCollectionReward: (
 		request: ClaimCollectionRewardRequest,
@@ -378,36 +378,44 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	 * Applies a mock paragraph state and reloads progress so gems and chapter access update together.
 	 */
 	const recordMockParagraphProgress = useCallback(
-		async (completedStages: CompletedSolveStages): Promise<number | false> => {
+		async (preset: MockParagraphPresetValue): Promise<number | false> => {
+			const firstGemUnclaimed = preset === 'firstGemUnclaimed';
+			const completedStages = preset === 'firstGemUnclaimed' ? 0 : preset;
+
 			return runProgressWrite(() => {
 				return applyMockParagraphProgress({
 					database,
 					userId: userId!,
 					completedStages,
+					firstGemUnclaimed,
 				});
 			});
 		},
 		[database, runProgressWrite, userId],
 	);
 
-	/*
-	 * Claims collection XP and refreshes progress to update the album and player level.
-	 */
+	// Claim collection XP, play its sound, and refresh the album and player level.
 	const recordCollectionReward = useCallback(
 		async (request: ClaimCollectionRewardRequest): Promise<CollectionRewardReceipt | false> => {
 			if (previewAllStamps) {
 				return false;
 			}
 
-			return runProgressWrite(() => {
-				return claimCollectionReward({
+			return runProgressWrite(async () => {
+				const receipt = await claimCollectionReward({
 					database,
 					userId: userId!,
 					...request,
 				});
+
+				if (receipt.status === 'claimed') {
+					void playClaimSound();
+				}
+
+				return receipt;
 			});
 		},
-		[database, runProgressWrite, userId, previewAllStamps],
+		[database, playClaimSound, runProgressWrite, userId, previewAllStamps],
 	);
 
 	/*

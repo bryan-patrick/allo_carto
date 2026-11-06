@@ -1,6 +1,6 @@
 import GettingStartedPage from './GettingStartedPage';
 
-const description = `See every flashcard for a paragraph to unlock its puzzle. Solving the puzzle unlocks the next paragraph.`;
+const description = `Unlock the first puzzle by seeing all flashcards in a paragraph once.\n\nEarn a gem each time you solve a puzzle. There are 5 levels of puzzles per paragraph!`;
 
 // Explain when Solve opens and how to earn more Ink.
 export default function PuzzlesPage() {

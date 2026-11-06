@@ -1,8 +1,7 @@
 import GettingStartedPage from './GettingStartedPage';
 
-const description = ` Flashcards unlock puzzles. 
-Puzzles unlock paragraphs.
-Paragraphs unlock chapters.`;
+const description = `In Allô Carto, you practice flashcards to progress a story one paragraph at a time.\n\nPracticing flashcards unlocks puzzles. 
+Solving puzzles unlocks more paragraphs.`;
 
 // Show where to open flashcards and explain what practice earns.
 export default function FlashcardsPage() {

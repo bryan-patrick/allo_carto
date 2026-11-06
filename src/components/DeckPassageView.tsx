@@ -1,14 +1,18 @@
 import colors from '@/src/app/colors';
 import type { PassageSegment, ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
+import CollectionGems from '@/src/components/CollectionGems';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import PassageHighlightLayer from '@/src/components/PassageHighlightLayer';
 import ProgressBar from '@/src/components/ProgressBar';
 import TTSButton, { type TTSButtonHandle } from '@/src/components/TTSButton';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
+import { useUserProgress } from '@/src/db/useUserProgress';
 import { readingSpeechRates } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
+import { findChapterById, getParagraphNumber } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
+import type { SolveStage } from '@/src/util/solveProgression';
 import type { SpeechPlaybackState } from '@/src/util/speakFrench';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -20,6 +24,8 @@ import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 
 interface DeckPassageViewProps {
 	currentWordId?: string;
 	deck: ReadingPassage;
+	celebrationStage?: SolveStage;
+	celebrationReady?: boolean;
 	onContentHeightChange?: (contentHeight: number) => void;
 	showLearningControls?: boolean;
 	showProgress?: boolean;
@@ -183,6 +189,8 @@ function getPassageSpeech(
 export default function DeckPassageView({
 	currentWordId,
 	deck,
+	celebrationStage,
+	celebrationReady,
 	onContentHeightChange,
 	showLearningControls = true,
 	showProgress = true,
@@ -190,6 +198,10 @@ export default function DeckPassageView({
 	wordProgressCounts,
 	wordProgressKeyByWordId,
 }: DeckPassageViewProps) {
+	const { progressById } = useUserProgress();
+	const chapter = findChapterById(deck.id);
+	const paragraphNumber = getParagraphNumber(deck.id);
+	const readingLabel = chapter?.label ?? (paragraphNumber ? `Paragraph ${paragraphNumber}` : '');
 	const {
 		settings: {
 			useLearningLevelColors,
@@ -461,6 +473,18 @@ export default function DeckPassageView({
 					}
 					style={styles.header}
 				>
+					{showTitle && (
+						<View style={styles.readingMetaRow}>
+							<Text style={styles.readingLabel}>{readingLabel}</Text>
+							<CollectionGems
+								title={deck.title}
+								progress={progressById[deck.id]}
+								size={24}
+								celebrationStage={celebrationStage}
+								celebrationReady={celebrationReady}
+							/>
+						</View>
+					)}
 					{showTitle && (
 						<View style={styles.titleRow}>
 							<Text style={[styles.title, { color: storyColor }]}>{deck.title}</Text>
@@ -798,6 +822,17 @@ const styles = StyleSheet.create({
 	passageView: {
 		flex: 1,
 		minHeight: 0,
+	},
+	readingMetaRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: 12,
+	},
+	readingLabel: {
+		color: colors.dark.text,
+		fontFamily: 'lexend-600',
+		fontSize: 12,
 	},
 	header: {
 		borderBottomColor: colors.light.goldenBorder,

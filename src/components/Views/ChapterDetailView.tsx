@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import ChapterPostcard from '@/src/components/ChapterPostcard';
+import CollectionGems from '@/src/components/CollectionGems';
 import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ReadingLink from '@/src/components/ReadingLink';
@@ -67,7 +68,20 @@ export default function ChapterDetailView() {
 						size={32}
 						name="raven"
 					/>
-					<Text style={styles.chapterTitle}>{chapter.label}</Text>
+					<CollectionGems
+						title={chapter.name}
+						progress={progressById[chapter.id]}
+						size={24}
+					/>
+					<View style={styles.chapterTitles}>
+						<Text style={styles.chapterTitle}>{chapter.label}</Text>
+						<Text
+							accessibilityRole="header"
+							style={styles.chapterName}
+						>
+							{chapter.name}
+						</Text>
+					</View>
 					{chapter.description && (
 						<Text style={styles.chapterDescription}>{chapter.description}</Text>
 					)}
@@ -108,15 +122,26 @@ const styles = StyleSheet.create({
 	},
 	chapterHeading: {
 		alignItems: 'center',
-		gap: 12,
+		gap: 8,
 		paddingHorizontal: 12,
-		marginBottom: 24,
+		marginBottom: 16,
+	},
+	chapterTitles: {
+		alignItems: 'center',
+		gap: 4,
 	},
 	chapterTitle: {
 		fontFamily: 'lexend-600',
 		fontSize: 15,
 		textAlign: 'center',
 		textTransform: 'uppercase',
+		color: colors.dark.text,
+	},
+	chapterName: {
+		fontFamily: 'lexend-600',
+		fontSize: 20,
+		lineHeight: 24,
+		textAlign: 'center',
 		color: colors.dark.text,
 	},
 	chapterDescription: {

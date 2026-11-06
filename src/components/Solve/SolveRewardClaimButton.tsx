@@ -3,7 +3,7 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import { useSolveXPFeedback, type SolveXPFeedbackOrigin } from './SolveXPFeedback';
-import type { SolveReward } from './solveTypes';
+import type { SolveReward, SolveRewardReceipt } from './solveTypes';
 
 /*
  * Typing
@@ -12,7 +12,7 @@ interface SolveRewardClaimButtonProps {
 	deckId: string;
 	reward: SolveReward;
 	disabled?: boolean;
-	onClaimed?: (reward: SolveReward) => void;
+	onClaimed?: (reward: SolveReward, status: SolveRewardReceipt['status']) => void;
 }
 
 /*
@@ -68,7 +68,7 @@ export default function SolveRewardClaimButton({
 				});
 			}
 
-			onClaimed?.(receipt.reward);
+			onClaimed?.(receipt.reward, receipt.status);
 		} finally {
 			isBusy.current = false;
 			setIsClaiming(false);
