@@ -1,6 +1,7 @@
 import BackgroundImage from '@/src/components/BackgroundImage';
 import type { ReactNode } from 'react';
 import {
+	Animated,
 	Image,
 	StyleSheet,
 	View,
@@ -14,6 +15,7 @@ import colors from '../app/colors';
 //const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 const postcardBackground = require('@/src/app/assets/images/chapter-images/polaroid-bg.jpg');
+const stripedPostcardBackground = require('@/src/app/assets/images/postcard-parts/background-bordered.jpg');
 
 interface ChapterPolaroidProps {
 	source: ImageSourcePropType;
@@ -23,6 +25,7 @@ interface ChapterPolaroidProps {
 	footer?: ReactNode;
 	badge?: ReactNode;
 	style?: StyleProp<ViewStyle>;
+	frontStyle?: StyleProp<Animated.WithAnimatedValue<ViewStyle>>;
 }
 
 /*
@@ -36,6 +39,7 @@ export default function ChapterPolaroid({
 	footer,
 	badge,
 	style,
+	frontStyle,
 }: ChapterPolaroidProps) {
 	const photoStyle = {
 		aspectRatio: photoAspectRatio,
@@ -49,50 +53,52 @@ export default function ChapterPolaroid({
 			<BackgroundImage
 				accessible={false}
 				pointerEvents="none"
-				source={postcardBackground}
+				source={stripedPostcardBackground}
+				imageStyle={styles.roundedCorners}
 				resizeMode="stretch"
-				style={[styles.frame, styles.backPolaroid]}
-			>
-				<View style={styles.paperOverlay} />
-			</BackgroundImage>
-			<View style={styles.frame}>
-				<BackgroundImage
-					accessible={false}
-					source={postcardBackground}
-					resizeMode="stretch"
-					style={[styles.paper, Boolean(footer) && styles.paperWithFooter]}
-				>
-					<View
-						pointerEvents="none"
-						style={styles.paperOverlay}
-					/>
-					<View style={[styles.photo, photoStyle]}>
-						<Image
-							accessible={false}
-							source={source}
-							resizeMode="cover"
-							style={styles.photoLayer}
+				style={[styles.frame, styles.roundedCorners, styles.backPolaroid]}
+			/>
+			<View style={styles.frontLayer}>
+				<Animated.View style={[styles.frame, styles.roundedCorners, frontStyle]}>
+					<BackgroundImage
+						accessible={false}
+						source={postcardBackground}
+						imageStyle={styles.roundedCorners}
+						resizeMode="stretch"
+						style={[styles.paper, styles.roundedCorners, Boolean(footer) && styles.paperWithFooter]}
+					>
+						<View
+							pointerEvents="none"
+							style={[styles.paperOverlay, styles.roundedCorners]}
 						/>
-						{photoNoiseSource && (
+						<View style={[styles.photo, photoStyle]}>
 							<Image
 								accessible={false}
-								pointerEvents="none"
-								source={photoNoiseSource}
-								resizeMode="repeat"
-								style={[styles.photoLayer, noiseStyle]}
+								source={source}
+								resizeMode="cover"
+								style={styles.photoLayer}
 							/>
-						)}
-					</View>
-					{Boolean(footer) && <View style={styles.footer}>{footer}</View>}
-				</BackgroundImage>
-				{Boolean(badge) && (
-					<View
-						pointerEvents="none"
-						style={styles.cornerBadge}
-					>
-						{badge}
-					</View>
-				)}
+							{photoNoiseSource && (
+								<Image
+									accessible={false}
+									pointerEvents="none"
+									source={photoNoiseSource}
+									resizeMode="repeat"
+									style={[styles.photoLayer, noiseStyle]}
+								/>
+							)}
+						</View>
+						{Boolean(footer) && <View style={styles.footer}>{footer}</View>}
+					</BackgroundImage>
+					{Boolean(badge) && (
+						<View
+							pointerEvents="none"
+							style={styles.cornerBadge}
+						>
+							{badge}
+						</View>
+					)}
+				</Animated.View>
 			</View>
 		</View>
 	);
@@ -102,14 +108,24 @@ export default function ChapterPolaroid({
  * Styles
  */
 const styles = StyleSheet.create({
+	roundedCorners: {
+		borderRadius: 6,
+	},
 	stack: {
 		width: '100%',
 		position: 'relative',
 	},
 
+	// Keep the turning photo in front of the striped card beneath it.
+	frontLayer: {
+		zIndex: 1,
+		elevation: 5,
+	},
 	frame: {
 		width: '100%',
 		backgroundColor: '#eee9df',
+		borderWidth: 1,
+		borderColor: colors.light.border,
 		elevation: 2,
 		shadowColor: '#000000',
 		shadowOffset: {
@@ -120,17 +136,17 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.4,
 	},
 	backPolaroid: {
+		zIndex: 0,
 		position: 'absolute',
 		top: 0,
 		left: 0,
 		height: '100%',
-		borderColor: colors.dark.border,
 		transform: [
 			{
 				rotate: '-4deg',
 			},
 		],
-		elevation: 4,
+		elevation: 2,
 		shadowColor: '#000000',
 		shadowOffset: {
 			width: 0,

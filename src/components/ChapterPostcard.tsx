@@ -3,7 +3,11 @@ import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
-import { StyleSheet, Text, View } from 'react-native';
+import { useNavigation, type NativeStackNavigationProp } from 'expo-router';
+import type { ParamListBase } from 'expo-router/react-navigation';
+import { useLayoutEffect, useRef } from 'react';
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 import ChapterDeckList from './ChapterDeckList';
 import ChapterHeader from './ChapterHeader';
 import LockedSection from './LockedSection';
@@ -22,6 +26,9 @@ interface ChapterPostcardProps {
 
 // Show the chapter's progress and paragraphs on a postcard, or explain how to unlock it.
 export default function ChapterPostcard({ chapter, story, progressById }: ChapterPostcardProps) {
+	const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+	const reducedMotion = useReducedMotion();
+	const postcardRotation = useRef(new Animated.Value(reducedMotion ? 0 : 10)).current;
 	const color = colors.category[story.category];
 	const isLocked = !isItemUnlocked({
 		id: chapter.id,
@@ -29,6 +36,46 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 	});
 	const unlockCriteria = getUnlockCriteria(chapter, progressById);
 	const hasDecks = chapter.decks.length > 0;
+	const frontPostcardStyle = {
+		transform: [
+			{
+				perspective: 1000,
+			},
+			{
+				rotateY: postcardRotation.interpolate({
+					inputRange: [0, 10],
+					outputRange: ['0deg', '10deg'],
+				}),
+			},
+		],
+	};
+
+	// Start the card's turn when the page actually moves, so it is visible during the slide.
+	useLayoutEffect(() => {
+		const removeTransitionListener = navigation.addListener('transitionStart', event => {
+			const targetRotation = event.data.closing && !reducedMotion ? 10 : 0;
+
+			Animated.timing(postcardRotation, {
+				toValue: targetRotation,
+				duration: reducedMotion ? 0 : 450,
+				easing: Easing.inOut(Easing.quad),
+				useNativeDriver: true,
+			}).start();
+		});
+		const removeGestureCancelListener = navigation.addListener('gestureCancel', () => {
+			postcardRotation.setValue(0);
+		});
+
+		if (reducedMotion) {
+			postcardRotation.setValue(0);
+		}
+
+		return () => {
+			removeTransitionListener();
+			removeGestureCancelListener();
+			postcardRotation.stopAnimation();
+		};
+	}, [navigation, postcardRotation, reducedMotion]);
 
 	return (
 		<View style={styles.stack}>
@@ -37,34 +84,38 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 				resizeMode="stretch"
 				style={[styles.postcard, styles.backPostcard]}
 			/>
-			<BackgroundImage
-				source={postcardBackground}
-				style={styles.postcard}
-			>
-				<View style={styles.border}>
-					<ChapterHeader
-						chapter={chapter}
-						progressById={progressById}
-					/>
-					{isLocked && (
-						<View style={styles.lockedInner}>
-							<LockedSection
-								color={color}
-								unlockCriteria={unlockCriteria}
-								fontSize={15}
+			<View style={styles.frontLayer}>
+				<Animated.View style={frontPostcardStyle}>
+					<BackgroundImage
+						source={postcardBackground}
+						style={styles.postcard}
+					>
+						<View style={styles.border}>
+							<ChapterHeader
+								chapter={chapter}
+								progressById={progressById}
 							/>
+							{isLocked && (
+								<View style={styles.lockedInner}>
+									<LockedSection
+										color={color}
+										unlockCriteria={unlockCriteria}
+										fontSize={15}
+									/>
+								</View>
+							)}
+							{!isLocked && hasDecks && (
+								<ChapterDeckList
+									chapter={chapter}
+									progressById={progressById}
+									story={story}
+								/>
+							)}
+							{!isLocked && !hasDecks && <Text style={styles.comingSoonText}>Coming soon</Text>}
 						</View>
-					)}
-					{!isLocked && hasDecks && (
-						<ChapterDeckList
-							chapter={chapter}
-							progressById={progressById}
-							story={story}
-						/>
-					)}
-					{!isLocked && !hasDecks && <Text style={styles.comingSoonText}>Coming soon</Text>}
-				</View>
-			</BackgroundImage>
+					</BackgroundImage>
+				</Animated.View>
+			</View>
 		</View>
 	);
 }
@@ -77,6 +128,11 @@ const styles = StyleSheet.create({
 		margin: 8,
 		position: 'relative',
 	},
+	// Keep the turning postcard in front of the striped card beneath it.
+	frontLayer: {
+		zIndex: 1,
+		elevation: 1,
+	},
 	postcard: {
 		padding: 6,
 		backgroundColor: colors.dark.background,
@@ -86,6 +142,7 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 	},
 	backPostcard: {
+		zIndex: 0,
 		transform: [{ rotate: '-4deg' }],
 		padding: 0,
 		position: 'absolute',
