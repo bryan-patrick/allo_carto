@@ -1,16 +1,23 @@
 import colors from '@/src/app/colors';
 import { StyleSheet, Text, View } from 'react-native';
 import SolveRewardClaimButton from './SolveRewardClaimButton';
-import type { SolveReward } from './solveTypes';
+import type { SolveReward, SolveRewardReceipt } from './solveTypes';
 
 interface SolveGemClaimProps {
 	deckId: string;
 	reward: SolveReward;
 	disabled: boolean;
+	onClaimed: (reward: SolveReward) => void;
 }
 
-// Keep the finished puzzle's gem hidden until its XP is claimed.
-export default function SolveGemClaim({ deckId, reward, disabled }: SolveGemClaimProps) {
+// Let the player claim the finished puzzle's gem and open its paragraph after a new claim.
+export default function SolveGemClaim({ deckId, reward, disabled, onClaimed }: SolveGemClaimProps) {
+	function handleClaimed(claimedReward: SolveReward, status: SolveRewardReceipt['status']) {
+		if (status === 'claimed') {
+			onClaimed(claimedReward);
+		}
+	}
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Puzzle solved!</Text>
@@ -19,6 +26,7 @@ export default function SolveGemClaim({ deckId, reward, disabled }: SolveGemClai
 				deckId={deckId}
 				reward={reward}
 				disabled={disabled}
+				onClaimed={handleClaimed}
 			/>
 		</View>
 	);

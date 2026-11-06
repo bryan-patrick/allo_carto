@@ -7,6 +7,7 @@ import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
+import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
 import type {
 	SolveAttemptRequest,
 	SolveAttemptResult,
@@ -125,6 +126,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const stageDefinition = solveStages[stage];
 	const isFrenchAnswer = stageDefinition.answerLanguage === 'french';
 	const [puzzle, setPuzzle] = useState<SolvePuzzle>();
+	const [claimedGem, setClaimedGem] = useState<SolveReward>();
 	const [loadError, setLoadError] = useState('');
 	const [selectedPosition, setSelectedPosition] = useState<number>();
 	const [answer, setAnswer] = useState('');
@@ -264,6 +266,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 				}
 
 				setPuzzle(undefined);
+				setClaimedGem(undefined);
 				setLoadError('');
 
 				try {
@@ -581,6 +584,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 									deckId={deckId}
 									reward={pendingGem}
 									disabled={disabled}
+									onClaimed={setClaimedGem}
 								/>
 							: pendingGem ?
 								<Text style={styles.text}>
@@ -670,6 +674,13 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 					</View>
 				</View>
 			</BackgroundImage>
+			{puzzle && claimedGem && (
+				<SolveGemCelebration
+					deck={puzzle.deck}
+					stage={claimedGem.stage}
+					onClose={() => setClaimedGem(undefined)}
+				/>
+			)}
 		</KeyboardAvoidingView>
 	);
 }

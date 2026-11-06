@@ -1,10 +1,14 @@
 import colors from '@/src/app/colors';
+import {
+	useSolveXPFeedback,
+	type SolveXPFeedbackOrigin,
+} from '@/src/components/Solve/SolveXPFeedback';
 import type { CollectionRewardReceipt } from '@/src/db/queries/claimCollectionReward';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import type { VocabularyCollectionProgress } from '@/src/util/vocabularyCollections';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import LinkButton from '../LinkButton';
 
 interface CollectionClaimProps {
@@ -16,7 +20,7 @@ interface CollectionClaimProps {
  */
 function getClaimFeedback(receipt: CollectionRewardReceipt): string {
 	const responses: Record<CollectionRewardReceipt['status'], string> = {
-		claimed: `Claimed +${receipt.xp} XP!`,
+		claimed: '',
 		alreadyClaimed: 'This reward has already been claimed.',
 		notReady: 'Keep practicing: every word needs to reach this learning level.',
 	};
@@ -24,11 +28,10 @@ function getClaimFeedback(receipt: CollectionRewardReceipt): string {
 	return responses[receipt.status];
 }
 
-/*
- * Shows the next XP claim below the progress bar when its learning level is ready.
- */
+// Show the next available collection reward and float its XP after a successful claim.
 export default function CollectionClaim({ progress }: CollectionClaimProps) {
 	const { claimCollectionReward, isUpdatingProgress } = useUserProgress();
+	const showXPFeedback = useSolveXPFeedback();
 	const { settings } = useAppSettings();
 	const [feedback, setFeedback] = useState('');
 	const nextReward = progress.nextReward;
@@ -44,7 +47,12 @@ export default function CollectionClaim({ progress }: CollectionClaimProps) {
 		actionLabel = isUpdatingProgress ? 'Saving…' : `Claim +${nextReward.xp} XP`;
 	}
 
-	async function claimReward() {
+	async function claimReward(event: GestureResponderEvent) {
+		const feedbackOrigin: SolveXPFeedbackOrigin = {
+			centerX: event.nativeEvent.pageX,
+			top: event.nativeEvent.pageY,
+		};
+
 		if (!nextReward || !canClaim) {
 			return;
 		}
@@ -61,6 +69,13 @@ export default function CollectionClaim({ progress }: CollectionClaimProps) {
 			return;
 		}
 
+		if (receipt.status === 'claimed') {
+			showXPFeedback({
+				...feedbackOrigin,
+				xp: receipt.xp,
+			});
+		}
+
 		setFeedback(getClaimFeedback(receipt));
 	}
 
@@ -72,7 +87,7 @@ export default function CollectionClaim({ progress }: CollectionClaimProps) {
 		<View style={styles.container}>
 			{nextReward?.isEligible && (
 				<LinkButton
-					handler={claimReward}
+					onPress={claimReward}
 					disabled={!canClaim}
 					useArrow={false}
 					color={colors.dark.primary}

@@ -1,6 +1,6 @@
 import GettingStartedPage from './GettingStartedPage';
 
-const description = `Every flashcard comes from the current paragraph, so you can see each word in context.`;
+const description = `Every flashcard comes from the paragraph you're currently on, so you can stay focused on learning the current paragraph.`;
 
 // Show how to find a flashcard's word in the story.
 export default function ParagraphPage() {

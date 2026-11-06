@@ -1,5 +1,4 @@
-import type { CompletedSolveStages } from '@/src/util/solveProgression';
-import { isMockParagraphPreset } from './mockParagraphProgress';
+import { isMockParagraphPreset, type MockParagraphPresetValue } from './mockParagraphProgress';
 
 /*
  * Typing
@@ -19,7 +18,7 @@ interface BooleanSettings {
 }
 
 export interface AppSettings extends BooleanSettings {
-	mockParagraphCompletion: CompletedSolveStages;
+	mockParagraphCompletion: MockParagraphPresetValue;
 	soundEffectsVolume: number;
 	ttsVolume: number;
 	ttsRate: number;

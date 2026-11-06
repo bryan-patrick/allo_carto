@@ -2,8 +2,11 @@ import type { DeckChapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, type LayoutRectangle } from 'react-native';
+import { useNavigation, type NativeStackNavigationProp } from 'expo-router';
+import type { ParamListBase } from 'expo-router/react-navigation';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleSheet, Text, View, type LayoutRectangle } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 import ChapterPolaroid from './ChapterPolaroid';
 import CollectionGems from './CollectionGems';
 import LinkButton from './LinkButton';
@@ -42,6 +45,9 @@ export default function ChapterSelectRow({
 	progressById,
 	onMapAnchorChange,
 }: ChapterSelectRowProps) {
+	const rootNavigation = useNavigation<NativeStackNavigationProp<ParamListBase>>('/');
+	const reducedMotion = useReducedMotion();
+	const polaroidRotation = useRef(new Animated.Value(0)).current;
 	const [rowLayout, setRowLayout] = useState<LayoutRectangle | null>(null);
 	const [columnLayout, setColumnLayout] = useState<LayoutRectangle | null>(null);
 	const [anchorLayout, setAnchorLayout] = useState<LayoutRectangle | null>(null);
@@ -62,10 +68,58 @@ export default function ChapterSelectRow({
 	const lockedLabelStyle = {
 		color: buttonColor,
 	};
+	const frontPolaroidStyle = {
+		transform: [
+			{
+				perspective: 1000,
+			},
+			{
+				rotateY: polaroidRotation.interpolate({
+					inputRange: [-20, 0],
+					outputRange: ['-20deg', '0deg'],
+				}),
+			},
+		],
+	};
 	let actionLabel = hasStartedChapter ? 'Continue' : 'Start Chapter';
 
 	if (chapterProgress?.hasFirstGem) {
 		actionLabel = 'Continue';
+	}
+
+	// Turn the photo back as the map slides into view, including when using the back gesture.
+	useLayoutEffect(() => {
+		const removeTransitionListener = rootNavigation.addListener('transitionStart', event => {
+			if (event.data.closing) {
+				return;
+			}
+
+			Animated.timing(polaroidRotation, {
+				toValue: 0,
+				duration: reducedMotion ? 0 : 450,
+				easing: Easing.inOut(Easing.quad),
+				useNativeDriver: true,
+			}).start();
+		});
+
+		return () => {
+			removeTransitionListener();
+			polaroidRotation.stopAnimation();
+		};
+	}, [rootNavigation, polaroidRotation, reducedMotion]);
+
+	// Turn the photo a little while the link starts the normal page transition.
+	function handleOpenChapter() {
+		if (reducedMotion) {
+			return;
+		}
+
+		Animated.timing(polaroidRotation, {
+			toValue: -20,
+			duration: 450,
+			easing: Easing.inOut(Easing.quad),
+			useNativeDriver: true,
+		}).start();
 	}
 
 	// We anchor the trail beside the illustration, or the lock when the chapter is locked.
@@ -104,6 +158,7 @@ export default function ChapterSelectRow({
 							photoNoiseSource={photoGrainOverlay}
 							photoNoiseOpacity={0.2}
 							style={styles.polaroid}
+							frontStyle={frontPolaroidStyle}
 							badge={isNew ? <Text style={styles.newLabel}>New</Text> : undefined}
 							footer={
 								<View style={styles.polaroidMetadata}>
@@ -151,7 +206,10 @@ export default function ChapterSelectRow({
 						<LinkButton
 							accessibilityLabel={`${actionLabel}: ${chapter.name}`}
 							screen="/(routes)/ChapterDetail"
-							params={{ chapterId: chapter.id }}
+							params={{
+								chapterId: chapter.id,
+							}}
+							handler={handleOpenChapter}
 							contentPaddingVertical={6}
 							contentPaddingHorizontal={6}
 							color={buttonColor}

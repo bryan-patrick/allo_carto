@@ -8,6 +8,7 @@ import { getCompletionPercentage } from '@/src/util/progression';
 import type { CompletedSolveStages, SolveStage } from '@/src/util/solveProgression';
 import { getSolveSentences, type SolveSentenceWord } from '@/src/util/solveSentences';
 import { getWordOrderCards } from '@/src/util/solveWordOrder';
+import { userExperienceConfig } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getUserProgress from './getUserProgress';
 import updateUserProgress from './updateUserProgress';
@@ -16,6 +17,7 @@ interface ApplyMockParagraphProgressOptions {
 	database: SQLiteDatabase;
 	userId: string;
 	completedStages: CompletedSolveStages;
+	firstGemUnclaimed?: boolean;
 }
 
 interface MockSolveAnswer {
@@ -48,6 +50,10 @@ const statements = {
 	saveCompletion: `
 		INSERT INTO solveCompletions (userId, deckId, completedAt, completedSolveStages)
 		VALUES (?, ?, ?, ?);
+	`,
+	saveUnclaimedGem: `
+		INSERT INTO solveRewards (userId, deckId, stage, kind, position, xp)
+		VALUES (?, ?, 1, 'gem', 0, ?);
 	`,
 	saveFirstStageAnswer: `
 		INSERT INTO solvePositions (userId, deckId, position, wordId, acceptedAnswer)
@@ -157,6 +163,7 @@ export default async function applyMockParagraphProgress({
 	database,
 	userId,
 	completedStages,
+	firstGemUnclaimed = false,
 }: ApplyMockParagraphProgressOptions): Promise<number> {
 	const allParagraphs = getDecks();
 	const paragraphs = allParagraphs.filter(hasParagraphContent);
@@ -164,6 +171,7 @@ export default async function applyMockParagraphProgress({
 	const sentenceWords: SolveSentenceWord[] = [];
 	const paragraphWordIds = new Set<string>();
 	const completedAt = Date.now();
+	const solvedStages = firstGemUnclaimed ? 1 : completedStages;
 
 	if (!isMockParagraphPreset(completedStages)) {
 		throw new Error('Choose a supported mock paragraph state.');
@@ -200,7 +208,7 @@ export default async function applyMockParagraphProgress({
 		for (const paragraph of paragraphs) {
 			const answers = getMockSolveAnswers({
 				paragraph,
-				completedStages,
+				completedStages: solvedStages,
 				vocabularyById,
 				sentenceWords,
 			});
@@ -209,6 +217,16 @@ export default async function applyMockParagraphProgress({
 			const savedWordOrder = JSON.stringify(wordOrderPositions);
 
 			await transaction.runAsync(statements.markFlashcardsStarted, userId, paragraph.id);
+
+			// Leave only the gem waiting to be claimed so the celebration is ready to try.
+			if (firstGemUnclaimed) {
+				await transaction.runAsync(
+					statements.saveUnclaimedGem,
+					userId,
+					paragraph.id,
+					userExperienceConfig.solveGemXP,
+				);
+			}
 
 			if (completedStages > 0) {
 				await transaction.runAsync(
