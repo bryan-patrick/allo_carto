@@ -1,22 +1,20 @@
 # Allô Carto
 
-![App preview](preview.jpg)
-
 Hello! Allô Carto is a story drive mobile flashcard app I've been building focused around progressing users through stories one paragraph at a time using flashcards and solving puzzles to learn Quebec French.
 
-## A note about AI (I need an artist!)
+## A note about AI
 
-Illustrations are created with AI and are placeholders while I create original illustrations.
+Allô Carto is not a vibe coded project. Months went into developing the core systems without any AI assistance. This includes the way context is used throughout the app, the database interface, the word data schemas, progression mechanics, and more. Building these systems myself has proved crucial to the project.
 
-The art is an unbelievably difficult challenge...err...at least for me.
-If you are an artist and for some reason are interested in helping with the app please let me know. 
-message.bryan.gh@outlook.com
+Copilot has been used increasingly in later development for refactoring, creating components, and general convenience.
 
-Update: 
-The AI stylized photos are no longer used.
-I'm going to go ahead and pull all of the AI placeholders.
-Illustrations will be done on paper digitized and edited in Affinity (AI free using the non-AI version).
+AI stylized images, originally created from my own photographs using Affinity, are no longer used and will be removed from the project.
 
+All remaining AI generated placeholders will also be removed. New illustrations will be hand drawn, digitized, and edited in Affinity and Procreate without AI tools.
+
+Illustrations are an enormous challenge for me. I'm not an artist. I don’t enjoy drawing and I dont find it fulfilling or rewarding. But I do believe in this project enough to take that challenge on and give it my best.
+
+If you’re an artist and are interested in contributing, I’d love to hear from you. message.bryan.gh@outlook.com
 
 ## Built with
 
