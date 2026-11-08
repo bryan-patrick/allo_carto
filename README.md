@@ -1,6 +1,6 @@
 # Allô Carto
 
-[App preview](preview.jpg)
+![App preview](preview.jpg)
 
 Hello! Allô Carto is a story drive mobile flashcard app I've been building focused around progressing users through stories one paragraph at a time using flashcards and solving puzzles to learn Quebec French.
 
