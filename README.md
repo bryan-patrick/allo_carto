@@ -12,7 +12,7 @@ AI stylized images, originally created from my own photographs using Affinity, a
 
 All remaining AI generated placeholders will also be removed. New illustrations will be hand drawn, digitized, and edited in Affinity and Procreate without AI tools.
 
-Illustrations are an enormous challenge for me. I'm not an artist. I don’t enjoy drawing and I dont find it fulfilling or rewarding. But I do believe in this project enough to take that challenge on and give it my best.
+Illustrations are an enormous challenge for me. I'm not a very good artist. But I do believe in this project enough to take that challenge on and give it my best.
 
 If you’re an artist and are interested in contributing, I’d love to hear from you. message.bryan.gh@outlook.com
 
