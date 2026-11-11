@@ -1,5 +1,4 @@
 import { placeholderStampImage } from '@/data/french/collectionAtlas';
-import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import { Image, StyleSheet, type ImageSourcePropType } from 'react-native';
 
@@ -34,14 +33,11 @@ const styles = StyleSheet.create({
 		aspectRatio: 200 / 230,
 		alignItems: 'center',
 		justifyContent: 'center',
-		shadowColor: colors.dark.border,
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.8,
-		shadowRadius: 1,
 	},
 	artwork: {
 		width: '80%',
 		height: '80%',
 		borderRadius: 1,
+		backgroundColor: '#ffffff',
 	},
 });
