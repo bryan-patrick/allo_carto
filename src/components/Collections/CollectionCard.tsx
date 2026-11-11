@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 	},
 	illustration: {
+		backgroundColor: '#ffffff',
 		width: 72,
 	},
 	lockedIllustration: {
