@@ -23,7 +23,7 @@ import WordPronunciation from './WordPronunciation';
 
 const AnimatedBackgroundImage = Animated.createAnimatedComponent(BackgroundImage);
 
-/*
+/**
  * Typing
  */
 interface WordCardFrontProps {
@@ -39,7 +39,7 @@ interface WordCardFrontProps {
 	background: ImageSourcePropType;
 }
 
-/*
+/**
  * WordCardFront component
  */
 const WordCardFront = memo(function WordCardFrontMemo({
@@ -57,13 +57,13 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	const { cardState } = useWordCardUI();
 	const { currentCard } = useCardDeck();
 
-	/*
+	/**
 	 * Word data
 	 */
 	const { frenchArticle, englishArticle, englishWords, frenchWord, form, partOfSpeech } =
 		currentCard;
 
-	/*
+	/**
 	 * Render the articlea and word the user has selected.
 	 * These will animated when changing size, which is cool.
 	 */
@@ -91,7 +91,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 		.join(' ');
 	const shouldShowMetadataDivider = Boolean(partOfSpeech && form);
 
-	/*
+	/**
 	 * Render the front of the WordCard
 	 */
 	return (
@@ -190,7 +190,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	);
 });
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

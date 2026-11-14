@@ -2,7 +2,7 @@ import colors from '@/src/app/colors';
 import ProgressBar from '@/src/components/ProgressBar';
 import { StyleSheet, Text, View } from 'react-native';
 
-/*
+/**
  * Typing
  */
 interface StoryMetaProps {
@@ -39,7 +39,7 @@ function StoryProgress({ color, label, percent, value }: StoryProgressProps) {
 	);
 }
 
-/*
+/**
  * Solved paragraphs show how far the player has moved through the story.
  */
 export default function StoryMeta({
@@ -86,7 +86,7 @@ export default function StoryMeta({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

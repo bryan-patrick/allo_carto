@@ -102,7 +102,7 @@ export default function ChapterDetailView() {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

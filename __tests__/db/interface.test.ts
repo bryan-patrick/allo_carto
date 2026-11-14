@@ -21,8 +21,16 @@ describe('getWordProgressById', () => {
 	test('loads word progress and queries repeated passage words once', async () => {
 		mockGetAllAsync.mockResolvedValueOnce([
 			{ wordId: 'word_new', correctCount: 0, seenCount: 1 },
-			{ wordId: 'word_learning', correctCount: 3, seenCount: 0 },
-			{ wordId: 'word_known', correctCount: 7, seenCount: 1 },
+			{
+				wordId: 'word_learning',
+				correctCount: 5,
+				seenCount: 0,
+			},
+			{
+				wordId: 'word_known',
+				correctCount: 30,
+				seenCount: 1,
+			},
 		]);
 
 		const progressByWordId = await getWordProgressById({

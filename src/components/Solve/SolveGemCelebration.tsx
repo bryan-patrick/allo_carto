@@ -10,7 +10,7 @@ import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
-/*
+/**
  * Typing
  */
 interface SolveGemCelebrationProps {
@@ -24,7 +24,7 @@ interface PassageProgress {
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
 }
 
-/*
+/**
  * Load the paragraph's saved word progress and open it half a second after a gem claim.
  * We want the user to be nudged to read the paragraph after claiming one.
  */

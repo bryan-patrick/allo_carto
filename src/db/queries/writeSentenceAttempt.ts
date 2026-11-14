@@ -6,7 +6,7 @@ import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getSolveSentencePuzzle from './getSolveSentencePuzzle';
 import { getSolveRewards, saveSolveGemReward } from './solveRewards';
 
-/*
+/**
  * Typings
  */
 interface WriteSentenceAttemptOptions extends SentenceAttemptRequest {
@@ -26,7 +26,7 @@ interface SentenceReceiptRow {
 	stageCompleted: number;
 }
 
-/*
+/**
  * Charge for a sentence answer and prepare a gem claim after every sentence is solved.
  */
 export default async function writeSentenceAttempt({

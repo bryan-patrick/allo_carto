@@ -23,7 +23,7 @@ export interface ChapterMapAnchor {
 	side: 'left' | 'right';
 }
 
-/*
+/**
  * Typing
  */
 interface ChapterSelectRowProps {
@@ -34,7 +34,7 @@ interface ChapterSelectRowProps {
 	onMapAnchorChange: (anchor: ChapterMapAnchor) => void;
 }
 
-/*
+/**
  * We alternate the chapter illustration and info between sides,
  * leaving the smaller column open for the map trail.
  */
@@ -227,7 +227,7 @@ export default function ChapterSelectRow({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

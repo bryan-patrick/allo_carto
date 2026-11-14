@@ -8,7 +8,7 @@ import WordCardContainer from '../WordCard/WordCardContainer';
 
 const cardPageBackground = require('@/src/app/assets/images/card-bgs/card-page-bg.jpg');
 
-/*
+/**
  * Typing
  */
 interface CardDeckViewProps {
@@ -23,7 +23,7 @@ export default function CardDeckView({ currentCard, wordActions }: CardDeckViewP
 		paddingTop: headerHeight,
 	};
 
-	/*
+	/**
 	 * Render the card deck
 	 */
 	return (
@@ -48,7 +48,7 @@ export default function CardDeckView({ currentCard, wordActions }: CardDeckViewP
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

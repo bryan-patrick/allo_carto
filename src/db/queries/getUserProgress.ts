@@ -1,5 +1,5 @@
-import { getAtlasCompletionItems } from '@/src/util/atlasCompletion';
 import type { FlashcardDeckProgress } from '@/src/components/CardDeck/cardDeckTypes';
+import { getAtlasCompletionItems } from '@/src/util/atlasCompletion';
 import type { ProgressById, UserProgressRow } from '@/src/util/progression';
 import type { CompletedSolveStages } from '@/src/util/solveProgression';
 import type { SQLiteDatabase } from 'expo-sqlite';
@@ -23,7 +23,7 @@ interface FlashcardCycleProgressRow {
 	deckIndex: number;
 }
 
-/*
+/**
  * Load word progress, solved puzzles, and flashcard deck counts for the app.
  * Keep flashcard progress separate from Solve completion.
  */

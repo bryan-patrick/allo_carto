@@ -5,8 +5,8 @@ import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
-import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
+import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import type {
 	SentenceAttemptRequest,
 	SolveAttemptResult,
@@ -22,17 +22,17 @@ import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompleti
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import type { UserProgressRow } from '@/src/util/progression';
 import {
-	reviewSentenceAnswer,
-	type SentenceAnswerReview,
-	type SentenceAnswerWordStatus,
-} from '@/src/util/solveSentenceAnswer';
-import {
 	getCompletedSolveStages,
 	getSolveStageEligibility,
 	getSolveUnlockMessage,
 	solveStages,
 	type SolveSentenceStage,
 } from '@/src/util/solveProgression';
+import {
+	reviewSentenceAnswer,
+	type SentenceAnswerReview,
+	type SentenceAnswerWordStatus,
+} from '@/src/util/solveSentenceAnswer';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import {
@@ -50,6 +50,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+/**
+ * Typing
+ */
 interface SolveSentenceViewProps {
 	deckId: string;
 	stage?: SolveSentenceStage;
@@ -74,8 +77,10 @@ interface SentenceFeedback {
 }
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
+
 const sentenceAnswerInstructions =
 	'Prepositions are required. Articles, accents, and punctuation are optional. Names and proper nouns do not need exact spelling.';
+
 const answerReviewWordStyles: Record<SentenceAnswerWordStatus, TextStyle> = {
 	correct: {
 		color: colors.ink.available,
@@ -88,6 +93,7 @@ const answerReviewWordStyles: Record<SentenceAnswerWordStatus, TextStyle> = {
 		color: colors.dark.text,
 	},
 };
+
 const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 	4: {
 		promptLanguage: 'French',
@@ -105,7 +111,7 @@ const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 	},
 };
 
-/*
+/**
  * Show the result and ink cost after a sentence answer is submitted.
  */
 function getSentenceFeedback(result: SolveAttemptResult, answerLanguage: string): SentenceFeedback {
@@ -140,7 +146,7 @@ function getSentenceFeedback(result: SolveAttemptResult, answerLanguage: string)
 	);
 }
 
-/*
+/**
  * Let the player translate each sentence to earn glowing or prismatic gems.
  */
 export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceViewProps) {
@@ -329,7 +335,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		setAnswerSelection(event.nativeEvent.selection);
 	}
 
-	/*
+	/**
 	 * Insert a French character at the cursor and replace any selected letters.
 	 */
 	function handleInsertCharacter(character: string) {
@@ -407,7 +413,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		});
 	}
 
-	/*
+	/**
 	 * Submit one paid sentence answer and keep its ID if the save needs to be retried.
 	 */
 	async function handleSubmit() {
@@ -747,6 +753,9 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

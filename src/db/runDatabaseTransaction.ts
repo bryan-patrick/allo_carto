@@ -4,7 +4,7 @@ type DatabaseTransactionWrite = (transaction: SQLiteDatabase) => Promise<void>;
 
 let pendingDatabaseWrite: Promise<void> = Promise.resolve();
 
-/*
+/**
  * Let each database save finish before the next one starts, even across screens.
  * Keep each save's changes together so a failed save leaves no partial rewards or progress.
  */

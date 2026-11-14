@@ -9,7 +9,7 @@ import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getSolveWordOrderPuzzle from './getSolveWordOrderPuzzle';
 import { getSolveRewards, saveSolveGemReward } from './solveRewards';
 
-/*
+/**
  * Typing
  */
 interface WriteWordOrderAttemptOptions extends WordOrderAttemptRequest {
@@ -28,7 +28,7 @@ interface WordOrderReceiptRow {
 	stageCompleted: number;
 }
 
-/*
+/**
  * Save correct sentences and prepare the third gem after every sentence is solved.
  * Save each result and Ink charge together so retrying cannot charge the player twice.
  */

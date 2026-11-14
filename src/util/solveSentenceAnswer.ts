@@ -1,7 +1,7 @@
 import type { SolveSentence } from '@/src/components/Solve/solveTypes';
 import { checkSolveAnswer, type SolveAnswerResult } from './solveAnswer';
 
-/*
+/**
  * Help the player see what they got right and what to fix after a sentence attempt.
  * Use the same word checks for accepting an answer and showing its feedback.
  */
@@ -115,7 +115,7 @@ const plainEnglishContractions = new Map(
 	}),
 );
 
-/*
+/**
  * Give the checker a plain version of a word, such as ete for été or coeur for cœur.
  * This lets the player use an ordinary keyboard without failing over accents or punctuation.
  */
@@ -132,7 +132,7 @@ function normalizeSentenceSpelling(text: string): string {
 	return result;
 }
 
-/*
+/**
  * Keep the à in au and the de in du when checking the answer.
  * Those prepositions still matter even when the player leaves out the article.
  */
@@ -148,7 +148,7 @@ export function getFrenchSentencePreposition(text: string): string {
 	return result;
 }
 
-/*
+/**
  * Make a simpler version of the sentence to check, and keep the original text for the feedback.
  * That lets can't be checked as can not while the player still sees exactly what they typed.
  */
@@ -206,7 +206,7 @@ function getSentenceTokens(text: string, language: SentenceAnswerLanguage): Sent
 	return result;
 }
 
-/*
+/**
  * Pick out the English words the player needs to include in their translation.
  * Keep words like in and under, while letting them leave out articles like a and the.
  */
@@ -223,7 +223,7 @@ export function getSentenceKeywords(text: string): string[] {
 	return result;
 }
 
-/*
+/**
  * Prepare the words we expect from one possible translation.
  * Keep a name like Allô Carto together so a misspelled name doesn't spoil the answer.
  */
@@ -320,7 +320,7 @@ function getTextKeywords(
 	return result;
 }
 
-/*
+/**
  * The same answer can line up with the expected words in more than one way.
  * Pick the closest fit so the feedback gives the player credit for what they got right.
  */
@@ -350,7 +350,7 @@ function getBetterMatch(
 	return result;
 }
 
-/*
+/**
  * Check whether a typed word is close enough to accept.
  * Keep English sentence puzzles as forgiving about small typos as the word puzzles.
  */
@@ -378,7 +378,7 @@ function matchesSentenceWord(
 	return result;
 }
 
-/*
+/**
  * Work out which words the player got right, even when they added or forgot a word.
  * If they forget "under" in "the cat is under the table," "table" should still get credit.
  */
@@ -481,7 +481,7 @@ function matchSentenceKeywords(
 					};
 					let bestWithoutExtra: SentenceMatch;
 
-					/*
+					/**
 					 * A wrong word, a missing word, and an extra word affect the rest of the sentence differently.
 					 * Try all three so one mistake doesn't turn every word after it red.
 					 */
@@ -529,7 +529,7 @@ function matchSentenceKeywords(
 	return result;
 }
 
-/*
+/**
  * Decide whether to accept the translation and explain the result word by word.
  * Even a wrong answer should help the player see what to keep and what to fix on their next try.
  */
@@ -605,7 +605,7 @@ export function reviewSentenceAnswer({
 	return result;
 }
 
-/*
+/**
  * Check an English translation using the word cards and the story's English text.
  * This gives the player more than one way to say the same thing.
  */
@@ -619,7 +619,7 @@ export function checkSentenceAnswer(options: CheckSentenceAnswerOptions): SolveA
 	return result;
 }
 
-/*
+/**
  * Check a French translation against the story's French sentence.
  * Accents and name spelling should not make an otherwise correct translation fail.
  */

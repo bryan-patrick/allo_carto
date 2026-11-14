@@ -261,7 +261,7 @@ describe('<WordCardButton />', () => {
 			});
 
 			const player = jest.mocked(useAudioPlayer).mock.results[0].value;
-			expect(player.volume).toBe(0.4);
+			expect(player.volume).toBe(defaultAppSettings.soundEffectsVolume);
 			expect(player.play).not.toHaveBeenCalled();
 		},
 	);

@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
-/*
+/**
  * Typing
  */
 interface CollectionGemsProps {
@@ -47,7 +47,7 @@ const gemAppearanceDescriptions: Partial<Record<CompletedSolveStages, string>> =
 	5: ' All three gems are prismatic. You have fully mastered this paragraph, congrats!',
 };
 
-/*
+/**
  * Gives the paragraph gems a cool prismatic color effect
  */
 function PrismaticGem({ size }: PrismaticGemProps) {
@@ -88,7 +88,7 @@ function PrismaticGem({ size }: PrismaticGemProps) {
 	);
 }
 
-/*
+/**
  * Explains earned gems and the next Solve challenge.
  */
 function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStages, GemResponse> {
@@ -202,7 +202,7 @@ export default function CollectionGems({
 		],
 	};
 
-	/*
+	/**
 	 * Spin and shrink the backdrop while the small gem stays still.
 	 * Reveal the earned gem and remove its backdrop as soon as the backdrop reaches normal size.
 	 */
@@ -354,7 +354,7 @@ export default function CollectionGems({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

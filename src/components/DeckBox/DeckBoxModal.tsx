@@ -4,18 +4,18 @@ import type { ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckPassageView from '@/src/components/DeckPassageView';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
-import type { WordProgressKey } from '@/src/util/wordProgress';
 import type { SolveStage } from '@/src/util/solveProgression';
+import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-/*
+/**
  * Images
  */
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/*
+/**
  * Typing
  */
 interface DeckBoxModalProps {
@@ -33,7 +33,7 @@ interface PassageMeasurement {
 	height: number;
 }
 
-/*
+/**
  * Standalone passage modal with a close button
  */
 export default function DeckBoxModal({
@@ -52,7 +52,7 @@ export default function DeckBoxModal({
 	const contentHeight =
 		passageMeasurement?.deckId === deck.id ? passageMeasurement.height : undefined;
 
-	/*
+	/**
 	 * Use 60% of the screen until we know how tall the passage is.
 	 * Then fit the passage and controls, leaving room for the safe areas.
 	 * Long passages scroll instead of making the modal taller.
@@ -65,7 +65,7 @@ export default function DeckBoxModal({
 			Math.min(contentHeight + 44 + bottomPadding, maximumSheetHeight)
 		);
 
-	/*
+	/**
 	 * Render the modal
 	 */
 	return (
@@ -132,7 +132,7 @@ export default function DeckBoxModal({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

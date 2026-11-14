@@ -9,7 +9,7 @@ import { splitFrenchSentences } from '@/src/util/splitFrenchSentences';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { runDatabaseTransaction } from '../runDatabaseTransaction';
 
-/*
+/**
  * Typing
  */
 interface SaveWordOrderDraftOptions {
@@ -24,7 +24,7 @@ interface WordOrderDraftRow {
 	positions: string;
 }
 
-/*
+/**
  * Saves this sentence's card order and keeps the other sentences' arrangements.
  * This lets the player leave Solve++ and resume later.
  */

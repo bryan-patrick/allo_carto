@@ -2,6 +2,9 @@ import { clampAudioVolume, clampSpeechRate } from '@/src/settings/appSettings';
 import * as Speech from 'expo-speech';
 import { Platform } from 'react-native';
 
+/**
+ * Typing
+ */
 export type SpeechPlaybackState = 'playing' | 'paused' | 'stopped';
 
 export interface SpeechPlayback {
@@ -25,7 +28,7 @@ interface SpeechBoundaryEvent {
 
 let stopCurrentSpeech: (() => Promise<void>) | null = null;
 
-/*
+/**
  * Find an enhanced Canadian French voice on the device if one is available.
  */
 async function getEnhancedCanadianFrenchVoice(): Promise<string | undefined> {
@@ -45,9 +48,8 @@ async function getEnhancedCanadianFrenchVoice(): Promise<string | undefined> {
 	}
 }
 
-/*
- * Read French text aloud for flashcards and stories, stopping any earlier speech first.
- * Keep the reading position when paused so Play can continue from there.
+/**
+ * TTS French for flashcards and stories
  */
 export default function speakFrench({
 	text,
@@ -63,12 +65,11 @@ export default function speakFrench({
 	let playbackState: SpeechPlaybackState = startPaused ? 'paused' : 'playing';
 	let hasStarted = false;
 	let currentCharacterIndex = 0;
-	let utteranceId = 0;
+	let TTSId = 0;
 
 	stopCurrentSpeech = stop;
 	onStateChange(playbackState);
 
-	// Keep pause, resume, and stop in order when the controls are tapped quickly.
 	function queueSpeechAction(action: () => Promise<void>): Promise<void> {
 		pendingSpeechAction = pendingSpeechAction.then(action).catch(handleSpeechError);
 		return pendingSpeechAction;
@@ -99,6 +100,7 @@ export default function speakFrench({
 		}
 
 		finishPlayback();
+
 		return queueSpeechAction(stopSpeech);
 	}
 
@@ -131,8 +133,7 @@ export default function speakFrench({
 		}
 
 		if (Platform.OS === 'android') {
-			// Android cannot pause speech. Save the current word and ignore the canceled reading.
-			utteranceId += 1;
+			TTSId += 1;
 			hasStarted = false;
 			await Speech.stop();
 		} else {
@@ -165,7 +166,7 @@ export default function speakFrench({
 	async function startSpeech() {
 		const preferredVoice = await getEnhancedCanadianFrenchVoice();
 		const startCharacterIndex = currentCharacterIndex;
-		const currentUtteranceId = utteranceId + 1;
+		const currentTTSId = TTSId + 1;
 		const remainingText = text.slice(startCharacterIndex);
 
 		if (playbackState !== 'playing' || hasStarted) {
@@ -173,7 +174,7 @@ export default function speakFrench({
 		}
 
 		hasStarted = true;
-		utteranceId = currentUtteranceId;
+		TTSId = currentTTSId;
 
 		Speech.speak(remainingText, {
 			language: 'fr-CA',
@@ -181,18 +182,18 @@ export default function speakFrench({
 			rate: clampSpeechRate(rate),
 			volume: clampAudioVolume(volume),
 			onBoundary(event: SpeechBoundaryEvent) {
-				if (playbackState === 'playing' && currentUtteranceId === utteranceId) {
+				if (playbackState === 'playing' && currentTTSId === TTSId) {
 					currentCharacterIndex = startCharacterIndex + event.charIndex;
 					onBoundary?.(currentCharacterIndex);
 				}
 			},
-			onDone: finishUtterance,
-			onStopped: finishUtterance,
-			onError: finishUtterance,
+			onDone: finishTTS,
+			onStopped: finishTTS,
+			onError: finishTTS,
 		});
 
-		function finishUtterance() {
-			if (currentUtteranceId === utteranceId) {
+		function finishTTS() {
+			if (currentTTSId === TTSId) {
 				finishPlayback();
 			}
 		}

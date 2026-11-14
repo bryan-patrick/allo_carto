@@ -11,7 +11,7 @@ const gettingStartedBackground = require('@/src/app/assets/images/postcard-parts
 const AnimatedBackgroundImage = Animated.createAnimatedComponent(BackgroundImage);
 const sheetTransition = LinearTransition.duration(120);
 
-/*
+/**
  * Typing
  */
 interface GettingStartedModalProps {
@@ -19,7 +19,7 @@ interface GettingStartedModalProps {
 	visible: boolean;
 }
 
-/*
+/**
  * Show one page at a time and smoothly resize the modal to fit it.
  * Keep Back and Next within reach at the bottom.
  */
@@ -118,7 +118,7 @@ export default function GettingStartedModal({ onFinish, visible }: GettingStarte
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

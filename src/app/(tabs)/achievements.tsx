@@ -2,7 +2,7 @@ import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { StyleSheet, Text, View } from 'react-native';
 import colors from '../colors';
 
-/*
+/**
  * Shows the Achievements placeholder until the feature is ready.
  */
 export default function Achievements() {
@@ -19,6 +19,9 @@ export default function Achievements() {
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

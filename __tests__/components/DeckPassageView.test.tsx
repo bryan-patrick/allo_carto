@@ -9,7 +9,13 @@ import * as Speech from 'expo-speech';
 import { Animated } from 'react-native';
 
 jest.mock('@/src/settings/useAppSettings');
-jest.mock('expo-speech', () => ({ speak: jest.fn(), stop: jest.fn() }));
+jest.mock('expo-speech', () => ({
+	speak: jest.fn(),
+	stop: jest.fn(async () => {}),
+	pause: jest.fn(async () => {}),
+	resume: jest.fn(async () => {}),
+	getAvailableVoicesAsync: jest.fn(async () => []),
+}));
 
 interface SpeechBoundaryEvent {
 	charIndex: number;
@@ -23,7 +29,7 @@ describe('<DeckPassageView />', () => {
 			setSetting: jest.fn(),
 		});
 
-		/*
+		/**
 		 * Don't wait for animations (Copilot actually got this wrong)
 		 */
 		const animatedMock = jest.requireActual('react-native/Libraries/Animated/AnimatedMock').default;
@@ -33,7 +39,7 @@ describe('<DeckPassageView />', () => {
 
 	afterEach(() => jest.restoreAllMocks());
 
-	/*
+	/**
 	 * Including unseen words shifts the speech positions of the words after them.
 	 * We check both settings so repeated words keep their own highlights.
 	 */
@@ -129,6 +135,8 @@ describe('<DeckPassageView />', () => {
 			}
 			expect(getByText('Wallace')).toHaveStyle({ opacity: 1 });
 
+			await fireEvent.press(getByText('Filters'));
+
 			// Exempt words fade under every filter, including Known and Unseen.
 			for (const { name } of wordProgressDefinitions) {
 				await fireEvent.press(getByText(name));
@@ -144,7 +152,7 @@ describe('<DeckPassageView />', () => {
 		},
 	);
 
-	/*
+	/**
 	 * A setting change must stop the old reading before its word positions change.
 	 * Late speech events should not bring an old highlight back.
 	 */

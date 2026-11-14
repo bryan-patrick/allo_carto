@@ -155,15 +155,16 @@ describe('Solve progression', () => {
 		expect(getCompletedSolveStages()).toBe(0);
 	});
 
-	test('adds one Ink to every Solve+ word price without changing Stage 1 prices', () => {
+	test('charges doubled word prices with two extra Ink for Solve+', () => {
 		const rarities: CardRarity[] = ['Common', 'Rare', 'Epic', 'Legendary'];
 
 		for (const rarity of rarities) {
-			expect(getSolveCardInkCost(2, rarity)).toBe(getSolveCardInkCost(1, rarity) + 1);
+			expect(getSolveCardInkCost(2, rarity)).toBe(getSolveCardInkCost(1, rarity) + 2);
 		}
 
 		expect(solveStages[1].incorrectAttemptInkCost).toBe(1);
 		expect(solveStages[2].incorrectAttemptInkCost).toBe(2);
-		expect(getSolveCardInkCost(2, 'Legendary')).toBe(6);
+		expect(getSolveCardInkCost(1, 'Common')).toBe(2);
+		expect(getSolveCardInkCost(2, 'Legendary')).toBe(12);
 	});
 });

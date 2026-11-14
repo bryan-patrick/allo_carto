@@ -2,10 +2,10 @@ import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
-import { useSolveXPFeedback, type SolveXPFeedbackOrigin } from './SolveXPFeedback';
+import { useSolveXPFeedback, type SolveXPFeedback } from './SolveXPFeedback';
 import type { SolveReward, SolveRewardReceipt } from './solveTypes';
 
-/*
+/**
  * Typing
  */
 interface SolveRewardClaimButtonProps {
@@ -15,7 +15,7 @@ interface SolveRewardClaimButtonProps {
 	onClaimed?: (reward: SolveReward, status: SolveRewardReceipt['status']) => void;
 }
 
-/*
+/**
  * Claim saved puzzle XP and show the earned amount above the button after a successful save.
  * Keep the button available if the save needs another try.
  */
@@ -35,7 +35,7 @@ export default function SolveRewardClaimButton({
 	const accessibilityLabel = isClaiming ? label : `Claim ${reward.xp} XP`;
 
 	async function handleClaim(event: GestureResponderEvent) {
-		const feedbackOrigin: SolveXPFeedbackOrigin = {
+		const feedbackOrigin: Pick<SolveXPFeedback, 'centerX' | 'top'> = {
 			centerX: event.nativeEvent.pageX,
 			top: event.nativeEvent.pageY,
 		};
@@ -107,7 +107,7 @@ export default function SolveRewardClaimButton({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

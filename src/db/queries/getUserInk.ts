@@ -12,7 +12,7 @@ interface UserInkRow {
 	totalXP: number;
 }
 
-/*
+/**
  * Load the player's saved Ink and limit it to the space allowed by their level.
  */
 export default async function getUserInk({ database, userId }: GetUserInkOptions): Promise<number> {

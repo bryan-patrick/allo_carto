@@ -5,6 +5,9 @@ import {
 	findStoryById,
 } from './atlasCompletion';
 
+/**
+ * Typing
+ */
 export type UserActivityType =
 	| 'xpClaimed'
 	| 'paragraphFlashcardsCompleted'
@@ -39,6 +42,11 @@ export interface UserNotification extends UserActivity {
 	type: UserNotificationType;
 }
 
+interface UserActivityDisplay {
+	title: string;
+	icon: string;
+}
+
 const notificationActivityTypes: ReadonlySet<UserActivityType> = new Set<UserActivityType>([
 	'levelUp',
 	'stampUnlocked',
@@ -52,11 +60,6 @@ const notificationActivityTypes: ReadonlySet<UserActivityType> = new Set<UserAct
 // Choose which saved rewards and unlocks also appear in Notifications.
 export function isUserNotificationType(type: UserActivityType): type is UserNotificationType {
 	return notificationActivityTypes.has(type);
-}
-
-interface UserActivityDisplay {
-	title: string;
-	icon: string;
 }
 
 export const userActivityLimit = 50;
@@ -112,7 +115,11 @@ export const userActivityDisplay: Record<UserActivityType, UserActivityDisplay> 
 	},
 };
 
-// Include the story and chapter so paragraphs with similar names are easy to tell apart.
+/**
+ * Takes a story, chapter, or paragraph ID and creates a name for the activity.
+ * For a paragraph, the result looks like:
+ * Story name > Chapter name > Paragraph name
+ */
 export function getActivityItemLabel(id: string): string {
 	const path = findCompletionPath({
 		id,
@@ -127,5 +134,5 @@ export function getActivityItemLabel(id: string): string {
 		return id;
 	}
 
-	return availableLabels.join(' · ');
+	return availableLabels.join(' > ');
 }

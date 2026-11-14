@@ -4,7 +4,7 @@ import { getSolvePassage } from './getSolvePassage';
 import shuffleArray from './shuffleArray';
 import { splitFrenchSentences } from './splitFrenchSentences';
 
-/*
+/**
  * Typing
  */
 export interface CheckWordOrderAnswerOptions {
@@ -13,7 +13,7 @@ export interface CheckWordOrderAnswerOptions {
 	sentencePosition?: number;
 }
 
-/*
+/**
  * Builds the French cards for a sentence, or the full paragraph when reading older saves.
  */
 export function getWordOrderCards(deck: CardDeck, sentencePosition?: number): SolveWordOrderCard[] {
@@ -38,7 +38,7 @@ export function getWordOrderCards(deck: CardDeck, sentencePosition?: number): So
 	return cards;
 }
 
-/*
+/**
  * Checks that an arrangement contains every card exactly once before it is saved or checked as an answer.
  */
 export function isCompleteWordOrder(
@@ -63,7 +63,7 @@ export function isCompleteWordOrder(
 	return cards.length > 0;
 }
 
-/*
+/**
  * Reads a saved card order so the player can resume Solve++.
  */
 export function readWordOrder(value: string, cards: SolveWordOrderCard[]): number[] | null {
@@ -78,7 +78,7 @@ export function readWordOrder(value: string, cards: SolveWordOrderCard[]): numbe
 	return isCompleteWordOrder(positions, cards) ? positions : null;
 }
 
-/*
+/**
  * Checks the card order against the original wording and any other accepted wording.
  */
 export function checkWordOrderAnswer({
@@ -123,7 +123,7 @@ export function checkWordOrderAnswer({
 	return false;
 }
 
-/*
+/**
  * Creates a shuffled starting order for Solve++.
  */
 export function shuffleWordOrder(deck: CardDeck, sentencePosition?: number): number[] {
@@ -151,7 +151,7 @@ export function shuffleWordOrder(deck: CardDeck, sentencePosition?: number): num
 	return positions;
 }
 
-/*
+/**
  * Moves one card to a chosen spot and shifts the cards in between.
  */
 export function moveWordOrderCard(

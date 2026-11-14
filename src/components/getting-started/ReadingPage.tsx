@@ -8,7 +8,7 @@ The rewind button is especially useful!`;
 export default function ReadingPage() {
 	return (
 		<GettingStartedPage
-			title="Hear words out loud."
+			title="Text to speech."
 			imageSource={require('@/src/app/assets/images/getting-started/story.png')}
 			imageLabel="Reading view with a word, the speaker, and playback controls circled"
 			description={description}

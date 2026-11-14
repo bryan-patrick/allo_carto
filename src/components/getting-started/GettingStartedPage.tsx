@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
 import { Image, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
 
-/*
+/**
  * Typing
  */
 interface GettingStartedPageProps {
@@ -55,7 +55,7 @@ export default function GettingStartedPage({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

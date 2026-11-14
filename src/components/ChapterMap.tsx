@@ -7,7 +7,7 @@ import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import ChapterSelectRow, { chapterMapDotSize, type ChapterMapAnchor } from './ChapterSelectRow';
 
-/*
+/**
  * Types
  */
 interface ChapterMapProps {
@@ -21,7 +21,7 @@ interface ChapterMapCurveProps {
 	width: number;
 }
 
-/*
+/**
  * It looks crazy but we're really just using curves to line up to our chapters via SVG
  */
 function getChapterMapCurve({ start, end, width }: ChapterMapCurveProps): string {
@@ -31,7 +31,7 @@ function getChapterMapCurve({ start, end, width }: ChapterMapCurveProps): string
 	return `M ${start.x} ${start.y} C ${bendX} ${start.y}, ${bendX} ${end.y}, ${end.x} ${end.y}`;
 }
 
-/*
+/**
  * This draws the map trail
  */
 export default function ChapterMap({ story, progressById }: ChapterMapProps) {
@@ -65,7 +65,7 @@ export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 		});
 	}
 
-	/*
+	/**
 	 * Render it
 	 */
 	return (
@@ -145,7 +145,7 @@ export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

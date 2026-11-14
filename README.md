@@ -6,17 +6,11 @@ Hello! Allô Carto is a story drive mobile flashcard app I've been building focu
 
 ## A note about AI
 
-Allô Carto is not a vibe coded project. Months went into developing the core systems without any AI assistance. This includes the way context is used throughout the app, the database interface, the word data schemas, progression mechanics, and more. Building these systems myself has proved crucial to the project.
+All core systems were developed without any AI assistance whatsoever.
 
-Copilot has been used increasingly in later development for refactoring, creating components, and general convenience.
+Copilot has been used for additional features for convenience, although the code has been so atrocious that they're being rewritten altogether.
 
-AI stylized images, originally created from my own photographs using Affinity, are no longer used and will be removed from the project.
-
-All remaining AI generated placeholders will also be removed. New illustrations will be hand drawn, digitized, and edited in Affinity and Procreate without AI tools.
-
-Illustrations are an enormous challenge for me. I'm not a very good artist. But I do believe in this project enough to take that challenge on and give it my best.
-
-If you’re an artist and are interested in contributing, I’d love to hear from you. message.bryan.gh@outlook.com
+All placeholder AI illustrations and stylized images will be removed from the project and replaced with original illustrations and artwork.
 
 ## Built with
 

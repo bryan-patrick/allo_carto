@@ -24,7 +24,7 @@ import { useAppSettings } from '../../settings/useAppSettings';
 import { solveStages } from '../../util/solveProgression';
 import colors from '../colors';
 
-/*
+/**
  * Typing
  */
 interface PassageSetting {
@@ -93,7 +93,7 @@ const pronunciationOptions: PronunciationOption[] = [
 	{ value: 'ipa', label: 'IPA' },
 ];
 
-/*
+/**
  * We explain both unlock settings using the same levels that open Solve stages.
  */
 function getSolveUnlockDescription(): string {
@@ -112,12 +112,12 @@ export default function Settings() {
 	const { settings, setSetting } = useAppSettings();
 	const solveUnlockDescription = getSolveUnlockDescription();
 
-	/*
+	/**
 	 * State
 	 */
 	const [isResettingDB, setIsResettingDB] = useState(false);
 
-	/*
+	/**
 	 * Reset the local DB, then rebuild the seed data.
 	 */
 	async function handleResetDB() {
@@ -348,7 +348,7 @@ export default function Settings() {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

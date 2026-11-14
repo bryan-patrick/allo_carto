@@ -13,7 +13,7 @@ export function getFlashcardDeckCount(wordCount: number, targetCardsPerDeck: num
 	return Math.ceil(wordCount / targetCardsPerDeck);
 }
 
-/*
+/**
  * Shuffle the paragraph's words into evenly sized decks.
  * Include each word once and keep every deck within the learner's card limit.
  */

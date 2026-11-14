@@ -22,7 +22,7 @@ interface LockedSectionProps {
 	fontSize?: number;
 }
 
-/*
+/**
  * Locked content explains which puzzle or chapter to finish next.
  * Access opens automatically when those first gems are saved.
  */

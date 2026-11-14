@@ -19,7 +19,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialSymbol from './MaterialSymbol';
 
-/*
+/**
  * Typing
  */
 interface UserProgressModalProps {
@@ -283,7 +283,7 @@ function UserProgressRow({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

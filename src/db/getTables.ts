@@ -3,7 +3,7 @@ import createTables from './schema/createTables';
 import seedLocalUser from './seeders/seedLocalUser';
 import seedWords from './seeders/seedWords';
 
-/*
+/**
  * Expo does the heavy lifting here for us.
  * This includes where the DB is stored and
  * init functions.

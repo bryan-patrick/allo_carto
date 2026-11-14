@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 
-/*
+/**
  * Typing
  */
 interface CompletionXPProgressProps {
@@ -15,7 +15,7 @@ interface CompletionXPProgressProps {
 	color: string;
 }
 
-/*
+/**
  * Show the player's level and animate XP earned from the flashcard session.
  */
 export default function CompletionXPProgress({
@@ -51,7 +51,7 @@ export default function CompletionXPProgress({
 		levelUpLabel = `Level up! Lvl. ${previousExperience.level} → Lvl. ${experience.level}`;
 	}
 
-	/*
+	/**
 	 * Wait until the XP amounts finish counting, then fill the bar
 	 * Stop the timers if the user leaves this view.
 	 */
@@ -67,7 +67,7 @@ export default function CompletionXPProgress({
 		let boundaryXP = fromXP;
 
 		while (currentExperience.level < finalExperience.level) {
-			/*
+			/**
 			 * Fill the current level's bar all the way before moving to the next level.
 			 */
 			const fullExperience = {
@@ -79,7 +79,7 @@ export default function CompletionXPProgress({
 			timers.push(setTimeout(() => setExperience(fullExperience), elapsed));
 			elapsed += progressBarAnimationDuration + 144;
 
-			/*
+			/**
 			 * After the bar fills, show the next level with an empty bar.
 			 */
 			boundaryXP += currentExperience.xpForNextLevel - currentExperience.xpIntoLevel;
@@ -91,7 +91,7 @@ export default function CompletionXPProgress({
 			elapsed += 144;
 		}
 
-		/*
+		/**
 		 * Fill the last bar up to the user's new XP amount.
 		 */
 		timers.push(setTimeout(() => setExperience(finalExperience), elapsed));
@@ -99,7 +99,7 @@ export default function CompletionXPProgress({
 		return () => timers.forEach(clearTimeout);
 	}, [fromXP, toXP, delay, reducedMotion]);
 
-	/*
+	/**
 	 * Render the current level, XP amount, and progress bar
 	 */
 	return (
@@ -138,7 +138,7 @@ export default function CompletionXPProgress({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

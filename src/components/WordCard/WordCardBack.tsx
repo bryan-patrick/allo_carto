@@ -20,7 +20,7 @@ import WordPronunciation from './WordPronunciation';
 
 const AnimatedBackgroundImage = Animated.createAnimatedComponent(BackgroundImage);
 
-/*
+/**
  * Typing
  */
 interface WordCardBackProps {
@@ -34,7 +34,7 @@ interface WordCardBackProps {
 	background: ImageSourcePropType;
 }
 
-/*
+/**
  * WordCardBack Component
  */
 const WordCardBack = memo(function WordCardBackMemo({
@@ -47,13 +47,13 @@ const WordCardBack = memo(function WordCardBackMemo({
 	wordSlotStyle,
 	background,
 }: WordCardBackProps) {
-	/*
+	/**
 	 * State
 	 */
 	const { cardState } = useWordCardUI();
 	const { currentCard } = useCardDeck();
 
-	/*
+	/**
 	 * Word data
 	 */
 	const { englishWords, englishArticle, frenchArticle, frenchWord, form, partOfSpeech } =
@@ -79,7 +79,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 	const feedbackKey = cardState.isAnswerRevealed ? 'REVEALED_ANSWER' : cardState.feedbackKey;
 	const feedbackText = FEEDBACK_TEXT_BACK[feedbackKey] ?? '';
 
-	/*
+	/**
 	 * Render the back of the WordCard
 	 */
 	return (
@@ -147,12 +147,12 @@ const WordCardBack = memo(function WordCardBackMemo({
 	);
 });
 
-/*
+/**
  * Export memoized
  */
 export default WordCardBack;
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

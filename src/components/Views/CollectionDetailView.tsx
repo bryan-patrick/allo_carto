@@ -29,7 +29,7 @@ interface CollectionDetailParams extends Record<string, string | string[] | unde
 const albumPaper = require('@/src/app/assets/images/postcard-parts/background.jpg');
 const collectionsPageBackground = require('@/src/app/assets/images/collections/page-background.jpg');
 
-/*
+/**
  * Shows a discovered collection's stamp album so the player can track words and claim rewards.
  */
 export default function CollectionDetailView() {

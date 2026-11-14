@@ -15,7 +15,7 @@ interface WordProgressBarProps {
 
 const learningLevels = wordProgressDefinitions.filter(definition => definition.level > 0);
 
-/*
+/**
  * Show learning levels as pill segments
  */
 export default function WordProgressBar({
@@ -73,7 +73,7 @@ export default function WordProgressBar({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

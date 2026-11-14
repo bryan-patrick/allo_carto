@@ -27,13 +27,13 @@ import { AppSettingsProvider } from '../settings/appSettingsContext';
 import { SoftTapSoundProvider } from '../util/softTapSound';
 import alloTheme from './alloTheme';
 
-/*
+/**
  * Set to true to delete/reset the db
  * Remember to put it back!
  */
 const resetDB = false;
 
-/*
+/**
  * The native header follows the current tab
  */
 function getTabHeaderOptions(route: DescriptorRouteProp<ParamListBase>) {
@@ -60,14 +60,14 @@ function getTabHeaderOptions(route: DescriptorRouteProp<ParamListBase>) {
 	};
 }
 
-/*
+/**
  * AppLayout Component
  *
  * "Off we go again."
  * - Vladimir, Waiting for Godot
  */
 export default function AppLayout() {
-	/*
+	/**
 	 * State
 	 */
 	const [cardDeckState, cardDeckDispatch] = useReducer(cardDeckReducer, initialCardDeckState);
@@ -115,7 +115,7 @@ export default function AppLayout() {
 		[userId],
 	);
 
-	/*
+	/**
 	 * Load our fonts
 	 */
 	const [fontsLoaded, fontError] = useFonts({
@@ -130,7 +130,7 @@ export default function AppLayout() {
 		'ipa-400': require('./assets/fonts/noto-sans-400.ttf'),
 	});
 
-	/*
+	/**
 	 * Let short UI sounds play without interrupting other device audio.
 	 */
 	useEffect(() => {
@@ -141,7 +141,7 @@ export default function AppLayout() {
 		});
 	}, []);
 
-	/*
+	/**
 	 * SLQLite provider init
 	 */
 	const initDB = useCallback(async (database: SQLiteDatabase) => {
@@ -184,7 +184,7 @@ export default function AppLayout() {
 		return <Loader />;
 	}
 
-	/*
+	/**
 	 * The (tabs) dir are navigable routes on the bottom bar
 	 * All other routes go in dir (routes)
 	 *

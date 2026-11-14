@@ -25,7 +25,7 @@ import { incrementSeenCount } from './incrementSeenCount';
 import updateUserProgress from './updateUserProgress';
 import { recordStampUnlockActivity, recordXPActivity, saveUserActivity } from './userActivity';
 
-/*
+/**
  * Typing
  */
 export interface DeckCompletionRequest {
@@ -96,7 +96,7 @@ interface SavedDeckBonusesRow {
 	bonuses: string;
 }
 
-/*
+/**
  * Award XP using the current write's database connection.
  */
 async function incrementUserXP(database: SQLiteDatabase, userId: string, amount: number) {
@@ -117,7 +117,7 @@ async function incrementUserXP(database: SQLiteDatabase, userId: string, amount:
 	});
 }
 
-/*
+/**
  * Update the userProgress table rows affected by new word progress
  */
 async function updateUserProgressTableItems({
@@ -129,7 +129,7 @@ async function updateUserProgressTableItems({
 	userId: string;
 	wordId: string;
 }): Promise<void> {
-	/*
+	/**
 	 * The atlas tells us which stories, chapters, and decks contain the word
 	 */
 	const atlasItems = getAtlasItemsContainingWord({
@@ -137,7 +137,7 @@ async function updateUserProgressTableItems({
 	});
 
 	for (const atlasItem of atlasItems) {
-		/*
+		/**
 		 * Update the completion percentage
 		 */
 		const wordProgressCounts = await getDeckWordProgressCounts({
@@ -151,7 +151,7 @@ async function updateUserProgressTableItems({
 			wordCount: atlasItem.wordIds.length,
 		});
 
-		/*
+		/**
 		 * Save this percentage to the userProgress table
 		 */
 		await updateUserProgress({
@@ -164,7 +164,7 @@ async function updateUserProgressTableItems({
 	}
 }
 
-/*
+/**
  * Calculate the awards for a correct answer on a flashcard
  */
 function getCorrectAnswerAward(previousProgress: WordProgressForAward): WordAnswerAwardProps {
@@ -196,7 +196,7 @@ function getCorrectAnswerAward(previousProgress: WordProgressForAward): WordAnsw
 	};
 }
 
-/*
+/**
  * We save XP and word progress right away. The card's Ink waits for deck completion.
  */
 export async function writeCorrectAnswer({
@@ -262,7 +262,7 @@ export async function writeCorrectAnswer({
 
 		nextAward = getCorrectAnswerAward(previousProgress);
 
-		/*
+		/**
 		 * We save all parts of the answer before returning its rewards.
 		 * If any part fails we rolls everything back.
 		 */
@@ -313,7 +313,7 @@ export async function writeCorrectAnswer({
 	return award;
 }
 
-/*
+/**
  * Save an incorrect or skipped answer without awarding XP or Ink.
  * Keep the result when the learner leaves and comes back to the deck.
  */
@@ -345,7 +345,7 @@ export async function writeIncorrectAnswer({
 	return true;
 }
 
-/*
+/**
  * Save the deck's rewards and move to the next deck. Award the paragraph bonus after
  * the last deck, and save a receipt so the same rewards cannot be paid twice.
  */
@@ -416,7 +416,7 @@ export async function writeDeckCompletion({
 			sessionId,
 		});
 
-		/*
+		/**
 		 * Deck rewards require a correct answer. Finishing every deck earns the paragraph
 		 * bonus, even with incorrect or skipped answers.
 		 */
@@ -528,7 +528,7 @@ export async function writeDeckCompletion({
 	return receipt;
 }
 
-/*
+/**
  * Save that a flashcard was seen and update its paragraph's progress.
  * A collection word also reveals its stamp the first time it is seen.
  */
@@ -540,7 +540,7 @@ export async function writeWordSeen({
 }: WriteWordSeenOptions): Promise<void> {
 	// Wait for other saves before recording this card's progress.
 	await runDatabaseTransaction(sqliteDatabase, async database => {
-		/*
+		/**
 		 * Get the word's progress before the seenCount changes
 		 */
 		const previousProgress = await database.getFirstAsync<WordProgressCountsRow>(
