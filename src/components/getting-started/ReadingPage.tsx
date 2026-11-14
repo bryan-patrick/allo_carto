@@ -4,7 +4,9 @@ const description = `Listen to any word, paragraph, chapter, or story with text 
 			
 The rewind button is especially useful!`;
 
-// Introduce the word meanings and audio controls in the reading view.
+/**
+ * Show the word meanings and audio controls in the reading view.
+ */
 export default function ReadingPage() {
 	return (
 		<GettingStartedPage

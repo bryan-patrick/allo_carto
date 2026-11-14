@@ -18,7 +18,11 @@ import saveWordOrderDraft from '@/src/db/queries/saveWordOrderDraft';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
+import {
+	findCompletionPath,
+	findNextParagraph,
+	getParagraphNumber,
+} from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import {
 	getCompletedSolveStages,
@@ -148,6 +152,8 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
+	const nextParagraph = findNextParagraph(deckId);
+	const isChapterComplete = nextParagraph?.chapter.id !== chapter?.id;
 	const containerInsets = {
 		paddingTop: top + 8,
 	};
@@ -167,6 +173,19 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		backgroundColor: feedback?.backgroundColor ?? 'transparent',
 	};
 	const submitLabel = needsRetry ? 'Retry save' : `Submit (${inkCost} Ink)`;
+
+	/**
+	 * Message after claiming all three gems
+	 */
+	let completionMessage = 'All 3 gems earned! The next paragraph is ready.';
+
+	if (isChapterComplete) {
+		completionMessage = 'All 3 gems earned! The next chapter is ready.';
+	}
+
+	if (!nextParagraph) {
+		completionMessage = 'All 3 gems earned! Story complete!';
+	}
 
 	useFocusEffect(
 		useCallback(() => {
@@ -451,7 +470,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 							color={colors.gems.third}
 						/>
 						<Text style={styles.title}>Third gem earned!</Text>
-						<Text style={styles.text}>All three gems are earned for this paragraph.</Text>
+						<Text style={styles.text}>{completionMessage}</Text>
 					</View>
 				: pendingGem ?
 					<SolveGemClaim

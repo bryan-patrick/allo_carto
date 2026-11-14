@@ -19,11 +19,7 @@ import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import {
-	findCompletionPath,
-	findNextParagraph,
-	getParagraphNumber,
-} from '@/src/util/atlasCompletion';
+import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import {
 	getCompletedSolveStages,
@@ -188,8 +184,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
-	const nextParagraph = findNextParagraph(deckId);
-	const isChapterComplete = nextParagraph?.chapter.id !== chapter?.id;
 	const isLoading = !puzzle && !loadError;
 	const wordColor = {
 		color: storyColor,
@@ -218,18 +212,11 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		selectedCard ? `${stageDefinition.label} (${cardCost} Ink)` : stageDefinition.label;
 	let prompt = 'No card selected.';
 	let statusMessage = '';
-	let completionMessage = 'All cards solved. The next paragraph is ready.';
-
-	if (isChapterComplete) {
-		completionMessage = 'Chapter complete! The next chapter is ready.';
-	}
-
-	if (!nextParagraph) {
-		completionMessage = 'All paragraphs solved. Story complete!';
-	}
+	let completionMessage =
+		'Complete Solve+ and Solve++ and claim all 3 gems to unlock the next paragraph.';
 
 	if (stage === 2) {
-		completionMessage = 'You earned your second gem. Awesome!';
+		completionMessage = 'Complete Solve++ and claim your third gem to unlock the next paragraph.';
 	}
 
 	if (selectedCard) {

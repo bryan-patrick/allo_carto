@@ -3,7 +3,11 @@ import { storyAtlas } from '@/data/french/storyAtlas';
 import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
 import { hasChapterContent, hasParagraphContent, hasStoryContent } from './atlasContent';
 import type { ProgressById, Progression, ProgressType } from './progression';
+import { getCompletedSolveStages } from './solveProgression';
 
+/**
+ * Typing
+ */
 interface AtlasCompletionItem {
 	id: string;
 	type: ProgressType;
@@ -19,10 +23,7 @@ interface GetAtlasItemsContainingWordProps {
 interface FindCompletionPathProps {
 	atlas?: StoryAtlas;
 	id: string;
-}
-
-interface IsItemUnlockedProps extends FindCompletionPathProps {
-	progressById: ProgressById;
+	progressById?: ProgressById;
 }
 
 export interface UnlockCriteria {
@@ -38,9 +39,16 @@ export interface AtlasChapterLocation {
 	chapter: DeckChapter;
 }
 
-export interface NextParagraphLocation extends AtlasChapterLocation {
+export interface NextParagraphLocation {
+	story: DeckStory;
+	chapter: DeckChapter;
 	paragraph: CardDeck;
 }
+
+/**
+ * Essentially the amount of puzzles required to unlock the next paragraph
+ */
+const gemsRequiredToUnlockNextParagraph = 3;
 
 function getUniqueWordIds(paragraphs: CardDeck[]): string[] {
 	const uniqueWordIds = new Set<string>();
@@ -55,8 +63,7 @@ function getUniqueWordIds(paragraphs: CardDeck[]): string[] {
 }
 
 /**
- * We keep vocabulary totals and solved-paragraph totals separate for each atlas item.
- * Empty chapters and paragraphs do not count toward finishing a story.
+ * Build the atlas for the completion items
  */
 export function getAtlasCompletionItems(atlas: StoryAtlas = storyAtlas): AtlasCompletionItem[] {
 	const completionItems: AtlasCompletionItem[] = [];
@@ -98,6 +105,13 @@ export function getAtlasCompletionItems(atlas: StoryAtlas = storyAtlas): AtlasCo
 	return completionItems;
 }
 
+/**
+ * This exists because we keep track of percentage
+ * completion for each story/chapter/paragraph.
+ *
+ * This is used to determine what progress to update when
+ * a word changes learning level.
+ */
 export function getAtlasItemsContainingWord({
 	atlas = storyAtlas,
 	wordId,
@@ -108,7 +122,7 @@ export function getAtlasItemsContainingWord({
 }
 
 /**
- * A paragraph's path contains its story, chapter, and paragraph, in that order.
+ * Get the cononical path of the story->chapter->paragraph
  */
 export function findCompletionPath({
 	atlas = storyAtlas,
@@ -136,14 +150,13 @@ export function findCompletionPath({
 }
 
 /**
- * Every published story starts open. Within a story, earlier paragraphs and chapters
- * need their first gems before the player moves forward. XP never blocks this path.
+ * Check if the content is locked
  */
 export function isItemUnlocked({
 	atlas = storyAtlas,
 	id,
 	progressById,
-}: IsItemUnlockedProps): boolean {
+}: FindCompletionPathProps): boolean {
 	const path = findCompletionPath({
 		atlas,
 		id,
@@ -165,7 +178,9 @@ export function isItemUnlocked({
 		return false;
 	}
 
-	return getUnlockCriteria(item, progressById, atlas).every(criterion => criterion.isUnlocked);
+	return getUnlockCriteria(item, progressById ?? {}, atlas).every(
+		criterion => criterion.isUnlocked,
+	);
 }
 
 /**
@@ -192,8 +207,7 @@ export function getVisibleParagraphs(chapter: DeckChapter, progressById: Progres
 }
 
 /**
- * Build the requirements that decide access and explain why content is locked.
- * A chapter is finished only when every playable paragraph has its saved first gem.
+ * Determines unlock criteria and explain why content is locked.
  */
 export function getUnlockCriteria(
 	item: Progression,
@@ -213,16 +227,18 @@ export function getUnlockCriteria(
 
 	for (const chapter of story.chapters.filter(hasChapterContent)) {
 		const paragraphs = chapter.decks.filter(hasParagraphContent);
-		const solvedParagraphs = paragraphs.filter(
-			paragraph => progressById[paragraph.id]?.hasFirstGem,
-		);
+		const paragraphsWithThreeGems = paragraphs.filter(paragraph => {
+			const completedStages = getCompletedSolveStages(progressById[paragraph.id]);
+
+			return completedStages >= gemsRequiredToUnlockNextParagraph;
+		});
 
 		if (chapter.id !== path[1]?.id) {
 			criteria.push({
-				isUnlocked: solvedParagraphs.length === paragraphs.length,
+				isUnlocked: paragraphsWithThreeGems.length === paragraphs.length,
 				type: 'chapter',
 				title: chapter.name,
-				completedParagraphCount: solvedParagraphs.length,
+				completedParagraphCount: paragraphsWithThreeGems.length,
 				paragraphCount: paragraphs.length,
 			});
 			continue;
@@ -230,9 +246,15 @@ export function getUnlockCriteria(
 
 		if (path.length === 3) {
 			for (const [paragraphIndex, paragraph] of paragraphs.entries()) {
-				const hasFirstGem = Boolean(progressById[paragraph.id]?.hasFirstGem);
+				const completedStages = getCompletedSolveStages(progressById[paragraph.id]);
+				const hasThreeGems = completedStages >= gemsRequiredToUnlockNextParagraph;
 				const paragraphNumber = paragraphIndex + 1;
 				let paragraphLabel = `paragraph ${paragraphNumber}`;
+				let completedParagraphCount = 0;
+
+				if (hasThreeGems) {
+					completedParagraphCount = 1;
+				}
 
 				if (paragraphIndex === 0) {
 					paragraphLabel = 'the first paragraph';
@@ -243,10 +265,10 @@ export function getUnlockCriteria(
 				}
 
 				criteria.push({
-					isUnlocked: hasFirstGem,
+					isUnlocked: hasThreeGems,
 					type: 'paragraph',
 					title: paragraphLabel,
-					completedParagraphCount: hasFirstGem ? 1 : 0,
+					completedParagraphCount,
 					paragraphCount: 1,
 				});
 			}
@@ -258,12 +280,15 @@ export function getUnlockCriteria(
 	return criteria;
 }
 
+/**
+ * Formats unlock criteria for the user as clearly as we can
+ */
 export function formatUnlockCriterion(criterion: UnlockCriteria): string {
 	if (criterion.type === 'chapter') {
-		return `Solve every paragraph in “${criterion.title}” to continue (${criterion.completedParagraphCount} of ${criterion.paragraphCount} solved).`;
+		return `Earn 3 gems from each paragraph in “${criterion.title}” to continue (${criterion.completedParagraphCount} of ${criterion.paragraphCount} paragraphs have 3 gems).`;
 	}
 
-	return `Solve ${criterion.title} to continue.`;
+	return `Earn 3 gems from ${criterion.title} to continue.`;
 }
 
 export function findStoryById(
@@ -289,6 +314,9 @@ export function findAtlasLocationByChapterId(
 	}
 }
 
+/**
+ * Finds the chapter by id based on the atlas
+ */
 export function findChapterById(
 	id: string | undefined,
 	atlas: StoryAtlas = storyAtlas,
@@ -311,7 +339,10 @@ export function findParagraphById(
 	}
 }
 
-// Find the paragraph's number within its chapter, matching the paragraph list.
+/**
+ * Since we aren't using paragraph names we just use
+ * the number of the paragraph to show the user. (e.g. Paragraph 2)
+ */
 export function getParagraphNumber(
 	deckId: string,
 	atlas: StoryAtlas = storyAtlas,
@@ -332,7 +363,9 @@ export function getParagraphNumber(
 }
 
 /**
- * The next reading action stays within this story and skips unwritten content.
+ * Gets the next paragraph. This is needed since the
+ * next paragraph may be in a different chapter/story and
+ * isn't necessarily iterative.
  */
 export function findNextParagraph(
 	deckId: string,

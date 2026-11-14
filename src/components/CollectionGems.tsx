@@ -109,26 +109,38 @@ function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStage
 	};
 	const target = targets[type];
 
+	/**
+	 * Paragraph hints for earning three gems and moving forward
+	 */
+	let paragraphProgressHint = '';
+	let paragraphUnlockedHint = '';
+
+	if (type === 'paragraph') {
+		paragraphProgressHint =
+			' Complete the first 3 puzzles and claim all 3 gems to unlock the next paragraph.';
+		paragraphUnlockedHint = ' You can now continue the story.';
+	}
+
 	return {
 		0: {
 			label: '0/3 Gems',
 			filledCount: 0,
-			description: requirements[type],
+			description: `${requirements[type]}${paragraphProgressHint}`,
 		},
 		1: {
 			label: '1/3 Gems',
 			filledCount: 1,
-			description: `First gem earned! Complete Solve+ for ${target} to earn the second gem.`,
+			description: `First gem earned! Complete Solve+ for ${target} to earn the second gem.${paragraphProgressHint}`,
 		},
 		2: {
 			label: '2/3 Gems',
 			filledCount: 2,
-			description: `Second gem earned! Complete Solve++ for ${target} to earn the third gem.`,
+			description: `Second gem earned! Complete Solve++ for ${target} to earn the third gem.${paragraphProgressHint}`,
 		},
 		3: {
 			label: '3/3 Gems',
 			filledCount: 3,
-			description: `All three gems earned! Complete Solve+++ for ${target} to make them glow.`,
+			description: `All three gems earned!${paragraphUnlockedHint} Complete Solve+++ for ${target} to make them glow.`,
 		},
 		4: {
 			label: '3/3 Gems',

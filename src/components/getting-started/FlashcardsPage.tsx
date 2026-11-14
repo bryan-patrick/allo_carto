@@ -1,7 +1,7 @@
 import GettingStartedPage from './GettingStartedPage';
 
 const description = `In Allô Carto, you practice flashcards to progress a story one paragraph at a time.\n\nPracticing flashcards unlocks puzzles. 
-Solving puzzles unlocks more paragraphs.`;
+Complete the first 3 puzzles and claim all 3 gems to unlock the next paragraph.`;
 
 // Show where to open flashcards and explain what practice earns.
 export default function FlashcardsPage() {

@@ -218,7 +218,7 @@ export function getSolveUnlockMessage({
 	const previousLabel = previousStage ? solveStages[previousStage].label : 'Solve';
 	const messages: Record<SolveLockReason, string> = {
 		completed: '',
-		paragraphLocked: 'Complete the earlier paragraphs to open this paragraph.',
+		paragraphLocked: 'Earn 3 gems from each paragraph to unlock.',
 		noWords: '',
 		unseenWords: `See every flashcard to solve (${seenWordCount} of ${wordCount} seen).`,
 		previousStageRequired: `Complete ${previousLabel} to unlock ${definition.label}.`,
