@@ -3,8 +3,8 @@ import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
-import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
+import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import WordOrderBoard from '@/src/components/Solve/WordOrderBoard';
 import type {
 	SolveAttemptResult,
@@ -18,7 +18,11 @@ import saveWordOrderDraft from '@/src/db/queries/saveWordOrderDraft';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
+import {
+	findCompletionPath,
+	findNextParagraph,
+	getParagraphNumber,
+} from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import {
 	getCompletedSolveStages,
@@ -43,7 +47,7 @@ interface WordOrderFeedback {
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/*
+/**
  * Gives the player feedback after submitting a Word Order puzzle.
  */
 function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
@@ -79,7 +83,7 @@ function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 	);
 }
 
-/*
+/**
  * Lets the player arrange one French sentence at a time in Solve++.
  * Save each move and advance after a correct answer until the third gem is ready.
  */
@@ -148,6 +152,8 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
+	const nextParagraph = findNextParagraph(deckId);
+	const isChapterComplete = nextParagraph?.chapter.id !== chapter?.id;
 	const containerInsets = {
 		paddingTop: top + 8,
 	};
@@ -167,6 +173,19 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		backgroundColor: feedback?.backgroundColor ?? 'transparent',
 	};
 	const submitLabel = needsRetry ? 'Retry save' : `Submit (${inkCost} Ink)`;
+
+	/**
+	 * Message after claiming all three gems
+	 */
+	let completionMessage = 'All 3 gems earned! The next paragraph is ready.';
+
+	if (isChapterComplete) {
+		completionMessage = 'All 3 gems earned! The next chapter is ready.';
+	}
+
+	if (!nextParagraph) {
+		completionMessage = 'All 3 gems earned! Story complete!';
+	}
 
 	useFocusEffect(
 		useCallback(() => {
@@ -239,7 +258,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		}, [deckId, userId, fastSolveUnlocks]),
 	);
 
-	/*
+	/**
 	 * Saves a card move before updating the board or allowing another action.
 	 * If saving fails, the last saved order stays in place so the player can try that move again.
 	 */
@@ -287,7 +306,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		}
 	}
 
-	/*
+	/**
 	 * Sends the current card order for a paid check and shows the result.
 	 * Keeps the same submission ID after a save error so retrying cannot charge twice.
 	 */
@@ -451,7 +470,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 							color={colors.gems.third}
 						/>
 						<Text style={styles.title}>Third gem earned!</Text>
-						<Text style={styles.text}>All three gems are earned for this paragraph.</Text>
+						<Text style={styles.text}>{completionMessage}</Text>
 					</View>
 				: pendingGem ?
 					<SolveGemClaim
@@ -534,7 +553,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

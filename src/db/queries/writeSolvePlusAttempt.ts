@@ -6,7 +6,7 @@ import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getSolvePuzzle from './getSolvePuzzle';
 import { getSolveRewards, saveSolveCardReward, saveSolveGemReward } from './solveRewards';
 
-/*
+/**
  * Typing
  */
 interface WriteSolvePlusAttemptOptions extends SolveAttemptRequest {
@@ -26,7 +26,7 @@ interface SavedSolvePlusAttempt {
 	stageCompleted: number;
 }
 
-/*
+/**
  * Check a French answer and save its Ink charge, solved card, and pending rewards together.
  */
 export default async function writeSolvePlusAttempt({

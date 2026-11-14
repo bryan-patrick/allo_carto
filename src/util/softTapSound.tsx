@@ -1,22 +1,32 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { useSoundEffect } from './useSoundEffect';
 
+/**
+ * Typing
+ */
 type PlaySoftTap = () => Promise<boolean>;
 
 interface SoftTapSoundProviderProps {
 	children: ReactNode;
 }
 
+/**
+ * Soft tap sound context
+ */
 const SoftTapSoundContext = createContext<PlaySoftTap | null>(null);
 
-// Keep the tap player available while flashcards open, change, and close.
+/**
+ * Context wrapper
+ */
 export function SoftTapSoundProvider({ children }: SoftTapSoundProviderProps) {
 	const playSoftTap = useSoundEffect('softTap');
 
 	return <SoftTapSoundContext value={playSoftTap}>{children}</SoftTapSoundContext>;
 }
 
-// Play the shared soft tap without tying its lifetime to the current flashcard.
+/**
+ * Custom hook for the tap sound
+ */
 export function useSoftTapSound(): PlaySoftTap {
 	const playSoftTap = useContext(SoftTapSoundContext);
 

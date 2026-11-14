@@ -5,7 +5,7 @@ import VerticalText from '@/src/components/VerticalText';
 import { StyleSheet, Text, View } from 'react-native';
 import { bookStyles } from './bookStyles';
 
-/*
+/**
  * Typing
  */
 interface SpineProps {
@@ -63,7 +63,7 @@ export default function Spine({ color, category, materialSymbolName, requiredLev
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

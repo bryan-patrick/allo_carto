@@ -23,7 +23,7 @@ export interface CollectionRewardReceipt {
 	xp: number;
 }
 
-/*
+/**
  * Saves an eligible collection reward and its XP together to prevent duplicate payouts.
  */
 export default async function claimCollectionReward({

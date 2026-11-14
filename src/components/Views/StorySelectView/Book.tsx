@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import { bookStyles } from './bookStyles';
 
-/*
+/**
  * Typing
  */
 interface BookProps {

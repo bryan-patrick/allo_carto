@@ -7,8 +7,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Alert, Text } from 'react-native';
 
-/*
- *
+/**
+ * Chapter select view
  */
 export default function ChapterSelect() {
 	const { storyId } = useLocalSearchParams<{ storyId?: string }>();

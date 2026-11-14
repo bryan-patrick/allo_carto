@@ -30,7 +30,7 @@ export interface SolveRewardReceipt {
 	reward: SolveReward | null;
 }
 
-/*
+/**
  * Typing
  */
 export type AdditionalSolveStage = Exclude<SolveStage, 1>;

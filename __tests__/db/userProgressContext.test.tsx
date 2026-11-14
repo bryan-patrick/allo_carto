@@ -23,8 +23,13 @@ jest.mock('@/src/db/queries/writeUserProgress', () => ({
 	writeWordSeen: jest.fn(),
 }));
 jest.mock('expo-sqlite', () => {
-	const database = {};
-	return { useSQLiteContext: () => database };
+	const database = {
+		getAllAsync: jest.fn(async () => []),
+	};
+
+	return {
+		useSQLiteContext: () => database,
+	};
 });
 
 const mockGetUserProgress = jest.mocked(getUserProgress);
@@ -62,7 +67,7 @@ describe('<UserProgressProvider />', () => {
 	});
 
 	test('starts only one write when input is repeated before React rerenders', async () => {
-		/*
+		/**
 		 * Keep the first write pending so a second press reaches the
 		 * synchronous in-flight guard before React can rerender.
 		 */
@@ -101,7 +106,7 @@ describe('<UserProgressProvider />', () => {
 	});
 
 	test('keeps input blocked until refreshed progress is loaded', async () => {
-		/*
+		/**
 		 * Let the write finish immediately, then pause the refresh that follows it.
 		 */
 		const pendingRefresh = deferred<any>();
@@ -135,7 +140,7 @@ describe('<UserProgressProvider />', () => {
 	});
 
 	test('releases the write block after a failed write', async () => {
-		/*
+		/**
 		 * The provider reports expected write failures, so silence that output here.
 		 */
 		const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});

@@ -14,7 +14,7 @@ interface UserWordProgressRow {
 	seenCount: number;
 }
 
-/*
+/**
  * Loads the player's word levels so stories and collections use the same saved progress.
  */
 export default async function getUserWordProgress({

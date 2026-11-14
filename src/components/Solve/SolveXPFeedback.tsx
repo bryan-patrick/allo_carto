@@ -21,17 +21,14 @@ import { useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 
-export interface SolveXPFeedbackOrigin {
-	centerX: number;
-	top: number;
-}
-
-interface SolveXPFeedbackRequest extends SolveXPFeedbackOrigin {
-	xp: number;
-}
-
-interface FloatingXPReward extends SolveXPFeedbackRequest {
-	id: number;
+/**
+ * Typing
+ */
+export interface SolveXPFeedback {
+	centerX?: number;
+	top?: number;
+	xp?: number;
+	id?: number;
 }
 
 interface SolveXPFeedbackProviderProps {
@@ -39,36 +36,37 @@ interface SolveXPFeedbackProviderProps {
 }
 
 interface FloatingXPLabelProps {
-	reward: FloatingXPReward;
+	reward: SolveXPFeedback;
 	onFinished: (rewardId: number) => void;
 }
 
-type ShowSolveXPFeedback = (request: SolveXPFeedbackRequest) => void;
+type ShowSolveXPFeedback = (request: SolveXPFeedback) => void;
 
 const SolveXPFeedbackContext = createContext<ShowSolveXPFeedback | null>(null);
 const feedbackDuration = 3000;
 const feedbackWidth = 180;
 
-/*
- * Show claimed XP above the puzzle, outside its card and scrolling areas.
- * Keep each label visible while it floats, even after its claim button disappears.
+/**
+ * This is for the little floating xp text that appears when you claim
+ * an xp award in collections / puzzles.
  */
 export function SolveXPFeedbackProvider({ children }: SolveXPFeedbackProviderProps) {
 	const { width: windowWidth } = useWindowDimensions();
 	const { top: topInset } = useSafeAreaInsets();
 	const nextRewardId = useRef(0);
-	const [rewards, setRewards] = useState<FloatingXPReward[]>([]);
+	const [rewards, setRewards] = useState<SolveXPFeedback[]>([]);
 
 	const showFeedback = useCallback(
-		(request: SolveXPFeedbackRequest) => {
+		(request: SolveXPFeedback) => {
 			const halfLabelWidth = feedbackWidth / 2;
 			const rightmostCenterX = Math.max(halfLabelWidth, windowWidth - halfLabelWidth);
-			const boundedCenterX = Math.min(request.centerX, rightmostCenterX);
+			const boundedCenterX = Math.min(request.centerX ?? 0, rightmostCenterX);
 			const labelCenterX = Math.max(halfLabelWidth, boundedCenterX);
 			const highestLabelStart = topInset + 88;
-			const labelTop = Math.max(highestLabelStart, request.top - 28);
+			const labelTop = Math.max(highestLabelStart, request.top ?? 0 - 28);
 			const rewardId = nextRewardId.current + 1;
-			const reward: FloatingXPReward = {
+
+			const reward: SolveXPFeedback = {
 				id: rewardId,
 				xp: request.xp,
 				centerX: labelCenterX,
@@ -117,7 +115,9 @@ export function SolveXPFeedbackProvider({ children }: SolveXPFeedbackProviderPro
 	);
 }
 
-// Let puzzle claim buttons show the XP they just awarded.
+/**
+ * Lets the puzzle claim buttons show the XP they just awarded.
+ */
 export function useSolveXPFeedback(): ShowSolveXPFeedback {
 	const showFeedback = useContext(SolveXPFeedbackContext);
 
@@ -128,12 +128,16 @@ export function useSolveXPFeedback(): ShowSolveXPFeedback {
 	return showFeedback;
 }
 
-// Float claimed XP upward for three seconds, then fade it away and remove the label.
+/**
+ * Handles the animated xp label
+ */
 function FloatingXPLabel({ reward, onFinished }: FloatingXPLabelProps) {
-	const animationProgress = useRef(new Animated.Value(0)).current;
+	const [animationProgress] = useState(() => new Animated.Value(0));
 	const reducedMotion = useReducedMotion();
+	const xpLabel = `+${reward.xp?.toLocaleString()} XP`;
+
 	const animatedStyle = {
-		left: reward.centerX - feedbackWidth / 2,
+		left: reward.centerX ?? 0 - feedbackWidth / 2,
 		top: reward.top,
 		opacity: animationProgress.interpolate({
 			inputRange: [0, 0.45, 1],
@@ -148,7 +152,6 @@ function FloatingXPLabel({ reward, onFinished }: FloatingXPLabelProps) {
 			},
 		],
 	};
-	const xpLabel = `+${reward.xp.toLocaleString()} XP`;
 
 	useEffect(() => {
 		const animation = Animated.timing(animationProgress, {
@@ -160,7 +163,7 @@ function FloatingXPLabel({ reward, onFinished }: FloatingXPLabelProps) {
 
 		animation.start(({ finished }) => {
 			if (finished) {
-				onFinished(reward.id);
+				onFinished(reward.id ?? 0);
 			}
 		});
 
@@ -174,6 +177,9 @@ function FloatingXPLabel({ reward, onFinished }: FloatingXPLabelProps) {
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

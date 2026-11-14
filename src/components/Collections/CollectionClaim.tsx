@@ -1,8 +1,5 @@
 import colors from '@/src/app/colors';
-import {
-	useSolveXPFeedback,
-	type SolveXPFeedbackOrigin,
-} from '@/src/components/Solve/SolveXPFeedback';
+import { useSolveXPFeedback, type SolveXPFeedback } from '@/src/components/Solve/SolveXPFeedback';
 import type { CollectionRewardReceipt } from '@/src/db/queries/claimCollectionReward';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
@@ -11,12 +8,15 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import LinkButton from '../LinkButton';
 
+/**
+ * Typing
+ */
 interface CollectionClaimProps {
 	progress: VocabularyCollectionProgress;
 }
 
-/*
- * Gets a message explaining the result of a collection reward claim.
+/**
+ * Gets a message explaining the result of a user claiming a collection XP reward
  */
 function getClaimFeedback(receipt: CollectionRewardReceipt): string {
 	const responses: Record<CollectionRewardReceipt['status'], string> = {
@@ -28,36 +28,86 @@ function getClaimFeedback(receipt: CollectionRewardReceipt): string {
 	return responses[receipt.status];
 }
 
-// Show the next available collection reward and float its XP after a successful claim.
+/**
+ * Show the next available collection XP reward and save it when the player claims it.
+ * After that show the XP animated floating text
+ */
 export default function CollectionClaim({ progress }: CollectionClaimProps) {
+	/**
+	 * Saved progress, XP feedback, and settings hooks
+	 */
 	const { claimCollectionReward, isUpdatingProgress } = useUserProgress();
 	const showXPFeedback = useSolveXPFeedback();
 	const { settings } = useAppSettings();
-	const [feedback, setFeedback] = useState('');
-	const nextReward = progress.nextReward;
-	const canClaim =
-		Boolean(nextReward?.isEligible) && !isUpdatingProgress && !settings.previewAllStamps;
-	const claimAccessibilityHint =
-		settings.previewAllStamps ?
-			'Turn off Reveal all stamps in Settings to claim rewards.'
-		:	undefined;
+
+	/**
+	 * State
+	 */
+	const [claimFeedback, setClaimFeedback] = useState('');
+
+	/**
+	 * Destructured collection progress
+	 */
+	const { nextReward } = progress;
+
+	/**
+	 * Reward readiness and claim availability
+	 */
+	const isNextXPRewardReadyToClaim = Boolean(nextReward?.isEligible);
+	const canClaimReward =
+		isNextXPRewardReadyToClaim && !isUpdatingProgress && !settings.previewAllStamps;
+
+	/**
+	 * Initial button text
+	 */
 	let actionLabel = '';
 
-	if (nextReward?.isEligible) {
-		actionLabel = isUpdatingProgress ? 'Saving…' : `Claim +${nextReward.xp} XP`;
+	/**
+	 * Initial screen reader descriptions
+	 */
+	let claimAccessibilityLabel = '';
+	let claimAccessibilityHint: string | undefined = undefined;
+
+	/**
+	 * Explain how to enable claims when all stamps are revealed in Settings.
+	 */
+	if (settings.previewAllStamps) {
+		claimAccessibilityHint = 'Turn off Reveal all stamps in Settings to claim rewards.';
 	}
 
+	/**
+	 * Build the claim button's text when the next reward is ready.
+	 */
+	if (nextReward?.isEligible) {
+		actionLabel = `Claim +${nextReward.xp} XP`;
+		claimAccessibilityLabel = `Claim ${nextReward.xp} XP for collection learning level ${nextReward.level}`;
+
+		if (isUpdatingProgress) {
+			actionLabel = 'Saving…';
+		}
+	}
+
+	/**
+	 * Save the collection reward and show the result.
+	 * Also stores the position so the earned XP appears near the claim button.
+	 */
 	async function claimReward(event: GestureResponderEvent) {
-		const feedbackOrigin: SolveXPFeedbackOrigin = {
+		/**
+		 * Tap position for the XP animation
+		 */
+		const feedbackOrigin: SolveXPFeedback = {
 			centerX: event.nativeEvent.pageX,
 			top: event.nativeEvent.pageY,
 		};
 
-		if (!nextReward || !canClaim) {
+		if (!nextReward || !canClaimReward) {
 			return;
 		}
 
-		setFeedback('');
+		/**
+		 * Clear the old message and save the reward.
+		 */
+		setClaimFeedback('');
 
 		const receipt = await claimCollectionReward({
 			collectionId: progress.collection.id,
@@ -65,10 +115,13 @@ export default function CollectionClaim({ progress }: CollectionClaimProps) {
 		});
 
 		if (!receipt) {
-			setFeedback('Could not save your reward. Please try again.');
+			setClaimFeedback('Could not save your reward. Please try again.');
 			return;
 		}
 
+		/**
+		 * Float the XP on claim
+		 */
 		if (receipt.status === 'claimed') {
 			showXPFeedback({
 				...feedbackOrigin,
@@ -76,39 +129,48 @@ export default function CollectionClaim({ progress }: CollectionClaimProps) {
 			});
 		}
 
-		setFeedback(getClaimFeedback(receipt));
+		setClaimFeedback(getClaimFeedback(receipt));
 	}
 
-	if (!nextReward?.isEligible && feedback === '') {
+	/**
+	 * Hide this section when there is no ready reward or claim message.
+	 */
+	if (!isNextXPRewardReadyToClaim && claimFeedback === '') {
 		return null;
 	}
 
+	/**
+	 * Render the thing
+	 */
 	return (
 		<View style={styles.container}>
-			{nextReward?.isEligible && (
+			{isNextXPRewardReadyToClaim && (
 				<LinkButton
 					onPress={claimReward}
-					disabled={!canClaim}
+					disabled={!canClaimReward}
 					useArrow={false}
 					color={colors.dark.primary}
-					accessibilityLabel={`Claim ${nextReward.xp} XP for collection learning level ${nextReward.level}`}
+					accessibilityLabel={claimAccessibilityLabel}
 					accessibilityHint={claimAccessibilityHint}
 				>
 					{actionLabel}
 				</LinkButton>
 			)}
-			{feedback !== '' && (
+			{claimFeedback !== '' && (
 				<Text
 					accessibilityLiveRegion="polite"
 					style={styles.feedback}
 				>
-					{feedback}
+					{claimFeedback}
 				</Text>
 			)}
 		</View>
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	container: {
 		gap: 8,

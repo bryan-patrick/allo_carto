@@ -13,7 +13,7 @@ interface VocabularyStampProps {
 	stamp: CollectionStamp;
 }
 
-/*
+/**
  * Shows a word's collectible stamp or a locked space until its flashcard is discovered.
  */
 export default function VocabularyStamp({ stamp }: VocabularyStampProps) {

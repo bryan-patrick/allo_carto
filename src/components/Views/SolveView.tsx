@@ -6,8 +6,8 @@ import ReadingLink from '@/src/components/ReadingLink';
 import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
-import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
+import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import type {
 	SolveAttemptRequest,
 	SolveAttemptResult,
@@ -19,11 +19,7 @@ import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import {
-	findCompletionPath,
-	findNextParagraph,
-	getParagraphNumber,
-} from '@/src/util/atlasCompletion';
+import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import {
 	getCompletedSolveStages,
@@ -48,7 +44,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-/*
+/**
  * Typing
  */
 interface SolveViewProps {
@@ -68,7 +64,7 @@ interface SolveFeedback {
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/*
+/**
  * Choose the message and color shown after a word answer is checked.
  */
 function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): SolveFeedback {
@@ -106,7 +102,7 @@ function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): So
 	return messages[result.status];
 }
 
-/*
+/**
  * Let the player select word cards and submit English or French answers for Ink.
  */
 export default function SolveView({ deckId, stage }: SolveViewProps) {
@@ -188,8 +184,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
-	const nextParagraph = findNextParagraph(deckId);
-	const isChapterComplete = nextParagraph?.chapter.id !== chapter?.id;
 	const isLoading = !puzzle && !loadError;
 	const wordColor = {
 		color: storyColor,
@@ -218,18 +212,11 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		selectedCard ? `${stageDefinition.label} (${cardCost} Ink)` : stageDefinition.label;
 	let prompt = 'No card selected.';
 	let statusMessage = '';
-	let completionMessage = 'All cards solved. The next paragraph is ready.';
-
-	if (isChapterComplete) {
-		completionMessage = 'Chapter complete! The next chapter is ready.';
-	}
-
-	if (!nextParagraph) {
-		completionMessage = 'All paragraphs solved. Story complete!';
-	}
+	let completionMessage =
+		'Complete Solve+ and Solve++ and claim all 3 gems to unlock the next paragraph.';
 
 	if (stage === 2) {
-		completionMessage = 'You earned your second gem. Awesome!';
+		completionMessage = 'Complete Solve++ and claim your third gem to unlock the next paragraph.';
 	}
 
 	if (selectedCard) {
@@ -322,7 +309,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		setAnswerSelection(event.nativeEvent.selection);
 	}
 
-	/*
+	/**
 	 * Insert a French character at the cursor and replace any selected letters.
 	 */
 	function handleInsertCharacter(character: string) {
@@ -398,7 +385,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		});
 	}
 
-	/*
+	/**
 	 * Submit a paid answer and keep its ID so retrying a failed save cannot charge twice.
 	 */
 	async function handleSubmit() {
@@ -433,7 +420,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 			setFeedback(getSolveFeedback(result, stage));
 			updateSavedCard(selectedCard.position, result);
 
-			/*
+			/**
 			 * Clear wrong answers so a quick second tap cannot charge for the same text again.
 			 */
 			if (result.status === 'incorrect') {
@@ -685,7 +672,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

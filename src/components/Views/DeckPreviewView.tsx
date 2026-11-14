@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const cardPageBackground = require('@/src/app/assets/images/card-bgs/card-page-bg.jpg');
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/*
+/**
  * Typing
  */
 interface DeckPreviewViewProps {
@@ -29,7 +29,7 @@ interface PreviewWordRowProps {
 	word: Word;
 }
 
-/*
+/**
  * Show each word's meaning, language level, and TTS button.
  */
 function PreviewWordRow({ word }: PreviewWordRowProps) {
@@ -74,7 +74,7 @@ function PreviewWordRow({ word }: PreviewWordRowProps) {
 	);
 }
 
-/*
+/**
  * Lets the player read this deck's cards before starting the flashcards.
  */
 export default function DeckPreviewView({
@@ -190,7 +190,7 @@ export default function DeckPreviewView({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

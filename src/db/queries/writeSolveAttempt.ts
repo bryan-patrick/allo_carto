@@ -8,7 +8,7 @@ import getUserInk from './getUserInk';
 import { getSolveRewards, saveSolveCardReward, saveSolveGemReward } from './solveRewards';
 import writeSolvePlusAttempt from './writeSolvePlusAttempt';
 
-/*
+/**
  * Typing
  */
 interface WriteSolveAttemptOptions extends SolveAttemptRequest {
@@ -23,7 +23,7 @@ interface SavedSolveAttempt extends Omit<SolveAttemptResult, 'firstGemEarned'> {
 	firstGemEarned: number;
 }
 
-/*
+/**
  * Check an English answer and save the ink charge and card.
  */
 export default async function writeSolveAttempt({
@@ -145,7 +145,7 @@ export default async function writeSolveAttempt({
 			return;
 		}
 
-		/*
+		/**
 		 * Wrong answers don't cost as much ink as correct ones
 		 */
 		if (inkBalance < cardCost) {

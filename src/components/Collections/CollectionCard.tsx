@@ -8,50 +8,110 @@ import MaterialSymbol from '../MaterialSymbol';
 import WordProgressBar from '../WordProgressBar';
 import StampIllustration from './StampIllustration';
 
+// This is the non-striped one
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/*
+/**
  * Typing
  */
 interface CollectionCardProps {
 	progress: VocabularyCollectionProgress;
 }
 
-/*
+/**
  * Shows a collection's first stamp and learning progress, or a lock until it is discovered.
  */
 export default function CollectionCard({ progress }: CollectionCardProps) {
+	/**
+	 * Navigation hook
+	 */
 	const router = useRouter();
+
+	/**
+	 * Destructured collection progress
+	 */
 	const { collection, isDiscovered, nextReward, section, level } = progress;
+
+	/**
+	 * Stamp, learning level, and reward state
+	 */
 	const firstStamp = progress.stamps[0];
-	const title = isDiscovered ? collection.name : '???';
-	const learningLevel =
-		wordProgressDefinitions.find(definition => definition.level === level) ??
-		wordProgressDefinitions[0];
+	const isNextXPRewardReadyToClaim = section === 'ready';
+
+	const matchingLearningLevel = wordProgressDefinitions.find(
+		definition => definition.level === level,
+	);
+
 	const rewardLearningLevel = wordProgressDefinitions.find(
 		definition => definition.level === nextReward?.level,
 	);
-	const progressDescription =
-		nextReward && rewardLearningLevel ?
-			`${nextReward.qualifyingWordCount}/${progress.stamps.length} words at ${rewardLearningLevel.name} | Next reward: ${nextReward.xp} XP`
-		:	undefined;
-	const isReady = section === 'ready';
-	const actionSymbol = isReady ? 'redeem' : 'chevron_right';
-	const rewardDescription =
-		nextReward ?
-			`${nextReward.qualifyingWordCount} of ${progress.stamps.length} words at learning level ${nextReward.level} or higher. Next reward: ${nextReward.xp} XP.`
-		:	'All rewards claimed.';
-	const accessibilityLabel =
-		isDiscovered ?
-			`${title}. ${learningLevel.name}. ${rewardDescription} ${isReady ? 'Reward ready to claim.' : ''}`
-		:	'Undiscovered collection.';
 
+	/**
+	 * Initial card text, learning level, and action icon
+	 */
+	let title = '???';
+	let learningLevel = wordProgressDefinitions[0];
+	let progressDescription: string | undefined = undefined;
+	let actionSymbol = 'chevron_right';
+	let rewardDescription = 'All rewards claimed.';
+
+	/**
+	 * Initial screen reader descriptions
+	 */
+	let readyDescription = '';
+	let accessibilityLabel = 'Undiscovered collection.';
+	let accessibilityHint = 'Learn how to reveal this collection.';
+
+	/**
+	 * Initial illustration for an undiscovered collection
+	 */
+	let illustration = (
+		<View style={styles.lockedIllustration}>
+			<MaterialSymbol
+				accessible={false}
+				name="lock"
+				size={32}
+				color={colors.wordProgress.unseen}
+			/>
+		</View>
+	);
+
+	/**
+	 * Make sure we can display the learning level
+	 */
+	if (matchingLearningLevel) {
+		learningLevel = matchingLearningLevel;
+	}
+
+	/**
+	 * Check if there's a "next reward" for the collection
+	 */
+	if (nextReward) {
+		rewardDescription = `${nextReward.qualifyingWordCount} of ${progress.stamps.length} words at learning level ${nextReward.level} or higher. Next reward: ${nextReward.xp} XP.`;
+
+		if (rewardLearningLevel) {
+			progressDescription = `${nextReward.qualifyingWordCount}/${progress.stamps.length} words at ${rewardLearningLevel.name} | Next reward: ${nextReward.xp} XP`;
+		}
+	}
+
+	if (isNextXPRewardReadyToClaim) {
+		actionSymbol = 'redeem';
+		readyDescription = 'Reward ready to claim.';
+	}
+
+	if (isDiscovered) {
+		title = collection.name;
+		accessibilityLabel = `${title}. ${learningLevel.name}. ${rewardDescription} ${readyDescription}`;
+		accessibilityHint = 'Open the stamp album.';
+		illustration = <StampIllustration image={firstStamp?.image} />;
+	}
+
+	/**
+	 * The user selects the collection
+	 */
 	function openCollection() {
 		if (!isDiscovered) {
-			Alert.alert(
-				'Undiscovered collection',
-				'Find one of this collection’s words in flashcards to reveal its album.',
-			);
+			Alert.alert('???', 'Find words in this collection by doing flashcards.');
 			return;
 		}
 
@@ -63,34 +123,23 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 		});
 	}
 
+	/**
+	 * Render the collection card
+	 */
 	return (
 		<Pressable
 			accessibilityRole="button"
 			accessibilityLabel={accessibilityLabel}
-			accessibilityHint={
-				isDiscovered ? 'Open the stamp album.' : 'Learn how to reveal this collection.'
-			}
+			accessibilityHint={accessibilityHint}
 			onPress={openCollection}
 		>
 			<BackgroundImage
 				source={postcardBackground}
 				imageStyle={styles.paperImage}
-				style={[styles.card, isReady && styles.readyCard]}
+				style={[styles.card, isNextXPRewardReadyToClaim && styles.readyCard]}
 			>
 				<View style={styles.cardContent}>
-					<View style={styles.illustration}>
-						{isDiscovered ?
-							<StampIllustration image={firstStamp?.image} />
-						:	<View style={styles.lockedIllustration}>
-								<MaterialSymbol
-									accessible={false}
-									name="lock"
-									size={32}
-									color={colors.wordProgress.unseen}
-								/>
-							</View>
-						}
-					</View>
+					<View style={styles.illustration}>{illustration}</View>
 					<View style={styles.details}>
 						<Text style={styles.title}>{title}</Text>
 						{isDiscovered && (
@@ -121,7 +170,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

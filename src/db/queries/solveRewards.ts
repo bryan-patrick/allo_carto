@@ -139,7 +139,7 @@ export async function saveSolveGemReward({
 	}
 }
 
-/*
+/**
  * Pay a solved card's XP or reveal a finished puzzle's gem after the player claims it.
  * Save the reward and XP together so retrying a claim cannot pay it twice.
  */

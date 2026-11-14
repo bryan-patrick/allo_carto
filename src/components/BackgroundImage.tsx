@@ -1,4 +1,4 @@
-/*
+/**
  * Adapted from the replacement example provided by React Native for ImageBackground.
 
  * https://github.com/react/react-native/commit/2361189716afbcced6ee2cdb0fd860cf23460850
@@ -21,7 +21,7 @@ interface BackgroundImageProps extends Omit<ImageProps, 'children' | 'style'> {
 	imageRef?: Ref<ComponentRef<typeof Image>>;
 }
 
-/*
+/**
  * Places images behind the children.
  * It's wrapped in a forwardRef so we can do things to the wrapping <View> (e.g. flipping the wordcards over)
  */

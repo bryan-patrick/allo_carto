@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
-/*
+/**
  * Typing
  */
 interface SolveButtonProps {
@@ -20,7 +20,7 @@ interface SolveButtonProps {
 	textStyle?: StyleProp<TextStyle>;
 }
 
-/*
+/**
  * Opens the next unfinished Solve puzzle for a paragraph.
  */
 export default function SolveButton({
@@ -120,7 +120,7 @@ export default function SolveButton({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

@@ -36,7 +36,7 @@ const collectionSections: CollectionSectionDefinition[] = [
 	},
 ];
 
-/*
+/**
  * Groups collection cards by progress so rewards ready to claim are easy to find.
  */
 export default function CollectionsView() {

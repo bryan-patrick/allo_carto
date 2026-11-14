@@ -75,7 +75,7 @@ export default function ChapterSelectHeader() {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

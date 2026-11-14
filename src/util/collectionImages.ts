@@ -8,7 +8,7 @@ const collectionImages = require.context(
 );
 const collectionImagePaths = new Set(collectionImages.keys());
 
-/*
+/**
  * Find a word's artwork in its collection folder using a lowercase filename with hyphens and no accents.
  * Leave missing artwork empty so the stamp can show its usual placeholder.
  */

@@ -28,7 +28,7 @@ interface ChapterPolaroidProps {
 	frontStyle?: StyleProp<Animated.WithAnimatedValue<ViewStyle>>;
 }
 
-/*
+/**
  * Show a chapter photo in a Polaroid frame, with a tilted frame behind it.
  */
 export default function ChapterPolaroid({

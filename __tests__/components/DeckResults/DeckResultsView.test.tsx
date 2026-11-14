@@ -31,9 +31,19 @@ jest.mock('expo-router', () => ({
 	useRouter: () => mockRouter,
 }));
 
-jest.mock('react-native-safe-area-context', () => ({
-	useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
-}));
+jest.mock('react-native-safe-area-context', () => {
+	const { View } = jest.requireActual('react-native');
+
+	return {
+		SafeAreaView: View,
+		useSafeAreaInsets: () => ({
+			top: 0,
+			bottom: 0,
+			left: 0,
+			right: 0,
+		}),
+	};
+});
 
 jest.mock('expo-audio', () => ({
 	useAudioPlayer: jest.fn(() => ({
@@ -73,10 +83,10 @@ describe('<DeckResultsView />', () => {
 	test('returns to the selected chapter directly from the session summary', async () => {
 		const { getByText, queryByText } = await render(<DeckResultsView />);
 
-		expect(getByText('You finished the deck!')).toBeTruthy();
+		expect(getByText('You finished the flashcards!')).toBeTruthy();
 		expect(getByText('XP earned')).toBeTruthy();
 		expect(queryByText('Next')).toBeNull();
-		await fireEvent.press(getByText('Back to chapter'));
+		await fireEvent.press(getByText('Finish'));
 		expect(mockRouter.dismissTo).toHaveBeenCalledWith({
 			pathname: '/ChapterDetail',
 			params: {

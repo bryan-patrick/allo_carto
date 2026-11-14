@@ -12,7 +12,7 @@ interface LevelBadgeProps {
 	onPress?: () => void;
 }
 
-/*
+/**
  * Player level and XP bar for headers
  */
 export default function LevelBadge({ colorScheme = 'dark', onPress }: LevelBadgeProps) {
@@ -56,12 +56,12 @@ export default function LevelBadge({ colorScheme = 'dark', onPress }: LevelBadge
 
 	const hasLiquidGlass = isLiquidGlassAvailable();
 
-	/*
+	/**
 	 * Render the badge.
 	 */
 	return (
 		<View>
-			{/* Give the badge its own glass background in each header. */}
+			{/** Give the badge its own glass background in each header. */}
 			<GlassView
 				colorScheme={colorScheme}
 				isInteractive
@@ -119,7 +119,7 @@ export default function LevelBadge({ colorScheme = 'dark', onPress }: LevelBadge
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

@@ -5,7 +5,7 @@ import { getFrenchSentencePreposition, getSentenceKeywords } from './solveSenten
 import { getWordOrderCards, isCompleteWordOrder } from './solveWordOrder';
 import { splitFrenchSentences, type SentencePassage } from './splitFrenchSentences';
 
-/*
+/**
  * Typing
  */
 export interface SolveSentenceWord {
@@ -28,7 +28,7 @@ function isSentenceProperNoun(
 	);
 }
 
-/*
+/**
  * Remove articles from the French answer so the learner can leave them out.
  * Prepositions still count.
  */
@@ -59,7 +59,7 @@ function getFrenchArticleFreeText(
 	return text.trim();
 }
 
-/*
+/**
  * Get the French answers the learner is allowed to give.
  */
 function getFrenchSentenceAnswers(
@@ -100,7 +100,7 @@ function getFrenchSentenceAnswers(
 	return answers;
 }
 
-/*
+/**
  * Find the English meanings that count as correct for this sentence.
  */
 function getSentenceCardKeywords(
@@ -151,7 +151,7 @@ function getSentenceCardKeywords(
 	return keywords;
 }
 
-/*
+/**
  * Turns a paragraph into the individual sentence puzzles the learner will answer.
  */
 export function getSolveSentences(deck: CardDeck, words: SolveSentenceWord[]): SolveSentence[] {

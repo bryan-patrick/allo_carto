@@ -12,7 +12,7 @@ import loadUserXP from './getUserExperience';
 import getUserProgress from './getUserProgress';
 import { getSolveRewards } from './solveRewards';
 
-/*
+/**
  * Typing
  */
 interface GetSolveWordOrderPuzzleOptions {
@@ -32,7 +32,7 @@ interface WordOrderAttemptRow {
 	status: 'exact' | 'incorrect';
 }
 
-/*
+/**
  * Loads the next unfinished sentence, its saved card order, and the Solve++ unlock requirements.
  * Older paragraph arrangements still supply the saved order for each sentence.
  */

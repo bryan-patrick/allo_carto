@@ -1,7 +1,7 @@
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import type { ImageSourcePropType } from 'react-native';
 
-/*
+/**
  * Typing
  */
 export type CollectionRewardLevel = Exclude<WordProgressKey, 'unseen'>;
@@ -29,7 +29,7 @@ export interface CollectionAtlas {
 
 export const placeholderStampImage: ImageSourcePropType = require('@/src/app/assets/images/chapters/how-it-works.png');
 
-/*
+/**
  * Sets the XP awarded for reaching each collection learning level.
  */
 const collectionLevelRewards: CollectionRewardDefinition[] = [
@@ -55,7 +55,7 @@ const collectionLevelRewards: CollectionRewardDefinition[] = [
 	},
 ];
 
-/*
+/**
  * Defines each stamp album's words, artwork, and rewards using existing vocabulary IDs.
  */
 export const collectionAtlas: CollectionAtlas = {

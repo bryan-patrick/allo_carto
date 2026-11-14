@@ -12,7 +12,7 @@ import Spine from './Spine';
 // import StoryMeta from './StoryMeta';
 import StorySelectButton from './StorySelectButton';
 
-/*
+/**
  * Typing
  */
 interface StoryProps {
@@ -24,7 +24,7 @@ interface StoryProps {
 	isSelecting: boolean;
 }
 
-/*
+/**
  * Story component
  */
 export default function Story({
@@ -69,7 +69,7 @@ export default function Story({
 		);
 	}
 
-	/*
+	/**
 	 * Render the component
 	 */
 	return (
@@ -107,8 +107,8 @@ export default function Story({
 						/>
 					</View>
 					<View style={styles.storyImageContainer} />
-					{/* We're on the fence about keeping this paragraph and word progress row. */}
-					{/* <StoryMeta
+					{/** We're on the fence about keeping this paragraph and word progress row. */}
+					{/** <StoryMeta
 						completedParagraphCount={completedParagraphCount}
 						paragraphCount={paragraphCount}
 						progressColor={color}
@@ -128,7 +128,7 @@ export default function Story({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

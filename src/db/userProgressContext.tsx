@@ -3,7 +3,6 @@ import type {
 	DeckCompletionReceiptProps,
 	WordAnswerAwardProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
-import Toaster from '@/src/components/Toaster';
 import type {
 	SentenceAttemptRequest,
 	SolveAttemptRequest,
@@ -12,8 +11,9 @@ import type {
 	SolveRewardRequest,
 	WordOrderAttemptRequest,
 } from '@/src/components/Solve/solveTypes';
-import { useAppSettings } from '@/src/settings/useAppSettings';
+import Toaster from '@/src/components/Toaster';
 import type { MockParagraphPresetValue } from '@/src/settings/mockParagraphProgress';
+import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getMaxInkBalance } from '@/src/util/ink';
 import type { ProgressById } from '@/src/util/progression';
 import type { UserActivity, UserNotification } from '@/src/util/userActivity';
@@ -64,7 +64,7 @@ import {
 } from './queries/writeUserProgress';
 import writeWordOrderAttempt from './queries/writeWordOrderAttempt';
 
-/*
+/**
  * Typing
  */
 type ProgressStatus = 'loading' | 'ready' | 'error';
@@ -103,7 +103,7 @@ interface UserProgressContextProps {
 	reloadProgress: () => Promise<void>;
 }
 
-/*
+/**
  * Initial progress state
  */
 const initialValue: UserProgressContextProps = {
@@ -133,7 +133,7 @@ const initialValue: UserProgressContextProps = {
 
 export const UserProgressContext = createContext<UserProgressContextProps>(initialValue);
 
-/*
+/**
  * Provide the current user's saved progress and XP to the app.
  */
 export function UserProgressProvider({ children, userId }: UserProgressProviderProps) {
@@ -147,7 +147,7 @@ export function UserProgressProvider({ children, userId }: UserProgressProviderP
 	);
 }
 
-/*
+/**
  * Load and save progress for the current user.
  */
 function UserProgressState({ children, userId }: UserProgressProviderProps) {
@@ -158,7 +158,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const previewAllStamps = settings.previewAllStamps;
 
-	/*
+	/**
 	 * State
 	 */
 	const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
@@ -293,14 +293,14 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		});
 	}, [collectionClaims, wordProgressById, previewAllStamps]);
 
-	/*
+	/**
 	 * Load userProgress rows when the database is ready
 	 */
 	useEffect(() => {
 		refreshProgress();
 	}, [refreshProgress]);
 
-	/*
+	/**
 	 * Keep progress buttons busy until the save and screen refresh finish.
 	 * The shared database queue keeps this save from overlapping deck setup or puzzle drafts.
 	 */
@@ -375,7 +375,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		});
 	}, [database, notifications, runProgressWrite, userId]);
 
-	/*
+	/**
 	 * Applies a mock paragraph state and reloads progress so gems and chapter access update together.
 	 */
 	const recordMockParagraphProgress = useCallback(
@@ -419,7 +419,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, playClaimSound, runProgressWrite, userId, previewAllStamps],
 	);
 
-	/*
+	/**
 	 * Save a correct answer
 	 */
 	const recordCorrectAnswer = useCallback(
@@ -431,7 +431,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/*
+	/**
 	 * We save incorrect and skipped cards so reopening a deck keeps those results.
 	 */
 	const recordIncorrectAnswer = useCallback(
@@ -447,7 +447,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/*
+	/**
 	 * Save the deck completion bonus and update the player's level
 	 */
 	const recordDeckCompletion = useCallback(
@@ -459,7 +459,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/*
+	/**
 	 * Save that a word was seen
 	 */
 	const recordWordSeen = useCallback(
@@ -472,7 +472,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId],
 	);
 
-	/*
+	/**
 	 * Write the solve attempt to the db
 	 */
 	const recordSolveAttempt = useCallback(
@@ -489,7 +489,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
-	/*
+	/**
 	 * Submits the Solve++ answer using the current unlock setting, then reloads the player's Ink and gems.
 	 */
 	const recordWordOrderAttempt = useCallback(
@@ -506,7 +506,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, runProgressWrite, userId, fastSolveUnlocks],
 	);
 
-	/*
+	/**
 	 * Submit a sentence answer and reload the player's ink and gems.
 	 */
 	const recordSentenceAttempt = useCallback(
@@ -539,7 +539,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		[database, playClaimSound, runProgressWrite, userId],
 	);
 
-	/*
+	/**
 	 * Context value
 	 */
 	const value = useMemo<UserProgressContextProps>(
@@ -592,7 +592,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 		],
 	);
 
-	/*
+	/**
 	 * Render the provider
 	 */
 	return (

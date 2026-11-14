@@ -8,7 +8,7 @@ import PuzzlesPage from './PuzzlesPage';
 import ReadingPage from './ReadingPage';
 import WelcomePage from './WelcomePage';
 
-/*
+/**
  * This is the order of the pages
  */
 export default [

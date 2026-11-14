@@ -19,7 +19,7 @@ import LinkButton from '../LinkButton';
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/*
+/**
  * Show flashcard results with actions to finish or read the next deck's definitions.
  */
 export default function DeckResultsView() {
@@ -69,7 +69,7 @@ export default function DeckResultsView() {
 		wordResultsIcon = 'expand_less';
 	}
 
-	/*
+	/**
 	 * Return to the chapter we were studying, or Home if that chapter is missing.
 	 */
 	const handleFinish = useCallback(() => {
@@ -125,7 +125,7 @@ export default function DeckResultsView() {
 		setShowWordResults(!showWordResults);
 	}
 
-	/*
+	/**
 	 * Android Back leaves results directly now that there are no review steps.
 	 */
 	useFocusEffect(
@@ -266,7 +266,7 @@ export default function DeckResultsView() {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

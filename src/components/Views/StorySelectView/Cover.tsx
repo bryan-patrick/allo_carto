@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { bookStyles } from './bookStyles';
 
-/*
+/**
  * Typing
  */
 interface CoverProps {
@@ -20,7 +20,7 @@ export default function Cover({ children }: CoverProps) {
 			imageStyle={bookStyles.coverCorners}
 		>
 			{children}
-			{/* Draw the border above the cover image so it stays visible at the corners. */}
+			{/** Draw the border above the cover image so it stays visible at the corners. */}
 			<View
 				accessible={false}
 				pointerEvents="none"
@@ -30,7 +30,7 @@ export default function Cover({ children }: CoverProps) {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

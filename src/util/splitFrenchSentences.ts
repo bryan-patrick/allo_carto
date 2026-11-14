@@ -6,7 +6,7 @@ export interface SentencePassage {
 	segments: SolvePassageSegment[];
 }
 
-/*
+/**
  * Splits the French paragraph into sentences and keeps its words and punctuation.
  */
 export function splitFrenchSentences(deck: CardDeck): SentencePassage[] {

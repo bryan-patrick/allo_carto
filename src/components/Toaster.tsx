@@ -30,7 +30,7 @@ interface ToasterCardProps extends ToasterProps {
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 const toastDuration = 4000;
 
-/*
+/**
  * Shows our toaster.
  */
 export default function Toaster({ notification, onClose }: ToasterProps) {

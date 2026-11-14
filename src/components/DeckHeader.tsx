@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, Text, View, type StyleProp, type TextStyle } from 'react-native';
 import CollectionGems from './CollectionGems';
 
-/*
+/**
  * Typing
  */
 interface DeckHeaderProps {
@@ -19,7 +19,7 @@ interface DeckHeaderProps {
 	fontSize?: number;
 }
 
-/*
+/**
  * Show a paragraph's title, word progress, gems, and New badge together.
  */
 export default function DeckHeader({
@@ -72,7 +72,7 @@ export default function DeckHeader({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

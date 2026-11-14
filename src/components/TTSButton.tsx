@@ -6,7 +6,7 @@ import { Pressable } from 'react-native';
 import Animated, { css, useReducedMotion } from 'react-native-reanimated';
 import MaterialSymbol from './MaterialSymbol';
 
-/*
+/**
  * Typing
  */
 interface TTSButtonProps {
@@ -27,7 +27,7 @@ export interface TTSButtonHandle {
 	togglePlayback: () => void;
 }
 
-/*
+/**
  * We use the same TTS button for flashcards and story readings
  */
 export default function TTSButton({
@@ -125,7 +125,7 @@ export default function TTSButton({
 		};
 	}, [wordsToSay]);
 
-	/*
+	/**
 	 * TTS on correct answer
 	 */
 	useEffect(() => {
@@ -170,7 +170,7 @@ export default function TTSButton({
 	);
 }
 
-/*
+/**
  * Styles (css!)
  */
 const styles = css.create({

@@ -142,21 +142,23 @@ describe('Fast Solve Unlocks', () => {
 	});
 
 	test('the Settings switch saves its value and keeps other settings', async () => {
+		const expectedSettings = {
+			...defaultAppSettings,
+			showDebugOptions: true,
+			fastSolveUnlocks: false,
+		};
+
 		await render(
 			<AppSettingsProvider>
 				<Settings />
 			</AppSettingsProvider>,
 		);
 
-		const toggle = screen.getByLabelText('Fast Solve Unlocks');
-		const expectedSettings = {
-			...defaultAppSettings,
-			fastSolveUnlocks: false,
-		};
+		await fireEvent(screen.getByLabelText('Show debug options'), 'valueChange', true);
 
-		expect(toggle.props.value).toBe(true);
+		expect(screen.getByLabelText('Fast Solve Unlocks').props.value).toBe(true);
 
-		await fireEvent(toggle, 'valueChange', false);
+		await fireEvent(screen.getByLabelText('Fast Solve Unlocks'), 'valueChange', false);
 
 		expect(Storage.setItemSync).toHaveBeenLastCalledWith(
 			appSettingsStorageKey,

@@ -21,6 +21,9 @@ import { Stack, useNavigation } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
+/**
+ * Typing
+ */
 interface PassageProgress {
 	wordProgressCounts: DeckWordProgressCounts;
 	wordProgressKeyByWordId: Record<string, WordProgressKey>;
@@ -32,7 +35,7 @@ interface OtherFormsAvailability {
 	hasOtherForms?: boolean;
 }
 
-/*
+/**
  * Deck view - A route wrapper in (routes)
  */
 export default function CardDeck() {
@@ -43,18 +46,23 @@ export default function CardDeck() {
 	const { id: userId } = useUserContext() ?? {};
 	const { isUpdatingProgress, progressById, status } = useUserProgress();
 	const isOpeningWordDetails = useRef(false);
+
 	const [isDeckPreviewVisible, setIsDeckPreviewVisible] = useState(
 		Boolean(cardDeckState.session && cardDeckState.session.results.length === 0),
 	);
+
 	const [isPassageVisible, setIsPassageVisible] = useState(false);
 	const [passageProgress, setPassageProgress] = useState<PassageProgress>();
 	const [otherFormsAvailability, setOtherFormsAvailability] = useState<OtherFormsAvailability>();
 	const { id: currentWordId, lemmaId: currentLemmaId } = currentCard;
+
 	const isLocked = !isItemUnlocked({
 		id: cardDeck.id,
 		progressById,
 	});
+
 	const isPassageDisabled = !userId || isUpdatingProgress;
+
 	const shouldShowOtherForms =
 		otherFormsAvailability?.wordId === currentWordId &&
 		otherFormsAvailability?.lemmaId === currentLemmaId &&
@@ -71,7 +79,7 @@ export default function CardDeck() {
 		setIsDeckPreviewVisible(false);
 	}
 
-	/*
+	/**
 	 * Check availability for the current word and ignore stale requests.
 	 */
 	useEffect(() => {
@@ -103,7 +111,7 @@ export default function CardDeck() {
 		};
 	}, [currentWordId, currentLemmaId]);
 
-	/*
+	/**
 	 * Refresh passage progress without changing the current flashcard.
 	 */
 	async function handleShowPassage() {
@@ -128,7 +136,7 @@ export default function CardDeck() {
 		}
 	}
 
-	/*
+	/**
 	 * Show the other forms already available in the word library.
 	 */
 	async function handleShowOtherForms() {
@@ -152,20 +160,20 @@ export default function CardDeck() {
 		}
 	}
 
-	/*
+	/**
 	 * Wait for the user's stored percentages
 	 */
 	if (status === 'loading') return <Loader />;
 	if (status === 'error') return <Text>Could not load paragraph progress.</Text>;
 
-	/*
+	/**
 	 * Block locked decks
 	 */
 	if (isLocked) {
 		return <Text style={{ textAlign: 'center' }}>This paragraph is locked.</Text>;
 	}
 
-	/*
+	/**
 	 * Render the deck
 	 */
 	return (
@@ -248,7 +256,7 @@ export default function CardDeck() {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

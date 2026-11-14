@@ -5,7 +5,7 @@ import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { StyleSheet, Text, View } from 'react-native';
 import CompletionXPProgress from './CompletionXPProgress';
 
-/*
+/**
  * Typing
  */
 interface CompletionRewardsProps {
@@ -89,7 +89,7 @@ export default function CompletionRewards({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

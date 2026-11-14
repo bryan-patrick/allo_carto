@@ -31,7 +31,7 @@ interface SecondaryButtonProps extends Omit<PressableProps, 'children' | 'style'
 	type?: 'fill' | 'outline';
 }
 
-/*
+/**
  * SecondaryButton Component
  */
 export default function SecondaryButton({
@@ -47,12 +47,12 @@ export default function SecondaryButton({
 	type = 'fill',
 	...props
 }: SecondaryButtonProps) {
-	/*
+	/**
 	 * State
 	 */
 	const [isPressed, setIsPressed] = useState(false);
 
-	/*
+	/**
 	 * Style vars
 	 */
 	let buttonTypeStyle: ViewStyle = {};
@@ -70,7 +70,7 @@ export default function SecondaryButton({
 		buttonTypeStyle = { backgroundColor: color };
 	}
 
-	/*
+	/**
 	 * Animation vars
 	 */
 	const top = useSharedValue(0);
@@ -78,7 +78,7 @@ export default function SecondaryButton({
 		top: top.get(),
 	}));
 
-	/*
+	/**
 	 * Handle animations on pressed
 	 */
 	useEffect(() => {
@@ -94,7 +94,7 @@ export default function SecondaryButton({
 		}
 	}, [isPressed, top]);
 
-	/*
+	/**
 	 * Handlers
 	 */
 	function handleOnPressIn(event: GestureResponderEvent) {
@@ -130,7 +130,7 @@ export default function SecondaryButton({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

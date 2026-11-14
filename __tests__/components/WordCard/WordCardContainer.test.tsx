@@ -105,7 +105,7 @@ describe('<WordCardContainer />', () => {
 		});
 	});
 
-	/*
+	/**
 	 * Recording an answer updates word scores. That rerender must not move
 	 * the answer buttons while the learner is still looking at the card.
 	 */

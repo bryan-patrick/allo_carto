@@ -81,7 +81,7 @@ export async function getUserActivity({
 	return database.getAllAsync<UserActivity>(statements.getActivity, userId, userActivityLimit);
 }
 
-/*
+/**
  * Save activity and any notification alongside the progress change that caused them.
  * Keep the latest 50 activity entries and leave notifications until they are dismissed.
  */
@@ -136,7 +136,7 @@ export async function recordStampUnlockActivity({
 	});
 }
 
-/*
+/**
  * Record XP claims and any levels or extra Ink space earned from XP.
  * Automatic XP rewards only add entries when they raise the player's level.
  */
@@ -197,7 +197,7 @@ function getGemActivityDescriptions(label: string): Record<SolveStage, string> {
 	};
 }
 
-/*
+/**
  * Record earned gems and newly opened stories, chapters, or paragraphs after a gem claim.
  * Completing the fifth stage also records the paragraph's full Solve completion.
  */

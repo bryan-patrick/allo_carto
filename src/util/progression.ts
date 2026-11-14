@@ -3,7 +3,7 @@ import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgres
 import type { CompletedSolveStages } from './solveProgression';
 import type { WordProgressKey } from './wordProgress';
 
-/*
+/**
  * Typing
  */
 export type ProgressType = 'story' | 'chapter' | 'paragraph';
@@ -24,7 +24,7 @@ export interface UserProgressRow {
 	id: string;
 	type: ProgressType;
 	completionPercentage: number;
-	/*
+	/**
 	 * Calculated from distinct encountered words when loading progress.
 	 */
 	seenPercentage?: number;
@@ -41,7 +41,7 @@ export interface UserProgressRow {
 
 export type ProgressById = Record<string, UserProgressRow>;
 
-/*
+/**
  * Calculate one stored completion percentage
  */
 export function getCompletionPercentage({
@@ -58,7 +58,7 @@ export function getCompletionPercentage({
 		return 0;
 	}
 
-	/*
+	/**
 	 * Each progress stage is worth more points.
 	 * These values describe learned progress; gems use each word's actual level.
 	 */

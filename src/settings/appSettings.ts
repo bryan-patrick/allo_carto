@@ -1,6 +1,6 @@
 import { isMockParagraphPreset, type MockParagraphPresetValue } from './mockParagraphProgress';
 
-/*
+/**
  * Typing
  */
 export type PronunciationFormat = 'readable' | 'ipa';
@@ -65,7 +65,7 @@ export function clampSpeechRate(rate: number): number {
 	return Math.max(0.2, Math.min(1.5, rate));
 }
 
-/*
+/**
  * Default settings
  */
 export const defaultAppSettings: AppSettings = {
@@ -88,7 +88,7 @@ export const defaultAppSettings: AppSettings = {
 
 export const appSettingsStorageKey = 'allo_carto.settings';
 
-/*
+/**
  * Get the current settings and set defaults
  */
 export function readAppSettings(value: string | null): AppSettings {

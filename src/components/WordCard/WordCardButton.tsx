@@ -19,12 +19,12 @@ import Animated, {
 import { useCardDeck } from '../CardDeck/useCardDeck';
 import { useWordCardUI } from './useWordCardUI';
 
-/*
+/**
  * Essentially Animated.Pressable
  */
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-/*
+/**
  * Typing
  */
 interface WordCardButtonProps extends PressableProps {
@@ -32,7 +32,7 @@ interface WordCardButtonProps extends PressableProps {
 	children?: ReactNode;
 }
 
-/*
+/**
  * WordCardButton Component
  * Handles checking/next card actions
  */
@@ -54,7 +54,7 @@ export default function WordCardButton({
 	const playIncorrect = useSoundEffect('incorrect');
 	const lastSoundedAnswer = useRef<string | null>(null);
 
-	/*
+	/**
 	 * Style vars
 	 */
 	let pressableStateStyle;
@@ -64,14 +64,14 @@ export default function WordCardButton({
 		textStateStyle = styles.successText;
 	}
 
-	/*
+	/**
 	 * State/prop vars
 	 */
 	const [isPressed, setIsPressed] = useState(false);
 	const [isAnswerPending, setIsAnswerPending] = useState(false);
 	const [hasSaveError, setHasSaveError] = useState(false);
 
-	/*
+	/**
 	 * Block very fast double presses
 	 */
 	const pressInFlight = useRef(false);
@@ -107,7 +107,7 @@ export default function WordCardButton({
 		buttonContent = 'Retry saving';
 	}
 
-	/*
+	/**
 	 * Animation vars
 	 */
 	const top = useSharedValue(0);
@@ -125,14 +125,14 @@ export default function WordCardButton({
 		},
 	}));
 
-	/*
+	/**
 	 * Check the user's answer
 	 */
 	const checkAnswer = useCallback(() => {
 		wordCardUIDispatch({ type: 'CHECK_ANSWER', currentCard });
 	}, [currentCard, wordCardUIDispatch]);
 
-	/*
+	/**
 	 * Save each answer and its rewards before allowing the next card.
 	 * Update the button when the save finishes, and allow a retry if it fails.
 	 */
@@ -220,7 +220,7 @@ export default function WordCardButton({
 		],
 	);
 
-	/*
+	/**
 	 * Sound effects
 	 * Plays once per answer
 	 */
@@ -250,7 +250,7 @@ export default function WordCardButton({
 		playIncorrect,
 	]);
 
-	/*
+	/**
 	 * Side effects (and haptics) for dispatching check answer
 	 */
 	useEffect(() => {
@@ -287,7 +287,7 @@ export default function WordCardButton({
 		persistAnswer,
 	]);
 
-	/*
+	/**
 	 * Action handlers
 	 * Advance after release so the current card does not unmount an active touch responder.
 	 */
@@ -327,7 +327,7 @@ export default function WordCardButton({
 		wordCardUIDispatch({ type: 'REVEAL_ANSWER', currentCard });
 	}, [cardState.stage, currentCard, isUpdatingProgress, wordCardUIDispatch]);
 
-	/*
+	/**
 	 * Side effect that sets the styles
 	 * when a user presses the button.
 	 */
@@ -352,7 +352,7 @@ export default function WordCardButton({
 		}
 	}, [isPressed, shadowOffsetHeight, top]);
 
-	/*
+	/**
 	 * Render the WordCard
 	 */
 	return (
@@ -400,7 +400,7 @@ export default function WordCardButton({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		flexDirection: 'row',
 		gap: 8,
-		/*
+		/**
 		 * Keep the button the same height before and after its 24px arrow appears.
 		 */
 		minHeight: 24,

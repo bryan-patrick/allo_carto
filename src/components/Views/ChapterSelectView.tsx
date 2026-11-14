@@ -6,8 +6,8 @@ import StorySelectModal from '@/src/components/StorySelectModal';
 import StorySelector from '@/src/components/StorySelector';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { getSelectedStory } from '@/src/util/getSelectedStory';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
+import { getSelectedStory } from '@/src/util/getSelectedStory';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
 import colors from '../../app/colors';
@@ -117,7 +117,7 @@ export default function ChapterSelectView() {
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

@@ -6,7 +6,7 @@ import MaterialSymbol from './MaterialSymbol';
 
 const storyPaperBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
-/*
+/**
  * Typing
  */
 interface StorySelectorProps {
@@ -58,7 +58,7 @@ export default function StorySelector({ story, isExpanded, onPress }: StorySelec
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({

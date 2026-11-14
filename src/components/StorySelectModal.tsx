@@ -8,7 +8,7 @@ import StorySelectView from './Views/StorySelectView';
 
 const storySelectBackground = require('@/src/app/assets/images/postcard-parts/background-old.jpg');
 
-/*
+/**
  * Typing
  */
 interface StorySelectModalProps {
@@ -18,7 +18,7 @@ interface StorySelectModalProps {
 	visible: boolean;
 }
 
-/*
+/**
  * Modal: We choose a story, then return to its chapters on Home view.
  */
 export default function StorySelectModal({
@@ -85,7 +85,7 @@ export default function StorySelectModal({
 	);
 }
 
-/*
+/**
  * Styles
  */
 const styles = StyleSheet.create({
