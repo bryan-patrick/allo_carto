@@ -3,7 +3,6 @@ import BackgroundImage from '@/src/components/BackgroundImage';
 import ChapterPostcard from '@/src/components/ChapterPostcard';
 import CollectionGems from '@/src/components/CollectionGems';
 import Loader from '@/src/components/Loader';
-import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ReadingLink from '@/src/components/ReadingLink';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findAtlasLocationByChapterId } from '@/src/util/atlasCompletion';
@@ -63,11 +62,6 @@ export default function ChapterDetailView() {
 				}}
 			>
 				<View style={styles.chapterHeading}>
-					<MaterialSymbol
-						color={colors.dark.text}
-						size={32}
-						name="raven"
-					/>
 					<CollectionGems
 						title={chapter.name}
 						progress={progressById[chapter.id]}

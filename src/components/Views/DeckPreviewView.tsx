@@ -131,7 +131,7 @@ export default function DeckPreviewView({
 											accessibilityRole="header"
 											style={[styles.title, headingStyle]}
 										>
-											Flashcards
+											Words in this deck
 										</Text>
 										<Pressable
 											accessibilityRole="button"
@@ -156,10 +156,7 @@ export default function DeckPreviewView({
 								</View>
 							</View>
 							<Text style={styles.description}>
-								Here are all the words you will see in this deck.
-							</Text>
-							<Text style={styles.description}>
-								Don&apos;t worry, you don&apos;t have to memorize these!
+								These are the words you will see in this deck and their translations.
 							</Text>
 						</View>
 						<ScrollView contentContainerStyle={styles.wordList}>
