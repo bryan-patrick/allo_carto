@@ -28,6 +28,7 @@ import {
 	solveStages,
 	type SolveWordStage,
 } from '@/src/util/solveProgression';
+import { useSoundEffect } from '@/src/util/useSoundEffect';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import {
@@ -118,6 +119,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		writeSolveAttempt,
 	} = useUserProgress();
 	const { settings } = useAppSettings();
+	const playCorrectWord = useSoundEffect('correctWord');
 	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const stageDefinition = solveStages[stage];
 	const isFrenchAnswer = stageDefinition.answerLanguage === 'french';
@@ -331,39 +333,59 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		answerInput.current?.focus();
 	}
 
+	/**
+	 * Show the saved answer on every occurrence of the solved word.
+	 *
+	 * For example, if chat appears three times, answering
+	 * “cat” once fills answers all three occurrences.
+	 */
 	function updateSavedCard(position: number, result: SolveAttemptResult) {
-		if (result.acceptedAnswer === null) {
+		const acceptedAnswer = result.acceptedAnswer;
+
+		if (acceptedAnswer === null) {
 			return;
 		}
 
 		setPuzzle(current => {
-			if (!current) {
+			/**
+			 * Current puzzle and answered word
+			 */
+			const answeredCard = current?.positions.find(card => card.position === position);
+
+			if (!current || !answeredCard?.wordId) {
 				return current;
 			}
 
 			const positions = current.positions.map(card => {
-				if (card.position !== position) {
+				if (card.wordId !== answeredCard.wordId || card.acceptedAnswer !== null) {
 					return card;
 				}
 
 				return {
 					...card,
-					acceptedAnswer: result.acceptedAnswer ?? card.acceptedAnswer,
+					acceptedAnswer,
 				};
 			});
+			let completedSolveStages = current.completedSolveStages;
+
+			if (result.stageCompleted || result.firstGemEarned) {
+				completedSolveStages = stage;
+			}
 
 			return {
 				...current,
 				positions,
 				rewards: result.rewards ?? current.rewards,
 				hasFirstGem: current.hasFirstGem || result.firstGemEarned,
-				completedSolveStages:
-					result.stageCompleted || result.firstGemEarned ? stage : current.completedSolveStages,
+				completedSolveStages,
 			};
 		});
 	}
 
-	// Show the solved card's usual success appearance after its XP has been claimed.
+	/**
+	 * Show the solved card's usual success
+	 * appearance after its XP has been claimed.
+	 */
 	function handleCardRewardClaimed(reward: SolveReward) {
 		setPuzzle(current => {
 			if (!current) {
@@ -386,7 +408,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	/**
-	 * Submit a paid answer and keep its ID so retrying a failed save cannot charge twice.
+	 * Submit an answer and keep its ID for receipt
 	 */
 	async function handleSubmit() {
 		if (disabled || isBusy.current || (!needsRetry && !canSubmit) || !selectedCard) {
@@ -421,7 +443,15 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 			updateSavedCard(selectedCard.position, result);
 
 			/**
-			 * Clear wrong answers so a quick second tap cannot charge for the same text again.
+			 * Play once for the accepted answer, even when it solves several repeated cards.
+			 */
+			if (result.status === 'exact' || result.status === 'close') {
+				void playCorrectWord();
+			}
+
+			/**
+			 * Clear wrong answers so a quick second tap
+			 * cannot charge for the same answer again.
 			 */
 			if (result.status === 'incorrect') {
 				setAnswer('');

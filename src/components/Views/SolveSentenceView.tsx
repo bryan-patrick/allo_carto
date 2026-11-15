@@ -18,7 +18,12 @@ import getSolveSentencePuzzle from '@/src/db/queries/getSolveSentencePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
+import {
+	findCompletionPath,
+	getAtlasItemLabel,
+	getChapterSolveUnlockLevel,
+	getParagraphNumber,
+} from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import type { UserProgressRow } from '@/src/util/progression';
 import {
@@ -200,6 +205,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const isSentenceSolved = Boolean(selectedSentence && selectedSentence.acceptedAnswer !== null);
 	const eligibility = getSolveStageEligibility({
 		stage,
+		chapterUnlockLevel: getChapterSolveUnlockLevel(deckId, stage),
 		completedStages,
 		playerLevel: experience.level,
 		fastSolveUnlocks,
@@ -227,6 +233,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
 	const storyColor = getDeckStoryColor(deckId);
 	const paragraphNumber = getParagraphNumber(deckId);
+	const paragraphLabel = getAtlasItemLabel(deckId);
 	const puzzleTitle = paragraphNumber ? `Solve Paragraph ${paragraphNumber}` : 'Solve';
 	const chapter = findCompletionPath({
 		id: deckId,
@@ -544,7 +551,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					: isComplete ?
 						<View style={styles.completion}>
 							<CollectionGems
-								title={puzzle.deck.title}
+								title={paragraphLabel}
 								progress={completionProgress}
 								size={32}
 							/>
@@ -615,8 +622,10 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 												accessibilityLiveRegion="polite"
 												style={styles.text}
 											>
-												You need {inkCost} Ink to type an answer. Close this puzzle and practice
-												flashcards to earn more.
+												<Text style={styles.warningHighlight}>
+													You need {inkCost} Ink to type an answer. Close this puzzle and practice
+													flashcards to earn more.
+												</Text>
 											</Text>
 										)}
 									</>
@@ -845,6 +854,9 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 		color: colors.dark.text,
+	},
+	warningHighlight: {
+		backgroundColor: colors.light.warning,
 	},
 	centeredText: {
 		textAlign: 'center',

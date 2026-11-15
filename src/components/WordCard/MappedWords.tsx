@@ -1,4 +1,5 @@
 import colors from '@/src/app/colors';
+import { getEnglishPrefixes } from '@/src/util/englishWordParts';
 import { Dispatch, memo, useEffect, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import Animated, {
@@ -175,8 +176,7 @@ const MappedWords = memo(function MappedWordsMemo({
 	let correctWords = currentCard.englishWords;
 	let hasMistake = cardState.mistake === 'WORD' || cardState.mistake === 'BOTH';
 	if (selectionType === 'article') {
-		correctWords = [];
-		if (currentCard.englishArticle) correctWords = [currentCard.englishArticle];
+		correctWords = getEnglishPrefixes(currentCard);
 		hasMistake = cardState.mistake === 'ARTICLE' || cardState.mistake === 'BOTH';
 	}
 

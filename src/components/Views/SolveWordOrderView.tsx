@@ -6,6 +6,7 @@ import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
 import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import WordOrderBoard from '@/src/components/Solve/WordOrderBoard';
+import WordOrderClaims from '@/src/components/Solve/WordOrderClaims';
 import type {
 	SolveAttemptResult,
 	SolveReward,
@@ -30,6 +31,7 @@ import {
 	getSolveUnlockMessage,
 	solveStages,
 } from '@/src/util/solveProgression';
+import { useSoundEffect } from '@/src/util/useSoundEffect';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -52,16 +54,19 @@ const postcardBackground = require('@/src/app/assets/images/postcard-parts/backg
  */
 function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 	const hasGemReward = result.rewards?.some(reward => reward.kind === 'gem');
+	let correctMessage = 'Correct! Claim the word XP, then continue to the next sentence.';
+
+	if (hasGemReward) {
+		correctMessage = 'Correct! Claim the word XP, then claim your third gem.';
+	}
+
 	const messages: Partial<Record<SolveAttemptResult['status'], WordOrderFeedback>> = {
 		exact: {
-			text:
-				hasGemReward ?
-					'Correct! Claim your third gem.'
-				:	'Sentence correct! Arrange the next sentence.',
+			text: correctMessage,
 			backgroundColor: colors.light.success,
 		},
 		incorrect: {
-			text: `Not quite. That arrangement cost ${result.inkSpent} Ink. Change the order before submitting again.`,
+			text: `Not quite. That attempt cost ${result.inkSpent} ink`,
 			backgroundColor: colors.light.danger,
 		},
 		notEnoughInk: {
@@ -70,7 +75,7 @@ function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 			needsInk: true,
 		},
 		alreadySolved: {
-			text: 'This paragraph already has its third gem.',
+			text: 'This sentence is already solved.',
 			backgroundColor: colors.light.success,
 		},
 	};
@@ -85,7 +90,10 @@ function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 
 /**
  * Lets the player arrange one French sentence at a time in Solve++.
- * Save each move and advance after a correct answer until the third gem is ready.
+ *
+ * Save each move,
+ * let the player claim each solved word's XP,
+ * then open the next sentence.
  */
 export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) {
 	const router = useRouter();
@@ -100,10 +108,12 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		writeWordOrderAttempt,
 	} = useUserProgress();
 	const { settings } = useAppSettings();
+	const playCorrectWord = useSoundEffect('correctWord');
+	const playIncorrect = useSoundEffect('incorrect');
 	const [puzzle, setPuzzle] = useState<SolveWordOrderPuzzle>();
 	const [claimedGem, setClaimedGem] = useState<SolveReward>();
 	const [positions, setPositions] = useState<number[]>([]);
-	const [lastSubmittedOrder, setLastSubmittedOrder] = useState<string | null>(null);
+	const [hasFailedAttempt, setHasFailedAttempt] = useState(false);
 	const [loadError, setLoadError] = useState('');
 	const [feedback, setFeedback] = useState<WordOrderFeedback | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
@@ -111,6 +121,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const [needsRetry, setNeedsRetry] = useState(false);
 	const isBusy = useRef(false);
 	const pendingAttempt = useRef<WordOrderAttemptRequest | null>(null);
+	const lastFeedbackAttemptId = useRef<string | null>(null);
 	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const stageDefinition = solveStages[3];
 	const inkCost = stageDefinition.attemptInkCost ?? stageDefinition.incorrectAttemptInkCost;
@@ -122,6 +133,10 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const pendingGem = puzzle?.rewards.find(
 		reward => reward.kind === 'gem' && reward.claimedAt === null,
 	);
+	const isSentenceSolved = puzzle?.isSentenceSolved ?? false;
+	const hasPendingCardRewards =
+		puzzle?.rewards.some(reward => reward.kind === 'card' && reward.claimedAt === null) ?? false;
+	const isShowingGemClaim = Boolean(pendingGem && !hasPendingCardRewards);
 	const eligibility = getSolveStageEligibility({
 		stage: 3,
 		completedStages,
@@ -137,14 +152,11 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		wordCount: puzzle?.deck.wordIds.length ?? 0,
 		seenWordCount: progressById[deckId]?.seenWordCount ?? 0,
 	});
-	const serializedOrder = JSON.stringify(positions);
-	const hasChangedOrder = serializedOrder !== lastSubmittedOrder;
 	const hasEnoughInk = inkBalance >= inkCost;
 	const disabled = isSaving || isUpdatingProgress || isDragging;
 	const isEligible = Boolean(puzzle && eligibility.isEligible);
-	const submitDisabled =
-		disabled || isComplete || (!needsRetry && (!isEligible || !hasEnoughInk || !hasChangedOrder));
-	const boardDisabled = isSaving || isUpdatingProgress || needsRetry || !isEligible;
+	const boardDisabled =
+		isSaving || isUpdatingProgress || needsRetry || !isEligible || isSentenceSolved;
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
 	const storyColor = getDeckStoryColor(deckId);
 	const paragraphNumber = getParagraphNumber(deckId);
@@ -172,7 +184,39 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const feedbackStyle = {
 		backgroundColor: feedback?.backgroundColor ?? 'transparent',
 	};
-	const submitLabel = needsRetry ? 'Retry save' : `Submit (${inkCost} Ink)`;
+	/**
+	 * Initial submission button values
+	 */
+	let submitLabel = `Submit (${inkCost} Ink)`;
+	let submitColor = inkColor;
+	let submitDisabled = disabled || isComplete;
+
+	if (!needsRetry) {
+		submitDisabled = submitDisabled || !isEligible || isShowingGemClaim;
+
+		if (isSentenceSolved) {
+			submitDisabled = submitDisabled || hasPendingCardRewards;
+		} else {
+			submitDisabled = submitDisabled || !hasEnoughInk;
+		}
+	}
+
+	if (hasFailedAttempt) {
+		submitLabel = `Try again (${inkCost} Ink)`;
+	}
+
+	if (isSentenceSolved) {
+		submitLabel = 'Next sentence';
+		submitColor = storyColor;
+	}
+
+	if (needsRetry) {
+		submitLabel = 'Retry save';
+	}
+
+	if (submitDisabled) {
+		submitColor = colors.dark.border;
+	}
 
 	/**
 	 * Message after claiming all three gems
@@ -216,7 +260,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					const hasPendingGem = savedPuzzle.rewards.some(reward => reward.kind === 'gem');
 					let savedFeedback: WordOrderFeedback | null = null;
 
-					if (savedPuzzle.isEligible && !hasPendingGem) {
+					if (savedPuzzle.isEligible && !savedPuzzle.isSentenceSolved && !hasPendingGem) {
 						await saveWordOrderDraft({
 							database,
 							userId,
@@ -228,7 +272,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 
 					if (lastAttempt?.status === 'incorrect' && savedOrder === attemptedOrder) {
 						savedFeedback = {
-							text: `That arrangement cost ${lastAttempt.inkSpent} Ink. Change the order before submitting again.`,
+							text: `Not quite. That attempt cost ${lastAttempt.inkSpent} ink`,
 							backgroundColor: colors.light.danger,
 						};
 					}
@@ -236,7 +280,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					if (isActive) {
 						setPuzzle(savedPuzzle);
 						setPositions(savedPuzzle.positions);
-						setLastSubmittedOrder(attemptedOrder);
+						setHasFailedAttempt(lastAttempt?.status === 'incorrect');
 						setFeedback(savedFeedback);
 						setNeedsRetry(false);
 						pendingAttempt.current = null;
@@ -260,7 +304,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 
 	/**
 	 * Saves a card move before updating the board or allowing another action.
-	 * If saving fails, the last saved order stays in place so the player can try that move again.
 	 */
 	async function handleReorder(nextPositions: number[]): Promise<boolean> {
 		if (
@@ -268,6 +311,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 			!puzzle ||
 			!isEligible ||
 			isComplete ||
+			isSentenceSolved ||
 			needsRetry ||
 			isBusy.current ||
 			isUpdatingProgress
@@ -307,8 +351,80 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	}
 
 	/**
-	 * Sends the current card order for a paid check and shows the result.
-	 * Keeps the same submission ID after a save error so retrying cannot charge twice.
+	 * Update the claimed word in place so the remaining claims and next button stay accurate.
+	 */
+	function handleCardRewardClaimed(reward: SolveReward) {
+		setPuzzle(current => {
+			if (!current) {
+				return current;
+			}
+
+			const rewards = current.rewards.map(saved => {
+				if (saved.kind === reward.kind && saved.position === reward.position) {
+					return reward;
+				}
+
+				return saved;
+			});
+
+			return {
+				...current,
+				rewards,
+			};
+		});
+	}
+
+	/**
+	 * Open the next unfinished sentence after every word reward has been claimed.
+	 * Moving forward does not submit another answer or spend Ink.
+	 */
+	async function handleNextSentence() {
+		if (!userId || !puzzle || hasPendingCardRewards || disabled || isBusy.current) {
+			return;
+		}
+
+		isBusy.current = true;
+		setIsSaving(true);
+
+		try {
+			const database = await getDB();
+			const nextPuzzle = await getSolveWordOrderPuzzle({
+				database,
+				userId,
+				deckId,
+				fastSolveUnlocks,
+			});
+			const hasPendingGem = nextPuzzle.rewards.some(reward => reward.kind === 'gem');
+
+			if (nextPuzzle.isEligible && !nextPuzzle.isSentenceSolved && !hasPendingGem) {
+				await saveWordOrderDraft({
+					database,
+					userId,
+					deckId,
+					position: nextPuzzle.sentencePosition,
+					positions: nextPuzzle.positions,
+				});
+			}
+
+			setPuzzle(nextPuzzle);
+			setPositions(nextPuzzle.positions);
+			setHasFailedAttempt(false);
+			setFeedback(null);
+			pendingAttempt.current = null;
+		} catch (error) {
+			console.error('Could not open the next Word Order sentence:', error);
+			setFeedback({
+				text: 'The next sentence could not be loaded. Please try again.',
+				backgroundColor: colors.light.warning,
+			});
+		} finally {
+			isBusy.current = false;
+			setIsSaving(false);
+		}
+	}
+
+	/**
+	 * Check the order
 	 */
 	async function handleSubmit() {
 		let attempt = pendingAttempt.current;
@@ -320,6 +436,11 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 			isBusy.current ||
 			(!needsRetry && pendingAttempt.current)
 		) {
+			return;
+		}
+
+		if (isSentenceSolved && !needsRetry) {
+			await handleNextSentence();
 			return;
 		}
 
@@ -352,19 +473,39 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 			setNeedsRetry(false);
 			setFeedback(getWordOrderFeedback(result));
 
-			if (result.status === 'incorrect') {
-				setLastSubmittedOrder(JSON.stringify(attempt.positions));
-			} else if (result.status === 'exact' || result.status === 'alreadySolved') {
+			/**
+			 * Play feedback for this saved submission.
+			 * I like using explicit voids
+			 */
+			if (
+				(result.status === 'exact' || result.status === 'incorrect') &&
+				lastFeedbackAttemptId.current !== attempt.attemptId
+			) {
+				lastFeedbackAttemptId.current = attempt.attemptId;
+
+				if (result.status === 'exact') {
+					void playCorrectWord();
+				} else {
+					void playIncorrect();
+				}
+			}
+
+			if (
+				result.status === 'incorrect' ||
+				result.status === 'exact' ||
+				result.status === 'alreadySolved'
+			) {
 				const database = await getDB();
 				const nextPuzzle = await getSolveWordOrderPuzzle({
 					database,
 					userId,
 					deckId,
 					fastSolveUnlocks,
+					sentencePosition: attempt.position,
 				});
 				const hasPendingGem = nextPuzzle.rewards.some(reward => reward.kind === 'gem');
 
-				if (nextPuzzle.isEligible && !hasPendingGem) {
+				if (nextPuzzle.isEligible && !nextPuzzle.isSentenceSolved && !hasPendingGem) {
 					await saveWordOrderDraft({
 						database,
 						userId,
@@ -376,7 +517,8 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 
 				setPuzzle(nextPuzzle);
 				setPositions(nextPuzzle.positions);
-				setLastSubmittedOrder(null);
+				setHasFailedAttempt(result.status === 'incorrect');
+
 				pendingAttempt.current = null;
 			} else {
 				pendingAttempt.current = null;
@@ -413,6 +555,9 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		}
 	}
 
+	/**
+	 * Render it
+	 */
 	return (
 		<View style={[styles.container, containerInsets]}>
 			<BackgroundImage
@@ -445,7 +590,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					</Pressable>
 				</View>
 				<View style={styles.details}>
-					{puzzle && isEligible && !isComplete && !pendingGem && (
+					{puzzle && isEligible && !isComplete && !isShowingGemClaim && (
 						<Text style={[styles.text, styles.sentenceProgress]}>
 							Sentence {puzzle.sentencePosition + 1} of {puzzle.sentenceCount}
 						</Text>
@@ -472,30 +617,45 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						<Text style={styles.title}>Third gem earned!</Text>
 						<Text style={styles.text}>{completionMessage}</Text>
 					</View>
-				: pendingGem ?
+				: isShowingGemClaim && pendingGem ?
 					<SolveGemClaim
 						deckId={deckId}
 						reward={pendingGem}
 						disabled={disabled}
 						onClaimed={setClaimedGem}
 					/>
+				: isEligible && isSentenceSolved ?
+					<WordOrderClaims
+						deckId={deckId}
+						cards={puzzle.cards}
+						positions={positions}
+						rewards={puzzle.rewards}
+						disabled={disabled}
+						onRewardClaimed={handleCardRewardClaimed}
+					/>
 				: isEligible ?
 					<WordOrderBoard
 						key={`${deckId}-${puzzle.sentencePosition}`}
+						deckId={deckId}
 						cards={puzzle.cards}
 						positions={positions}
+						lockedCardIds={puzzle.lockedCardIds}
+						rewards={puzzle.rewards}
 						disabled={boardDisabled}
+						onRewardClaimed={handleCardRewardClaimed}
 						onReorder={handleReorder}
 						onDraggingChange={setIsDragging}
 					/>
 				:	<Text style={styles.notice}>{unlockMessage}</Text>}
 				<View style={styles.footer}>
-					{puzzle && !isComplete && !pendingGem && (
+					{puzzle && !isComplete && !isShowingGemClaim && (
 						<>
-							{isEligible && !hasEnoughInk && !feedback?.needsInk && (
+							{isEligible && !isSentenceSolved && !hasEnoughInk && !feedback?.needsInk && (
 								<Text style={styles.text}>
-									You need {inkCost} Ink to submit. Close this puzzle and practice flashcards to
-									earn more.
+									<Text style={styles.warningHighlight}>
+										You need {inkCost} Ink to submit. Close this puzzle and practice flashcards to
+										earn more.
+									</Text>
 								</Text>
 							)}
 							{feedback && (
@@ -520,7 +680,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 								Close
 							</SecondaryButton>
 						</View>
-						{puzzle && !isComplete && !pendingGem && (
+						{puzzle && !isComplete && !isShowingGemClaim && (
 							<View style={styles.solveActionButton}>
 								<LinkButton
 									handler={handleSubmit}
@@ -530,7 +690,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 										disabled: submitDisabled,
 										busy: isSaving,
 									}}
-									color={submitDisabled ? colors.dark.border : inkColor}
+									color={submitColor}
 									style={submitDisabled && styles.disabled}
 									useArrow={false}
 									fullwidth
@@ -557,6 +717,9 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
  * Styles
  */
 const styles = StyleSheet.create({
+	warningHighlight: {
+		backgroundColor: colors.light.warning,
+	},
 	container: {
 		flex: 1,
 		paddingHorizontal: 8,

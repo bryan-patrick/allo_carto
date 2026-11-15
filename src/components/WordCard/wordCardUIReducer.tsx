@@ -1,3 +1,4 @@
+import { getEnglishPrefixes } from '@/src/util/englishWordParts';
 import { type Word } from '../CardDeck/cardDeckTypes';
 import { type CardMistake, getFeedbackKey, type WordCardStateProps } from './wordCardContext';
 
@@ -19,17 +20,25 @@ export type WordCardUIAction =
 	  };
 
 /**
- * Compare the user's selection against actual
+ * Check the selected prefix and meaning against this word's accepted answers.
  */
 function getMistake(state: WordCardStateProps, currentCard: Word): CardMistake {
+	const acceptedPrefixes = getEnglishPrefixes(currentCard);
 	let mistake: CardMistake = 'NONE';
 
-	if (currentCard.englishArticle && currentCard.englishArticle !== state.selectedArticle) {
+	if (
+		acceptedPrefixes.length > 0 &&
+		(!state.selectedArticle || !acceptedPrefixes.includes(state.selectedArticle))
+	) {
 		mistake = 'ARTICLE';
 	}
 
 	if (!state.selectedWord || !currentCard.englishWords.includes(state.selectedWord)) {
-		mistake = mistake === 'ARTICLE' ? 'BOTH' : 'WORD';
+		if (mistake === 'ARTICLE') {
+			mistake = 'BOTH';
+		} else {
+			mistake = 'WORD';
+		}
 	}
 
 	return mistake;
@@ -44,16 +53,23 @@ export function wordCardUIReducer(
 ): WordCardStateProps {
 	switch (action.type) {
 		case 'REVEAL_ANSWER': {
-			if (state.stage !== 'READY' || !action.currentCard) return state;
+			if (state.stage !== 'READY' || !action.currentCard) {
+				return state;
+			}
+
+			const acceptedPrefixes = getEnglishPrefixes(action.currentCard);
 
 			return wordCardUIReducer(
 				{
 					...state,
-					selectedArticle: action.currentCard.englishArticle ?? null,
+					selectedArticle: acceptedPrefixes[0] ?? null,
 					selectedWord: action.currentCard.englishWords[0],
 					isAnswerRevealed: true,
 				},
-				{ type: 'CHECK_ANSWER', currentCard: action.currentCard },
+				{
+					type: 'CHECK_ANSWER',
+					currentCard: action.currentCard,
+				},
 			);
 		}
 		case 'CHECK_ANSWER': {

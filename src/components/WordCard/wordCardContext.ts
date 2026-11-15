@@ -10,18 +10,18 @@ import { type WordCardUIAction } from './wordCardUIReducer';
  */
 export const FEEDBACK_TEXT_FRONT: Partial<Record<FeedbackKey, string>> = {
 	READY_PENDING_NONE: '',
-	READY_WARNING_ARTICLE: 'The article is incorrect! Try again.',
+	READY_WARNING_ARTICLE: 'The first part is incorrect! Try again.',
 	READY_WARNING_WORD: 'The word is incorrect! Try again.',
 	READY_WARNING_BOTH: 'Both are incorrect! Try again.',
-	INCORRECT_WARNING_ARTICLE: 'The article is incorrect! Try again.',
+	INCORRECT_WARNING_ARTICLE: 'The first part is incorrect! Try again.',
 	INCORRECT_WARNING_WORD: 'The word is incorrect! Try again.',
 	INCORRECT_WARNING_BOTH: 'Both are incorrect! Try again.',
-	COMPLETED_DANGER_ARTICLE: 'That is the wrong article!',
+	COMPLETED_DANGER_ARTICLE: 'That is the wrong first part!',
 	COMPLETED_DANGER_WORD: 'That is the wrong word!',
 	COMPLETED_DANGER_BOTH: 'Both are wrong!',
 	INCORRECT_DANGER_BOTH: 'Both are incorrect! Try again next time.',
 	INCORRECT_DANGER_WORD: 'That is the wrong word!',
-	INCORRECT_DANGER_ARTICLE: 'That is the wrong article!',
+	INCORRECT_DANGER_ARTICLE: 'That is the wrong first part!',
 };
 
 export const FEEDBACK_TEXT_BACK: Partial<Record<FeedbackKey | 'REVEALED_ANSWER', string>> = {

@@ -1,6 +1,6 @@
-import type { DeckChapter, DeckStory } from '@/data/french/storyAtlas';
+import type { Chapter, Story } from '@/data/french/storyAtlas';
 import type {
-	CardDeck,
+	Paragraph,
 	PassageSegment,
 	ReadingPassage,
 } from '@/src/components/CardDeck/cardDeckTypes';
@@ -12,7 +12,7 @@ import getDeckWordProgressCounts, {
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { isItemUnlocked } from '@/src/util/atlasCompletion';
+import { getAtlasItemLabel, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { hasChapterContent, hasParagraphContent } from '@/src/util/atlasContent';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import type { WordProgressKey } from '@/src/util/wordProgress';
@@ -23,7 +23,7 @@ import { Pressable, type StyleProp, StyleSheet, Text, type TextStyle, View } fro
  * Typing
  */
 export interface ReadingLinkProps {
-	item: CardDeck | DeckChapter | DeckStory;
+	item: Paragraph | Chapter | Story;
 	color: string;
 	label?: string;
 	style?: StyleProp<TextStyle>;
@@ -50,31 +50,31 @@ export default function ReadingLink({
 	const { progressById } = useUserProgress();
 	const [loading, setLoading] = useState(false);
 	const [passageState, setPassageState] = useState<PassageState>();
-	const title = 'name' in item ? item.name : item.title;
-	let decks: CardDeck[];
+	const title = getAtlasItemLabel(item.id);
+	let paragraphs: Paragraph[];
 
 	if ('chapters' in item) {
-		decks = item.chapters
+		paragraphs = item.chapters
 			.filter(hasChapterContent)
-			.flatMap(chapter => chapter.decks.filter(hasParagraphContent));
-	} else if ('decks' in item) {
-		decks = item.decks.filter(hasParagraphContent);
+			.flatMap(chapter => chapter.paragraphs.filter(hasParagraphContent));
+	} else if ('paragraphs' in item) {
+		paragraphs = item.paragraphs.filter(hasParagraphContent);
 	} else {
-		decks = [item];
+		paragraphs = [item];
 	}
 
 	/**
 	 * Reading a chapter or story only includes paragraphs the player can already open.
 	 */
-	decks = decks.filter(deck => {
+	paragraphs = paragraphs.filter(paragraph => {
 		return isItemUnlocked({
-			id: deck.id,
+			id: paragraph.id,
 			progressById,
 		});
 	});
 
 	const canRead =
-		decks.length > 0 &&
+		paragraphs.length > 0 &&
 		isItemUnlocked({
 			id: item.id,
 			progressById,
@@ -90,7 +90,7 @@ export default function ReadingLink({
 		try {
 			const passage: PassageSegment[] = [];
 
-			for (const deck of decks) {
+			for (const paragraph of paragraphs) {
 				if (passage.length > 0) {
 					passage.push({
 						text: '\n\n',
@@ -99,7 +99,7 @@ export default function ReadingLink({
 					});
 				}
 
-				passage.push(...deck.passage);
+				passage.push(...paragraph.passage);
 			}
 
 			const wordIds = getPassageWordIds(passage);
@@ -119,7 +119,6 @@ export default function ReadingLink({
 			setPassageState({
 				deck: {
 					id: item.id,
-					title,
 					passage,
 					wordIds,
 				},

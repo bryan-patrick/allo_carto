@@ -1,20 +1,25 @@
 import sharedStyles from '@/src/app/sharedStyles';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
+import { getAtlasItemLabel } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import colors from '../../app/colors';
 
 interface ViewCardsViewProps {
-	deck?: CardDeck;
+	deck?: Paragraph;
 }
 
 /**
  * ViewCardsView component
  */
 export default function ViewCardsView({ deck }: ViewCardsViewProps) {
-	const title = deck?.title ?? 'Paragraph';
 	const cardCount = deck?.wordIds.length ?? 0;
 	const storyColor = getDeckStoryColor(deck?.id);
+	let title = 'Paragraph';
+
+	if (deck) {
+		title = getAtlasItemLabel(deck.id);
+	}
 
 	return (
 		<ScrollView contentContainerStyle={styles.container}>

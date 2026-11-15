@@ -1,4 +1,5 @@
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { getEnglishPrefixes } from '@/src/util/englishWordParts';
 import { memo, type ReactNode } from 'react';
 import {
 	ImageSourcePropType,
@@ -56,14 +57,14 @@ const WordCardBack = memo(function WordCardBackMemo({
 	/**
 	 * Word data
 	 */
-	const { englishWords, englishArticle, frenchArticle, frenchWord, form, partOfSpeech } =
-		currentCard;
+	const { englishWords, frenchArticle, frenchWord, form, partOfSpeech } = currentCard;
+	const acceptedPrefixes = getEnglishPrefixes(currentCard);
 
 	const displayedFrenchWord = formatFrenchWordWithArticle({
 		article: frenchArticle,
 		word: frenchWord,
 	});
-	const displayedArticle = cardState.selectedArticle ?? englishArticle;
+	const displayedArticle = cardState.selectedArticle ?? acceptedPrefixes[0];
 	const displayedWord = cardState.selectedWord ?? englishWords[0];
 
 	const formCapitalized = (form ?? '')
@@ -124,7 +125,7 @@ const WordCardBack = memo(function WordCardBackMemo({
 					{wordActions}
 				</View>
 				<View style={sharedWordCardStyles.answerSlotContainer}>
-					{englishArticle && (
+					{acceptedPrefixes.length > 0 && (
 						<Animated.Text
 							numberOfLines={1}
 							style={[sharedWordCardStyles.answerSlot, articleSlotStyle, articleWidthStyle]}

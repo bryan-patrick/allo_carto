@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import sharedStyles from '@/src/app/sharedStyles';
 import { useUserProgress } from '@/src/db/useUserProgress';
+import { defaultEnglishPrefixChoices, getEnglishPrefixes } from '@/src/util/englishWordParts';
 import { useEffect, useLayoutEffect, useReducer, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -40,6 +41,8 @@ interface ResumeWordCardOptions {
  * This lets a reopened deck reach its results without asking for the same answer again.
  */
 function getStartingWordCardState({ word, result }: ResumeWordCardOptions): WordCardStateProps {
+	const acceptedPrefixes = getEnglishPrefixes(word);
+
 	if (!result) {
 		return initialWordCardState;
 	}
@@ -48,7 +51,7 @@ function getStartingWordCardState({ word, result }: ResumeWordCardOptions): Word
 		...initialWordCardState,
 		stage: 'COMPLETED',
 		progress: result.outcome === 'incorrect' ? 'DANGER' : 'SUCCESS',
-		selectedArticle: word.englishArticle ?? null,
+		selectedArticle: acceptedPrefixes[0] ?? null,
 		selectedWord: word.englishWords[0] ?? null,
 		isAnswerRevealed: result.outcome === 'skipped',
 	};
@@ -152,27 +155,40 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 			loadedWordId.current = word.id;
 
 			/**
-			 * Keep a list of the choices shown in the article buttons.
-			 * A Set stores each choice only once.
+			 * Keep the accepted prefixes and second-slot answers in separate groups of buttons.
+			 * Older cards keep their usual article choices.
 			 */
-			const uniqueArticleChoices = new Set<string>();
+			const acceptedPrefixes = getEnglishPrefixes(word);
+			const correctWordChoices = new Set(word.englishWords.map(meaning => meaning.toLowerCase()));
+			const uniquePrefixChoices = new Set<string>();
+			let prefixChoicePool = englishArticles;
+			let prefixDistractorCount: number | undefined;
 
-			if (word.englishArticle) {
+			if (word.englishPrefixes) {
+				prefixChoicePool = defaultEnglishPrefixChoices;
 				/**
-				 * Include the usual articles and this word's correct article, such as "to".
-				 * Use lowercase so "The" and "the" are treated as the same choice.
+				 * Keep the first group as small as the usual article group.
+				 * Both correct prefixes count toward its total number of choices.
 				 */
-				for (const article of [...englishArticles, word.englishArticle]) {
-					uniqueArticleChoices.add(article.toLowerCase());
+				prefixDistractorCount = Math.max(0, englishArticles.length - acceptedPrefixes.length);
+			}
+
+			const availablePrefixChoices = prefixChoicePool.filter(prefix => {
+				return !correctWordChoices.has(prefix.toLowerCase());
+			});
+
+			if (acceptedPrefixes.length > 0) {
+				for (const prefix of [...availablePrefixChoices, ...acceptedPrefixes]) {
+					uniquePrefixChoices.add(prefix.toLowerCase());
 				}
 			}
 
 			/**
-			 * Keep a word choice only if it is not already an article choice.
-			 * This stops a choice like "to" from showing up in both groups of buttons.
+			 * Keep first-slot choices out of the word buttons.
+			 * For d'un, "of" and "from" belong in the first slot, while "a" stays in the second.
 			 */
 			function isAvailableWordChoice(choice: string) {
-				return !uniqueArticleChoices.has(choice.toLowerCase());
+				return !uniquePrefixChoices.has(choice.toLowerCase());
 			}
 
 			/**
@@ -210,11 +226,12 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 				}),
 			);
 
-			if (word.englishArticle) {
+			if (acceptedPrefixes.length > 0) {
 				setArticleWords(
 					await getFillerWords({
-						words: englishArticles,
-						correctWords: [word.englishArticle],
+						amount: prefixDistractorCount,
+						words: availablePrefixChoices,
+						correctWords: acceptedPrefixes,
 					}),
 				);
 			} else {
@@ -228,6 +245,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 		word.frenchWord,
 		word.englishWords,
 		word.englishArticle,
+		word.englishPrefixes,
 		word.partOfSpeech,
 		cardDeckState.cardDeck.wordChoices,
 	]);
