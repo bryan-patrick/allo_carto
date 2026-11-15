@@ -1,6 +1,5 @@
-import type { DeckStory } from '@/data/french/storyAtlas';
+import type { Story } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
-import { hasChapterContent } from '@/src/util/atlasContent';
 import type { ProgressById } from '@/src/util/progression';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
@@ -11,7 +10,7 @@ import ChapterSelectRow, { chapterMapDotSize, type ChapterMapAnchor } from './Ch
  * Types
  */
 interface ChapterMapProps {
-	story: DeckStory;
+	story: Story;
 	progressById: ProgressById;
 }
 
@@ -22,7 +21,8 @@ interface ChapterMapCurveProps {
 }
 
 /**
- * It looks crazy but we're really just using curves to line up to our chapters via SVG
+ * It looks crazy but we're really just using
+ * curves to line up to our chapters with SVG.
  */
 function getChapterMapCurve({ start, end, width }: ChapterMapCurveProps): string {
 	const edgeInset = chapterMapDotSize;
@@ -32,12 +32,12 @@ function getChapterMapCurve({ start, end, width }: ChapterMapCurveProps): string
 }
 
 /**
- * This draws the map trail
+ * Draw the trail to all chapters.
  */
 export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 	const [size, setSize] = useState({ width: 0, height: 0 });
 	const [anchors, setAnchors] = useState<Record<string, ChapterMapAnchor>>({});
-	const chapters = story.chapters.filter(hasChapterContent);
+	const chapters = story.chapters;
 	const storyColor = colors.category[story.category];
 	const buttonColor = colors.category[story.category];
 
@@ -125,11 +125,7 @@ export default function ChapterMap({ story, progressById }: ChapterMapProps) {
 					})}
 				</Svg>
 			)}
-			{story.chapters.map((chapter, index) => {
-				if (!hasChapterContent(chapter)) {
-					return null;
-				}
-
+			{chapters.map((chapter, index) => {
 				return (
 					<ChapterSelectRow
 						key={chapter.id}

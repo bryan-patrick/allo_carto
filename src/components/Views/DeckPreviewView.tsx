@@ -5,6 +5,7 @@ import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import TTSButton from '@/src/components/TTSButton';
 import { getParagraphNumber } from '@/src/util/atlasCompletion';
+import { getEnglishTranslations } from '@/src/util/englishWordParts';
 import formatFrenchWordWithArticle from '@/src/util/formatFrenchWordWithArticle';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { ImageBackground } from 'expo-image';
@@ -37,13 +38,7 @@ function PreviewWordRow({ word }: PreviewWordRowProps) {
 		article: word.frenchArticle,
 		word: word.frenchWord,
 	});
-	const englishDefinitions = word.englishWords.map(englishWord => {
-		if (word.englishArticle) {
-			return `${word.englishArticle} ${englishWord}`;
-		}
-
-		return englishWord;
-	});
+	const englishDefinitions = getEnglishTranslations(word);
 	const translation = englishDefinitions.join(', ');
 	const cefrStyle = {
 		backgroundColor: colors.light.CEFR[word.CEFR],

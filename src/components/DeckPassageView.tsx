@@ -9,7 +9,7 @@ import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgres
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { readingSpeechRates } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findChapterById, getParagraphNumber } from '@/src/util/atlasCompletion';
+import { findChapterById, getAtlasItemLabel } from '@/src/util/atlasCompletion';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import type { SolveStage } from '@/src/util/solveProgression';
@@ -200,8 +200,8 @@ export default function DeckPassageView({
 }: DeckPassageViewProps) {
 	const { progressById } = useUserProgress();
 	const chapter = findChapterById(deck.id);
-	const paragraphNumber = getParagraphNumber(deck.id);
-	const readingLabel = chapter?.label ?? (paragraphNumber ? `Paragraph ${paragraphNumber}` : '');
+	const readingLabel = chapter?.label ?? '';
+	const passageLabel = getAtlasItemLabel(deck.id);
 	const {
 		settings: {
 			useLearningLevelColors,
@@ -473,22 +473,31 @@ export default function DeckPassageView({
 					}
 					style={styles.header}
 				>
+					{showTitle && Boolean(readingLabel) && (
+						<Text style={styles.readingLabel}>{readingLabel}</Text>
+					)}
 					{showTitle && (
-						<View style={styles.readingMetaRow}>
-							<Text style={styles.readingLabel}>{readingLabel}</Text>
+						<View style={styles.titleRow}>
+							<View style={styles.titleDetails}>
+								<Text
+									style={[
+										styles.title,
+										{
+											color: storyColor,
+										},
+									]}
+								>
+									{passageLabel}
+								</Text>
+								{speechButton}
+							</View>
 							<CollectionGems
-								title={deck.title}
+								title={passageLabel}
 								progress={progressById[deck.id]}
 								size={24}
 								celebrationStage={celebrationStage}
 								celebrationReady={celebrationReady}
 							/>
-						</View>
-					)}
-					{showTitle && (
-						<View style={styles.titleRow}>
-							<Text style={[styles.title, { color: storyColor }]}>{deck.title}</Text>
-							{speechButton}
 						</View>
 					)}
 					{showProgress && (
@@ -823,12 +832,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		minHeight: 0,
 	},
-	readingMetaRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: 12,
-	},
 	readingLabel: {
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
@@ -843,6 +846,13 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	titleRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: 12,
+	},
+	titleDetails: {
+		flexShrink: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 8,

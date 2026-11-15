@@ -1,4 +1,4 @@
-import type { DeckStory } from '@/data/french/storyAtlas';
+import type { Story } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import BackgroundImage from './BackgroundImage';
@@ -10,7 +10,7 @@ const storyPaperBackground = require('@/src/app/assets/images/postcard-parts/bac
  * Typing
  */
 interface StorySelectorProps {
-	story: DeckStory;
+	story: Story;
 	isExpanded: boolean;
 	onPress: () => void;
 }

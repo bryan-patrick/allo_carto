@@ -81,9 +81,7 @@ export const mockWords: Word[] = [
  */
 export const mockCardDeck: CardDeck = createCardDeck({
 	id: 'deck__testing',
-	title: 'Testing deck',
 	description: 'A deck for tests',
-	chapter: 'Testing Chapter',
 	CEFR: ['A1'],
 	passage: mockWords.map(word => ({ text: word.frenchWord, wordId: word.id })),
 	words: mockWords,

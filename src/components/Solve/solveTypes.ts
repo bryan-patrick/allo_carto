@@ -1,4 +1,4 @@
-import type { CardDeck, CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph, CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveAnswerResult } from '@/src/util/solveAnswer';
 import type {
 	CompletedSolveStages,
@@ -60,7 +60,7 @@ export interface SolvePosition {
 
 export interface SolvePuzzle extends SolveStageEligibility {
 	rewards: SolveReward[];
-	deck: CardDeck;
+	deck: Paragraph;
 	stage: SolveWordStage;
 	completedSolveStages: CompletedSolveStages;
 	positions: SolvePosition[];
@@ -109,11 +109,13 @@ export interface SavedWordOrderAttempt {
 
 export interface SolveWordOrderPuzzle extends SolveStageEligibility {
 	rewards: SolveReward[];
-	deck: CardDeck;
+	deck: Paragraph;
 	isUnlocked: boolean;
 	cards: SolveWordOrderCard[];
 	positions: number[];
+	lockedCardIds: number[];
 	sentencePosition: number;
+	isSentenceSolved: boolean;
 	sentenceCount: number;
 	solvedSentenceCount: number;
 	completedSolveStages: CompletedSolveStages;
@@ -138,7 +140,7 @@ export interface SolveSentence {
 
 export interface SolveSentencePuzzle extends SolveStageEligibility {
 	rewards: SolveReward[];
-	deck: CardDeck;
+	deck: Paragraph;
 	isUnlocked: boolean;
 	sentences: SolveSentence[];
 	completedSolveStages: CompletedSolveStages;

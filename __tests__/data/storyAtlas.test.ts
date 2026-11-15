@@ -1,4 +1,4 @@
-import { getDecks } from '@/data/french/storyAtlas';
+import { getParagraphs } from '@/data/french/storyAtlas';
 import { seedWords } from '@/data/french/words';
 
 // Broken references make passage words impossible to practice or complete.
@@ -7,7 +7,7 @@ describe('story atlas content', () => {
 		const wordsById = new Map(seedWords.map(word => [word.id, word]));
 		const invalidReferences: string[] = [];
 
-		for (const deck of getDecks()) {
+		for (const deck of getParagraphs()) {
 			for (const segment of deck.passage) {
 				if (segment.unlockExempt) continue;
 

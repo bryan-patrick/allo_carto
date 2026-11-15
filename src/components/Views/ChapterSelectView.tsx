@@ -1,4 +1,4 @@
-import type { DeckStory } from '@/data/french/storyAtlas';
+import type { Story } from '@/data/french/storyAtlas';
 import ChapterMap from '@/src/components/ChapterMap';
 import Loader from '@/src/components/Loader';
 import RepeatingBackgroundImage from '@/src/components/RepeatingBackgroundImage';
@@ -36,7 +36,7 @@ export default function ChapterSelectView() {
 		setStoryTabHeight(height);
 	}
 
-	async function handleSelectStory(story: DeckStory) {
+	async function handleSelectStory(story: Story) {
 		let didSave = false;
 
 		if (

@@ -37,8 +37,6 @@ export default function LockedSection({
 	fontSize,
 }: LockedSectionProps) {
 	const nextRequirement = unlockCriteria.find(criterion => !criterion.isUnlocked);
-	const description =
-		nextRequirement ? formatUnlockCriterion(nextRequirement) : 'More story content is coming soon.';
 	const borderStyle = {
 		borderColor: color,
 	};
@@ -57,6 +55,15 @@ export default function LockedSection({
 		color,
 		fontSize: fontSize ?? 12 + fontSizeOffset,
 	};
+
+	/**
+	 * Initial lock description
+	 */
+	let description = 'This content is locked.';
+
+	if (nextRequirement) {
+		description = formatUnlockCriterion(nextRequirement);
+	}
 
 	function showRequirements() {
 		Alert.alert('Keep solving to continue', description);

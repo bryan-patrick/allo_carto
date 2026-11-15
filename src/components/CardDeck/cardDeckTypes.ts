@@ -7,6 +7,7 @@ export type CardRarity = 'Common' | 'Rare' | 'Epic' | 'Legendary';
 export type CEFR = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 export type WordForm =
 	| 'contraction'
+	| 'elision'
 	| 'feminine'
 	| 'imperfect'
 	| 'infinitive'
@@ -26,20 +27,19 @@ export interface DeckWordChoice {
 export interface PassageSegment {
 	text: string;
 	wordId?: string;
+	canonicalEnglish?: string;
 	unlockExempt?: boolean;
 	after?: string;
 }
 
-export interface CardDeckDefinition extends Progression {
+export interface ParagraphDefinition extends Progression {
 	id: string;
-	title: string;
 	CEFR: CEFR[];
 	description: string;
-	words: Word[];
-	wordChoices: DeckWordChoice[];
-	chapter: string;
 	passage: PassageSegment[];
-	// Original English passage, when available.
+	/**
+	 * The matching English passage for sentence puzzles.
+	 */
 	englishPassage?: string;
 	/**
 	 * Allows a paragraph to accept more than one correct order in Solve++.
@@ -49,11 +49,23 @@ export interface CardDeckDefinition extends Progression {
 }
 
 /**
- * Hold a paragraph's content, learnable word IDs, and planned flashcard decks.
- * Each planned deck lists its word IDs in play order to match the learner's saved cycle.
+ * Keep a paragraph's passage and learnable word IDs together.
  */
-export interface CardDeck extends CardDeckDefinition {
+export interface Paragraph extends ParagraphDefinition {
 	wordIds: string[];
+}
+
+export interface CardDeckDefinition extends ParagraphDefinition {
+	words: Word[];
+	wordChoices: DeckWordChoice[];
+}
+
+/**
+ * Add the current flashcards and saved deck cycle to a paragraph.
+ */
+export interface CardDeck extends Paragraph {
+	words: Word[];
+	wordChoices: DeckWordChoice[];
 	flashcardDecks?: string[][];
 	flashcardProgress?: FlashcardDeckProgress;
 }
@@ -63,25 +75,40 @@ export interface FlashcardDeckProgress {
 	deckCount: number;
 }
 
-export type ReadingPassage = Pick<CardDeck, 'id' | 'title' | 'passage' | 'wordIds'>;
+export type ReadingPassage = Pick<Paragraph, 'id' | 'passage' | 'wordIds'>;
 
 /**
  * Word type
- * As a general rule, ids should always be slug-safe (no accents or anything)
+ *
+ * As a general rule, ids should always be slug-safe (no accents or anything and yes I made a pun...uh...sort of)
+ *
  * IDs are "word_partOfSpeech_frenchword(no special chars)"
  * E.G. "word_noun_apres" (note the lack of the accent over the é)
  *
  * Important: prop frenchWord ALWAYS gets its special characters.
  */
+export interface WordElision {
+	frenchWord: string;
+	pronunciation: string;
+	ipaPronunciation: string;
+}
+
 export interface Word {
 	id: string;
 	frenchWord: string;
 	englishWords: string[];
+	/**
+	 * The full English meaning used in puzzles. A passage can choose a different meaning.
+	 */
+	canonicalEnglish?: string | null;
+	elision?: WordElision;
 	frenchArticle?: string;
 	englishArticle?: string;
+	englishPrefixes?: string[];
 	pronunciation: string;
 	ipaPronunciation: string;
 	isVulgar: boolean;
+	isQuebecois?: boolean;
 	CEFR: CEFR;
 	lemmaId?: string;
 	form?: WordForm;

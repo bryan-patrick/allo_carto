@@ -1,9 +1,8 @@
 import GettingStartedPage from './GettingStartedPage';
 
-// Share the inspiration for Léo and Poe and wish the player well.
-export default function GoodLuckPage() {
-	const description = `Enjoy reading about the adventures of Leo and Poe.\n\nI hope a little of their magic finds its way to you, as it did for me.`;
+const description = `Good luck, enojoy reading about the adventures of Leo and Poe. We hope a little of their magic finds its way to you.`;
 
+export default function GoodLuckPage() {
 	return (
 		<GettingStartedPage
 			title="Bonne chance!"

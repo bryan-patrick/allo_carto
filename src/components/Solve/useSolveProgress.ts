@@ -1,6 +1,10 @@
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
-import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
+import {
+	findParagraphById,
+	getChapterSolveUnlockLevel,
+	isItemUnlocked,
+} from '@/src/util/atlasCompletion';
 import {
 	getCompletedSolveStages,
 	getNextSolveStage,
@@ -21,11 +25,8 @@ export interface SolveProgress extends SolveStageEligibility {
 }
 
 /**
- * This hook works out the next Solve stage for a
- * paragraph and whether the player can open it.
- *
- * It reads completed stages, player level, and Fast Solve Unlocks,
- * then returns the next stage’s label, required level, and any reason it’s locked.
+ * This hook gets the paragraph's next
+ * puzzle and explain whether it can be opened.
  */
 export function useSolveProgress(deckId: string): SolveProgress {
 	const { progressById, experience } = useUserProgress();
@@ -54,6 +55,7 @@ export function useSolveProgress(deckId: string): SolveProgress {
 
 	eligibility = getSolveStageEligibility({
 		stage: nextStage,
+		chapterUnlockLevel: getChapterSolveUnlockLevel(deckId, nextStage),
 		completedStages,
 		playerLevel: experience.level,
 		fastSolveUnlocks: settings.fastSolveUnlocks,

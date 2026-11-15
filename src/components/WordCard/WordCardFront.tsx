@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { getEnglishPrefixes } from '@/src/util/englishWordParts';
 import { memo, type ReactNode } from 'react';
 import {
 	ImageSourcePropType,
@@ -60,14 +61,13 @@ const WordCardFront = memo(function WordCardFrontMemo({
 	/**
 	 * Word data
 	 */
-	const { frenchArticle, englishArticle, englishWords, frenchWord, form, partOfSpeech } =
-		currentCard;
+	const { frenchArticle, englishWords, frenchWord, form, partOfSpeech } = currentCard;
+	const acceptedPrefixes = getEnglishPrefixes(currentCard);
 
 	/**
-	 * Render the articlea and word the user has selected.
-	 * These will animated when changing size, which is cool.
+	 * Show the selected prefix and meaning
 	 */
-	const displayedArticle = cardState.selectedArticle ?? englishArticle;
+	const displayedArticle = cardState.selectedArticle ?? acceptedPrefixes[0];
 	const displayedWord = cardState.selectedWord ?? englishWords[0];
 	const displayedFrenchWord = formatFrenchWordWithArticle({
 		article: frenchArticle,
@@ -134,7 +134,7 @@ const WordCardFront = memo(function WordCardFrontMemo({
 					{wordActions}
 				</View>
 				<View style={sharedWordCardStyles.answerSlotContainer}>
-					{englishArticle && (
+					{acceptedPrefixes.length > 0 && (
 						<>
 							<Text
 								numberOfLines={1}

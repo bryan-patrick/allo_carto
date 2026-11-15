@@ -1,4 +1,4 @@
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import { getSolvePassage, type SolvePassageSegment } from './getSolvePassage';
 
 export interface SentencePassage {
@@ -9,7 +9,7 @@ export interface SentencePassage {
 /**
  * Splits the French paragraph into sentences and keeps its words and punctuation.
  */
-export function splitFrenchSentences(deck: CardDeck): SentencePassage[] {
+export function splitFrenchSentences(deck: Paragraph): SentencePassage[] {
 	const passage = getSolvePassage(deck.passage);
 	const sentences: SentencePassage[] = [];
 	let text = '';

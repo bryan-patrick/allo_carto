@@ -1,4 +1,4 @@
-import { storyAtlas, type DeckStory } from '@/data/french/storyAtlas';
+import { storyAtlas, type Story } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useUserContext } from '@/src/db/useUserContext';
@@ -8,13 +8,13 @@ import { hasStoryContent } from '@/src/util/atlasContent';
 import { getSelectedStory } from '@/src/util/getSelectedStory';
 import { getStoriesForArea } from '@/src/util/storyAreas';
 import { StyleSheet, Text, View } from 'react-native';
-import Story from './Story';
+import StoryCard from './Story';
 
 /**
  * Typing
  */
 interface StorySelectViewProps {
-	onSelect: (story: DeckStory) => void;
+	onSelect: (story: Story) => void;
 	isSelecting: boolean;
 }
 
@@ -59,7 +59,7 @@ export default function StorySelectView({ onSelect, isSelecting }: StorySelectVi
 						</View>
 					</View>
 					{stories.map(story => (
-						<Story
+						<StoryCard
 							key={story.id}
 							story={story}
 							isSelected={story.id === selectedStory?.id}

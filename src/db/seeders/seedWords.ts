@@ -9,17 +9,26 @@ export default async function seedWords(): Promise<void> {
 	 */
 	for (const word of frenchSeedWords) {
 		await logThisIfItFails(`Oops we messed up seeding word ${word.id}`, async () => {
+			let savedEnglishPrefixes: string | null = null;
+
+			if (word.englishPrefixes) {
+				savedEnglishPrefixes = JSON.stringify(word.englishPrefixes);
+			}
+
 			await database.runAsync(
 				`
 				INSERT INTO words (
 					id,
 					frenchWord,
 					englishWords,
+					canonicalEnglish,
 					frenchArticle,
 					englishArticle,
+					englishPrefixes,
 					pronunciation,
 					ipaPronunciation,
 					isVulgar,
+					isQuebecois,
 					CEFR,
 					lemmaId,
 					form,
@@ -29,15 +38,18 @@ export default async function seedWords(): Promise<void> {
 					correctCount,
 					rarity
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				ON CONFLICT(id) DO UPDATE SET
 					frenchWord = excluded.frenchWord,
 					englishWords = excluded.englishWords,
+					canonicalEnglish = excluded.canonicalEnglish,
 					frenchArticle = excluded.frenchArticle,
 					englishArticle = excluded.englishArticle,
+					englishPrefixes = excluded.englishPrefixes,
 					pronunciation = excluded.pronunciation,
 					ipaPronunciation = excluded.ipaPronunciation,
 					isVulgar = excluded.isVulgar,
+					isQuebecois = excluded.isQuebecois,
 					CEFR = excluded.CEFR,
 					lemmaId = excluded.lemmaId,
 					form = excluded.form,
@@ -50,11 +62,14 @@ export default async function seedWords(): Promise<void> {
 					word.id,
 					word.frenchWord,
 					JSON.stringify(word.englishWords),
+					word.canonicalEnglish ?? null,
 					word.frenchArticle ?? null,
 					word.englishArticle ?? null,
+					savedEnglishPrefixes,
 					word.pronunciation,
 					word.ipaPronunciation,
-					word.isVulgar ? 1 : 0,
+					Number(word.isVulgar),
+					Number(word.isQuebecois ?? false),
 					word.CEFR,
 					word.lemmaId ?? null,
 					word.form ?? null,

@@ -1,10 +1,10 @@
 import type { StoryArea } from '@/data/french/storyAreas';
-import type { DeckStory } from '@/data/french/storyAtlas';
+import type { Story } from '@/data/french/storyAtlas';
 
 /**
  * Stories belong to the area containing their required player level.
  */
-export function getStoriesForArea(stories: DeckStory[], area: StoryArea): DeckStory[] {
+export function getStoriesForArea(stories: Story[], area: StoryArea): Story[] {
 	return stories.filter(
 		story => story.requiredLevel >= area.minLevel && story.requiredLevel <= area.maxLevel,
 	);

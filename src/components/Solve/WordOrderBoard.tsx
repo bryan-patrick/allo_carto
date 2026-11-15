@@ -15,15 +15,20 @@ import {
 	type GestureResponderEvent,
 	type LayoutChangeEvent,
 } from 'react-native';
-import type { SolveWordOrderCard } from './solveTypes';
+import SolveRewardClaimButton from './SolveRewardClaimButton';
+import type { SolveReward, SolveWordOrderCard } from './solveTypes';
 
 /**
  * Typing
  */
 interface WordOrderBoardProps {
+	deckId: string;
 	cards: SolveWordOrderCard[];
 	positions: number[];
+	lockedCardIds: number[];
+	rewards: SolveReward[];
 	disabled: boolean;
+	onRewardClaimed: (reward: SolveReward) => void;
 	onReorder: (positions: number[]) => Promise<boolean>;
 	onDraggingChange: (isDragging: boolean) => void;
 }
@@ -45,15 +50,23 @@ interface WordOrderDrag {
 
 /**
  * Lets the player put one sentence's French cards in order for Solve++.
- * Cards can move by dragging, tapping a new position, or using the move buttons.
+ * Correct cards stay locked on an attempt.
+ * The remaining cards can still move though.
  */
 export default function WordOrderBoard({
+	deckId,
 	cards,
 	positions,
+	lockedCardIds,
+	rewards,
 	disabled,
+	onRewardClaimed,
 	onReorder,
 	onDraggingChange,
 }: WordOrderBoardProps) {
+	/**
+	 * Selection, dragging, and board measurements
+	 */
 	const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
 	const [draggedCardId, setDraggedCardId] = useState<number | null>(null);
 	const [dropCardId, setDropCardId] = useState<number | null>(null);
@@ -62,28 +75,68 @@ export default function WordOrderBoard({
 	const viewport = useRef<ElementRef<typeof View>>(null);
 	const cardLayouts = useRef(new Map<number, WordOrderBounds>());
 	const currentDrag = useRef<WordOrderDrag | null>(null);
+
+	/**
+	 * Cards, saved locks, and available moves
+	 */
 	const cardsById = new Map(cards.map(card => [card.id, card]));
-	const selectedIndex = selectedCardId === null ? -1 : positions.indexOf(selectedCardId);
+	const lockedCards = new Set(lockedCardIds);
+	const previousMovableIndex = getMoveTargetIndex(selectedCardId, -1);
+	const nextMovableIndex = getMoveTargetIndex(selectedCardId, 1);
 	const isDragging = draggedCardId !== null;
 	const controlsDisabled = disabled || isDragging;
-	const moveEarlierDisabled = controlsDisabled || selectedIndex <= 0;
-	const moveLaterDisabled =
-		controlsDisabled || selectedIndex < 0 || selectedIndex === positions.length - 1;
+	const moveEarlierDisabled = controlsDisabled || previousMovableIndex < 0;
+	const moveLaterDisabled = controlsDisabled || nextMovableIndex < 0;
+
+	/**
+	 * Drag display
+	 */
 	const movingStyle = {
 		transform: dragOffset.getTranslateTransform(),
 	};
 
+	/**
+	 * Finds the next unlocked slot for the move buttons.
+	 */
+	function getMoveTargetIndex(cardId: number | null, direction: number): number {
+		let targetIndex = -1;
+
+		if (cardId === null || lockedCards.has(cardId)) {
+			return targetIndex;
+		}
+
+		targetIndex = positions.indexOf(cardId);
+
+		if (targetIndex < 0) {
+			return -1;
+		}
+
+		targetIndex += direction;
+
+		while (targetIndex >= 0 && targetIndex < positions.length) {
+			if (!lockedCards.has(positions[targetIndex])) {
+				return targetIndex;
+			}
+
+			targetIndex += direction;
+		}
+
+		return -1;
+	}
+
 	async function moveCard(cardId: number, toIndex: number) {
 		const fromIndex = positions.indexOf(cardId);
 		const card = cardsById.get(cardId);
-		const nextPositions = moveWordOrderCard(positions, fromIndex, toIndex);
+		const nextPositions = moveWordOrderCard(positions, fromIndex, toIndex, lockedCardIds);
 
 		if (
 			disabled ||
 			fromIndex === toIndex ||
 			fromIndex < 0 ||
 			toIndex < 0 ||
-			toIndex >= positions.length
+			toIndex >= positions.length ||
+			lockedCards.has(cardId) ||
+			lockedCards.has(positions[toIndex])
 		) {
 			return;
 		}
@@ -100,11 +153,11 @@ export default function WordOrderBoard({
 	function handleSelect(cardId: number) {
 		const targetIndex = positions.indexOf(cardId);
 
-		if (disabled || currentDrag.current) {
+		if (disabled || currentDrag.current || lockedCards.has(cardId)) {
 			return;
 		}
 
-		if (selectedCardId === null) {
+		if (selectedCardId === null || lockedCards.has(selectedCardId)) {
 			setSelectedCardId(cardId);
 		} else if (selectedCardId === cardId) {
 			setSelectedCardId(null);
@@ -114,19 +167,18 @@ export default function WordOrderBoard({
 	}
 
 	function handleAccessibilityMove(cardId: number, event: AccessibilityActionEvent) {
-		const cardIndex = positions.indexOf(cardId);
 		const actionName = event.nativeEvent.actionName;
 
-		if (controlsDisabled) {
+		if (controlsDisabled || lockedCards.has(cardId)) {
 			return;
 		}
 
 		setSelectedCardId(cardId);
 
 		if (actionName === 'moveEarlier') {
-			moveCard(cardId, cardIndex - 1);
+			moveCard(cardId, getMoveTargetIndex(cardId, -1));
 		} else if (actionName === 'moveLater') {
-			moveCard(cardId, cardIndex + 1);
+			moveCard(cardId, getMoveTargetIndex(cardId, 1));
 		}
 	}
 
@@ -135,7 +187,7 @@ export default function WordOrderBoard({
 			return;
 		}
 
-		moveCard(selectedCardId, selectedIndex - 1);
+		moveCard(selectedCardId, previousMovableIndex);
 	}
 
 	function handleMoveLater() {
@@ -143,7 +195,7 @@ export default function WordOrderBoard({
 			return;
 		}
 
-		moveCard(selectedCardId, selectedIndex + 1);
+		moveCard(selectedCardId, nextMovableIndex);
 	}
 
 	function handleCardLayout(cardId: number, event: LayoutChangeEvent) {
@@ -151,8 +203,7 @@ export default function WordOrderBoard({
 	}
 
 	/**
-	 * Starts dragging a card and records where the board sits on the screen.
-	 * Measuring the visible area keeps drop positions correct after scrolling.
+	 * Saves finger/cursor position
 	 */
 	function handleDragStart(cardId: number, event: GestureResponderEvent) {
 		const drag: WordOrderDrag = {
@@ -163,7 +214,7 @@ export default function WordOrderBoard({
 			viewportBounds: null,
 		};
 
-		if (disabled) {
+		if (disabled || lockedCards.has(cardId)) {
 			return;
 		}
 
@@ -228,7 +279,7 @@ export default function WordOrderBoard({
 		for (const cardId of positions) {
 			const layout = cardLayouts.current.get(cardId);
 
-			if (layout) {
+			if (layout && !lockedCards.has(cardId)) {
 				const centerX = layout.x + layout.width / 2;
 				const centerY = layout.y + layout.height / 2;
 				const distanceX = boardX - centerX;
@@ -245,6 +296,11 @@ export default function WordOrderBoard({
 		return closestCardId;
 	}
 
+	/**
+	 * Uses the difference in start position and current position
+	 * to move the card position AND we also do a nearest
+	 * card highlight.
+	 */
 	function handleDragMove(event: GestureResponderEvent) {
 		const drag = currentDrag.current;
 
@@ -270,6 +326,9 @@ export default function WordOrderBoard({
 		onDraggingChange(false);
 	}
 
+	/**
+	 * Positions the dragged card into the target cards slot
+	 */
 	function handleDragEnd(event: GestureResponderEvent) {
 		const drag = currentDrag.current;
 		const targetCardId = findDropCard(event);
@@ -282,12 +341,129 @@ export default function WordOrderBoard({
 		}
 	}
 
+	/**
+	 * Render it
+	 */
 	return (
 		<View style={styles.container}>
-			<Text style={styles.instructions}>
-				Drag a handle, or tap a card and then its new position. Your card order is saved if you
-				leave this view.
-			</Text>
+			<Text style={styles.instructions}>Put the cards in the correct order!</Text>
+			<View
+				ref={viewport}
+				collapsable={false}
+				style={styles.viewport}
+			>
+				<ScrollView scrollEnabled={!isDragging}>
+					<View
+						ref={board}
+						collapsable={false}
+						style={styles.grid}
+					>
+						{positions.map((cardId, index) => {
+							const card = cardsById.get(cardId);
+							const isLocked = lockedCards.has(cardId);
+							const isSelected = selectedCardId === cardId && !isLocked;
+							const isDragged = draggedCardId === cardId;
+							const isDropTarget = dropCardId === cardId && !isDragged;
+							const isCardDisabled = controlsDisabled || isLocked;
+							const reward = rewards.find(
+								saved => saved.kind === 'card' && saved.position === cardId,
+							);
+							const hasPendingReward = reward?.claimedAt === null;
+							const isRewardClaimed = Boolean(reward && reward.claimedAt !== null);
+							let accessibilityHint =
+								'Select this card, then tap its new position. Actions can also move it earlier or later.';
+							let accessibilityActions = [
+								{
+									name: 'moveEarlier',
+									label: 'Move earlier',
+								},
+								{
+									name: 'moveLater',
+									label: 'Move later',
+								},
+							];
+
+							if (!card) {
+								return null;
+							}
+
+							if (isLocked) {
+								accessibilityHint = 'Correct position. This word is locked.';
+								accessibilityActions = [];
+							}
+
+							return (
+								<Animated.View
+									key={cardId}
+									onLayout={event => handleCardLayout(cardId, event)}
+									style={[
+										styles.card,
+										isLocked && styles.lockedCard,
+										isSelected && styles.selectedCard,
+										isDropTarget && styles.dropTarget,
+										isDragged && styles.draggedCard,
+										isDragged && movingStyle,
+									]}
+								>
+									<Pressable
+										accessibilityRole="button"
+										accessibilityLabel={`${card.text}. Position ${index + 1} of ${positions.length}.`}
+										accessibilityHint={accessibilityHint}
+										accessibilityState={{
+											selected: isSelected,
+											disabled: isCardDisabled,
+										}}
+										accessibilityActions={accessibilityActions}
+										onAccessibilityAction={event => handleAccessibilityMove(cardId, event)}
+										disabled={isCardDisabled}
+										onPress={() => handleSelect(cardId)}
+										style={styles.cardTextArea}
+									>
+										<Text style={styles.word}>{card.text}</Text>
+									</Pressable>
+									{(!isLocked || isRewardClaimed) && (
+										<View
+											accessible={false}
+											onStartShouldSetResponder={() => !disabled && !isLocked}
+											onResponderGrant={event => handleDragStart(cardId, event)}
+											onResponderMove={handleDragMove}
+											onResponderRelease={handleDragEnd}
+											onResponderTerminate={clearDrag}
+											onResponderTerminationRequest={() => false}
+											style={styles.dragHandle}
+										>
+											{!isLocked && (
+												<MaterialSymbol
+													name="drag_indicator"
+													size={22}
+													color={colors.dark.primary}
+												/>
+											)}
+											{isLocked && isRewardClaimed && (
+												<MaterialSymbol
+													name="lock"
+													size={22}
+													color={colors.dark.success}
+												/>
+											)}
+										</View>
+									)}
+									{isLocked && hasPendingReward && reward && (
+										<View style={styles.claim}>
+											<SolveRewardClaimButton
+												deckId={deckId}
+												reward={reward}
+												disabled={controlsDisabled}
+												onClaimed={onRewardClaimed}
+											/>
+										</View>
+									)}
+								</Animated.View>
+							);
+						})}
+					</View>
+				</ScrollView>
+			</View>
 			<View style={styles.moveControls}>
 				<LinkButton
 					accessibilityRole="button"
@@ -326,86 +502,6 @@ export default function WordOrderBoard({
 					Move later
 				</LinkButton>
 			</View>
-			<View
-				ref={viewport}
-				collapsable={false}
-				style={styles.viewport}
-			>
-				<ScrollView scrollEnabled={!isDragging}>
-					<View
-						ref={board}
-						collapsable={false}
-						style={styles.grid}
-					>
-						{positions.map((cardId, index) => {
-							const card = cardsById.get(cardId);
-							const isSelected = selectedCardId === cardId;
-							const isDragged = draggedCardId === cardId;
-							const isDropTarget = dropCardId === cardId && !isDragged;
-
-							if (!card) {
-								return null;
-							}
-
-							return (
-								<Animated.View
-									key={cardId}
-									onLayout={event => handleCardLayout(cardId, event)}
-									style={[
-										styles.card,
-										isSelected && styles.selectedCard,
-										isDropTarget && styles.dropTarget,
-										isDragged && styles.draggedCard,
-										isDragged && movingStyle,
-									]}
-								>
-									<Pressable
-										accessibilityRole="button"
-										accessibilityLabel={`${card.text}. Position ${index + 1} of ${positions.length}.`}
-										accessibilityHint="Select this card, then tap its new position. Actions can also move it earlier or later."
-										accessibilityState={{
-											selected: isSelected,
-											disabled: controlsDisabled,
-										}}
-										accessibilityActions={[
-											{
-												name: 'moveEarlier',
-												label: 'Move earlier',
-											},
-											{
-												name: 'moveLater',
-												label: 'Move later',
-											},
-										]}
-										onAccessibilityAction={event => handleAccessibilityMove(cardId, event)}
-										disabled={controlsDisabled}
-										onPress={() => handleSelect(cardId)}
-										style={styles.cardTextArea}
-									>
-										<Text style={styles.word}>{card.text}</Text>
-									</Pressable>
-									<View
-										accessible={false}
-										onStartShouldSetResponder={() => !disabled}
-										onResponderGrant={event => handleDragStart(cardId, event)}
-										onResponderMove={handleDragMove}
-										onResponderRelease={handleDragEnd}
-										onResponderTerminate={clearDrag}
-										onResponderTerminationRequest={() => false}
-										style={styles.dragHandle}
-									>
-										<MaterialSymbol
-											name="drag_indicator"
-											size={22}
-											color={colors.dark.primary}
-										/>
-									</View>
-								</Animated.View>
-							);
-						})}
-					</View>
-				</ScrollView>
-			</View>
 		</View>
 	);
 }
@@ -421,13 +517,14 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 12,
 		paddingTop: 12,
 		fontFamily: 'lexend-400',
-		fontSize: 13,
+		fontSize: 18,
+		textAlign: 'center',
 		color: colors.dark.text,
 	},
 	moveControls: {
 		flexDirection: 'row',
 		gap: 8,
-		padding: 12,
+		padding: 8,
 	},
 	moveButton: {
 		flexDirection: 'row',
@@ -452,6 +549,14 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
 		backgroundColor: colors.light.secondary,
+	},
+	lockedCard: {
+		borderColor: colors.dark.success,
+		backgroundColor: colors.light.success,
+	},
+	claim: {
+		marginTop: 2,
+		paddingBottom: 8,
 	},
 	selectedCard: {
 		borderColor: colors.dark.primary,

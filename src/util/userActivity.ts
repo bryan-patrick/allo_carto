@@ -1,8 +1,8 @@
 import {
 	findChapterById,
 	findCompletionPath,
-	findParagraphById,
 	findStoryById,
+	getParagraphNumber,
 } from './atlasCompletion';
 
 /**
@@ -116,9 +116,7 @@ export const userActivityDisplay: Record<UserActivityType, UserActivityDisplay> 
 };
 
 /**
- * Takes a story, chapter, or paragraph ID and creates a name for the activity.
- * For a paragraph, the result looks like:
- * Story name > Chapter name > Paragraph name
+ * Label an activity with its story, chapter, and paragraph number.
  */
 export function getActivityItemLabel(id: string): string {
 	const path = findCompletionPath({
@@ -126,9 +124,13 @@ export function getActivityItemLabel(id: string): string {
 	});
 	const story = findStoryById(path[0]?.id);
 	const chapter = findChapterById(path[1]?.id);
-	const paragraph = path.length === 3 ? findParagraphById(id) : undefined;
-	const labels = [story?.name, chapter?.name, paragraph?.title];
+	const paragraphNumber = getParagraphNumber(id);
+	const labels = [story?.name, chapter?.name];
 	const availableLabels = labels.filter(Boolean);
+
+	if (paragraphNumber !== undefined) {
+		availableLabels.push(`Paragraph ${paragraphNumber}`);
+	}
 
 	if (availableLabels.length === 0) {
 		return id;

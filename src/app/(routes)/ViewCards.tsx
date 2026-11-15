@@ -1,24 +1,15 @@
-import { storyAtlas } from '@/data/french/storyAtlas';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import Loader from '@/src/components/Loader';
 import ViewCardsView from '@/src/components/Views/ViewCardsView';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { isItemUnlocked } from '@/src/util/atlasCompletion';
+import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { useLocalSearchParams } from 'expo-router';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 /**
- * Typing
+ * Read the paragraph ID from the route.
  */
-interface ViewCardsRouteParams {
-	deckTitle?: string;
-	chapterId?: string;
-}
-
-/**
- * Get one route param
- */
-function getRouteParam(routeParam: string | string[] | undefined) {
+function getRouteParam(routeParam: string | string[] | undefined): string | undefined {
 	let result: string | undefined;
 
 	if (Array.isArray(routeParam)) {
@@ -31,59 +22,47 @@ function getRouteParam(routeParam: string | string[] | undefined) {
 }
 
 /**
- * Find the deck from the route
- */
-function findDeckByRouteParams({
-	deckTitle,
-	chapterId,
-}: ViewCardsRouteParams): CardDeck | undefined {
-	let routeDeck: CardDeck | undefined;
-
-	for (const story of storyAtlas.stories) {
-		for (const chapter of story.chapters) {
-			if (chapter.id === chapterId) {
-				routeDeck = chapter.decks.find(deck => deck.title === deckTitle);
-			}
-		}
-	}
-
-	return routeDeck;
-}
-
-/**
- * Route wrapper for viewing all cards in a deck.
+ * Find the selected paragraph by its saved ID and open its card.
  */
 export default function ViewCards() {
+	/**
+	 * Saved progress and selected paragraph
+	 */
 	const { progressById, status } = useUserProgress();
 	const routeParams = useLocalSearchParams();
-	const deckTitle = getRouteParam(routeParams.deckTitle);
-	const chapterId = getRouteParam(routeParams.chapterId);
-	const deck = findDeckByRouteParams({
-		deckTitle,
-		chapterId,
-	});
+	const paragraphId = getRouteParam(routeParams.paragraphId);
+	let paragraph: Paragraph | undefined;
 
-	/**
-	 * Wait for the user's stored percentages
-	 */
-	if (status === 'loading') return <Loader />;
-	if (status === 'error') return <Text>Could not load paragraph progress.</Text>;
+	if (paragraphId) {
+		paragraph = findParagraphById(paragraphId);
+	}
 
-	/**
-	 * Block locked decks
-	 */
+	if (status === 'loading') {
+		return <Loader />;
+	}
+
+	if (status === 'error') {
+		return <Text>Could not load paragraph progress.</Text>;
+	}
+
 	if (
-		deck &&
+		paragraph &&
 		!isItemUnlocked({
-			id: deck.id,
+			id: paragraph.id,
 			progressById,
 		})
 	) {
-		return <Text style={{ textAlign: 'center' }}>This paragraph is locked.</Text>;
+		return <Text style={styles.notice}>This paragraph is locked.</Text>;
 	}
 
-	/**
-	 * Render the cards
-	 */
-	return <ViewCardsView deck={deck} />;
+	return <ViewCardsView deck={paragraph} />;
 }
+
+/**
+ * Styles
+ */
+const styles = StyleSheet.create({
+	notice: {
+		textAlign: 'center',
+	},
+});

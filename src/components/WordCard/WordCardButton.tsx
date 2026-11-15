@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
+import { getEnglishPrefixes } from '@/src/util/englishWordParts';
 import { useSoundEffect } from '@/src/util/useSoundEffect';
 import {
 	impactAsync,
@@ -53,6 +54,7 @@ export default function WordCardButton({
 	const { settings } = useAppSettings();
 	const playIncorrect = useSoundEffect('incorrect');
 	const lastSoundedAnswer = useRef<string | null>(null);
+	const isEnglishPrefixRequired = getEnglishPrefixes(currentCard).length > 0;
 
 	/**
 	 * Style vars
@@ -86,14 +88,14 @@ export default function WordCardButton({
 			cardState.progress === 'WARNING' ||
 			isAnswerPending ||
 			isUpdatingProgress ||
-			(currentCard.englishArticle && !cardState.selectedArticle) ||
+			(isEnglishPrefixRequired && !cardState.selectedArticle) ||
 			!cardState.selectedWord
 		) {
 			return true;
 		}
 		return false;
 	}, [
-		currentCard.englishArticle,
+		isEnglishPrefixRequired,
 		cardState.progress,
 		cardState.selectedArticle,
 		cardState.selectedWord,
@@ -133,8 +135,7 @@ export default function WordCardButton({
 	}, [currentCard, wordCardUIDispatch]);
 
 	/**
-	 * Save each answer and its rewards before allowing the next card.
-	 * Update the button when the save finishes, and allow a retry if it fails.
+	 * Saves each answer and its rewards before allowing the next card.
 	 */
 	const persistAnswer = useCallback(
 		function persistAnswer() {
@@ -221,18 +222,17 @@ export default function WordCardButton({
 	);
 
 	/**
-	 * Sound effects
-	 * Plays once per answer
+	 * Play the incorrect answer if it's wrong.
 	 */
 	useEffect(() => {
-		if (cardState.attempts === 0 || cardState.isAnswerRevealed) {
-			return;
-		}
-
 		const isIncorrect =
 			(cardState.stage === 'READY' && cardState.progress === 'WARNING') ||
 			(cardState.stage === 'INCORRECT' && cardState.progress === 'DANGER');
 		const answerId = `${currentCard.id}:${cardState.attempts}`;
+
+		if (cardState.attempts === 0 || cardState.isAnswerRevealed) {
+			return;
+		}
 
 		if (!isIncorrect || lastSoundedAnswer.current === answerId) {
 			return;
@@ -240,7 +240,7 @@ export default function WordCardButton({
 
 		lastSoundedAnswer.current = answerId;
 
-		playIncorrect();
+		void playIncorrect();
 	}, [
 		currentCard.id,
 		cardState.attempts,
@@ -288,8 +288,8 @@ export default function WordCardButton({
 	]);
 
 	/**
-	 * Action handlers
-	 * Advance after release so the current card does not unmount an active touch responder.
+	 * This handles a press on the answer button.
+	 * It either checks a new answer or retries saving an answer that failed.
 	 */
 	const handlePress = useCallback(() => {
 		if (pressInFlight.current || isUpdatingProgress) {

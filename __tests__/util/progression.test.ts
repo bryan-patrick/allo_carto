@@ -55,7 +55,7 @@ function makeAtlas(): StoryAtlas {
 						id: 'chapter_one',
 						label: 'Chapter 1',
 						name: 'Chapter one',
-						decks: [firstDeck, secondDeck],
+						paragraphs: [firstDeck, secondDeck],
 					},
 				],
 			},
@@ -76,7 +76,7 @@ function makeAtlas(): StoryAtlas {
 						id: 'chapter_two',
 						label: 'Chapter 1',
 						name: 'Chapter two',
-						decks: [
+						paragraphs: [
 							makeMockCardDeck({
 								id: 'deck_three',
 								passage: [{ text: 'Fourth', wordId: 'fourth_word' }],

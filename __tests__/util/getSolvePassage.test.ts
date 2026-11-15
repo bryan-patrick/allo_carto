@@ -12,6 +12,7 @@ describe('Solve contractions', () => {
 			{ text: 'est', wordId: 'word_auxiliary_est', after: '. ' },
 			{ text: 'Léo', unlockExempt: true },
 		];
+
 		const segments = getSolvePassage(passage);
 
 		expect(segments).toEqual([

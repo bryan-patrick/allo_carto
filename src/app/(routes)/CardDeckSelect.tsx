@@ -1,5 +1,5 @@
 import BackgroundImage from '@/src/components/BackgroundImage';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import DeckBox from '@/src/components/DeckBox';
 import Loader from '@/src/components/Loader';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
@@ -24,21 +24,23 @@ export default function CardDeckSelect() {
 	const { chapterId } = useLocalSearchParams<{ chapterId?: string }>();
 	const { progressById, status } = useUserProgress();
 	const headerHeight = useHeaderHeight();
-	const scrollContentStyle = { paddingTop: headerHeight + 16 };
-	const scrollIndicatorInsets = { top: headerHeight };
+	const scrollContentStyle = {
+		paddingTop: headerHeight + 16,
+	};
+	const scrollIndicatorInsets = {
+		top: headerHeight,
+	};
 	const chapter = findChapterById(chapterId);
-	const decks =
-		chapter ?
-			getVisibleParagraphs(chapter, progressById).map(deck => ({
-				...deck,
-				chapter: chapter.name,
-			}))
-		:	[];
+	let paragraphs: Paragraph[] = [];
+
+	if (chapter) {
+		paragraphs = getVisibleParagraphs(chapter, progressById);
+	}
 
 	/**
 	 * Check a deck's lock
 	 */
-	function getIsDeckLocked(deck: CardDeck): boolean {
+	function getIsDeckLocked(deck: Paragraph): boolean {
 		return !isItemUnlocked({
 			id: deck.id,
 			progressById,
@@ -93,9 +95,9 @@ export default function CardDeckSelect() {
 						Read a paragraph, or select it to begin practicing its words.
 					</Text>
 				</View>
-				{decks.length > 0 && (
+				{paragraphs.length > 0 && (
 					<View style={styles.cardGrid}>
-						{decks.map(deck => (
+						{paragraphs.map(deck => (
 							<View key={deck.id}>
 								<DeckBox
 									deck={deck}
@@ -106,7 +108,7 @@ export default function CardDeckSelect() {
 						))}
 					</View>
 				)}
-				{decks.length === 0 && (
+				{paragraphs.length === 0 && (
 					<View style={styles.noDecksContainer}>
 						<Text style={styles.noDecksText}>Sorry! No paragraphs found.</Text>
 					</View>

@@ -1,4 +1,4 @@
-import type { DeckStory } from '@/data/french/storyAtlas';
+import type { Story } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import CollectionGems from '@/src/components/CollectionGems';
 import LockedSection from '@/src/components/LockedSection';
@@ -16,11 +16,11 @@ import StorySelectButton from './StorySelectButton';
  * Typing
  */
 interface StoryProps {
-	story: DeckStory;
+	story: Story;
 	isLocked: boolean;
 	isSelected: boolean;
 	progressById: ProgressById;
-	onSelect: (story: DeckStory) => void;
+	onSelect: (story: Story) => void;
 	isSelecting: boolean;
 }
 

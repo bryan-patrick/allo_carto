@@ -11,7 +11,7 @@ interface InkConfig {
  * Set flashcard ink rewards and the costs used for word puzzles.
  */
 export const inkConfig: InkConfig = {
-	correctFlashcard: 1,
+	correctFlashcard: 2,
 	cardCostByRarity: {
 		Common: 1,
 		Rare: 2,

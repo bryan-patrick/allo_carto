@@ -1,8 +1,7 @@
 import GettingStartedPage from './GettingStartedPage';
 
-const description = `Unlock the first puzzle by seeing all flashcards in a paragraph once.\n\nComplete Solve, Solve+, and Solve++ and claim all 3 gems to unlock the next paragraph. The last 2 puzzles make your gems glow, then turn prismatic!`;
+const description = `Unlock the first puzzle by seeing all flashcards in a paragraph once. Solve the first three puzzles to unlock the next paragraph.`;
 
-// Explain when Solve opens and how to earn more Ink.
 export default function PuzzlesPage() {
 	return (
 		<GettingStartedPage

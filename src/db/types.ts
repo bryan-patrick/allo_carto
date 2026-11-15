@@ -4,11 +4,14 @@ export interface WordRow {
 	id: string;
 	frenchWord: string;
 	englishWords: string;
+	canonicalEnglish?: string | null;
 	frenchArticle?: string;
 	englishArticle?: string;
+	englishPrefixes?: string | null;
 	pronunciation: string;
 	ipaPronunciation: string;
 	isVulgar: number;
+	isQuebecois: number;
 	CEFR: CEFR;
 	lemmaId?: string;
 	form?: Word['form'];

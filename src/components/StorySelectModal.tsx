@@ -1,4 +1,4 @@
-import type { DeckStory } from '@/data/french/storyAtlas';
+import type { Story } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import { Modal, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
@@ -13,7 +13,7 @@ const storySelectBackground = require('@/src/app/assets/images/postcard-parts/ba
  */
 interface StorySelectModalProps {
 	onRequestClose: () => void;
-	onSelect: (story: DeckStory) => void;
+	onSelect: (story: Story) => void;
 	isSelecting: boolean;
 	visible: boolean;
 }

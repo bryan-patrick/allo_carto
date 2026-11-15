@@ -1,4 +1,4 @@
-import type { DeckStory } from '@/data/french/storyAtlas';
+import type { Story } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
 import { StyleSheet, Text, View } from 'react-native';
@@ -7,11 +7,11 @@ import { StyleSheet, Text, View } from 'react-native';
  * Typing
  */
 interface StorySelectButtonProps {
-	story: DeckStory;
+	story: Story;
 	isSelected: boolean;
 	disabled?: boolean;
 	hasStarted?: boolean;
-	onSelect: (story: DeckStory) => void;
+	onSelect: (story: Story) => void;
 }
 
 /**

@@ -1,4 +1,4 @@
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveSentence, SolveSentenceKeyword } from '@/src/components/Solve/solveTypes';
 import type { SolvePassageSegment } from './getSolvePassage';
 import { getFrenchSentencePreposition, getSentenceKeywords } from './solveSentenceAnswer';
@@ -64,7 +64,7 @@ function getFrenchArticleFreeText(
  */
 function getFrenchSentenceAnswers(
 	sentence: SentencePassage,
-	deck: CardDeck,
+	deck: Paragraph,
 	wordsById: Map<string, SolveSentenceWord>,
 	omitArticles = false,
 ): string[] {
@@ -80,7 +80,9 @@ function getFrenchSentenceAnswers(
 		let alternativeText = '';
 
 		if (!isCompleteWordOrder(acceptedOrder, cards)) {
-			throw new Error(`An accepted French order for ${deck.title} is missing or repeating cards.`);
+			throw new Error(
+				`An accepted French order for paragraph ${deck.id} is missing or repeating cards.`,
+			);
 		}
 
 		for (const position of sentencePositions) {
@@ -129,7 +131,16 @@ function getSentenceCardKeywords(
 			continue;
 		}
 
-		const englishWords = word ? word.englishWords : [segment.text];
+		let englishWords = [segment.text];
+
+		if (word) {
+			englishWords = word.englishWords;
+		}
+
+		if (segment.canonicalEnglish !== undefined) {
+			englishWords = [segment.canonicalEnglish];
+		}
+
 		const keywordOptions = englishWords.map(getSentenceKeywords);
 		const canBeLeftOut = keywordOptions.some(option => option.length === 0);
 
@@ -154,7 +165,7 @@ function getSentenceCardKeywords(
 /**
  * Turns a paragraph into the individual sentence puzzles the learner will answer.
  */
-export function getSolveSentences(deck: CardDeck, words: SolveSentenceWord[]): SolveSentence[] {
+export function getSolveSentences(deck: Paragraph, words: SolveSentenceWord[]): SolveSentence[] {
 	const frenchSentences = splitFrenchSentences(deck);
 	const englishParts = deck.englishPassage?.match(/[^.!?…]+(?:[.!?…]+|$)/gu) ?? [];
 	const englishSentences = englishParts.filter(text => /[\p{L}\p{N}]/u.test(text));

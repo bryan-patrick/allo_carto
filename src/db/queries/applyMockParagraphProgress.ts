@@ -1,8 +1,9 @@
-import { getDecks } from '@/data/french/storyAtlas';
+import { getParagraphs } from '@/data/french/storyAtlas';
 import { seedWords } from '@/data/french/words';
-import type { CardDeck, Word } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph, Word } from '@/src/components/CardDeck/cardDeckTypes';
 import { isMockParagraphPreset } from '@/src/settings/mockParagraphProgress';
 import { hasParagraphContent } from '@/src/util/atlasContent';
+import { getEnglishPuzzleAnswers } from '@/src/util/englishWordParts';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
 import { getCompletionPercentage } from '@/src/util/progression';
 import type { CompletedSolveStages, SolveStage } from '@/src/util/solveProgression';
@@ -29,7 +30,7 @@ interface MockSolveAnswer {
 }
 
 interface GetMockSolveAnswersOptions {
-	paragraph: CardDeck;
+	paragraph: Paragraph;
 	completedStages: CompletedSolveStages;
 	vocabularyById: Map<string, Word>;
 	sentenceWords: SolveSentenceWord[];
@@ -113,7 +114,7 @@ function getMockSolveAnswers({
 			stage: 1,
 			position: segment.position,
 			wordId: word.id,
-			acceptedAnswer: word.englishWords[0],
+			acceptedAnswer: getEnglishPuzzleAnswers(word)[0],
 		});
 
 		if (completedStages >= 2) {
@@ -133,7 +134,7 @@ function getMockSolveAnswers({
 			const englishAnswer = sentence.englishText ?? paragraph.englishPassage?.trim();
 
 			if (!englishAnswer) {
-				throw new Error(`Paragraph ${paragraph.title} needs English text for this mock preset.`);
+				throw new Error(`Paragraph ${paragraph.id} needs English text for this mock preset.`);
 			}
 
 			answers.push({
@@ -166,7 +167,7 @@ export default async function applyMockParagraphProgress({
 	completedStages,
 	firstGemUnclaimed = false,
 }: ApplyMockParagraphProgressOptions): Promise<number> {
-	const allParagraphs = getDecks();
+	const allParagraphs = getParagraphs();
 	const paragraphs = allParagraphs.filter(hasParagraphContent);
 	const vocabularyById = new Map<string, Word>();
 	const sentenceWords: SolveSentenceWord[] = [];
@@ -186,7 +187,7 @@ export default async function applyMockParagraphProgress({
 		vocabularyById.set(word.id, word);
 		sentenceWords.push({
 			id: word.id,
-			englishWords: word.englishWords,
+			englishWords: getEnglishPuzzleAnswers(word),
 			partOfSpeech: word.partOfSpeech ?? null,
 		});
 	}

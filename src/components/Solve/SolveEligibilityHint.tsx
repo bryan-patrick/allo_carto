@@ -1,10 +1,10 @@
 import colors from '@/src/app/colors';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import { StyleSheet, Text, type StyleProp, type TextStyle } from 'react-native';
 import { useSolveProgress } from './useSolveProgress';
 
 interface SolveEligibilityHintProps {
-	deck: CardDeck;
+	deck: Paragraph;
 	textStyle?: StyleProp<TextStyle>;
 }
 

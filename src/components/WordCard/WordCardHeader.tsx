@@ -5,15 +5,30 @@ import { useCardDeck } from '../CardDeck/useCardDeck';
 import WordProgress from '../WordProgress';
 
 /**
- * WordCardHeader Component
+ * Show the current flashcard's language
+ * level, word label, and learning progress.
+ *
+ * Québecois words use the Quebecois label.
  */
 export default function WordCardHeader() {
+	/**
+	 * Current flashcard
+	 */
 	const { currentCard } = useCardDeck();
 
 	/**
-	 * Card vars
+	 * Card details
 	 */
 	const { rarity } = currentCard;
+
+	/**
+	 * Initial display values
+	 */
+	let rarityLabel: string = rarity;
+
+	if (currentCard.isQuebecois) {
+		rarityLabel = 'Quebecois';
+	}
 
 	/**
 	 * Render the WordCardHeader
@@ -23,20 +38,35 @@ export default function WordCardHeader() {
 			<View
 				style={[
 					styles.CEFRContainer,
-					{ backgroundColor: `${colors.light.CEFR[currentCard.CEFR]}26` },
+					{
+						backgroundColor: `${colors.light.CEFR[currentCard.CEFR]}26`,
+					},
 				]}
 			>
-				<Text style={[styles.cardCEFRLevel, { color: colors.dark.CEFR[currentCard.CEFR] }]}>
+				<Text
+					style={[
+						styles.cardCEFRLevel,
+						{
+							color: colors.dark.CEFR[currentCard.CEFR],
+						},
+					]}
+				>
 					{currentCard.CEFR}
 				</Text>
 			</View>
 			<LinearGradient
-				start={{ x: 0, y: 0 }}
-				end={{ x: 1, y: 1 }}
+				start={{
+					x: 0,
+					y: 0,
+				}}
+				end={{
+					x: 1,
+					y: 1,
+				}}
 				colors={[`${colors.rarity[rarity]}88`, '#ffffff00']}
 				style={styles.rarityContainer}
 			>
-				<Text style={styles.rarityText}>{rarity}</Text>
+				<Text style={styles.rarityText}>{rarityLabel}</Text>
 			</LinearGradient>
 			<WordProgress />
 		</View>

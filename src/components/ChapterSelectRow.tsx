@@ -1,10 +1,11 @@
-import type { DeckChapter } from '@/data/french/storyAtlas';
+import type { Chapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { hasChapterContent } from '@/src/util/atlasContent';
 import type { ProgressById } from '@/src/util/progression';
 import { useNavigation, type NativeStackNavigationProp } from 'expo-router';
 import type { ParamListBase } from 'expo-router/react-navigation';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, View, type LayoutRectangle } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import ChapterPolaroid from './ChapterPolaroid';
@@ -12,10 +13,16 @@ import CollectionGems from './CollectionGems';
 import LinkButton from './LinkButton';
 import LockedSection from './LockedSection';
 
+/**
+ * Consts
+ */
 const defaultCharacterImage = require('@/src/app/assets/images/chapters/what-is-allo-carto.png');
 const photoGrainOverlay = require('@/src/app/assets/images/chapter-images/photo-grain-overlay.png');
 export const chapterMapDotSize = 20;
 
+/**
+ * Typing
+ */
 export interface ChapterMapAnchor {
 	id: string;
 	x: number;
@@ -23,11 +30,8 @@ export interface ChapterMapAnchor {
 	side: 'left' | 'right';
 }
 
-/**
- * Typing
- */
 interface ChapterSelectRowProps {
-	chapter: DeckChapter;
+	chapter: Chapter;
 	buttonColor: string;
 	index: number;
 	progressById: ProgressById;
@@ -35,8 +39,8 @@ interface ChapterSelectRowProps {
 }
 
 /**
- * We alternate the chapter illustration and info between sides,
- * leaving the smaller column open for the map trail.
+ * Show each chapter's illustration and details on opposite sides
+ * Locked chapters show the usual lock and chapter label.
  */
 export default function ChapterSelectRow({
 	chapter,
@@ -45,22 +49,35 @@ export default function ChapterSelectRow({
 	progressById,
 	onMapAnchorChange,
 }: ChapterSelectRowProps) {
+	/**
+	 * Navigation and motion preference
+	 */
 	const rootNavigation = useNavigation<NativeStackNavigationProp<ParamListBase>>('/');
 	const reducedMotion = useReducedMotion();
-	const polaroidRotation = useRef(new Animated.Value(0)).current;
+
+	/**
+	 * Photo animation and measured layout
+	 */
+	const [polaroidRotation] = useState(function createPolaroidRotation() {
+		return new Animated.Value(0);
+	});
 	const [rowLayout, setRowLayout] = useState<LayoutRectangle | null>(null);
 	const [columnLayout, setColumnLayout] = useState<LayoutRectangle | null>(null);
 	const [anchorLayout, setAnchorLayout] = useState<LayoutRectangle | null>(null);
+
+	/**
+	 * Chapter progress and display values
+	 */
 	const isReversed = index % 2 === 1;
+	const hasParagraphs = hasChapterContent(chapter);
 	const isLocked = !isItemUnlocked({
 		id: chapter.id,
 		progressById,
 	});
 	const unlockCriteria = getUnlockCriteria(chapter, progressById);
-	const hasStartedChapter = chapter.decks.some(deck =>
+	const hasStartedChapter = chapter.paragraphs.some(deck =>
 		Boolean(progressById[deck.id]?.hasStartedFlashcards),
 	);
-	const hasParagraphs = chapter.decks.length > 0;
 	const chapterProgress = progressById[chapter.id];
 	const completedParagraphCount = chapterProgress?.completedParagraphCount ?? 0;
 	const paragraphCount = chapterProgress?.paragraphCount ?? 0;
@@ -87,7 +104,9 @@ export default function ChapterSelectRow({
 		actionLabel = 'Continue';
 	}
 
-	// Turn the photo back as the map slides into view, including when using the back gesture.
+	/**
+	 * Turn the photo back as the map slides into view
+	 */
 	useLayoutEffect(() => {
 		const removeTransitionListener = rootNavigation.addListener('transitionStart', event => {
 			if (event.data.closing) {
@@ -108,7 +127,6 @@ export default function ChapterSelectRow({
 		};
 	}, [rootNavigation, polaroidRotation, reducedMotion]);
 
-	// Turn the photo a little while the link starts the normal page transition.
 	function handleOpenChapter() {
 		if (reducedMotion) {
 			return;
@@ -122,7 +140,10 @@ export default function ChapterSelectRow({
 		}).start();
 	}
 
-	// We anchor the trail beside the illustration, or the lock when the chapter is locked.
+	/**
+	 * Anchor the trail beside the illustration,
+	 * or the lock when the chapter is locked.
+	 */
 	useEffect(() => {
 		if (!rowLayout || !columnLayout || !anchorLayout) {
 			return;
@@ -188,9 +209,11 @@ export default function ChapterSelectRow({
 							>
 								{chapter.name}
 							</Text>
-							<Text style={styles.progress}>
-								{completedParagraphCount} of {paragraphCount} paragraphs solved
-							</Text>
+							{hasParagraphs && (
+								<Text style={styles.progress}>
+									{completedParagraphCount} of {paragraphCount} paragraphs solved
+								</Text>
+							)}
 						</>
 					)}
 					{isLocked && (
@@ -219,7 +242,6 @@ export default function ChapterSelectRow({
 							<Text style={styles.actionText}>{actionLabel}</Text>
 						</LinkButton>
 					)}
-					{!isLocked && !hasParagraphs && <Text style={styles.level}>Coming soon</Text>}
 				</View>
 			</View>
 			<View style={styles.pathColumn} />
@@ -305,12 +327,6 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		color: colors.dark.text,
 		marginBottom: 12,
-	},
-	level: {
-		fontFamily: 'lexend-400',
-		fontSize: 12,
-		textAlign: 'center',
-		color: colors.light.background,
 	},
 	actionButton: {
 		paddingVertical: 0,
