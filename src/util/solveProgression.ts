@@ -42,6 +42,7 @@ export interface SolveStageEligibilityOptions {
 	isParagraphUnlocked: boolean;
 	wordCount: number;
 	seenWordCount: number;
+	chapterUnlockLevel?: number;
 }
 
 export interface SolveStageEligibility {
@@ -72,8 +73,8 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		isImplemented: true,
 		challengeType: 'word',
 		answerLanguage: 'french',
-		fastUnlockLevel: 2,
-		normalUnlockLevel: 5,
+		fastUnlockLevel: 0,
+		normalUnlockLevel: 0,
 		cardCostIncrease: 1,
 		attemptInkCost: null,
 		incorrectAttemptInkCost: inkConfig.incorrectSolveAttempt + 1,
@@ -85,8 +86,8 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		isImplemented: true,
 		challengeType: 'wordOrder',
 		answerLanguage: null,
-		fastUnlockLevel: 3,
-		normalUnlockLevel: 10,
+		fastUnlockLevel: 0,
+		normalUnlockLevel: 0,
 		cardCostIncrease: 0,
 		attemptInkCost: 10,
 		incorrectAttemptInkCost: 10,
@@ -170,11 +171,19 @@ export function getSolveStageEligibility({
 	isParagraphUnlocked,
 	wordCount,
 	seenWordCount,
+	chapterUnlockLevel,
 }: SolveStageEligibilityOptions): SolveStageEligibility {
 	const definition = solveStages[stage];
-	const requiredPlayerLevel =
-		fastSolveUnlocks ? definition.fastUnlockLevel : definition.normalUnlockLevel;
+	let requiredPlayerLevel = definition.normalUnlockLevel;
 	let lockReason: SolveLockReason | null = null;
+
+	if (fastSolveUnlocks) {
+		requiredPlayerLevel = definition.fastUnlockLevel;
+	}
+
+	if (chapterUnlockLevel !== undefined) {
+		requiredPlayerLevel = chapterUnlockLevel;
+	}
 
 	if (stage <= completedStages) {
 		lockReason = 'completed';

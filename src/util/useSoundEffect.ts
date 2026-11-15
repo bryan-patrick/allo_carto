@@ -4,6 +4,7 @@ import { AudioSource, useAudioPlayer, type AudioPlayer } from 'expo-audio';
 import { useCallback, useEffect, useRef } from 'react';
 
 const sounds: Record<string, AudioSource> = {
+	correctWord: require('@/src/app/assets/sounds/correct-word.m4a'),
 	incorrect: require('@/src/app/assets/sounds/incorrect.m4a'),
 	levelUp: require('@/src/app/assets/sounds/level-up.m4a'),
 	pop: require('@/src/app/assets/sounds/pop.wav'),
@@ -16,7 +17,9 @@ const sounds: Record<string, AudioSource> = {
  */
 export function useSoundEffect(sound: keyof typeof sounds) {
 	const { settings } = useAppSettings();
-	const player = useAudioPlayer(sounds[sound], { keepAudioSessionActive: true });
+	const player = useAudioPlayer(sounds[sound], {
+		keepAudioSessionActive: true,
+	});
 	const activePlayer = useRef<AudioPlayer | null>(null);
 	const playbackFinished = useRef<((completed: boolean) => void) | null>(null);
 	const enabled = settings.soundEffectsEnabled;

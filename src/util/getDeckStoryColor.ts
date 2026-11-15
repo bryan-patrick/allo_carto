@@ -15,7 +15,7 @@ export function getDeckStoryColor(
 
 		if (
 			story.chapters.some(
-				chapter => chapter.id === deckId || chapter.decks.some(deck => deck.id === deckId),
+				chapter => chapter.id === deckId || chapter.paragraphs.some(deck => deck.id === deckId),
 			)
 		) {
 			return colors.category[story.category];
