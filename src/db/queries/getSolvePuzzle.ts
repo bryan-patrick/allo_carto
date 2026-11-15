@@ -5,6 +5,11 @@ import type {
 	SolveStageSolvedPosition,
 } from '@/src/components/Solve/solveTypes';
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
+import {
+	getEnglishPuzzleAnswers,
+	parseEnglishPrefixes,
+	type EnglishWordDefinition,
+} from '@/src/util/englishWordParts';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
 import {
@@ -35,7 +40,9 @@ interface SolveWordRow {
 	frenchWord: string;
 	frenchArticle: string | null;
 	englishArticle: string | null;
+	englishPrefixes: string | null;
 	englishWords: string;
+	canonicalEnglish: string | null;
 	rarity: CardRarity;
 }
 
@@ -108,7 +115,8 @@ export default async function getSolvePuzzle({
 
 	if (solveWordIds.length > 0) {
 		words = await database.getAllAsync<SolveWordRow>(
-			`SELECT id, frenchWord, frenchArticle, englishArticle, englishWords, rarity
+			`SELECT id, frenchWord, frenchArticle, englishArticle, englishPrefixes, englishWords,
+			 canonicalEnglish, rarity
 			 FROM words WHERE id IN (${placeholders});`,
 			...solveWordIds,
 		);
@@ -121,24 +129,45 @@ export default async function getSolvePuzzle({
 		 */
 		const textWithoutPunctuation = segment.text.replace(/[^\p{L}\p{M}\p{N}\s'’ʼ-]/gu, '');
 		const text = textWithoutPunctuation.trim();
-		const wordId = segment.unlockExempt ? undefined : segment.wordId;
+		let wordId = segment.wordId;
+
+		if (segment.unlockExempt) {
+			wordId = undefined;
+		}
+
 		const word = words.find(word => word.id === wordId);
 		const solved = solvedPositions.find(
 			saved => saved.position === position && saved.wordId === wordId,
 		);
 		const rarity = word?.rarity ?? 'Common';
-		const inkCost = wordId ? getSolveCardInkCost(stage, rarity) : 0;
-		const englishWords: string[] = word ? JSON.parse(word.englishWords) : [];
-		const englishMeanings = englishWords.join(' / ');
-		const englishPrompt =
-			word?.englishArticle ? `${word.englishArticle} ${englishMeanings}` : englishMeanings;
 		const frenchWords = new Set([text]);
+		let inkCost = 0;
+		let englishWords: string[] = [];
+		let englishPrompt = '';
+
+		if (wordId) {
+			inkCost = getSolveCardInkCost(stage, rarity);
+		}
 
 		if (word) {
+			const englishDefinition: EnglishWordDefinition = {
+				englishWords: JSON.parse(word.englishWords),
+				canonicalEnglish: segment.canonicalEnglish ?? word.canonicalEnglish,
+				englishArticle: word.englishArticle,
+				englishPrefixes: parseEnglishPrefixes(word.englishPrefixes),
+			};
+
+			englishWords = getEnglishPuzzleAnswers(englishDefinition);
+			englishPrompt = englishWords.join(' / ');
 			frenchWords.add(word.frenchWord);
 
 			if (word.frenchArticle) {
-				const articleSeparator = /['’ʼ]$/u.test(word.frenchArticle) ? '' : ' ';
+				let articleSeparator = ' ';
+
+				if (/['’ʼ]$/u.test(word.frenchArticle)) {
+					articleSeparator = '';
+				}
+
 				const wordWithArticle = `${word.frenchArticle}${articleSeparator}${word.frenchWord}`;
 
 				frenchWords.add(wordWithArticle);

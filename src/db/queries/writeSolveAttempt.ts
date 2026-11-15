@@ -24,7 +24,7 @@ interface SavedSolveAttempt extends Omit<SolveAttemptResult, 'firstGemEarned'> {
 }
 
 /**
- * Check an English answer and save the ink charge and card.
+ * Check an English answer and charge ink for the attempt.
  */
 export default async function writeSolveAttempt({
 	database,
@@ -54,6 +54,7 @@ export default async function writeSolveAttempt({
 			) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 		`,
 	};
+
 	let result: SolveAttemptResult = {
 		status: 'unavailable',
 		acceptedAnswer: null,
@@ -111,9 +112,23 @@ export default async function writeSolveAttempt({
 			userId,
 			deckId,
 		});
+
 		const card = puzzle.positions.find(card => card.position === position);
-		const remainingCards = puzzle.positions.filter(card => {
-			return card.wordId && card.position !== position && card.acceptedAnswer === null;
+
+		const matchingUnsolvedCards = puzzle.positions.filter(puzzleCard => {
+			return (
+				puzzleCard.wordId &&
+				puzzleCard.wordId === card?.wordId &&
+				puzzleCard.acceptedAnswer === null
+			);
+		});
+
+		const remainingCards = puzzle.positions.filter(puzzleCard => {
+			return (
+				puzzleCard.wordId &&
+				puzzleCard.wordId !== card?.wordId &&
+				puzzleCard.acceptedAnswer === null
+			);
 		});
 
 		if (!puzzle.isUnlocked || !puzzle.allWordsSeen || !card?.wordId) {
@@ -131,13 +146,17 @@ export default async function writeSolveAttempt({
 			answer,
 			englishWords: card.englishWords,
 		});
+
 		const cardCost = card.inkCost;
+
 		const inkBalance = await getUserInk({
 			database: transaction,
 			userId,
 		});
+
 		const inkSpent =
 			checkedAnswer.status === 'incorrect' ? inkConfig.incorrectSolveAttempt : cardCost;
+
 		const nextBalance = inkBalance - inkSpent;
 
 		if (checkedAnswer.status === 'empty') {
@@ -159,26 +178,33 @@ export default async function writeSolveAttempt({
 			throw new Error('Could not save the Ink charge.');
 		}
 
+		/**
+		 * Every occurrence gets its own saved answer and XP
+		 */
 		if (checkedAnswer.acceptedAnswer !== null) {
-			await transaction.runAsync(
-				statements.savePosition,
-				userId,
-				deckId,
-				position,
-				card.wordId,
-				checkedAnswer.acceptedAnswer,
-			);
+			for (const matchingCard of matchingUnsolvedCards) {
+				await transaction.runAsync(
+					statements.savePosition,
+					userId,
+					deckId,
+					matchingCard.position,
+					card.wordId,
+					checkedAnswer.acceptedAnswer,
+				);
 
-			await saveSolveCardReward({
-				database: transaction,
-				userId,
-				deckId,
-				stage: 1,
-				position,
-				wordId: card.wordId,
-			});
+				await saveSolveCardReward({
+					database: transaction,
+					userId,
+					deckId,
+					stage: 1,
+					position: matchingCard.position,
+					wordId: card.wordId,
+				});
+			}
 
-			// Keep the gem hidden until the player claims it after the last card.
+			/**
+			 * Prepare the gem once every word is solved
+			 */
 			if (remainingCards.length === 0 && !puzzle.hasFirstGem) {
 				await saveSolveGemReward({
 					database: transaction,

@@ -27,7 +27,7 @@ interface SavedSolvePlusAttempt {
 }
 
 /**
- * Check a French answer and save its Ink charge, solved card, and pending rewards together.
+ * Check the French answer and charge ink for the attempt.
  */
 export default async function writeSolvePlusAttempt({
 	database,
@@ -64,6 +64,7 @@ export default async function writeSolvePlusAttempt({
 			) VALUES (?, ?, ?, 2, ?, ?, ?, ?, ?, ?);
 		`,
 	};
+
 	let result: SolveAttemptResult = {
 		status: 'unavailable',
 		acceptedAnswer: null,
@@ -120,9 +121,23 @@ export default async function writeSolvePlusAttempt({
 			stage: 2,
 			fastSolveUnlocks,
 		});
+
 		const card = puzzle.positions.find(card => card.position === position);
-		const remainingCards = puzzle.positions.filter(card => {
-			return card.wordId && card.position !== position && card.acceptedAnswer === null;
+
+		const matchingUnsolvedCards = puzzle.positions.filter(puzzleCard => {
+			return (
+				puzzleCard.wordId &&
+				puzzleCard.wordId === card?.wordId &&
+				puzzleCard.acceptedAnswer === null
+			);
+		});
+
+		const remainingCards = puzzle.positions.filter(puzzleCard => {
+			return (
+				puzzleCard.wordId &&
+				puzzleCard.wordId !== card?.wordId &&
+				puzzleCard.acceptedAnswer === null
+			);
 		});
 
 		if (!puzzle.isUnlocked || !card?.wordId) {
@@ -144,6 +159,7 @@ export default async function writeSolvePlusAttempt({
 			answer,
 			frenchWords: card.frenchWords,
 		});
+
 		const cardCost = card.inkCost;
 		const inkSpent =
 			checkedAnswer.status === 'incorrect' ? solveStages[2].incorrectAttemptInkCost : cardCost;
@@ -161,24 +177,33 @@ export default async function writeSolvePlusAttempt({
 		}
 
 		if (checkedAnswer.acceptedAnswer !== null) {
-			await transaction.runAsync(
-				statements.savePosition,
-				userId,
-				deckId,
-				position,
-				card.wordId,
-				checkedAnswer.acceptedAnswer,
-			);
+			/**
+			 * Every occurrence gets its own saved answer and XP claim.
+			 * Already solved cards keep their answers and claimed rewards.
+			 */
+			for (const matchingCard of matchingUnsolvedCards) {
+				await transaction.runAsync(
+					statements.savePosition,
+					userId,
+					deckId,
+					matchingCard.position,
+					card.wordId,
+					checkedAnswer.acceptedAnswer,
+				);
 
-			await saveSolveCardReward({
-				database: transaction,
-				userId,
-				deckId,
-				stage: 2,
-				position,
-				wordId: card.wordId,
-			});
+				await saveSolveCardReward({
+					database: transaction,
+					userId,
+					deckId,
+					stage: 2,
+					position: matchingCard.position,
+					wordId: card.wordId,
+				});
+			}
 
+			/**
+			 * Prepare the gem once every word is solved, including all repeated cards.
+			 */
 			if (remainingCards.length === 0) {
 				await saveSolveGemReward({
 					database: transaction,

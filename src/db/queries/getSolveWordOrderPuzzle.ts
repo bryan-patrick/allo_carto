@@ -1,11 +1,22 @@
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import type {
 	SavedWordOrderAttempt,
+	SolveReward,
+	SolveStageSolvedPosition,
+	SolveWordOrderCard,
 	SolveWordOrderPuzzle,
 } from '@/src/components/Solve/solveTypes';
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getCompletedSolveStages, getSolveStageEligibility } from '@/src/util/solveProgression';
-import { getWordOrderCards, readWordOrder, shuffleWordOrder } from '@/src/util/solveWordOrder';
-import { splitFrenchSentences } from '@/src/util/splitFrenchSentences';
+import {
+	getWordOrderCards,
+	getWordOrderCardsFromSegments,
+	getWordOrderSentences,
+	readWordOrder,
+	shuffleWordOrder,
+	type WordOrderSentence,
+} from '@/src/util/solveWordOrder';
+import { splitFrenchSentences, type SentencePassage } from '@/src/util/splitFrenchSentences';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import getSolveStageProgress from './getSolveStageProgress';
 import loadUserXP from './getUserExperience';
@@ -13,17 +24,19 @@ import getUserProgress from './getUserProgress';
 import { getSolveRewards } from './solveRewards';
 
 /**
- * Typing
+ * Types
  */
 interface GetSolveWordOrderPuzzleOptions {
 	database: SQLiteDatabase;
 	userId: string;
 	deckId: string;
 	fastSolveUnlocks: boolean;
+	sentencePosition?: number;
 }
 
 interface WordOrderDraftRow {
 	positions: string;
+	lockedCardIds: string;
 }
 
 interface WordOrderAttemptRow {
@@ -32,130 +45,377 @@ interface WordOrderAttemptRow {
 	status: 'exact' | 'incorrect';
 }
 
+interface GetSolvedSentenceGroupsOptions {
+	paragraph: Paragraph;
+	paragraphCards: SolveWordOrderCard[];
+	sentenceGroups: WordOrderSentence[];
+	savedAnswers: SolveStageSolvedPosition[];
+}
+
+interface GetOriginalSentencesSolvedOptions {
+	sentenceGroup: WordOrderSentence;
+	originalSentences: SentencePassage[];
+	savedAnswers: SolveStageSolvedPosition[];
+}
+
+interface GetSentencePositionToOpenOptions {
+	sentenceGroups: WordOrderSentence[];
+	solvedSentenceGroups: boolean[];
+	puzzleRewards: SolveReward[];
+	requestedSentencePosition?: number;
+}
+
 /**
- * Loads the next unfinished sentence, its saved card order, and the Solve++ unlock requirements.
- * Older paragraph arrangements still supply the saved order for each sentence.
+ * Puzzle stage and database statements
+ */
+const wordOrderPuzzleStage = 3;
+const getWordOrderDraftStatement = `
+	SELECT positions, lockedCardIds
+	FROM solveWordOrderDrafts
+	WHERE userId = ? AND deckId = ?;
+`;
+const getWordOrderAttemptsStatement = `
+	SELECT answer, inkSpent, status
+	FROM solveStageAttempts
+	WHERE userId = ? AND deckId = ? AND stage = ${wordOrderPuzzleStage}
+		AND position IN (?, ?)
+	ORDER BY rowid DESC;
+`;
+
+/**
+ * Check whether an older save already solved every sentence in this group.
+ */
+function areOriginalSentencesSolved({
+	sentenceGroup,
+	originalSentences,
+	savedAnswers,
+}: GetOriginalSentencesSolvedOptions): boolean {
+	let areAllOriginalSentencesSolved = true;
+
+	for (const originalSentencePosition of sentenceGroup.originalSentencePositions) {
+		const originalSentence = originalSentences[originalSentencePosition];
+		const originalSentenceCards = getWordOrderCardsFromSegments(originalSentence.segments);
+
+		const savedOriginalAnswer = savedAnswers.find(savedAnswer => {
+			return savedAnswer.position === originalSentencePosition;
+		});
+
+		let savedOriginalCardOrder: number[] | null = null;
+
+		if (savedOriginalAnswer) {
+			savedOriginalCardOrder = readWordOrder(
+				savedOriginalAnswer.acceptedAnswer,
+				originalSentenceCards,
+			);
+		}
+
+		if (savedOriginalCardOrder === null) {
+			areAllOriginalSentencesSolved = false;
+			break;
+		}
+	}
+
+	return areAllOriginalSentencesSolved;
+}
+
+/**
+ * List which sentence groups the player has already solve
+ */
+function getSolvedSentenceGroups({
+	paragraph,
+	paragraphCards,
+	sentenceGroups,
+	savedAnswers,
+}: GetSolvedSentenceGroupsOptions): boolean[] {
+	/**
+	 * Original sentences and older paragraph answers
+	 */
+	const originalSentences = splitFrenchSentences(paragraph);
+	const savedParagraphAnswer = savedAnswers.find(savedAnswer => {
+		return (
+			savedAnswer.position === 0 &&
+			readWordOrder(savedAnswer.acceptedAnswer, paragraphCards) !== null
+		);
+	});
+	const solvedSentenceGroups: boolean[] = [];
+
+	for (const [sentenceGroupPosition, sentenceGroup] of sentenceGroups.entries()) {
+		/**
+		 * Cards and saved answer for this group
+		 */
+		const firstOriginalSentencePosition = sentenceGroup.originalSentencePositions[0];
+
+		const savedSentenceAnswer = savedAnswers.find(savedAnswer => {
+			return savedAnswer.position === firstOriginalSentencePosition;
+		});
+
+		const sentenceCards = getWordOrderCards(paragraph, sentenceGroupPosition);
+		let savedSentenceCardOrder: number[] | null = null;
+		let isSentenceGroupSolved = false;
+
+		if (savedSentenceAnswer) {
+			savedSentenceCardOrder = readWordOrder(savedSentenceAnswer.acceptedAnswer, sentenceCards);
+		}
+
+		if (savedParagraphAnswer || savedSentenceCardOrder) {
+			isSentenceGroupSolved = true;
+		} else {
+			isSentenceGroupSolved = areOriginalSentencesSolved({
+				sentenceGroup,
+				originalSentences,
+				savedAnswers,
+			});
+		}
+
+		solvedSentenceGroups.push(isSentenceGroupSolved);
+	}
+
+	return solvedSentenceGroups;
+}
+
+/**
+ * Choose which sentence to open
+ */
+function getSentencePositionToOpen({
+	sentenceGroups,
+	solvedSentenceGroups,
+	puzzleRewards,
+	requestedSentencePosition,
+}: GetSentencePositionToOpenOptions): number {
+	const nextUnsolvedSentencePosition = solvedSentenceGroups.findIndex(isSolved => !isSolved);
+	const unclaimedWordPositions = new Set<number>();
+	let sentenceWithUnclaimedXPPosition = -1;
+	let sentencePositionToOpen = 0;
+
+	for (const reward of puzzleRewards) {
+		if (reward.kind === 'card' && reward.claimedAt === null) {
+			unclaimedWordPositions.add(reward.position);
+		}
+	}
+
+	for (const [sentencePosition, sentenceGroup] of sentenceGroups.entries()) {
+		const hasUnclaimedWordXP = sentenceGroup.segments.some(segment => {
+			return unclaimedWordPositions.has(segment.position);
+		});
+
+		if (hasUnclaimedWordXP) {
+			sentenceWithUnclaimedXPPosition = sentencePosition;
+			break;
+		}
+	}
+
+	if (nextUnsolvedSentencePosition !== -1) {
+		sentencePositionToOpen = nextUnsolvedSentencePosition;
+	}
+
+	if (sentenceWithUnclaimedXPPosition !== -1) {
+		sentencePositionToOpen = sentenceWithUnclaimedXPPosition;
+	}
+
+	/**
+	 * Use the requested sentence when if belongs to this paragraph.
+	 */
+	if (requestedSentencePosition !== undefined && sentenceGroups[requestedSentencePosition]) {
+		sentencePositionToOpen = requestedSentencePosition;
+	}
+
+	return sentencePositionToOpen;
+}
+
+/**
+ * Find the player's latest saved attempt
+ */
+function getLastWordOrderAttempt(
+	savedAttemptRows: WordOrderAttemptRow[],
+	sentenceCards: SolveWordOrderCard[],
+): SavedWordOrderAttempt | null {
+	let lastWordOrderAttempt: SavedWordOrderAttempt | null = null;
+
+	for (const savedAttempt of savedAttemptRows) {
+		const attemptedCardOrder = readWordOrder(savedAttempt.answer, sentenceCards);
+
+		if (attemptedCardOrder !== null) {
+			lastWordOrderAttempt = {
+				positions: attemptedCardOrder,
+				inkSpent: savedAttempt.inkSpent,
+				status: savedAttempt.status,
+			};
+			break;
+		}
+	}
+
+	return lastWordOrderAttempt;
+}
+
+/**
+ * Load the puzzle
  */
 export default async function getSolveWordOrderPuzzle({
 	database,
 	userId,
 	deckId,
 	fastSolveUnlocks,
+	sentencePosition: requestedSentencePosition,
 }: GetSolveWordOrderPuzzleOptions): Promise<SolveWordOrderPuzzle> {
-	const statements = {
-		getDraft: `
-			SELECT positions FROM solveWordOrderDrafts
-			WHERE userId = ? AND deckId = ?;
-		`,
-		getLastAttempt: `
-			SELECT answer, inkSpent, status FROM solveStageAttempts
-			WHERE userId = ? AND deckId = ? AND stage = 3 AND position = ?
-			ORDER BY rowid DESC LIMIT 1;
-		`,
-	};
+	/**
+	 * Paragraph content
+	 */
+	const paragraph = findParagraphById(deckId);
 
-	const deck = findParagraphById(deckId);
-	let lastAttempt: SavedWordOrderAttempt | null = null;
-
-	if (!deck) {
+	if (!paragraph) {
 		throw new Error('This paragraph could not be found.');
 	}
 
-	const paragraphCards = getWordOrderCards(deck);
-	const sentenceDefinitions = splitFrenchSentences(deck);
+	const paragraphCards = getWordOrderCards(paragraph);
+	const sentenceGroups = getWordOrderSentences(paragraph);
 
-	if (sentenceDefinitions.length === 0) {
+	if (sentenceGroups.length === 0) {
 		throw new Error('This paragraph has no sentences to solve.');
 	}
 
-	const savedStage = await getSolveStageProgress({
+	/**
+	 * Saved answers and rewards
+	 */
+	const savedPuzzleProgress = await getSolveStageProgress({
 		database,
 		userId,
 		deckId,
-		stage: 3,
+		stage: wordOrderPuzzleStage,
 	});
-	const legacyAnswer = savedStage.solvedPositions.find(answer => {
-		return answer.position === 0 && readWordOrder(answer.acceptedAnswer, paragraphCards) !== null;
-	});
-	const solvedSentences = sentenceDefinitions.map((_sentence, position) => {
-		const savedAnswer = savedStage.solvedPositions.find(answer => answer.position === position);
-		const sentenceCards = getWordOrderCards(deck, position);
 
-		return Boolean(
-			legacyAnswer || (savedAnswer && readWordOrder(savedAnswer.acceptedAnswer, sentenceCards)),
-		);
+	const puzzleRewards = await getSolveRewards({
+		database,
+		userId,
+		deckId,
+		stage: wordOrderPuzzleStage,
 	});
-	const nextSentencePosition = solvedSentences.findIndex(isSolved => !isSolved);
-	const sentencePosition = nextSentencePosition === -1 ? 0 : nextSentencePosition;
-	const cards = getWordOrderCards(deck, sentencePosition);
-	const solvedSentenceCount = solvedSentences.filter(isSolved => isSolved).length;
-	const progressById = await getUserProgress({
+
+	const solvedSentenceGroups = getSolvedSentenceGroups({
+		paragraph,
+		paragraphCards,
+		sentenceGroups,
+		savedAnswers: savedPuzzleProgress.solvedPositions,
+	});
+
+	/**
+	 * Selected sentence group
+	 */
+	const selectedSentencePosition = getSentencePositionToOpen({
+		sentenceGroups,
+		solvedSentenceGroups,
+		puzzleRewards,
+		requestedSentencePosition,
+	});
+
+	const selectedSentenceGroup = sentenceGroups[selectedSentencePosition];
+	const firstOriginalSentencePosition = selectedSentenceGroup.originalSentencePositions[0];
+	const sentenceCards = getWordOrderCards(paragraph, selectedSentencePosition);
+	const sentenceCardIds = new Set(sentenceCards.map(card => card.id));
+	const isSelectedSentenceSolved = solvedSentenceGroups[selectedSentencePosition];
+
+	const savedSentenceAnswer = savedPuzzleProgress.solvedPositions.find(savedAnswer => {
+		return savedAnswer.position === firstOriginalSentencePosition;
+	});
+
+	const solvedSentenceCount = solvedSentenceGroups.filter(isSolved => isSolved).length;
+
+	/**
+	 * Player progress and puzzle access
+	 */
+	const playerProgressById = await getUserProgress({
 		database,
 		userId,
 	});
-	const experience = await loadUserXP({
+
+	const playerExperience = await loadUserXP({
 		database,
 		userId,
 	});
-	const progress = progressById[deckId];
-	const completedSolveStages = getCompletedSolveStages(progress);
+
+	const paragraphProgress = playerProgressById[deckId];
+	const completedSolveStages = getCompletedSolveStages(paragraphProgress);
+
 	const isParagraphUnlocked = isItemUnlocked({
 		id: deckId,
-		progressById,
+		progressById: playerProgressById,
 	});
-	const eligibility = getSolveStageEligibility({
-		stage: 3,
+
+	const puzzleEligibility = getSolveStageEligibility({
+		stage: wordOrderPuzzleStage,
 		completedStages: completedSolveStages,
-		playerLevel: experience.level,
+		playerLevel: playerExperience.level,
 		fastSolveUnlocks,
 		isParagraphUnlocked,
-		wordCount: deck.wordIds.length,
-		seenWordCount: progress?.seenWordCount ?? 0,
+		wordCount: paragraph.wordIds.length,
+		seenWordCount: paragraphProgress?.seenWordCount ?? 0,
 	});
+
+	/**
+	 * Saved card order and attempts
+	 */
 	const savedDraft = await database.getFirstAsync<WordOrderDraftRow>(
-		statements.getDraft,
+		getWordOrderDraftStatement,
 		userId,
 		deckId,
 	);
-	const savedAttempt = await database.getFirstAsync<WordOrderAttemptRow>(
-		statements.getLastAttempt,
+	const savedAttemptRows = await database.getAllAsync<WordOrderAttemptRow>(
+		getWordOrderAttemptsStatement,
 		userId,
 		deckId,
-		sentencePosition,
+		selectedSentencePosition,
+		firstOriginalSentencePosition,
 	);
-	const savedParagraphPositions =
-		savedDraft ? readWordOrder(savedDraft.positions, paragraphCards) : null;
-	const sentenceCardIds = new Set(cards.map(card => card.id));
-	const savedPositions = savedParagraphPositions?.filter(position => sentenceCardIds.has(position));
-	const positions = savedPositions ?? shuffleWordOrder(deck, sentencePosition);
-	const attemptedPositions = savedAttempt ? readWordOrder(savedAttempt.answer, cards) : null;
+	const savedLockedCardIds: number[] = JSON.parse(savedDraft?.lockedCardIds ?? '[]');
+	let savedParagraphCardOrder: number[] | null = null;
+	let savedSentenceCardOrder: number[] | null = null;
 
-	if (savedAttempt && attemptedPositions) {
-		lastAttempt = {
-			positions: attemptedPositions,
-			inkSpent: savedAttempt.inkSpent,
-			status: savedAttempt.status,
-		};
-	}
-
-	const rewards = await getSolveRewards({
-		database,
-		userId,
-		deckId,
-		stage: 3,
-	});
-
-	return {
-		...eligibility,
-		rewards,
-		deck,
+	/**
+	 * Puzzle result
+	 */
+	const puzzleResult: SolveWordOrderPuzzle = {
+		...puzzleEligibility,
+		rewards: puzzleRewards,
+		deck: paragraph,
 		isUnlocked: isParagraphUnlocked,
-		cards,
-		positions,
-		sentencePosition,
-		sentenceCount: sentenceDefinitions.length,
+		cards: sentenceCards,
+		positions: [],
+		lockedCardIds: [],
+		sentencePosition: selectedSentencePosition,
+		isSentenceSolved: isSelectedSentenceSolved,
+		sentenceCount: sentenceGroups.length,
 		solvedSentenceCount,
 		completedSolveStages,
-		lastAttempt,
+		lastAttempt: getLastWordOrderAttempt(savedAttemptRows, sentenceCards),
 	};
+
+	/**
+	 * Resume the attempt
+	 */
+	if (savedDraft) {
+		savedParagraphCardOrder = readWordOrder(savedDraft.positions, paragraphCards);
+	}
+
+	if (savedParagraphCardOrder !== null) {
+		puzzleResult.positions = savedParagraphCardOrder.filter(cardId => sentenceCardIds.has(cardId));
+		puzzleResult.lockedCardIds = savedLockedCardIds.filter(cardId => sentenceCardIds.has(cardId));
+	} else {
+		puzzleResult.positions = shuffleWordOrder(paragraph, selectedSentencePosition);
+	}
+
+	/**
+	 * Keep solved cards in order
+	 */
+	if (isSelectedSentenceSolved && savedSentenceAnswer) {
+		savedSentenceCardOrder = readWordOrder(savedSentenceAnswer.acceptedAnswer, sentenceCards);
+	}
+
+	if (isSelectedSentenceSolved) {
+		puzzleResult.positions = sentenceCards.map(card => card.id);
+	}
+
+	if (savedSentenceCardOrder !== null) {
+		puzzleResult.positions = savedSentenceCardOrder;
+	}
+
+	return puzzleResult;
 }

@@ -1,5 +1,14 @@
 import type { SolveSentencePuzzle } from '@/src/components/Solve/solveTypes';
-import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
+import {
+	findParagraphById,
+	getChapterSolveUnlockLevel,
+	isItemUnlocked,
+} from '@/src/util/atlasCompletion';
+import {
+	getEnglishPuzzleAnswers,
+	parseEnglishPrefixes,
+	type EnglishWordDefinition,
+} from '@/src/util/englishWordParts';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
 import {
@@ -25,6 +34,8 @@ interface GetSolveSentencePuzzleOptions {
 interface SentenceWordRow {
 	id: string;
 	englishWords: string;
+	canonicalEnglish: string | null;
+	englishPrefixes: string | null;
 	partOfSpeech: string | null;
 }
 
@@ -49,7 +60,7 @@ export default async function getSolveSentencePuzzle({
 	const wordIds = getPassageWordIds(passage);
 	const placeholders = wordIds.map(() => '?').join(',');
 	const getWordsStatement = `
-		SELECT id, englishWords, partOfSpeech FROM words
+		SELECT id, englishWords, canonicalEnglish, englishPrefixes, partOfSpeech FROM words
 		WHERE id IN (${placeholders});
 	`;
 	const progressById = await getUserProgress({
@@ -83,6 +94,7 @@ export default async function getSolveSentencePuzzle({
 	});
 	const eligibility = getSolveStageEligibility({
 		stage,
+		chapterUnlockLevel: getChapterSolveUnlockLevel(deckId, stage),
 		completedStages: completedSolveStages,
 		playerLevel: experience.level,
 		fastSolveUnlocks,
@@ -95,11 +107,19 @@ export default async function getSolveSentencePuzzle({
 		wordRows = await database.getAllAsync<SentenceWordRow>(getWordsStatement, ...wordIds);
 	}
 
-	const words: SolveSentenceWord[] = wordRows.map(word => ({
-		id: word.id,
-		englishWords: JSON.parse(word.englishWords),
-		partOfSpeech: word.partOfSpeech,
-	}));
+	const words: SolveSentenceWord[] = wordRows.map(word => {
+		const englishDefinition: EnglishWordDefinition = {
+			englishWords: JSON.parse(word.englishWords),
+			canonicalEnglish: word.canonicalEnglish,
+			englishPrefixes: parseEnglishPrefixes(word.englishPrefixes),
+		};
+
+		return {
+			id: word.id,
+			englishWords: getEnglishPuzzleAnswers(englishDefinition),
+			partOfSpeech: word.partOfSpeech,
+		};
+	});
 	const sentenceDefinitions = getSolveSentences(deck, words);
 	const sentences = sentenceDefinitions.map(sentence => {
 		const saved = savedStage.solvedPositions.find(

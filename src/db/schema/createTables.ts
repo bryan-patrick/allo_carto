@@ -1,15 +1,7 @@
 import { getDB, logThisIfItFails } from '../connection';
-import { runDatabaseTransaction } from '../runDatabaseTransaction';
 
 /**
- * Typing
- */
-interface DatabaseColumn {
-	name: string;
-}
-
-/**
- * Off we go again
+ * Player progress table
  */
 const createUserProgressTableSQL = `
 	CREATE TABLE IF NOT EXISTS userProgress (
@@ -24,23 +16,28 @@ const createUserProgressTableSQL = `
 	);
 `;
 
+/**
+ * Creates the words table for French words, English words, and card details.
+ *
+ * Off we go again.
+ */
 async function createWordsTable(): Promise<void> {
 	const database = await getDB();
 
-	/**
-	 * Stores the French words, English meanings, and card details used in flashcards and Solve.
-	 */
 	await logThisIfItFails('Oops we messed up creating the words table somehows', async () => {
 		await database.execAsync(`
 				CREATE TABLE IF NOT EXISTS words (
 					id TEXT PRIMARY KEY,
 					frenchWord TEXT NOT NULL,
 					englishWords TEXT NOT NULL,
+					canonicalEnglish TEXT,
 					frenchArticle TEXT,
 					englishArticle TEXT,
+					englishPrefixes TEXT,
 					pronunciation TEXT NOT NULL,
 					ipaPronunciation TEXT NOT NULL,
 					isVulgar INTEGER NOT NULL,
+					isQuebecois INTEGER NOT NULL DEFAULT 0 CHECK (isQuebecois IN (0, 1)),
 					CEFR TEXT NOT NULL,
 					lemmaId TEXT,
 					form TEXT,
@@ -54,26 +51,12 @@ async function createWordsTable(): Promise<void> {
 	});
 }
 
-async function ensureWordsFormColumn(): Promise<void> {
-	const database = await getDB();
-
-	await logThisIfItFails('Oops we messed up adding the words form column', async () => {
-		const columns =
-			(await database.getAllAsync<{ name: string }>('PRAGMA table_info(words)')) ?? [];
-		const hasFormColumn = columns.some(column => column.name === 'form');
-
-		if (!hasFormColumn) {
-			await database.execAsync('ALTER TABLE words ADD COLUMN form TEXT;');
-		}
-	});
-}
-
+/**
+ * Creates the users table for player profiles, their selected story, and XP.
+ */
 async function createUsersTable(): Promise<void> {
 	const database = await getDB();
 
-	/**
-	 * Stores local player profiles, their selected story, and earned XP.
-	 */
 	await logThisIfItFails('Oops we messed up the users table somehows mon homme', async () => {
 		await database.execAsync(`
 				CREATE TABLE IF NOT EXISTS users (
@@ -88,12 +71,12 @@ async function createUsersTable(): Promise<void> {
 	});
 }
 
+/**
+ * Creates the userWords table for how often each player sees and correctly answers each word.
+ */
 async function createUserWordsTable(): Promise<void> {
 	const database = await getDB();
 
-	/**
-	 * Stores how often each player has seen or correctly answered each word.
-	 */
 	await logThisIfItFails('Oops our join table messed up', async () => {
 		await database.execAsync(`
 			CREATE TABLE IF NOT EXISTS userWords (
@@ -110,7 +93,7 @@ async function createUserWordsTable(): Promise<void> {
 }
 
 /**
- * Stores learning progress for paragraphs, chapters, and stories, including whether flashcard practice has started.
+ * Creates the userProgress table for story, chapter, and paragraph progress.
  */
 async function createUserProgressTable(): Promise<void> {
 	const database = await getDB();
@@ -120,12 +103,12 @@ async function createUserProgressTable(): Promise<void> {
 	});
 }
 
+/**
+ * Creates all the app's tables.
+ */
 export default async function createTables(): Promise<void> {
 	await createWordsTable();
-	await ensureWordsFormColumn();
 	await createUsersTable();
-	await ensureGettingStartedColumn();
-	await ensureSelectedStoryColumn();
 	await createUserWordsTable();
 	await createUserProgressTable();
 	await createDeckCompletionsTable();
@@ -136,37 +119,10 @@ export default async function createTables(): Promise<void> {
 	await createSolveRewardsTable();
 	await createUserActivityTable();
 	await createUserNotificationsTable();
-	await ensureFlashcardsStartedColumn();
-	await ensureParagraphProgressType();
 }
 
 /**
- * Keep the tutorial automatic for new players while leaving existing players' saves alone.
- */
-async function ensureGettingStartedColumn(): Promise<void> {
-	const database = await getDB();
-	const columns = await database.getAllAsync<DatabaseColumn>('PRAGMA table_info(users);');
-	const hasGettingStartedColumn = columns.some(
-		column => column.name === 'hasCompletedGettingStarted',
-	);
-	const addColumnStatement = `
-		ALTER TABLE users
-		ADD COLUMN hasCompletedGettingStarted INTEGER NOT NULL DEFAULT 0;
-	`;
-	const updateExistingPlayersStatement = `
-		UPDATE users SET hasCompletedGettingStarted = 1;
-	`;
-
-	if (!hasGettingStartedColumn) {
-		await runDatabaseTransaction(database, async transaction => {
-			await transaction.execAsync(addColumnStatement);
-			await transaction.execAsync(updateExistingPlayersStatement);
-		});
-	}
-}
-
-/**
- * Keep new notifications until the player dismisses them, even when older activity is removed.
+ * Creates the userNotifications table for player notifications.
  */
 async function createUserNotificationsTable(): Promise<void> {
 	const database = await getDB();
@@ -187,7 +143,7 @@ async function createUserNotificationsTable(): Promise<void> {
 }
 
 /**
- * Keep a short saved history of the player's rewards, completed activities, and unlocks.
+ * Creates the userActivity table for rewards, completed activities, and unlocks.
  */
 async function createUserActivityTable(): Promise<void> {
 	const database = await getDB();
@@ -202,15 +158,13 @@ async function createUserActivityTable(): Promise<void> {
 		);
 		CREATE INDEX IF NOT EXISTS userActivityByUser
 			ON userActivity (userId, id DESC);
-
-		DELETE FROM userActivity WHERE type IN ('xpEarned', 'deckCompleted');
 	`;
 
 	await database.execAsync(statement);
 }
 
 /**
- * Remember each puzzle reward until it is claimed, including the XP already paid.
+ * Creates the solveRewards table for puzzle XP and whether each reward has been claimed.
  */
 async function createSolveRewardsTable(): Promise<void> {
 	const database = await getDB();
@@ -232,8 +186,7 @@ async function createSolveRewardsTable(): Promise<void> {
 }
 
 /**
- * Create storage for each learner's shuffled decks and answers so they can leave and resume.
- * One saved cycle per paragraph records which deck to open next.
+ * Creates the flashcardCycles table for saved flashcard decks and answers.
  */
 async function createFlashcardCyclesTable(): Promise<void> {
 	const database = await getDB();
@@ -257,7 +210,7 @@ async function createFlashcardCyclesTable(): Promise<void> {
 }
 
 /**
- * Creates storage for claimed collections XP (receipts)
+ * Creates the collectionRewardClaims table for claimed collection XP.
  */
 async function createCollectionRewardClaimsTable(): Promise<void> {
 	const database = await getDB();
@@ -278,8 +231,7 @@ async function createCollectionRewardClaimsTable(): Promise<void> {
 }
 
 /**
- * Creates storage for the first Solve puzzle's unlocked cards, answers, paid attempts, and earned gem.
- * Also prepares saved progress for the later Solve puzzles.
+ * Creates the tables for puzzle answers, attempts, card orders, and completed puzzles.
  */
 async function createSolveTables(): Promise<void> {
 	const database = await getDB();
@@ -330,32 +282,11 @@ async function createSolveTables(): Promise<void> {
 	`;
 
 	await database.execAsync(statement);
-	await ensureCompletedSolveStagesColumn();
 	await createSolveStageTables();
 }
 
 /**
- * Adds a completed puzzle count when opening an older save.
- */
-async function ensureCompletedSolveStagesColumn(): Promise<void> {
-	const database = await getDB();
-	const columns = await database.getAllAsync<DatabaseColumn>(
-		'PRAGMA table_info(solveCompletions);',
-	);
-	const hasCompletedStagesColumn = columns.some(column => column.name === 'completedSolveStages');
-	const addColumnStatement = `
-		ALTER TABLE solveCompletions
-		ADD COLUMN completedSolveStages INTEGER NOT NULL DEFAULT 1
-			CHECK (completedSolveStages BETWEEN 1 AND 5);
-	`;
-
-	if (!hasCompletedStagesColumn) {
-		await database.execAsync(addColumnStatement);
-	}
-}
-
-/**
- * Creates storage for later Solve puzzles' unlocked cards, correct answers, paid attempts, and unfinished Word Order arrangements.
+ * Creates the tables for later puzzles' card orders, locks, answers, and attempts.
  */
 async function createSolveStageTables(): Promise<void> {
 	const database = await getDB();
@@ -364,6 +295,7 @@ async function createSolveStageTables(): Promise<void> {
 			userId TEXT NOT NULL,
 			deckId TEXT NOT NULL,
 			positions TEXT NOT NULL,
+			lockedCardIds TEXT NOT NULL DEFAULT '[]',
 			PRIMARY KEY (userId, deckId),
 			FOREIGN KEY (userId) REFERENCES users(id)
 		);
@@ -411,76 +343,7 @@ async function createSolveStageTables(): Promise<void> {
 }
 
 /**
- * Adds a saved story selection to older databases when needed.
- */
-async function ensureSelectedStoryColumn(): Promise<void> {
-	const database = await getDB();
-	const columns = await database.getAllAsync<{ name: string }>('PRAGMA table_info(users);');
-	const hasSelectedStoryColumn = columns.some(column => column.name === 'selectedStoryId');
-
-	if (!hasSelectedStoryColumn) {
-		await database.execAsync('ALTER TABLE users ADD COLUMN selectedStoryId TEXT;');
-	}
-}
-
-/**
- * Updates older saves to call paragraph progress "paragraph" instead of "deck".
- */
-async function ensureParagraphProgressType(): Promise<void> {
-	const statements = {
-		getTable: "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'userProgress';",
-		renameOldTable: 'ALTER TABLE userProgress RENAME TO userProgressWithDeckTypes;',
-		copyProgress: `
-			INSERT INTO userProgress (
-				userId, id, type, completionPercentage, hasStartedFlashcards
-			)
-			SELECT
-				userId,
-				id,
-				CASE WHEN type = 'deck' THEN 'paragraph' ELSE type END,
-				completionPercentage,
-				hasStartedFlashcards
-			FROM userProgressWithDeckTypes;
-		`,
-		removeOldTable: 'DROP TABLE userProgressWithDeckTypes;',
-	};
-	const database = await getDB();
-	const table = await database.getFirstAsync<{ sql: string }>(statements.getTable);
-	const hasDeckProgressType = table?.sql.includes("'deck'");
-
-	if (hasDeckProgressType) {
-		await runDatabaseTransaction(database, async transaction => {
-			await transaction.execAsync(statements.renameOldTable);
-			await transaction.execAsync(createUserProgressTableSQL);
-			await transaction.execAsync(statements.copyProgress);
-			await transaction.execAsync(statements.removeOldTable);
-		});
-	}
-}
-
-/**
- * Keeps the New badge accurate when opening an older save.
- */
-async function ensureFlashcardsStartedColumn(): Promise<void> {
-	const database = await getDB();
-	const columns = await database.getAllAsync<{ name: string }>('PRAGMA table_info(userProgress)');
-
-	if (columns.some(column => column.name === 'hasStartedFlashcards')) {
-		return;
-	}
-
-	await runDatabaseTransaction(database, async transaction => {
-		await transaction.execAsync(`
-			ALTER TABLE userProgress ADD COLUMN hasStartedFlashcards INTEGER NOT NULL DEFAULT 0;
-			INSERT INTO userProgress (userId, id, type, completionPercentage, hasStartedFlashcards)
-			SELECT DISTINCT userId, deckId, 'deck', 0, 1 FROM deckCompletions WHERE 1
-			ON CONFLICT(userId, id) DO UPDATE SET hasStartedFlashcards = 1;
-		`);
-	});
-}
-
-/**
- * Remembers finished flashcard sessions and the rewards already paid for them.
+ * Creates the deckCompletions table for completed flashcard sessions and their rewards.
  */
 async function createDeckCompletionsTable(): Promise<void> {
 	const database = await getDB();
@@ -499,23 +362,10 @@ async function createDeckCompletionsTable(): Promise<void> {
 		CREATE INDEX IF NOT EXISTS deckCompletionsByDeck
 			ON deckCompletions (userId, deckId);
 	`);
-
-	/**
-	 * Adds the saved Ink payout to older databases.
-	 */
-	const columns = await database.getAllAsync<DatabaseColumn>('PRAGMA table_info(deckCompletions);');
-	const hasEarnedInkColumn = columns.some(column => column.name === 'earnedInk');
-
-	if (!hasEarnedInkColumn) {
-		await database.execAsync(`
-			ALTER TABLE deckCompletions
-			ADD COLUMN earnedInk INTEGER NOT NULL DEFAULT 0 CHECK (earnedInk >= 0);
-		`);
-	}
 }
 
 /**
- * Stores the player's Ink balance and the Ink earned by correct flashcard answers.
+ * Creates the tables for Ink balances and flashcard rewards.
  */
 async function createInkTables(): Promise<void> {
 	const statements = {

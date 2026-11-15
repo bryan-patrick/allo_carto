@@ -1,9 +1,9 @@
-import type { DeckChapter, DeckStory, StoryAtlas } from '@/data/french/storyAtlas';
+import type { Chapter, Story, StoryAtlas } from '@/data/french/storyAtlas';
 import { storyAtlas } from '@/data/french/storyAtlas';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import { hasChapterContent, hasParagraphContent, hasStoryContent } from './atlasContent';
 import type { ProgressById, Progression, ProgressType } from './progression';
-import { getCompletedSolveStages } from './solveProgression';
+import { getCompletedSolveStages, type SolveStage } from './solveProgression';
 
 /**
  * Typing
@@ -35,22 +35,22 @@ export interface UnlockCriteria {
 }
 
 export interface AtlasChapterLocation {
-	story: DeckStory;
-	chapter: DeckChapter;
+	story: Story;
+	chapter: Chapter;
 }
 
 export interface NextParagraphLocation {
-	story: DeckStory;
-	chapter: DeckChapter;
-	paragraph: CardDeck;
+	story: Story;
+	chapter: Chapter;
+	paragraph: Paragraph;
 }
 
 /**
- * Essentially the amount of puzzles required to unlock the next paragraph
+ * The amount of puzzles required to unlock the next paragraph
  */
 const gemsRequiredToUnlockNextParagraph = 3;
 
-function getUniqueWordIds(paragraphs: CardDeck[]): string[] {
+function getUniqueWordIds(paragraphs: Paragraph[]): string[] {
 	const uniqueWordIds = new Set<string>();
 
 	for (const paragraph of paragraphs) {
@@ -70,7 +70,11 @@ export function getAtlasCompletionItems(atlas: StoryAtlas = storyAtlas): AtlasCo
 
 	for (const story of atlas.stories) {
 		const chapters = story.chapters.filter(hasChapterContent);
-		const storyParagraphs = chapters.flatMap(chapter => chapter.decks.filter(hasParagraphContent));
+
+		const storyParagraphs = chapters.flatMap(chapter =>
+			chapter.paragraphs.filter(hasParagraphContent),
+		);
+
 		const storyParagraphIds = storyParagraphs.map(paragraph => paragraph.id);
 
 		completionItems.push({
@@ -81,7 +85,7 @@ export function getAtlasCompletionItems(atlas: StoryAtlas = storyAtlas): AtlasCo
 		});
 
 		for (const chapter of chapters) {
-			const paragraphs = chapter.decks.filter(hasParagraphContent);
+			const paragraphs = chapter.paragraphs.filter(hasParagraphContent);
 			const paragraphIds = paragraphs.map(paragraph => paragraph.id);
 
 			completionItems.push({
@@ -122,7 +126,7 @@ export function getAtlasItemsContainingWord({
 }
 
 /**
- * Get the cononical path of the story->chapter->paragraph
+ * Get the cononical path of the story -> chapter -> paragraph
  */
 export function findCompletionPath({
 	atlas = storyAtlas,
@@ -138,7 +142,7 @@ export function findCompletionPath({
 				return [story, chapter];
 			}
 
-			for (const paragraph of chapter.decks) {
+			for (const paragraph of chapter.paragraphs) {
 				if (paragraph.id === id) {
 					return [story, chapter, paragraph];
 				}
@@ -161,6 +165,7 @@ export function isItemUnlocked({
 		atlas,
 		id,
 	});
+
 	const story = findStoryById(path[0]?.id, atlas);
 	const chapter = findChapterById(path[1]?.id, atlas);
 	const paragraph = path.length === 3 ? findParagraphById(id, atlas) : undefined;
@@ -186,9 +191,9 @@ export function isItemUnlocked({
 /**
  * List the chapter's paragraphs
  */
-export function getVisibleParagraphs(chapter: DeckChapter, progressById: ProgressById): CardDeck[] {
-	const paragraphs = chapter.decks.filter(hasParagraphContent);
-	const visibleParagraphs: CardDeck[] = [];
+export function getVisibleParagraphs(chapter: Chapter, progressById: ProgressById): Paragraph[] {
+	const paragraphs = chapter.paragraphs.filter(hasParagraphContent);
+	const visibleParagraphs: Paragraph[] = [];
 
 	for (const paragraph of paragraphs) {
 		const isUnlocked = isItemUnlocked({
@@ -218,6 +223,7 @@ export function getUnlockCriteria(
 		atlas,
 		id: item.id,
 	});
+
 	const story = findStoryById(path[0]?.id, atlas);
 	const criteria: UnlockCriteria[] = [];
 
@@ -226,7 +232,7 @@ export function getUnlockCriteria(
 	}
 
 	for (const chapter of story.chapters.filter(hasChapterContent)) {
-		const paragraphs = chapter.decks.filter(hasParagraphContent);
+		const paragraphs = chapter.paragraphs.filter(hasParagraphContent);
 		const paragraphsWithThreeGems = paragraphs.filter(paragraph => {
 			const completedStages = getCompletedSolveStages(progressById[paragraph.id]);
 
@@ -294,7 +300,7 @@ export function formatUnlockCriterion(criterion: UnlockCriteria): string {
 export function findStoryById(
 	id: string | undefined,
 	atlas: StoryAtlas = storyAtlas,
-): DeckStory | undefined {
+): Story | undefined {
 	return atlas.stories.find(story => story.id === id);
 }
 
@@ -320,17 +326,30 @@ export function findAtlasLocationByChapterId(
 export function findChapterById(
 	id: string | undefined,
 	atlas: StoryAtlas = storyAtlas,
-): DeckChapter | undefined {
+): Chapter | undefined {
 	return findAtlasLocationByChapterId(id, atlas)?.chapter;
+}
+
+/**
+ * Find a paragraph's chapter and get its required player level for a puzzle.
+ */
+export function getChapterSolveUnlockLevel(deckId: string, stage: SolveStage): number | undefined {
+	const path = findCompletionPath({
+		id: deckId,
+	});
+
+	const chapter = findChapterById(path[1]?.id);
+
+	return chapter?.solveUnlockLevels?.[stage];
 }
 
 export function findParagraphById(
 	id: string,
 	atlas: StoryAtlas = storyAtlas,
-): CardDeck | undefined {
+): Paragraph | undefined {
 	for (const story of atlas.stories) {
 		for (const chapter of story.chapters) {
-			const paragraph = chapter.decks.find(paragraph => paragraph.id === id);
+			const paragraph = chapter.paragraphs.find(paragraph => paragraph.id === id);
 
 			if (paragraph) {
 				return paragraph;
@@ -352,7 +371,7 @@ export function getParagraphNumber(
 		id: deckId,
 	});
 	const chapter = findChapterById(path[1]?.id, atlas);
-	const paragraphs = chapter?.decks.filter(hasParagraphContent) ?? [];
+	const paragraphs = chapter?.paragraphs.filter(hasParagraphContent) ?? [];
 	const paragraphIndex = paragraphs.findIndex(paragraph => paragraph.id === deckId);
 
 	if (paragraphIndex === -1) {
@@ -360,6 +379,27 @@ export function getParagraphNumber(
 	}
 
 	return paragraphIndex + 1;
+}
+
+/**
+ * Show the name of the story or chapter, or the paragraph number.
+ */
+export function getAtlasItemLabel(id: string, atlas: StoryAtlas = storyAtlas): string {
+	const story = findStoryById(id, atlas);
+	const chapter = findChapterById(id, atlas);
+	const paragraphNumber = getParagraphNumber(id, atlas);
+
+	let label = 'Paragraph';
+
+	if (story) {
+		label = story.name;
+	} else if (chapter) {
+		label = chapter.name;
+	} else if (paragraphNumber !== undefined) {
+		label = `Paragraph ${paragraphNumber}`;
+	}
+
+	return label;
 }
 
 /**
@@ -375,7 +415,7 @@ export function findNextParagraph(
 
 	for (const story of atlas.stories) {
 		for (const chapter of story.chapters.filter(hasChapterContent)) {
-			for (const paragraph of chapter.decks.filter(hasParagraphContent)) {
+			for (const paragraph of chapter.paragraphs.filter(hasParagraphContent)) {
 				if (foundCurrentParagraph) {
 					return {
 						story,

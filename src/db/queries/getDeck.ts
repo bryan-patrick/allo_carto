@@ -1,5 +1,6 @@
-import type { CardDeck, Word } from '../../components/CardDeck/cardDeckTypes';
+import type { Paragraph, Word } from '../../components/CardDeck/cardDeckTypes';
 import type { LoadedFlashcardDeck } from '../../components/CardDeck/deckSessionTypes';
+import { parseEnglishPrefixes } from '@/src/util/englishWordParts';
 import { getDB } from '../connection';
 import type { WordRow } from '../types';
 import { getFlashcardCycle } from './flashcardCycles';
@@ -9,7 +10,7 @@ import getDeckWordChoices from './getDeckWordChoices';
  * These are the paragraph, card limit, and learner we need to load flashcards.
  */
 interface GetDeckProps {
-	deck: CardDeck;
+	deck: Paragraph;
 	/**
 	 * The maximum cards per deck when starting a new flashcard cycle.
 	 */
@@ -23,16 +24,26 @@ interface DeckWordRow extends WordRow {
 
 /**
  * Turn a saved database word into flashcard data the app can display.
- * Read its English answers as a list, turn the vulgar-word setting into true or false,
+ * Read its English answers as a list, turn the saved word flags into true or false,
  * and include the learner's word counts, starting at zero when no counts are saved.
  */
 function parseWordRow(row: DeckWordRow): Word {
-	const { englishWords, isVulgar, userCorrectCount, userSeenCount, ...wordFields } = row;
+	const {
+		englishWords,
+		englishPrefixes,
+		isVulgar,
+		isQuebecois,
+		userCorrectCount,
+		userSeenCount,
+		...wordFields
+	} = row;
 
 	return {
 		...wordFields,
 		englishWords: JSON.parse(englishWords),
+		englishPrefixes: parseEnglishPrefixes(englishPrefixes),
 		isVulgar: Boolean(isVulgar),
+		isQuebecois: Boolean(isQuebecois),
 		correctCount: userCorrectCount ?? 0,
 		seenCount: userSeenCount ?? 0,
 	};

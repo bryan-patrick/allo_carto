@@ -25,7 +25,7 @@ interface FlashcardCycleProgressRow {
 
 /**
  * Load word progress, solved puzzles, and flashcard deck counts for the app.
- * Keep flashcard progress separate from Solve completion.
+ * Count a paragraph as solved after its first three Solve puzzles are complete.
  */
 export default async function getUserProgress({
 	database,
@@ -52,8 +52,6 @@ export default async function getUserProgress({
 		statements.getCompletions,
 		userId,
 	);
-	const savedParagraphIds = completions.map(completion => completion.deckId);
-	const completedParagraphs = new Set(savedParagraphIds);
 	const completedStagesByParagraph = new Map<string, CompletedSolveStages>();
 	const flashcardCycles = await database.getAllAsync<FlashcardCycleProgressRow>(
 		statements.getFlashcardCycles,
@@ -77,7 +75,11 @@ export default async function getUserProgress({
 		const wordProgressCounts = {
 			...emptyDeckWordProgressCounts,
 		};
-		const completedParagraphIds = item.paragraphIds.filter(id => completedParagraphs.has(id));
+		const completedParagraphIds = item.paragraphIds.filter(paragraphId => {
+			const completedStages = completedStagesByParagraph.get(paragraphId) ?? 0;
+
+			return completedStages >= 3;
+		});
 		const completedParagraphCount = completedParagraphIds.length;
 		const paragraphCount = item.paragraphIds.length;
 		const savedCycle = flashcardCyclesByParagraph.get(item.id);
@@ -89,8 +91,12 @@ export default async function getUserProgress({
 		};
 		let seenPercentage = 0;
 		let seenWordCount = 0;
-		let completedSolveStages: CompletedSolveStages = paragraphCount > 0 ? 5 : 0;
+		let completedSolveStages: CompletedSolveStages = 0;
 		let flashcardProgress: FlashcardDeckProgress | undefined;
+
+		if (paragraphCount > 0) {
+			completedSolveStages = 5;
+		}
 
 		// Keep the saved deck number until the cycle ends or the paragraph's words change.
 		if (savedCycle) {
@@ -138,7 +144,7 @@ export default async function getUserProgress({
 			completedParagraphCount,
 			paragraphCount,
 			completedSolveStages,
-			hasFirstGem: paragraphCount > 0 && completedParagraphCount === paragraphCount,
+			hasFirstGem: paragraphCount > 0 && completedSolveStages >= 1,
 		};
 	}
 

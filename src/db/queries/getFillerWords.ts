@@ -1,4 +1,4 @@
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import filterFillerWords from '@/src/util/filterFillerWords';
 import { getDB } from '../connection';
 
@@ -8,7 +8,7 @@ import { getDB } from '../connection';
 interface GetDeckFillerWordsProps {
 	amount?: number;
 	correctWords: string[];
-	deck: CardDeck;
+	deck: Paragraph;
 }
 
 interface FillerWordRow {
