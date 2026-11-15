@@ -1,6 +1,6 @@
 import { storyAtlas } from '@/data/french/storyAtlas';
 import { initialWordState } from '@/src/components/CardDeck/cardDeckTypes';
-import { makeMockCardDeckState } from '@/src/components/CardDeck/mockCardDeck';
+import { makeMockCardDeck, makeMockCardDeckState } from '@/src/components/CardDeck/mockCardDeck';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckResultsView from '@/src/components/Views/DeckResultsView';
 import { fireEvent, render } from '@testing-library/react-native';
@@ -57,16 +57,16 @@ jest.mock('expo-audio', () => ({
 
 const mockUseCardDeck = jest.mocked(useCardDeck);
 const story = storyAtlas.stories.find(story =>
-	story.chapters.some(chapter => chapter.decks.length > 0),
+	story.chapters.some(chapter => chapter.paragraphs.length > 0),
 )!;
-const chapter = story.chapters.find(chapter => chapter.decks.length > 0)!;
+const chapter = story.chapters.find(chapter => chapter.paragraphs.length > 0)!;
 
 describe('<DeckResultsView />', () => {
 	beforeEach(() => {
 		mockRouter.dismissTo.mockClear();
 		mockUseCardDeck.mockReturnValue({
 			cardDeckState: makeMockCardDeckState({
-				cardDeck: chapter.decks[0],
+				cardDeck: makeMockCardDeck(chapter.paragraphs[0]),
 				isComplete: true,
 				session: {
 					id: 'completed-session',
