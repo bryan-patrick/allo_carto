@@ -1,8 +1,8 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
-import type { CardDeck } from '@/src/components/CardDeck/cardDeckTypes';
+import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
-import DeckHeader from '@/src/components/DeckHeader';
+import ParagraphHeader from '@/src/components/ParagraphHeader';
 import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
@@ -15,7 +15,7 @@ import getDeckWordProgressCounts, {
 } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import type { UnlockCriteria } from '@/src/util/atlasCompletion';
+import { getAtlasItemLabel, type UnlockCriteria } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
 import { formatCEFRRange } from '@/src/util/formatCEFRRange';
@@ -41,7 +41,7 @@ const deckBoxBg = require('@/src/app/assets/images/decks/deck-box-bg.jpg');
  * Typing
  */
 interface DeckBoxProps {
-	deck: CardDeck;
+	deck: Paragraph;
 	isLocked: boolean;
 	unlockCriteria: UnlockCriteria[];
 }
@@ -51,7 +51,7 @@ interface DeckBoxProps {
  */
 export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps) {
 	const router = useRouter();
-	const { CEFR, description: deckDescription, passage, title: deckTitle, wordIds } = deck;
+	const { CEFR, description: deckDescription, passage, wordIds } = deck;
 
 	/**
 	 * Context and state
@@ -74,6 +74,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 	 * Story display values
 	 */
 	const storyColor = getDeckStoryColor(deck.id);
+	const paragraphLabel = getAtlasItemLabel(deck.id);
 
 	/**
 	 * Deck metadata
@@ -254,13 +255,12 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 							{!isLocked && (
 								<View style={styles.deckDetails}>
 									<View style={styles.titleContainer}>
-										<DeckHeader
-											title={deckTitle}
+										<ParagraphHeader
+											label={paragraphLabel}
 											progress={progressById[deck.id]}
-											titleStyle={styles.deckTitle}
 										>
 											<Text style={styles.deckDescription}>{deckDescription}</Text>
-										</DeckHeader>
+										</ParagraphHeader>
 									</View>
 								</View>
 							)}
@@ -320,7 +320,7 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 									</Pressable>
 									<LinkButton
 										accessibilityHint="Practice the next flashcard deck for this paragraph."
-										accessibilityLabel={`${selectText}: ${deckTitle}`}
+										accessibilityLabel={`${selectText}: ${paragraphLabel}`}
 										arrowColor={colors.light.background}
 										color={storyColor}
 										handler={handleSelectDeck}

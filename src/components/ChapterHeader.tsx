@@ -1,4 +1,4 @@
-import type { DeckChapter } from '@/data/french/storyAtlas';
+import type { Chapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import type { ProgressById } from '@/src/util/progression';
@@ -10,7 +10,7 @@ const postmarkImage = require('@/src/app/assets/images/postcard-parts/quebec-pos
  * Typing
  */
 interface ChapterHeaderProps {
-	chapter: DeckChapter;
+	chapter: Chapter;
 	progressById: ProgressById;
 }
 

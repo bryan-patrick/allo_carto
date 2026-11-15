@@ -7,8 +7,16 @@ import {
 } from '@/src/util/solveProgression';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+	Alert,
+	Animated,
+	Easing,
+	Pressable,
+	StyleSheet,
+	View,
+	type ColorValue,
+} from 'react-native';
 import MaterialSymbol from './MaterialSymbol';
 
 /**
@@ -32,16 +40,24 @@ interface PrismaticGemProps {
 	size: number;
 }
 
+interface PrismaticGemGradient {
+	colors: [ColorValue, ColorValue, ...ColorValue[]];
+}
+
+/**
+ * Consts
+ */
 const gemSpinDuration = 4000;
 const gemSpinDegrees = 10 * 360;
+
 const gemColors = [colors.gems.first, colors.gems.second, colors.gems.third];
+
 const glowGemColors = [colors.glowGems.first, colors.glowGems.second, colors.glowGems.third];
-const prismaticGemColors = [
-	colors.rarity.Legendary,
-	colors.gems.second,
-	colors.gems.third,
-	colors.gems.first,
-] as const;
+
+const prismaticGemGradient: PrismaticGemGradient = {
+	colors: [colors.rarity.Legendary, colors.gems.second, colors.gems.third, colors.gems.first],
+};
+
 const gemAppearanceDescriptions: Partial<Record<CompletedSolveStages, string>> = {
 	4: ' All three gems are glowing.',
 	5: ' All three gems are prismatic. You have fully mastered this paragraph, congrats!',
@@ -73,7 +89,7 @@ function PrismaticGem({ size }: PrismaticGemProps) {
 			}
 		>
 			<LinearGradient
-				colors={prismaticGemColors}
+				colors={prismaticGemGradient.colors}
 				start={{
 					x: 0,
 					y: 1,
@@ -89,7 +105,7 @@ function PrismaticGem({ size }: PrismaticGemProps) {
 }
 
 /**
- * Explains earned gems and the next Solve challenge.
+ * Explains earned gems and the next puzzle.
  */
 function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStages, GemResponse> {
 	const type = progress?.type ?? 'paragraph';
@@ -99,8 +115,8 @@ function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStage
 	const wordCount = progress?.wordCount ?? 0;
 	const requirements: Record<ProgressType, string> = {
 		paragraph: `${seenWordCount} of ${wordCount} words seen. See every word in flashcards, then solve every puzzle card to earn the first gem.`,
-		chapter: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Solve every paragraph in this chapter to earn its first gem.`,
-		story: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Solve every paragraph in this story to earn its first gem.`,
+		chapter: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Complete the first Solve puzzle for every paragraph in this chapter to earn its first gem.`,
+		story: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Complete the first Solve puzzle for every paragraph in this story to earn its first gem.`,
 	};
 	const targets: Record<ProgressType, string> = {
 		paragraph: 'this paragraph',
@@ -155,17 +171,45 @@ function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStage
 	};
 }
 
-// Show earned gems and celebrate a new claim with a spin and a shrinking backdrop gem.
-export default function CollectionGems({
+/**
+ * Show the paragraph's gems with fresh animation state for each celebration.
+ * Changing the stage or readiness restarts the celebration from the beginning.
+ */
+export default function CollectionGems(props: CollectionGemsProps) {
+	const celebrationKey = `${props.celebrationStage ?? 0}-${props.celebrationReady ?? true}`;
+
+	return (
+		<CollectionGemsContent
+			key={celebrationKey}
+			{...props}
+		/>
+	);
+}
+
+/**
+ * Show earned gems and explain the next puzzle when they are selected.
+ */
+function CollectionGemsContent({
 	title,
 	progress,
 	size = 18,
 	celebrationStage,
 	celebrationReady = true,
 }: CollectionGemsProps) {
-	const rotation = useRef(new Animated.Value(0)).current;
-	const backdropScale = useRef(new Animated.Value(8)).current;
+	/**
+	 * Celebration animation and reveal state
+	 */
+	const [rotation] = useState(function createGemRotation() {
+		return new Animated.Value(0);
+	});
+	const [backdropScale] = useState(function createBackdropScale() {
+		return new Animated.Value(8);
+	});
 	const [hasRevealedGem, setHasRevealedGem] = useState(!celebrationStage);
+
+	/**
+	 * Saved progress and gem display values
+	 */
 	const responses = getGemResponses(progress);
 	const completedStages = getCompletedSolveStages(progress);
 	const response = responses[completedStages];
@@ -215,8 +259,7 @@ export default function CollectionGems({
 	};
 
 	/**
-	 * Spin and shrink the backdrop while the small gem stays still.
-	 * Reveal the earned gem and remove its backdrop as soon as the backdrop reaches normal size.
+	 * Spins and shrinks the backdrop while the small gem stays still.
 	 */
 	useEffect(() => {
 		const spin = Animated.timing(rotation, {
@@ -238,7 +281,6 @@ export default function CollectionGems({
 
 		rotation.setValue(0);
 		backdropScale.setValue(8);
-		setHasRevealedGem(false);
 		spin.start();
 		shrinkBackdrop.start(({ finished }) => {
 			if (finished) {

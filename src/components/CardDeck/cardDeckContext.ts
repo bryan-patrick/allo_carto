@@ -37,9 +37,7 @@ export const initialCardDeckState: CardDeckStateProps = {
 	incorrectWords: [],
 	cardDeck: createCardDeck({
 		id: '',
-		title: '',
 		description: '',
-		chapter: '',
 		CEFR: [],
 		passage: [],
 		words: [initialWordState],

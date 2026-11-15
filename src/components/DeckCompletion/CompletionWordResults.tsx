@@ -4,6 +4,7 @@ import type { DeckWordResultProps } from '@/src/components/CardDeck/deckSessionT
 import CountUp from '@/src/components/CountUp';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { WordProgressIcon } from '@/src/components/WordProgress';
+import { getEnglishPuzzleAnswers } from '@/src/util/englishWordParts';
 import { userExperienceConfig } from '@/src/util/userExperience';
 import {
 	getWordProgressDefinitionByKey,
@@ -33,6 +34,11 @@ interface WordResultRowProps {
 	index: number;
 }
 
+interface WordLearningChange {
+	previous: WordProgressDefinition;
+	next: WordProgressDefinition;
+}
+
 /**
  * Show a word's earned XP and its old and new learning levels.
  */
@@ -60,6 +66,12 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 	const learningBonusPercent = userExperienceConfig.learningLevelBonusMultiplier * 100;
 
 	const learningBonusLabel = `Level-up bonus (${learningBonusPercent}%)`;
+	const englishMeanings = getEnglishPuzzleAnswers(word).join(', ');
+
+	/**
+	 * Initial word label
+	 */
+	let rarityLabel: string = word.rarity;
 
 	/**
 	 * Start with an X and red colors for wrong or skipped words.
@@ -73,13 +85,16 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 	/**
 	 * Join the English meanings into one line, with a comma between them.
 	 */
-	let translation = word.englishWords.join(', ');
+	let translation = englishMeanings;
 
 	/**
 	 * Keep the old and new learning levels here if the word changed levels.
 	 */
-	let learningChange:
-		{ previous: WordProgressDefinition; next: WordProgressDefinition } | undefined;
+	let learningChange: WordLearningChange | undefined;
+
+	if (word.isQuebecois) {
+		rarityLabel = 'Quebecois';
+	}
 
 	if (result.outcome === 'correct') {
 		symbolName = 'check';
@@ -123,9 +138,9 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 
 	/**
 	 * Build the text a screen reader says for this word.
-	 * Include the answer result, XP, language level, rarity, and any learning bonus or level change.
+	 * Include the answer result, XP, language level, word label, and any learning bonus or level change.
 	 */
-	let accessibilityLabel = `${word.frenchWord}. ${word.englishWords.join(', ')}. ${result.outcome}. ${xpLabel}. ${word.CEFR}. ${word.rarity}.`;
+	let accessibilityLabel = `${word.frenchWord}. ${englishMeanings}. ${result.outcome}. ${xpLabel}. ${word.CEFR}. ${rarityLabel}.`;
 
 	if (learningChange) {
 		accessibilityLabel += ` ${learningChange.previous.name} to ${learningChange.next.name}.`;
@@ -138,9 +153,15 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 	 * Give the answer icon its background color.
 	 * Use the word's language level and rarity to choose their label colors.
 	 */
-	const iconStyle = { backgroundColor: iconBackground };
-	const cefrStyle = { backgroundColor: colors.light.CEFR[word.CEFR] };
-	const rarityStyle = { backgroundColor: colors.rarity[word.rarity] };
+	const iconStyle = {
+		backgroundColor: iconBackground,
+	};
+	const cefrStyle = {
+		backgroundColor: colors.light.CEFR[word.CEFR],
+	};
+	const rarityStyle = {
+		backgroundColor: colors.rarity[word.rarity],
+	};
 
 	/**
 	 * Render the thing
@@ -200,11 +221,16 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 					delay={countDelay}
 					prefix={xpPrefix}
 					suffix=" XP"
-					style={[styles.xp, { color: xpColor }]}
+					style={[
+						styles.xp,
+						{
+							color: xpColor,
+						},
+					]}
 				/>
 				<View style={styles.badges}>
 					<Text style={[styles.badge, cefrStyle]}>{word.CEFR}</Text>
-					<Text style={[styles.badge, rarityStyle]}>{word.rarity}</Text>
+					<Text style={[styles.badge, rarityStyle]}>{rarityLabel}</Text>
 				</View>
 			</View>
 		</Animated.View>
@@ -234,7 +260,12 @@ export default function CompletionWordResults({
 		if (!result) {
 			return [];
 		}
-		return [{ word, result }];
+		return [
+			{
+				word,
+				result,
+			},
+		];
 	});
 
 	/**
