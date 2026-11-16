@@ -29,6 +29,7 @@ export interface PassageSegment {
 	wordId?: string;
 	canonicalEnglish?: string;
 	unlockExempt?: boolean;
+	isLocked?: boolean;
 	after?: string;
 }
 
@@ -93,6 +94,12 @@ export interface WordElision {
 	ipaPronunciation: string;
 }
 
+export interface WordTip {
+	id: string;
+	title: string;
+	description: string;
+}
+
 export interface Word {
 	id: string;
 	frenchWord: string;
@@ -102,6 +109,7 @@ export interface Word {
 	 */
 	canonicalEnglish?: string | null;
 	elision?: WordElision;
+	tip?: WordTip;
 	frenchArticle?: string;
 	englishArticle?: string;
 	englishPrefixes?: string[];

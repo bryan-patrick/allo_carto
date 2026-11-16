@@ -1,6 +1,9 @@
 import { seedWords as frenchSeedWords } from '@/data/french/words';
 import { getDB, logThisIfItFails } from '../connection';
 
+/**
+ * Saves the active vocabulary and its flashcard details.
+ */
 export default async function seedWords(): Promise<void> {
 	const database = await getDB();
 
@@ -10,9 +13,14 @@ export default async function seedWords(): Promise<void> {
 	for (const word of frenchSeedWords) {
 		await logThisIfItFails(`Oops we messed up seeding word ${word.id}`, async () => {
 			let savedEnglishPrefixes: string | null = null;
+			let savedTip: string | null = null;
 
 			if (word.englishPrefixes) {
 				savedEnglishPrefixes = JSON.stringify(word.englishPrefixes);
+			}
+
+			if (word.tip) {
+				savedTip = JSON.stringify(word.tip);
 			}
 
 			await database.runAsync(
@@ -22,6 +30,7 @@ export default async function seedWords(): Promise<void> {
 					frenchWord,
 					englishWords,
 					canonicalEnglish,
+					tip,
 					frenchArticle,
 					englishArticle,
 					englishPrefixes,
@@ -38,11 +47,12 @@ export default async function seedWords(): Promise<void> {
 					correctCount,
 					rarity
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				ON CONFLICT(id) DO UPDATE SET
 					frenchWord = excluded.frenchWord,
 					englishWords = excluded.englishWords,
 					canonicalEnglish = excluded.canonicalEnglish,
+					tip = excluded.tip,
 					frenchArticle = excluded.frenchArticle,
 					englishArticle = excluded.englishArticle,
 					englishPrefixes = excluded.englishPrefixes,
@@ -63,6 +73,7 @@ export default async function seedWords(): Promise<void> {
 					word.frenchWord,
 					JSON.stringify(word.englishWords),
 					word.canonicalEnglish ?? null,
+					savedTip,
 					word.frenchArticle ?? null,
 					word.englishArticle ?? null,
 					savedEnglishPrefixes,

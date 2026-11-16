@@ -45,6 +45,12 @@ import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
 import getUserWordProgress, { type UserWordProgressById } from './queries/getUserWordProgress';
 import { claimSolveReward } from './queries/solveRewards';
+import {
+	claimTipReward,
+	getTipRewardClaims,
+	type TipRewardClaim,
+	type TipRewardReceipt,
+} from './queries/tipRewards';
 import { getUserActivity } from './queries/userActivity';
 import {
 	dismissAllUserNotifications,
@@ -80,6 +86,8 @@ interface UserProgressContextProps {
 	dismissNotification: (notificationId: number) => Promise<boolean>;
 	dismissAllNotifications: () => Promise<boolean>;
 	claimSolveReward: (request: SolveRewardRequest) => Promise<SolveRewardReceipt | false>;
+	tipClaims: TipRewardClaim[];
+	claimTipReward: (tipId: string) => Promise<TipRewardReceipt | false>;
 	applyMockParagraphProgress: (preset: MockParagraphPresetValue) => Promise<number | false>;
 	collections: VocabularyCollectionProgress[];
 	claimCollectionReward: (
@@ -112,6 +120,8 @@ const initialValue: UserProgressContextProps = {
 	dismissNotification: async () => false,
 	dismissAllNotifications: async () => false,
 	claimSolveReward: async () => false,
+	tipClaims: [],
+	claimTipReward: async () => false,
 	applyMockParagraphProgress: async () => false,
 	collections: [],
 	claimCollectionReward: async () => false,
@@ -168,6 +178,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const [progressById, setProgressById] = useState<ProgressById>({});
 	const [wordProgressById, setWordProgressById] = useState<UserWordProgressById>({});
 	const [collectionClaims, setCollectionClaims] = useState<CollectionRewardClaim[]>([]);
+	const [tipClaims, setTipClaims] = useState<TipRewardClaim[]>([]);
 	const [experience, setExperience] = useState<UserExperience>(() => getUserExperience(0));
 	const [inkBalance, setInkBalance] = useState(0);
 	const [status, setStatus] = useState<ProgressStatus>('loading');
@@ -206,6 +217,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 				nextExperience,
 				nextInkBalance,
 				nextCollectionClaims,
+				nextTipClaims,
 				nextActivity,
 				nextNotifications,
 			] = await Promise.all([
@@ -223,6 +235,10 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 					userId,
 				}),
 				getCollectionRewardClaims({
+					database,
+					userId,
+				}),
+				getTipRewardClaims({
 					database,
 					userId,
 				}),
@@ -257,6 +273,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			setProgressById(nextProgress);
 			setWordProgressById(nextWordProgressById);
 			setCollectionClaims(nextCollectionClaims);
+			setTipClaims(nextTipClaims);
 			setExperience(nextExperience);
 			setInkBalance(nextInkBalance);
 			setStatus('ready');
@@ -393,6 +410,28 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			});
 		},
 		[database, runProgressWrite, userId],
+	);
+
+	/**
+	 * Claims tip XP and refreshes the player's saved claims and level.
+	 */
+	const recordTipReward = useCallback(
+		async (tipId: string): Promise<TipRewardReceipt | false> => {
+			return runProgressWrite(async () => {
+				const receipt = await claimTipReward({
+					database,
+					userId: userId!,
+					tipId,
+				});
+
+				if (receipt.status === 'claimed') {
+					void playClaimSound();
+				}
+
+				return receipt;
+			});
+		},
+		[database, playClaimSound, runProgressWrite, userId],
 	);
 
 	// Claim collection XP, play its sound, and refresh the album and player level.
@@ -549,6 +588,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			dismissNotification,
 			dismissAllNotifications,
 			claimSolveReward: recordSolveReward,
+			tipClaims,
+			claimTipReward: recordTipReward,
 			applyMockParagraphProgress: recordMockParagraphProgress,
 			collections,
 			claimCollectionReward: recordCollectionReward,
@@ -573,6 +614,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			dismissNotification,
 			dismissAllNotifications,
 			recordSolveReward,
+			tipClaims,
+			recordTipReward,
 			recordMockParagraphProgress,
 			collections,
 			recordCollectionReward,

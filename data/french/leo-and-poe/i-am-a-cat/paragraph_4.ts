@@ -72,7 +72,6 @@ export const paragraph4 = createParagraph({
 		{
 			text: 'faire',
 			wordId: 'word_verb_faire',
-			canonicalEnglish: 'be',
 			after: '. ',
 		},
 		{

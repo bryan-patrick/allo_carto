@@ -4,14 +4,6 @@
 
 Hello! Allô Carto is a story drive mobile flashcard app I've been building focused around progressing users through stories one paragraph at a time using flashcards and solving puzzles to learn Quebec French.
 
-## A note about AI
-
-All core systems were developed without any AI assistance whatsoever.
-
-Copilot has been used for additional features for convenience, although the code has been so atrocious that they're being rewritten altogether.
-
-All placeholder AI illustrations and stylized images will be removed from the project and replaced with original illustrations and artwork.
-
 ## Built with
 
 - [Expo](https://expo.dev/) and [React Native](https://reactnative.dev/)
@@ -35,6 +27,16 @@ Vowels in readable pronunciation are written like this:
 - `un`: `uhn`
 
 The final `n` is generally there to suggest a French nasal sound. It is included often because these guides favor being approachable over exact. That's what IPA is for.
+
+## A note about AI
+
+All core systems were developed without any AI assistance or tools.
+
+AI has been used in later features that build on top of core.
+
+All placeholder AI illustrations and stylized images are _**temporary**_ and will be removed from the project and replaced with original illustrations and artwork that I've been working on. This application will not use AI generated illustrations when published.
+
+None of the textual or learning content is AI generated.
 
 ### Copyright
 

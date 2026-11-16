@@ -313,6 +313,8 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		fontSize: 15,
 		lineHeight: 20,
+		marginTop: 1,
+		marginBottom: 4,
 		textDecorationLine: 'underline',
 	},
 	loadingButton: {

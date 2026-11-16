@@ -1,6 +1,7 @@
 import type { Story } from '@/data/french/storyAtlas';
 import ChapterMap from '@/src/components/ChapterMap';
 import Loader from '@/src/components/Loader';
+import ReadingLink from '@/src/components/ReadingLink';
 import RepeatingBackgroundImage from '@/src/components/RepeatingBackgroundImage';
 import StorySelectModal from '@/src/components/StorySelectModal';
 import StorySelector from '@/src/components/StorySelector';
@@ -26,7 +27,7 @@ export default function ChapterSelectView() {
 		progressById,
 	});
 	const chapterContentInsetStyle = {
-		paddingTop: storyTabHeight + 24,
+		paddingTop: storyTabHeight + 8,
 	};
 
 	// Leave room for the tab even when a long story title wraps onto another line.
@@ -88,6 +89,14 @@ export default function ChapterSelectView() {
 						source={chapterSelectBackground}
 						style={[styles.chapterContent, chapterContentInsetStyle]}
 					>
+						<View style={styles.readStoryAction}>
+							<ReadingLink
+								item={selectedStory}
+								color={colors.category[selectedStory.category]}
+								label="Read story"
+								style={styles.readStoryLink}
+							/>
+						</View>
 						<ChapterMap
 							key={selectedStory.id}
 							story={selectedStory}
@@ -129,6 +138,14 @@ const styles = StyleSheet.create({
 		left: 0,
 		right: 0,
 		zIndex: 1,
+	},
+	readStoryAction: {
+		alignItems: 'center',
+		marginBottom: 4,
+	},
+	readStoryLink: {
+		fontSize: 14,
+		lineHeight: 20,
 	},
 	background: {
 		flex: 1,

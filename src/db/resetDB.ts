@@ -12,6 +12,7 @@ export default async function resetDB(): Promise<void> {
 		DROP TABLE IF EXISTS userNotifications;
 		DROP TABLE IF EXISTS userActivity;
 		DROP TABLE IF EXISTS collectionRewardClaims;
+		DROP TABLE IF EXISTS tipRewardClaims;
 		DROP TABLE IF EXISTS solveRewards;
 		DROP TABLE IF EXISTS solveWordOrderDrafts;
 		DROP TABLE IF EXISTS solveStageAttempts;

@@ -1,4 +1,4 @@
-import type { Paragraph, Word } from '../../components/CardDeck/cardDeckTypes';
+import type { Paragraph, Word, WordTip } from '../../components/CardDeck/cardDeckTypes';
 import type { LoadedFlashcardDeck } from '../../components/CardDeck/deckSessionTypes';
 import { parseEnglishPrefixes } from '@/src/util/englishWordParts';
 import { getDB } from '../connection';
@@ -23,25 +23,30 @@ interface DeckWordRow extends WordRow {
 }
 
 /**
- * Turn a saved database word into flashcard data the app can display.
- * Read its English answers as a list, turn the saved word flags into true or false,
- * and include the learner's word counts, starting at zero when no counts are saved.
+ * Reads a saved word's flashcard details and the learner's progress.
  */
 function parseWordRow(row: DeckWordRow): Word {
 	const {
 		englishWords,
 		englishPrefixes,
+		tip,
 		isVulgar,
 		isQuebecois,
 		userCorrectCount,
 		userSeenCount,
 		...wordFields
 	} = row;
+	let wordTip: WordTip | undefined;
+
+	if (tip) {
+		wordTip = JSON.parse(tip);
+	}
 
 	return {
 		...wordFields,
 		englishWords: JSON.parse(englishWords),
 		englishPrefixes: parseEnglishPrefixes(englishPrefixes),
+		tip: wordTip,
 		isVulgar: Boolean(isVulgar),
 		isQuebecois: Boolean(isQuebecois),
 		correctCount: userCorrectCount ?? 0,

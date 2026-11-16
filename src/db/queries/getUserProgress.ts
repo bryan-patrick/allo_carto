@@ -1,7 +1,7 @@
 import type { FlashcardDeckProgress } from '@/src/components/CardDeck/cardDeckTypes';
 import { getAtlasCompletionItems } from '@/src/util/atlasCompletion';
 import type { ProgressById, UserProgressRow } from '@/src/util/progression';
-import type { CompletedSolveStages } from '@/src/util/solveProgression';
+import type { CompletedSolveStages, SolveStage } from '@/src/util/solveProgression';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { emptyDeckWordProgressCounts } from './getDeckWordProgressCounts';
 import getUserWordProgress, { type UserWordProgressById } from './getUserWordProgress';
@@ -17,6 +17,11 @@ interface SolveCompletionRow {
 	completedSolveStages: CompletedSolveStages;
 }
 
+interface StartedSolveStageRow {
+	deckId: string;
+	stage: SolveStage;
+}
+
 interface FlashcardCycleProgressRow {
 	deckId: string;
 	decks: string;
@@ -24,8 +29,7 @@ interface FlashcardCycleProgressRow {
 }
 
 /**
- * Load word progress, solved puzzles, and flashcard deck counts for the app.
- * Count a paragraph as solved after its first three Solve puzzles are complete.
+ * Loads saved flashcard and puzzle progress for paragraphs, chapters, and stories.
  */
 export default async function getUserProgress({
 	database,
@@ -39,6 +43,17 @@ export default async function getUserProgress({
 		`,
 		getCompletions: 'SELECT deckId, completedSolveStages FROM solveCompletions WHERE userId = ?;',
 		getFlashcardCycles: 'SELECT deckId, decks, deckIndex FROM flashcardCycles WHERE userId = ?;',
+		getStartedSolveStages: `
+			SELECT deckId, 1 AS stage FROM solveAttempts WHERE userId = ?
+			UNION
+			SELECT deckId, stage FROM solveStageAttempts WHERE userId = ?
+			UNION
+			SELECT deckId, 1 AS stage FROM solvePositions WHERE userId = ?
+			UNION
+			SELECT deckId, stage FROM solveStagePositions WHERE userId = ?
+			UNION
+			SELECT deckId, 3 AS stage FROM solveWordOrderDrafts WHERE userId = ?;
+		`,
 	};
 	const result: ProgressById = {};
 	const rows = await database.getAllAsync<UserProgressRow>(statements.getProgress, userId);
@@ -58,6 +73,25 @@ export default async function getUserProgress({
 		userId,
 	);
 	const flashcardCyclesByParagraph = new Map<string, FlashcardCycleProgressRow>();
+	const startedSolveStageRows = await database.getAllAsync<StartedSolveStageRow>(
+		statements.getStartedSolveStages,
+		userId,
+		userId,
+		userId,
+		userId,
+		userId,
+	);
+	const startedSolveStagesByParagraph = new Map<string, SolveStage[]>();
+
+	/**
+	 * Count incorrect answers and saved card arrangements as started puzzles too.
+	 */
+	for (const row of startedSolveStageRows) {
+		const startedSolveStages = startedSolveStagesByParagraph.get(row.deckId) ?? [];
+
+		startedSolveStages.push(row.stage);
+		startedSolveStagesByParagraph.set(row.deckId, startedSolveStages);
+	}
 
 	for (const cycle of flashcardCycles) {
 		flashcardCyclesByParagraph.set(cycle.deckId, cycle);
@@ -144,6 +178,7 @@ export default async function getUserProgress({
 			completedParagraphCount,
 			paragraphCount,
 			completedSolveStages,
+			startedSolveStages: startedSolveStagesByParagraph.get(item.id) ?? [],
 			hasFirstGem: paragraphCount > 0 && completedSolveStages >= 1,
 		};
 	}

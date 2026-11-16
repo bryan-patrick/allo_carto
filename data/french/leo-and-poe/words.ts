@@ -688,7 +688,7 @@ export const leoAndPoeWords: Word[] = [
 			pronunciation: 'd',
 			ipaPronunciation: 'd',
 		},
-		englishWords: ['of', 'from'],
+		englishWords: ['of', 'from', 'to'],
 		canonicalEnglish: 'of',
 		isVulgar: false,
 		lemmaId: 'de',

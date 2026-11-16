@@ -1,6 +1,6 @@
 import GettingStartedPage from './GettingStartedPage';
 
-const description = `Welcome to Allô Carto! Practice flashcards to progress a story one paragraph at a time. Do flashcards to unlock the puzzles.\n\nComplete the first 3 puzzles and to unlock the next paragraph.`;
+const description = `Welcome to Allô Carto! The app is simple. You study one paragraph at a time. Study the flashcards to unlock the puzzles.\n\nComplete the puzzles to unlock the next paragraph. That's it!`;
 
 export default function FlashcardsPage() {
 	return (
