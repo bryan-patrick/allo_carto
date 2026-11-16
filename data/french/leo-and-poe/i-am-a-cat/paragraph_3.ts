@@ -5,7 +5,7 @@ export const paragraph3 = createParagraph({
 	description: 'Leo describes his meals and considers whether city life is easy for a cat.',
 	CEFR: ['A1', 'A2'],
 	englishPassage:
-		'Everyday he gives me bread to eat and water to drink. Is it easy to be a cat and live in the city? For me, yes and no.',
+		'Every day he gives me bread to eat and water to drink. Is it easy to be a cat and live in the city? For me, yes and no.',
 	passage: [
 		{
 			text: 'Tous',
@@ -52,9 +52,13 @@ export const paragraph3 = createParagraph({
 			text: 'et',
 			wordId: 'word_conjunction_et',
 		},
+		/**
+		 * Together, de l’ means “some” here, but l’eau stays on one beginner flashcard.
+		 */
 		{
 			text: 'de',
 			wordId: 'word_preposition_de',
+			canonicalEnglish: 'some',
 		},
 		{
 			text: 'l’eau',

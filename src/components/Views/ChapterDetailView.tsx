@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
 		gap: 4,
 	},
 	chapterTitle: {
-		fontFamily: 'lexend-600',
+		fontFamily: 'lexend-700',
 		fontSize: 15,
 		textAlign: 'center',
 		textTransform: 'uppercase',
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
 	},
 	chapterName: {
 		fontFamily: 'lexend-600',
-		fontSize: 20,
+		fontSize: 22,
 		lineHeight: 24,
 		textAlign: 'center',
 		color: colors.dark.text,

@@ -29,6 +29,7 @@ expo-env.d.ts
 *.pem
 canon.md
 canon/
+stories/
 
 # local env files
 .env*.local

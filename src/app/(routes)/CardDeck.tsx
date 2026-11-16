@@ -5,6 +5,8 @@ import LevelBadge from '@/src/components/LevelBadge';
 import Loader from '@/src/components/Loader';
 import CardDeckView from '@/src/components/Views/CardDeckView';
 import DeckPreviewView from '@/src/components/Views/DeckPreviewView';
+import ElisionModal from '@/src/components/WordCard/ElisionModal';
+import WordTipModal from '@/src/components/WordCard/WordTipModal';
 import { sharedWordCardStyles } from '@/src/components/WordCard/sharedWordCardStyles';
 import { getDB, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
@@ -52,6 +54,8 @@ export default function CardDeck() {
 	);
 
 	const [isPassageVisible, setIsPassageVisible] = useState(false);
+	const [isElisionVisible, setIsElisionVisible] = useState(false);
+	const [isWordTipVisible, setIsWordTipVisible] = useState(false);
 	const [passageProgress, setPassageProgress] = useState<PassageProgress>();
 	const [otherFormsAvailability, setOtherFormsAvailability] = useState<OtherFormsAvailability>();
 	const { id: currentWordId, lemmaId: currentLemmaId } = currentCard;
@@ -62,6 +66,12 @@ export default function CardDeck() {
 	});
 
 	const isPassageDisabled = !userId || isUpdatingProgress;
+
+	/**
+	 * Show the elision link when the French article or word contains an apostrophe.
+	 */
+	const frenchWordWithArticle = `${currentCard.frenchArticle ?? ''}${currentCard.frenchWord}`;
+	const shouldShowElision = /['’ʼ]/u.test(frenchWordWithArticle);
 
 	const shouldShowOtherForms =
 		otherFormsAvailability?.wordId === currentWordId &&
@@ -238,6 +248,44 @@ export default function CardDeck() {
 									</Pressable>
 								</>
 							)}
+							{shouldShowElision && (
+								<>
+									<View
+										accessible={false}
+										style={sharedWordCardStyles.wordDetailDivider}
+									/>
+									<Pressable
+										accessibilityLabel="Learn about elisions"
+										accessibilityRole="button"
+										hitSlop={8}
+										onPress={() => setIsElisionVisible(true)}
+										style={styles.wordLink}
+									>
+										<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
+											Elision!
+										</Text>
+									</Pressable>
+								</>
+							)}
+							{currentCard.tip && (
+								<>
+									<View
+										accessible={false}
+										style={sharedWordCardStyles.wordDetailDivider}
+									/>
+									<Pressable
+										accessibilityLabel="Read a tip about this word"
+										accessibilityRole="button"
+										hitSlop={8}
+										onPress={() => setIsWordTipVisible(true)}
+										style={styles.wordLink}
+									>
+										<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
+											Tip!
+										</Text>
+									</Pressable>
+								</>
+							)}
 						</View>
 					}
 				/>
@@ -250,6 +298,18 @@ export default function CardDeck() {
 					setModalVisible={setIsPassageVisible}
 					wordProgressCounts={passageProgress.wordProgressCounts}
 					wordProgressKeyByWordId={passageProgress.wordProgressKeyByWordId}
+				/>
+			)}
+			<ElisionModal
+				visible={isElisionVisible && shouldShowElision}
+				onClose={() => setIsElisionVisible(false)}
+			/>
+			{currentCard.tip && (
+				<WordTipModal
+					key={currentCard.id}
+					tip={currentCard.tip}
+					visible={isWordTipVisible}
+					onClose={() => setIsWordTipVisible(false)}
 				/>
 			)}
 		</>

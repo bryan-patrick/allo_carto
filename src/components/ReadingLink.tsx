@@ -37,7 +37,7 @@ interface PassageState {
 }
 
 /**
- * Opens the story modal
+ * Opens a paragraph, chapter, or story with placeholders for locked paragraphs.
  */
 export default function ReadingLink({
 	item,
@@ -64,9 +64,9 @@ export default function ReadingLink({
 	}
 
 	/**
-	 * Reading a chapter or story only includes paragraphs the player can already open.
+	 * Allow reading once at least one paragraph is unlocked.
 	 */
-	paragraphs = paragraphs.filter(paragraph => {
+	const hasUnlockedParagraph = paragraphs.some(paragraph => {
 		return isItemUnlocked({
 			id: paragraph.id,
 			progressById,
@@ -74,7 +74,7 @@ export default function ReadingLink({
 	});
 
 	const canRead =
-		paragraphs.length > 0 &&
+		hasUnlockedParagraph &&
 		isItemUnlocked({
 			id: item.id,
 			progressById,
@@ -91,6 +91,11 @@ export default function ReadingLink({
 			const passage: PassageSegment[] = [];
 
 			for (const paragraph of paragraphs) {
+				const isParagraphUnlocked = isItemUnlocked({
+					id: paragraph.id,
+					progressById,
+				});
+
 				if (passage.length > 0) {
 					passage.push({
 						text: '\n\n',
@@ -99,7 +104,19 @@ export default function ReadingLink({
 					});
 				}
 
-				passage.push(...paragraph.passage);
+				/**
+				 * Keep locked paragraphs in their place without loading their words.
+				 */
+				if (isParagraphUnlocked) {
+					passage.push(...paragraph.passage);
+				} else {
+					passage.push({
+						text: '??? (locked)',
+						unlockExempt: true,
+						isLocked: true,
+						after: '',
+					});
+				}
 			}
 
 			const wordIds = getPassageWordIds(passage);

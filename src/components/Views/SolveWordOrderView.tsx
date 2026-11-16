@@ -105,6 +105,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		inkBalance,
 		maxInkBalance,
 		isUpdatingProgress,
+		reloadProgress,
 		writeWordOrderAttempt,
 	} = useUserProgress();
 	const { settings } = useAppSettings();
@@ -268,6 +269,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 							position: savedPuzzle.sentencePosition,
 							positions: savedPuzzle.positions,
 						});
+						await reloadProgress();
 					}
 
 					if (lastAttempt?.status === 'incorrect' && savedOrder === attemptedOrder) {
@@ -299,7 +301,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 			return () => {
 				isActive = false;
 			};
-		}, [deckId, userId, fastSolveUnlocks]),
+		}, [deckId, userId, fastSolveUnlocks, reloadProgress]),
 	);
 
 	/**

@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
-import { useState } from 'react';
+import { useState, type ComponentType, type ReactNode } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,31 +17,71 @@ const sheetTransition = LinearTransition.duration(120);
 interface GettingStartedModalProps {
 	onFinish: () => void;
 	visible: boolean;
+	pages?: ComponentType[];
+	label?: string;
+	finishButtonLabel?: string;
+	children?: ReactNode;
 }
 
 /**
- * Show one page at a time and smoothly resize the modal to fit it.
- * Keep Back and Next within reach at the bottom.
+ * Shows tutorial pages in a scrolling modal with navigation and a finish button.
  */
-export default function GettingStartedModal({ onFinish, visible }: GettingStartedModalProps) {
+export default function GettingStartedModal({
+	onFinish,
+	visible,
+	pages = GettingStartedIndex,
+	label = 'Getting started',
+	finishButtonLabel = "Let's go!",
+	children,
+}: GettingStartedModalProps) {
+	/**
+	 * Current page and screen size
+	 */
 	const [pageIndex, setPageIndex] = useState(0);
 	const { bottom, top } = useSafeAreaInsets();
 	const { height: windowHeight } = useWindowDimensions();
-	const CurrentPage = GettingStartedIndex[pageIndex];
+	const CurrentPage = pages[pageIndex];
+	let pageCount = pages.length;
+	let pageContent: ReactNode = <CurrentPage />;
+
+	if (children !== undefined) {
+		pageCount = 1;
+		pageContent = children;
+	}
+
+	/**
+	 * Page navigation and modal size
+	 */
 	const isFirstPage = pageIndex === 0;
-	const isLastPage = pageIndex === GettingStartedIndex.length - 1;
-	const nextButtonLabel = isLastPage ? "Let's go!" : 'Next';
+	const isLastPage = pageIndex === pageCount - 1;
+	const hasMultiplePages = pageCount > 1;
 	const sheetStyle = {
 		maxHeight: windowHeight - top - 8,
 		paddingBottom: Math.max(bottom, 16),
 	};
+	let nextButtonLabel = 'Next';
 
+	if (isLastPage) {
+		nextButtonLabel = finishButtonLabel;
+	}
+
+	/**
+	 * Returns to the previous tutorial page or closes a single-page explanation.
+	 */
 	function handleBack() {
+		if (!hasMultiplePages) {
+			onFinish();
+			return;
+		}
+
 		if (!isFirstPage) {
 			setPageIndex(pageIndex - 1);
 		}
 	}
 
+	/**
+	 * Opens the next tutorial page or finishes the explanation.
+	 */
 	function handleNext() {
 		if (isLastPage) {
 			onFinish();
@@ -70,37 +110,41 @@ export default function GettingStartedModal({ onFinish, visible }: GettingStarte
 					style={[styles.sheet, sheetStyle]}
 				>
 					<View style={styles.topBar}>
-						<Text style={styles.label}>Getting started</Text>
-						<Text
-							accessibilityLiveRegion="polite"
-							style={styles.pageCount}
-						>
-							Page {pageIndex + 1} of {GettingStartedIndex.length}
-						</Text>
+						<Text style={styles.label}>{label}</Text>
+						{hasMultiplePages && (
+							<Text
+								accessibilityLiveRegion="polite"
+								style={styles.pageCount}
+							>
+								Page {pageIndex + 1} of {pageCount}
+							</Text>
+						)}
 					</View>
 					<ScrollView
 						key={pageIndex}
 						contentContainerStyle={styles.pageContent}
 						style={styles.scrollView}
 					>
-						<CurrentPage />
+						{pageContent}
 					</ScrollView>
 					<View style={styles.footer}>
-						<LinkButton
-							accessibilityRole="button"
-							handler={handleBack}
-							disabled={isFirstPage}
-							useArrow={false}
-							type="outline"
-							color={colors.dark.primary}
-							showShadow={false}
-							showInnerBorder={false}
-							contentPaddingHorizontal={0}
-							style={[styles.button, isFirstPage && styles.disabledButton]}
-							textStyle={styles.buttonText}
-						>
-							Back
-						</LinkButton>
+						{hasMultiplePages && (
+							<LinkButton
+								accessibilityRole="button"
+								handler={handleBack}
+								disabled={isFirstPage}
+								useArrow={false}
+								type="outline"
+								color={colors.dark.primary}
+								showShadow={false}
+								showInnerBorder={false}
+								contentPaddingHorizontal={0}
+								style={[styles.button, isFirstPage && styles.disabledButton]}
+								textStyle={styles.buttonText}
+							>
+								Back
+							</LinkButton>
+						)}
 						<LinkButton
 							accessibilityRole="button"
 							handler={handleNext}

@@ -22,11 +22,11 @@ export interface SolveProgress extends SolveStageEligibility {
 	nextStage: SolveStage | null;
 	definition: SolveStageDefinition | null;
 	unlockMessage: string;
+	hasStartedCurrentStage: boolean;
 }
 
 /**
- * This hook gets the paragraph's next
- * puzzle and explain whether it can be opened.
+ * Finds the paragraph's next puzzle and reports whether it is unlocked or already started.
  */
 export function useSolveProgress(deckId: string): SolveProgress {
 	const { progressById, experience } = useUserProgress();
@@ -47,6 +47,7 @@ export function useSolveProgress(deckId: string): SolveProgress {
 			nextStage,
 			definition: null,
 			unlockMessage: '',
+			hasStartedCurrentStage: false,
 			isEligible: false,
 			lockReason: 'completed',
 			requiredPlayerLevel: 0,
@@ -69,6 +70,7 @@ export function useSolveProgress(deckId: string): SolveProgress {
 		completedStages,
 		nextStage,
 		definition: solveStages[nextStage],
+		hasStartedCurrentStage: progress?.startedSolveStages?.includes(nextStage) ?? false,
 		unlockMessage: getSolveUnlockMessage({
 			stage: nextStage,
 			eligibility,

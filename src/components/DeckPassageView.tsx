@@ -154,8 +154,7 @@ function isPassageWordVisible(
 }
 
 /**
- * Each word keeps its place in that text so the highlight follows the voice.
- * We return an object, because we're insane.
+ * Builds the spoken passage and tracks each word so its highlight follows the voice.
  */
 function getPassageSpeech(
 	passage: PassageSegment[],
@@ -170,7 +169,7 @@ function getPassageSpeech(
 		const start = text.length;
 		let end = start;
 
-		if (isVisible) {
+		if (isVisible && !segment.isLocked) {
 			text += segment.text;
 		}
 

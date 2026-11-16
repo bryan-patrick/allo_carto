@@ -1,3 +1,4 @@
+import colors from '@/src/app/colors';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SecondaryButton from '@/src/components/SecondaryButton';
 import { useSolveProgress } from '@/src/components/Solve/useSolveProgress';
@@ -5,9 +6,18 @@ import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findParagraphById } from '@/src/util/atlasCompletion';
 import { solveStages } from '@/src/util/solveProgression';
+import { useButtonWiggle } from '@/src/util/useButtonWiggle';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import {
+	Animated,
+	StyleSheet,
+	Text,
+	View,
+	type StyleProp,
+	type TextStyle,
+	type ViewStyle,
+} from 'react-native';
 
 /**
  * Typing
@@ -30,10 +40,18 @@ export default function SolveButton({
 	style,
 	textStyle,
 }: SolveButtonProps) {
+	/**
+	 * Hooks and saved puzzle progress
+	 */
 	const router = useRouter();
 	const { id: userId } = useUserContext() ?? {};
 	const { status, isUpdatingProgress } = useUserProgress();
-	const { nextStage, definition, isEligible, unlockMessage } = useSolveProgress(deckId);
+	const { nextStage, definition, isEligible, unlockMessage, hasStartedCurrentStage } =
+		useSolveProgress(deckId);
+
+	/**
+	 * Paragraph and button availability
+	 */
 	const deck = findParagraphById(deckId);
 	const isDisabled =
 		disabled ||
@@ -42,15 +60,47 @@ export default function SolveButton({
 		status !== 'ready' ||
 		!userId ||
 		isUpdatingProgress;
+	const showNewBadge = nextStage !== null && !isDisabled && !hasStartedCurrentStage;
+
+	/**
+	 * Movement for a new puzzle
+	 */
+	const animatedStyle = useButtonWiggle(showNewBadge);
+
+	/**
+	 * Initial button text, colors, and icon
+	 */
 	const label = definition?.label ?? 'Mastered';
 	const isMastered = nextStage === null;
 	const gradientColors = definition?.buttonGradient ?? solveStages[5].buttonGradient;
-	const accessibilityHint =
-		unlockMessage ||
-		(nextStage === null ?
-			'All five Solve puzzles are complete.'
-		:	`Open this paragraph’s ${label} puzzle.`);
+	let actionSymbol = 'extension';
 
+	/**
+	 * Screen reader descriptions
+	 */
+	let accessibilityLabel = label;
+	let accessibilityHint = `Open this paragraph’s ${label} puzzle.`;
+
+	if (isDisabled) {
+		actionSymbol = 'lock';
+	}
+
+	if (isMastered) {
+		actionSymbol = 'check';
+		accessibilityHint = 'All five Solve puzzles are complete.';
+	}
+
+	if (unlockMessage) {
+		accessibilityHint = unlockMessage;
+	}
+
+	if (showNewBadge) {
+		accessibilityLabel = `${label}, new puzzle`;
+	}
+
+	/**
+	 * Opens the paragraph's next unlocked puzzle.
+	 */
 	function handleOpen() {
 		if (isDisabled || nextStage === null) {
 			return;
@@ -70,7 +120,7 @@ export default function SolveButton({
 	}
 
 	return (
-		<View style={[styles.container, style]}>
+		<Animated.View style={[styles.container, style, animatedStyle]}>
 			<SecondaryButton
 				onPress={handleOpen}
 				color={color}
@@ -95,18 +145,14 @@ export default function SolveButton({
 						/>
 					)
 				}
+				accessibilityLabel={accessibilityLabel}
 				accessibilityHint={accessibilityHint}
 				accessibilityState={{
 					disabled: isDisabled,
 				}}
 				SVGElement={
 					<MaterialSymbol
-						name={
-							nextStage === null ? 'check'
-							: isDisabled ?
-								'lock'
-							:	'extension'
-						}
+						name={actionSymbol}
 						size={18}
 						color={color}
 						style={styles.icon}
@@ -116,7 +162,16 @@ export default function SolveButton({
 			>
 				{label}
 			</SecondaryButton>
-		</View>
+			{showNewBadge && (
+				<View
+					style={styles.newBadge}
+					pointerEvents="none"
+					aria-hidden
+				>
+					<Text style={styles.newBadgeText}>New</Text>
+				</View>
+			)}
+		</Animated.View>
 	);
 }
 
@@ -145,5 +200,25 @@ const styles = StyleSheet.create({
 	},
 	disabledButton: {
 		opacity: 0.6,
+	},
+	newBadge: {
+		position: 'absolute',
+		top: -8,
+		right: -5,
+		zIndex: 1,
+		transform: [
+			{
+				rotate: '8deg',
+			},
+		],
+		backgroundColor: colors.dark.primary,
+		borderRadius: 4,
+		paddingHorizontal: 6,
+		paddingVertical: 2,
+	},
+	newBadgeText: {
+		color: colors.light.text,
+		fontFamily: 'lexend-600',
+		fontSize: 10,
 	},
 });

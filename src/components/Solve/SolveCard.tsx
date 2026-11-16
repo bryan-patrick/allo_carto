@@ -2,7 +2,7 @@ import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import { cardBackgrounds } from '@/src/components/WordCard/cardBackgrounds';
 import type { SolveWordStage } from '@/src/util/solveProgression';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type ViewProps } from 'react-native';
 import SolveRewardClaimButton from './SolveRewardClaimButton';
 import type { SolvePosition, SolveReward } from './solveTypes';
 
@@ -19,7 +19,7 @@ interface SolveCardProps {
 }
 
 /**
- * Returns a French/English word (card props) in Solve
+ * Shows a word puzzle card with its prompt, solved answer, and claimable XP.
  */
 export default function SolveCard({
 	deckId,
@@ -32,22 +32,55 @@ export default function SolveCard({
 	storyColor,
 	onSelect,
 }: SolveCardProps) {
+	/**
+	 * Card progress and availability
+	 */
 	const hasPendingReward = reward?.claimedAt === null;
 	const isSolved = card.acceptedAnswer !== null && !hasPendingReward;
 	const isDisabled = disabled || card.acceptedAnswer !== null;
-	const prompt = stage === 2 ? card.englishPrompt : card.text;
+
+	/**
+	 * Card colors
+	 */
 	const wordColor = {
 		color: storyColor,
 	};
 	const selectedBorder = {
 		borderColor: storyColor,
 	};
-	let accessibilityLabel = `${prompt}, card ${card.position + 1}, solve for ${card.inkCost} Ink`;
+
+	/**
+	 * Initial prompt, solved answer, and card status
+	 */
+	let prompt = card.text;
+	let solvedAnswerText = card.acceptedAnswer ?? '';
+	let statusText = `${card.inkCost} Ink`;
+	let statusTextStyle = styles.cost;
+
+	/**
+	 * Screen reader descriptions
+	 */
+	let accessibilityLabel = '';
+	let importantForAccessibility: ViewProps['importantForAccessibility'] = 'auto';
+
+	/**
+	 * Show each solved French word as it appears in the passage, such as J’ before habite.
+	 */
+	if (stage === 2) {
+		prompt = card.englishPrompt;
+		solvedAnswerText = card.text;
+	}
+
+	accessibilityLabel = `${prompt}, card ${card.position + 1}, solve for ${card.inkCost} Ink`;
 
 	if (hasPendingReward) {
+		statusText = 'Solved!';
+		importantForAccessibility = 'no-hide-descendants';
 		accessibilityLabel = `${prompt}, solved, XP ready to claim`;
 	} else if (isSolved) {
-		accessibilityLabel = `${prompt}, solved: ${card.acceptedAnswer}`;
+		statusText = `✓ ${solvedAnswerText}`;
+		statusTextStyle = styles.translation;
+		accessibilityLabel = `${prompt}, solved: ${solvedAnswerText}`;
 	}
 
 	if (!card.wordId) {
@@ -69,7 +102,7 @@ export default function SolveCard({
 		>
 			<Pressable
 				accessibilityElementsHidden={hasPendingReward}
-				importantForAccessibility={hasPendingReward ? 'no-hide-descendants' : 'auto'}
+				importantForAccessibility={importantForAccessibility}
 				accessibilityRole="button"
 				accessibilityLabel={accessibilityLabel}
 				accessibilityState={{
@@ -91,11 +124,7 @@ export default function SolveCard({
 						/>
 					)}
 					<Text style={[styles.word, wordColor]}>{prompt}</Text>
-					{hasPendingReward ?
-						<Text style={styles.cost}>Solved!</Text>
-					: isSolved ?
-						<Text style={styles.translation}>✓ {card.acceptedAnswer}</Text>
-					:	<Text style={styles.cost}>{card.inkCost} Ink</Text>}
+					<Text style={statusTextStyle}>{statusText}</Text>
 				</BackgroundImage>
 			</Pressable>
 			{hasPendingReward && reward && (
