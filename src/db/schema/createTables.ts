@@ -31,7 +31,7 @@ async function createWordsTable(): Promise<void> {
 					frenchWord TEXT NOT NULL,
 					englishWords TEXT NOT NULL,
 					canonicalEnglish TEXT,
-					tip TEXT,
+					tipId TEXT,
 					frenchArticle TEXT,
 					englishArticle TEXT,
 					englishPrefixes TEXT,
@@ -117,6 +117,7 @@ export default async function createTables(): Promise<void> {
 	await createInkTables();
 	await createCollectionRewardClaimsTable();
 	await createTipRewardClaimsTable();
+	await createUserTipDiscoveriesTable();
 	await createSolveTables();
 	await createSolveRewardsTable();
 	await createUserActivityTable();
@@ -243,6 +244,24 @@ async function createTipRewardClaimsTable(): Promise<void> {
 			tipId TEXT NOT NULL,
 			xp INTEGER NOT NULL CHECK (xp > 0),
 			claimedAt INTEGER NOT NULL,
+			PRIMARY KEY (userId, tipId),
+			FOREIGN KEY (userId) REFERENCES users(id)
+		);
+	`;
+
+	await database.execAsync(statement);
+}
+
+/**
+ * Creates the userTipDiscoveries table for tips the player has opened.
+ */
+async function createUserTipDiscoveriesTable(): Promise<void> {
+	const database = await getDB();
+	const statement = `
+		CREATE TABLE IF NOT EXISTS userTipDiscoveries (
+			userId TEXT NOT NULL,
+			tipId TEXT NOT NULL,
+			discoveredAt INTEGER NOT NULL,
 			PRIMARY KEY (userId, tipId),
 			FOREIGN KEY (userId) REFERENCES users(id)
 		);

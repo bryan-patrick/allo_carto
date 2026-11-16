@@ -1,8 +1,10 @@
+import { getTipById } from '@/data/french/tips';
 import colors from '@/src/app/colors';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckBoxModal from '@/src/components/DeckBox/DeckBoxModal';
 import LevelBadge from '@/src/components/LevelBadge';
 import Loader from '@/src/components/Loader';
+import MaterialSymbol from '@/src/components/MaterialSymbol';
 import CardDeckView from '@/src/components/Views/CardDeckView';
 import DeckPreviewView from '@/src/components/Views/DeckPreviewView';
 import ElisionModal from '@/src/components/WordCard/ElisionModal';
@@ -59,6 +61,7 @@ export default function CardDeck() {
 	const [passageProgress, setPassageProgress] = useState<PassageProgress>();
 	const [otherFormsAvailability, setOtherFormsAvailability] = useState<OtherFormsAvailability>();
 	const { id: currentWordId, lemmaId: currentLemmaId } = currentCard;
+	const currentTip = getTipById(currentCard.tipId ?? '');
 
 	const isLocked = !isItemUnlocked({
 		id: cardDeck.id,
@@ -215,7 +218,7 @@ export default function CardDeck() {
 					wordActions={
 						<View style={sharedWordCardStyles.wordMetaContainer}>
 							<Pressable
-								accessibilityLabel="View word in passage"
+								accessibilityLabel="Read paragraph"
 								accessibilityRole="button"
 								accessibilityState={{
 									disabled: isPassageDisabled,
@@ -225,9 +228,12 @@ export default function CardDeck() {
 								onPress={handleShowPassage}
 								style={styles.wordLink}
 							>
-								<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
-									View paragraph
-								</Text>
+								<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>Read</Text>
+								<MaterialSymbol
+									name="menu_book"
+									size={16}
+									color={colors.dark.primary}
+								/>
 							</Pressable>
 							{shouldShowOtherForms && (
 								<>
@@ -245,6 +251,11 @@ export default function CardDeck() {
 										<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
 											Other forms
 										</Text>
+										<MaterialSymbol
+											name="language"
+											size={16}
+											color={colors.dark.primary}
+										/>
 									</Pressable>
 								</>
 							)}
@@ -264,10 +275,15 @@ export default function CardDeck() {
 										<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
 											Elision!
 										</Text>
+										<MaterialSymbol
+											name="lightbulb_2"
+											size={16}
+											color={colors.dark.primary}
+										/>
 									</Pressable>
 								</>
 							)}
-							{currentCard.tip && (
+							{currentTip && (
 								<>
 									<View
 										accessible={false}
@@ -283,6 +299,11 @@ export default function CardDeck() {
 										<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
 											Tip!
 										</Text>
+										<MaterialSymbol
+											name="lightbulb_2"
+											size={16}
+											color={colors.dark.primary}
+										/>
 									</Pressable>
 								</>
 							)}
@@ -304,10 +325,10 @@ export default function CardDeck() {
 				visible={isElisionVisible && shouldShowElision}
 				onClose={() => setIsElisionVisible(false)}
 			/>
-			{currentCard.tip && (
+			{currentTip && (
 				<WordTipModal
 					key={currentCard.id}
-					tip={currentCard.tip}
+					tip={currentTip}
 					visible={isWordTipVisible}
 					onClose={() => setIsWordTipVisible(false)}
 				/>
@@ -321,8 +342,10 @@ export default function CardDeck() {
  */
 const styles = StyleSheet.create({
 	wordLink: {
+		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
+		gap: 4,
 	},
 	wordLinkText: {
 		lineHeight: 16,

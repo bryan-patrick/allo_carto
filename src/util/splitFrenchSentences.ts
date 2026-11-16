@@ -17,7 +17,7 @@ export function splitFrenchSentences(deck: Paragraph): SentencePassage[] {
 
 	for (const segment of passage) {
 		const textWithPunctuation = segment.text + (segment.after ?? ' ');
-		const endsSentence = /[.!?…][\s»”"'’)\]]*$/u.test(textWithPunctuation);
+		const endsSentence = /[.!?...][\s»”"'’)\]]*$/u.test(textWithPunctuation);
 		const isClosingPunctuation = /^[\s»”’)\]]+$/u.test(textWithPunctuation);
 		const previousSentence = sentences[sentences.length - 1];
 

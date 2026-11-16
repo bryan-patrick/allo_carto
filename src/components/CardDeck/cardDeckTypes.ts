@@ -94,12 +94,6 @@ export interface WordElision {
 	ipaPronunciation: string;
 }
 
-export interface WordTip {
-	id: string;
-	title: string;
-	description: string;
-}
-
 export interface Word {
 	id: string;
 	frenchWord: string;
@@ -109,7 +103,7 @@ export interface Word {
 	 */
 	canonicalEnglish?: string | null;
 	elision?: WordElision;
-	tip?: WordTip;
+	tipId?: string;
 	frenchArticle?: string;
 	englishArticle?: string;
 	englishPrefixes?: string[];

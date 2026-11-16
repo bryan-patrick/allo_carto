@@ -58,7 +58,7 @@ export default function SolveRewardClaimButton({
 	let accessibilityLabel = `Claim ${reward.xp} XP`;
 
 	if (isClaiming) {
-		label = 'Claiming…';
+		label = 'Claiming...';
 		accessibilityLabel = label;
 	}
 

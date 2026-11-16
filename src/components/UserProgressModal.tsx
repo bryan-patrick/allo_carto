@@ -68,7 +68,7 @@ export default function UserProgressModal({ onRequestClose, visible }: UserProgr
 	}
 
 	if (status === 'loading') {
-		emptyTitle = `Loading your ${sectionLabel}…`;
+		emptyTitle = `Loading your ${sectionLabel}...`;
 		emptyDescription = 'Your saved events will appear here.';
 	} else if (status === 'error') {
 		emptyTitle = `Could not load your ${sectionLabel}`;

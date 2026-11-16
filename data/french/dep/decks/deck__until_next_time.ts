@@ -11,7 +11,7 @@ export const DeckUntilNextTime = createCardDeck({
 	words: [],
 	wordChoices: [],
 	englishPassage:
-		'At seven fifty, Wallace asked for the bill. He paid, put his jacket back on, and thanked the waitress. As he stood up, he almost forgot his phone on the table. The waitress called to him before he reached the door. Wallace laughed, went back to get it, and said, “Thank you… again.” Outside, the street was dark and the air was colder. He started walking home. He felt happy and content. He thought the restaurant was very good and was excited to come back.',
+		'At seven fifty, Wallace asked for the bill. He paid, put his jacket back on, and thanked the waitress. As he stood up, he almost forgot his phone on the table. The waitress called to him before he reached the door. Wallace laughed, went back to get it, and said, “Thank you... again.” Outside, the street was dark and the air was colder. He started walking home. He felt happy and content. He thought the restaurant was very good and was excited to come back.',
 	passage: [
 		{ text: 'À', wordId: 'word_preposition_a' },
 		{ text: 'sept', wordId: 'word_numeral_sept' },
@@ -68,7 +68,7 @@ export const DeckUntilNextTime = createCardDeck({
 		{ text: 'et', wordId: 'word_conjunction_et' },
 		{ text: 'a', wordId: 'word_auxiliary_a' },
 		{ text: 'dit', wordId: 'word_verb_dit', after: '\u00a0: « ' },
-		{ text: 'Merci', wordId: 'word_interjection_merci', after: '… ' },
+		{ text: 'Merci', wordId: 'word_interjection_merci', after: '... ' },
 		{ text: 'encore', wordId: 'word_adverb_encore' },
 		{ text: 'une', wordId: 'word_article_une' },
 		{ text: 'fois', wordId: 'word_noun_fois', after: '. » ' },

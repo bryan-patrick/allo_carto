@@ -240,7 +240,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	if (disabled) {
-		statusMessage = 'Saving…';
+		statusMessage = 'Saving...';
 		statusTextStyle.backgroundColor = 'transparent';
 	}
 
@@ -552,7 +552,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 				</View>
 				{!isEligible && (
 					<Text style={styles.notice}>
-						{isLoading ? 'Loading puzzle…' : loadError || unlockMessage}
+						{isLoading ? 'Loading puzzle...' : loadError || unlockMessage}
 					</Text>
 				)}
 				{isEligible && (

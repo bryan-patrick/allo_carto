@@ -167,7 +167,7 @@ function getSentenceCardKeywords(
  */
 export function getSolveSentences(deck: Paragraph, words: SolveSentenceWord[]): SolveSentence[] {
 	const frenchSentences = splitFrenchSentences(deck);
-	const englishParts = deck.englishPassage?.match(/[^.!?…]+(?:[.!?…]+|$)/gu) ?? [];
+	const englishParts = deck.englishPassage?.match(/[^.!?...]+(?:[.!?...]+|$)/gu) ?? [];
 	const englishSentences = englishParts.filter(text => /[\p{L}\p{N}]/u.test(text));
 	const canPairEnglish = englishSentences.length === frenchSentences.length;
 	const wordsById = new Map(words.map(word => [word.id, word]));

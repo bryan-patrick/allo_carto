@@ -547,7 +547,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					keyboardShouldPersistTaps="handled"
 				>
 					{!puzzle ?
-						<Text style={styles.text}>{loadError || 'Loading puzzle…'}</Text>
+						<Text style={styles.text}>{loadError || 'Loading puzzle...'}</Text>
 					: isComplete ?
 						<View style={styles.completion}>
 							<CollectionGems

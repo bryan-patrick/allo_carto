@@ -63,7 +63,7 @@ export const DeckAForkInstead = createCardDeck({
 		{ text: 'déplacées', wordId: 'word_verb_deplacees' },
 		{ text: 'entre', wordId: 'word_preposition_entre' },
 		{ text: 'ses', wordId: 'word_determiner_ses' },
-		{ text: 'doigts', wordId: 'word_noun_doigts', after: '… ' },
+		{ text: 'doigts', wordId: 'word_noun_doigts', after: '... ' },
 		{ text: 'et', wordId: 'word_conjunction_et' },
 		{ text: 'elles', wordId: 'word_pronoun_elles' },
 		{ text: 'sont', wordId: 'word_auxiliary_sont' },

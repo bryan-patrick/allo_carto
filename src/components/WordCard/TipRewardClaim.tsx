@@ -1,6 +1,6 @@
 import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
-import type { WordTip } from '@/src/components/CardDeck/cardDeckTypes';
+import type { FrenchTip } from '@/src/components/Tips/tipTypes';
 import type { TipRewardReceipt } from '@/src/db/queries/tipRewards';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { userExperienceConfig } from '@/src/util/userExperience';
@@ -11,7 +11,7 @@ import { StyleSheet, Text, View } from 'react-native';
  * Typing
  */
 interface TipRewardClaimProps {
-	tip: WordTip;
+	tip: FrenchTip;
 }
 
 interface SaveTipRewardOptions {
@@ -21,7 +21,7 @@ interface SaveTipRewardOptions {
 }
 
 /**
- * Claims a tip's reward and shows a message if the save fails.
+ * Claims a tip's XP and shows a message if the save fails.
  */
 async function saveTipReward({
 	tipId,
@@ -38,20 +38,23 @@ async function saveTipReward({
 }
 
 /**
- * Shows a tip's XP claim button or its saved claimed status.
+ * Shows a tip's XP claim button or that it has been claimed.
  */
 export default function TipRewardClaim({ tip }: TipRewardClaimProps) {
 	/**
 	 * Saved progress and feedback state
 	 */
-	const { tipClaims, claimTipReward, isUpdatingProgress, status } = useUserProgress();
+	const { tips, tipClaims, claimTipReward, isUpdatingProgress, status, reloadProgress } =
+		useUserProgress();
 	const [claimFeedback, setClaimFeedback] = useState('');
 
 	/**
 	 * Claim availability
 	 */
 	const savedClaim = tipClaims.find(claim => claim.tipId === tip.id);
-	const canClaimTipReward = !savedClaim && !isUpdatingProgress && status !== 'loading';
+	const tipProgress = tips.find(progress => progress.tip.id === tip.id);
+	const canClaimTipReward =
+		tipProgress?.isXPRewardReadyToClaim === true && !isUpdatingProgress && status === 'ready';
 
 	/**
 	 * Initial display values
@@ -60,7 +63,7 @@ export default function TipRewardClaim({ tip }: TipRewardClaimProps) {
 	let claimContent: ReactNode = null;
 
 	if (isUpdatingProgress) {
-		actionLabel = 'Saving…';
+		actionLabel = 'Saving...';
 	}
 
 	claimContent = (
@@ -103,6 +106,12 @@ export default function TipRewardClaim({ tip }: TipRewardClaimProps) {
 				>
 					{claimFeedback}
 				</Text>
+			)}
+			{status === 'error' && (
+				<>
+					<Text style={styles.feedback}>Could not load your tip progress. Please try again.</Text>
+					<LinkButton handler={reloadProgress}>Try again</LinkButton>
+				</>
 			)}
 		</View>
 	);

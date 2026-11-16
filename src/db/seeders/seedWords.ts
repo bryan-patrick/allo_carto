@@ -1,4 +1,5 @@
 import { seedWords as frenchSeedWords } from '@/data/french/words';
+import { getTipById } from '@/data/french/tips';
 import { getDB, logThisIfItFails } from '../connection';
 
 /**
@@ -11,16 +12,15 @@ export default async function seedWords(): Promise<void> {
 	 * Seed the existing words
 	 */
 	for (const word of frenchSeedWords) {
+		if (word.tipId && !getTipById(word.tipId)) {
+			throw new Error(`Word ${word.id} refers to missing tip ${word.tipId}.`);
+		}
+
 		await logThisIfItFails(`Oops we messed up seeding word ${word.id}`, async () => {
 			let savedEnglishPrefixes: string | null = null;
-			let savedTip: string | null = null;
 
 			if (word.englishPrefixes) {
 				savedEnglishPrefixes = JSON.stringify(word.englishPrefixes);
-			}
-
-			if (word.tip) {
-				savedTip = JSON.stringify(word.tip);
 			}
 
 			await database.runAsync(
@@ -30,7 +30,7 @@ export default async function seedWords(): Promise<void> {
 					frenchWord,
 					englishWords,
 					canonicalEnglish,
-					tip,
+						tipId,
 					frenchArticle,
 					englishArticle,
 					englishPrefixes,
@@ -52,7 +52,7 @@ export default async function seedWords(): Promise<void> {
 					frenchWord = excluded.frenchWord,
 					englishWords = excluded.englishWords,
 					canonicalEnglish = excluded.canonicalEnglish,
-					tip = excluded.tip,
+					tipId = excluded.tipId,
 					frenchArticle = excluded.frenchArticle,
 					englishArticle = excluded.englishArticle,
 					englishPrefixes = excluded.englishPrefixes,
@@ -73,7 +73,7 @@ export default async function seedWords(): Promise<void> {
 					word.frenchWord,
 					JSON.stringify(word.englishWords),
 					word.canonicalEnglish ?? null,
-					savedTip,
+					word.tipId ?? null,
 					word.frenchArticle ?? null,
 					word.englishArticle ?? null,
 					savedEnglishPrefixes,

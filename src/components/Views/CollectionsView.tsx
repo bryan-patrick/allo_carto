@@ -1,102 +1,67 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
-import CollectionCard from '@/src/components/Collections/CollectionCard';
+import CollectionsPageMenu, {
+	type CollectionsPage,
+} from '@/src/components/Collections/CollectionsPageMenu';
+import { collectionsPageStyles } from '@/src/components/Collections/collectionsPageStyles';
 import LinkButton from '@/src/components/LinkButton';
 import Loader from '@/src/components/Loader';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import type { CollectionSection } from '@/src/util/vocabularyCollections';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState, type ReactNode } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import StampsView from './StampsView';
+import TipsView from './TipsView';
 
 const collectionsPageBackground = require('@/src/app/assets/images/collections/page-background.jpg');
 
 /**
- * Typing
- */
-interface CollectionSectionDefinition {
-	key: CollectionSection;
-	title: string;
-}
-
-const collectionSections: CollectionSectionDefinition[] = [
-	{
-		key: 'ready',
-		title: 'Ready to Claim',
-	},
-	{
-		key: 'inProgress',
-		title: 'In Progress',
-	},
-	{
-		key: 'undiscovered',
-		title: 'Undiscovered',
-	},
-	{
-		key: 'completed',
-		title: 'Completed',
-	},
-];
-
-/**
- * Groups collection cards by progress so rewards ready to claim are easy to find.
+ * Shows the Stamps or Tips page.
  */
 export default function CollectionsView() {
-	const { collections, status, reloadProgress } = useUserProgress();
+	/**
+	 * Saved progress and page selection
+	 */
+	const { status, reloadProgress } = useUserProgress();
+	const [selectedPage, setSelectedPage] = useState<CollectionsPage>('stamps');
+
+	/**
+	 * Initial page content
+	 */
+	let pageContent: ReactNode = <StampsView />;
+
+	if (selectedPage === 'tips') {
+		pageContent = <TipsView />;
+	}
 
 	if (status === 'loading') {
-		return <Loader />;
+		pageContent = <Loader />;
 	}
 
 	if (status === 'error') {
-		return (
+		pageContent = (
 			<View style={styles.notice}>
-				<Text style={styles.introduction}>Could not load your collections. Please try again.</Text>
+				<Text style={collectionsPageStyles.introduction}>
+					Could not load your collections. Please try again.
+				</Text>
 				<LinkButton handler={reloadProgress}>Try again</LinkButton>
 			</View>
 		);
 	}
 
+	/**
+	 * Render the page
+	 */
 	return (
 		<BackgroundImage
 			source={collectionsPageBackground}
 			resizeMode="cover"
 			style={styles.background}
 		>
-			<ScrollView contentContainerStyle={styles.content}>
-				<Text style={styles.introduction}>Do flashcards to complete collections!</Text>
-				{collectionSections.map(section => {
-					const albums = collections.filter(progress => progress.section === section.key);
-
-					if (albums.length === 0) {
-						return null;
-					}
-
-					return (
-						<View
-							key={section.key}
-							style={styles.section}
-						>
-							<View style={styles.sectionHeader}>
-								<Text
-									accessibilityRole="header"
-									style={styles.sectionTitle}
-								>
-									{section.title}
-								</Text>
-								<Text style={styles.count}>{albums.length}</Text>
-							</View>
-							{albums.map(progress => (
-								<CollectionCard
-									key={progress.collection.id}
-									progress={progress}
-								/>
-							))}
-						</View>
-					);
-				})}
-				{collections.length === 0 && (
-					<Text style={styles.introduction}>New collections are on their way.</Text>
-				)}
-			</ScrollView>
+			<CollectionsPageMenu
+				selectedPage={selectedPage}
+				onSelectPage={setSelectedPage}
+			/>
+			{pageContent}
 		</BackgroundImage>
 	);
 }
@@ -109,47 +74,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: colors.light.secondary,
 	},
-	content: {
-		flexGrow: 1,
-		padding: 16,
-		gap: 24,
-	},
-	introduction: {
-		fontFamily: 'lexend-400',
-		fontSize: 13,
-		lineHeight: 20,
-		textAlign: 'center',
-		color: colors.dark.text,
-	},
-	section: {
-		gap: 6,
-	},
-	sectionHeader: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: 6,
-	},
-	sectionTitle: {
-		fontFamily: 'lexend-600',
-		fontSize: 18,
-		color: colors.dark.text,
-	},
-	count: {
-		fontFamily: 'lexend-600',
-		fontSize: 13,
-		color: colors.dark.text,
-		backgroundColor: colors.light.background,
-		paddingHorizontal: 10,
-		paddingVertical: 3,
-		borderRadius: 6,
-	},
 	notice: {
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
 		padding: 24,
 		gap: 16,
-		backgroundColor: colors.light.secondary,
 	},
 });
