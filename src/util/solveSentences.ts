@@ -1,6 +1,7 @@
 import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveSentence, SolveSentenceKeyword } from '@/src/components/Solve/solveTypes';
 import type { SolvePassageSegment } from './getSolvePassage';
+import { getCanonicalEnglishAnswers } from './englishWordParts';
 import { getFrenchSentencePreposition, getSentenceKeywords } from './solveSentenceAnswer';
 import { getWordOrderCards, isCompleteWordOrder } from './solveWordOrder';
 import { splitFrenchSentences, type SentencePassage } from './splitFrenchSentences';
@@ -138,7 +139,7 @@ function getSentenceCardKeywords(
 		}
 
 		if (segment.canonicalEnglish !== undefined) {
-			englishWords = [segment.canonicalEnglish];
+			englishWords = getCanonicalEnglishAnswers(segment.canonicalEnglish);
 		}
 
 		const keywordOptions = englishWords.map(getSentenceKeywords);

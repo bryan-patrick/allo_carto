@@ -1,4 +1,4 @@
-import { getEnglishPrefixes } from '@/src/util/englishWordParts';
+import { getEnglishFlashcardAnswers, getEnglishPrefixes } from '@/src/util/englishWordParts';
 import { type Word } from '../CardDeck/cardDeckTypes';
 import { type CardMistake, getFeedbackKey, type WordCardStateProps } from './wordCardContext';
 
@@ -24,6 +24,7 @@ export type WordCardUIAction =
  */
 function getMistake(state: WordCardStateProps, currentCard: Word): CardMistake {
 	const acceptedPrefixes = getEnglishPrefixes(currentCard);
+	const acceptedWordAnswers = getEnglishFlashcardAnswers(currentCard);
 	let mistake: CardMistake = 'NONE';
 
 	if (
@@ -33,7 +34,7 @@ function getMistake(state: WordCardStateProps, currentCard: Word): CardMistake {
 		mistake = 'ARTICLE';
 	}
 
-	if (!state.selectedWord || !currentCard.englishWords.includes(state.selectedWord)) {
+	if (!state.selectedWord || !acceptedWordAnswers.includes(state.selectedWord)) {
 		if (mistake === 'ARTICLE') {
 			mistake = 'BOTH';
 		} else {
@@ -58,12 +59,13 @@ export function wordCardUIReducer(
 			}
 
 			const acceptedPrefixes = getEnglishPrefixes(action.currentCard);
+			const acceptedWordAnswers = getEnglishFlashcardAnswers(action.currentCard);
 
 			return wordCardUIReducer(
 				{
 					...state,
 					selectedArticle: acceptedPrefixes[0] ?? null,
-					selectedWord: action.currentCard.englishWords[0],
+					selectedWord: acceptedWordAnswers[0] ?? null,
 					isAnswerRevealed: true,
 				},
 				{

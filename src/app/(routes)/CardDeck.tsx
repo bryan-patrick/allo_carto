@@ -159,7 +159,7 @@ export default function CardDeck() {
 
 		try {
 			const forms = await getOtherWordForms(currentCard);
-			const message = forms.map(formatOtherWordForm).join('\n');
+			const message = forms.map(form => formatOtherWordForm(form, currentCard)).join('\n');
 
 			Alert.alert(
 				`Other forms of ${currentCard.frenchWord}`,

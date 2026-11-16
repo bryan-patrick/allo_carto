@@ -3,6 +3,7 @@
  */
 export interface FrenchTip {
 	id: string;
+	draftTipId?: number;
 	title: string;
 	description: string;
 }

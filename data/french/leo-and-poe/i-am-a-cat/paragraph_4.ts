@@ -44,6 +44,7 @@ export const paragraph4 = createParagraph({
 		{
 			text: 'beaucoup',
 			wordId: 'word_adverb_beaucoup',
+			canonicalEnglish: 'a lot',
 		},
 		{
 			text: 'de',
@@ -97,6 +98,7 @@ export const paragraph4 = createParagraph({
 		{
 			text: 'me',
 			wordId: 'word_pronoun_me',
+			canonicalEnglish: 'me',
 		},
 		{
 			text: 'donnent',

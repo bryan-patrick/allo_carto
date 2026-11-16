@@ -6,14 +6,42 @@ import type { WordRow } from '../types';
 /**
  * Types
  */
-export type OtherWordForm = Pick<
+interface OtherWordFormRow extends Pick<
 	WordRow,
-	'lemmaId' | 'frenchWord' | 'frenchArticle' | 'form' | 'tense' | 'gender' | 'partOfSpeech'
->;
+	| 'lemmaId'
+	| 'frenchWord'
+	| 'englishWords'
+	| 'frenchArticle'
+	| 'form'
+	| 'tense'
+	| 'gender'
+	| 'partOfSpeech'
+	| 'isQuebecois'
+> {}
 
 /**
- * Get the word's related forms from the current story vocabulary.
- * TODO: This hasn't been working correctly, idk why yet.
+ * Typing for the related forms shown on a flashcard.
+ */
+export interface OtherWordForm extends Omit<OtherWordFormRow, 'englishWords' | 'isQuebecois'> {
+	englishWords: string[];
+	isQuebecois: boolean;
+}
+
+/**
+ * Reads a related word's French details and English meanings.
+ */
+function parseOtherWordForm(row: OtherWordFormRow): OtherWordForm {
+	const { englishWords, isQuebecois, ...wordDetails } = row;
+
+	return {
+		...wordDetails,
+		englishWords: JSON.parse(englishWords),
+		isQuebecois: Boolean(isQuebecois),
+	};
+}
+
+/**
+ * Loads other forms of the same word from the active vocabulary.
  */
 export default async function getOtherWordForms(
 	word: Pick<Word, 'id' | 'lemmaId'>,
@@ -37,8 +65,9 @@ export default async function getOtherWordForms(
 	/**
 	 * Find related spellings still available in the current word library.
 	 */
-	return database.getAllAsync<OtherWordForm>(
-		`SELECT DISTINCT lemmaId, frenchWord, frenchArticle, form, tense, gender, partOfSpeech
+	const rows = await database.getAllAsync<OtherWordFormRow>(
+		`SELECT DISTINCT lemmaId, frenchWord, englishWords, frenchArticle,
+		 form, tense, gender, partOfSpeech, isQuebecois
 		 FROM words
 		 WHERE lemmaId = ? COLLATE BINARY AND id <> ? AND id IN (${placeholders})
 		 ORDER BY frenchWord COLLATE NOCASE`,
@@ -46,4 +75,6 @@ export default async function getOtherWordForms(
 		word.id,
 		...wordIds,
 	);
+
+	return rows.map(parseOtherWordForm);
 }

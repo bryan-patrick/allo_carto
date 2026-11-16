@@ -1,6 +1,8 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
+import SecondaryButton from '@/src/components/SecondaryButton';
+import { SolveXPFeedbackProvider } from '@/src/components/Solve/SolveXPFeedback';
 import { useState, type ComponentType, type ReactNode } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
@@ -20,6 +22,7 @@ interface GettingStartedModalProps {
 	pages?: ComponentType[];
 	label?: string;
 	finishButtonLabel?: string;
+	finishButtonVariant?: 'primary' | 'secondary';
 	children?: ReactNode;
 }
 
@@ -32,6 +35,7 @@ export default function GettingStartedModal({
 	pages = GettingStartedIndex,
 	label = 'Getting started',
 	finishButtonLabel = "Let's go!",
+	finishButtonVariant = 'primary',
 	children,
 }: GettingStartedModalProps) {
 	/**
@@ -91,6 +95,35 @@ export default function GettingStartedModal({
 		setPageIndex(pageIndex + 1);
 	}
 
+	/**
+	 * Navigation button
+	 */
+	let nextButtonContent = (
+		<LinkButton
+			accessibilityRole="button"
+			handler={handleNext}
+			useArrow={!isLastPage}
+			contentPaddingHorizontal={0}
+			style={styles.button}
+			textStyle={styles.buttonText}
+		>
+			{nextButtonLabel}
+		</LinkButton>
+	);
+
+	if (isLastPage && finishButtonVariant === 'secondary') {
+		nextButtonContent = (
+			<SecondaryButton
+				accessibilityRole="button"
+				onPress={handleNext}
+				style={styles.button}
+				textStyle={styles.buttonText}
+			>
+				{nextButtonLabel}
+			</SecondaryButton>
+		);
+	}
+
 	return (
 		<Modal
 			accessibilityViewIsModal
@@ -102,62 +135,55 @@ export default function GettingStartedModal({
 			transparent
 			visible={visible}
 		>
-			<View style={styles.backdrop}>
-				<AnimatedBackgroundImage
-					layout={sheetTransition}
-					source={gettingStartedBackground}
-					resizeMode="cover"
-					style={[styles.sheet, sheetStyle]}
-				>
-					<View style={styles.topBar}>
-						<Text style={styles.label}>{label}</Text>
-						{hasMultiplePages && (
-							<Text
-								accessibilityLiveRegion="polite"
-								style={styles.pageCount}
-							>
-								Page {pageIndex + 1} of {pageCount}
-							</Text>
-						)}
-					</View>
-					<ScrollView
-						key={pageIndex}
-						contentContainerStyle={styles.pageContent}
-						style={styles.scrollView}
+			<SolveXPFeedbackProvider>
+				<View style={styles.backdrop}>
+					<AnimatedBackgroundImage
+						layout={sheetTransition}
+						source={gettingStartedBackground}
+						resizeMode="cover"
+						style={[styles.sheet, sheetStyle]}
 					>
-						{pageContent}
-					</ScrollView>
-					<View style={styles.footer}>
-						{hasMultiplePages && (
-							<LinkButton
-								accessibilityRole="button"
-								handler={handleBack}
-								disabled={isFirstPage}
-								useArrow={false}
-								type="outline"
-								color={colors.dark.primary}
-								showShadow={false}
-								showInnerBorder={false}
-								contentPaddingHorizontal={0}
-								style={[styles.button, isFirstPage && styles.disabledButton]}
-								textStyle={styles.buttonText}
-							>
-								Back
-							</LinkButton>
-						)}
-						<LinkButton
-							accessibilityRole="button"
-							handler={handleNext}
-							useArrow={!isLastPage}
-							contentPaddingHorizontal={0}
-							style={styles.button}
-							textStyle={styles.buttonText}
+						<View style={styles.topBar}>
+							<Text style={styles.label}>{label}</Text>
+							{hasMultiplePages && (
+								<Text
+									accessibilityLiveRegion="polite"
+									style={styles.pageCount}
+								>
+									Page {pageIndex + 1} of {pageCount}
+								</Text>
+							)}
+						</View>
+						<ScrollView
+							key={pageIndex}
+							contentContainerStyle={styles.pageContent}
+							style={styles.scrollView}
 						>
-							{nextButtonLabel}
-						</LinkButton>
-					</View>
-				</AnimatedBackgroundImage>
-			</View>
+							{pageContent}
+						</ScrollView>
+						<View style={styles.footer}>
+							{hasMultiplePages && (
+								<LinkButton
+									accessibilityRole="button"
+									handler={handleBack}
+									disabled={isFirstPage}
+									useArrow={false}
+									type="outline"
+									color={colors.dark.primary}
+									showShadow={false}
+									showInnerBorder={false}
+									contentPaddingHorizontal={0}
+									style={[styles.button, isFirstPage && styles.disabledButton]}
+									textStyle={styles.buttonText}
+								>
+									Back
+								</LinkButton>
+							)}
+							{nextButtonContent}
+						</View>
+					</AnimatedBackgroundImage>
+				</View>
+			</SolveXPFeedbackProvider>
 		</Modal>
 	);
 }

@@ -78,7 +78,7 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 	useLayoutEffect(() => {
 		const removeTransitionListener = navigation.addListener('transitionStart', event => {
 			let targetRotation = 0;
-			let animationDuration = 450;
+			let animationDuration = 300;
 
 			if (event.data.closing && !reducedMotion) {
 				targetRotation = 10;

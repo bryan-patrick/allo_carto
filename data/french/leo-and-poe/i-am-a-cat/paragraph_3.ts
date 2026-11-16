@@ -27,6 +27,7 @@ export const paragraph3 = createParagraph({
 		{
 			text: 'me',
 			wordId: 'word_pronoun_me',
+			canonicalEnglish: 'me',
 		},
 		{
 			text: 'donne',

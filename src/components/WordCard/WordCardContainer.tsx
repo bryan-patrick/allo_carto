@@ -1,7 +1,11 @@
 import colors from '@/src/app/colors';
 import sharedStyles from '@/src/app/sharedStyles';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { defaultEnglishPrefixChoices, getEnglishPrefixes } from '@/src/util/englishWordParts';
+import {
+	defaultEnglishPrefixChoices,
+	getEnglishFlashcardAnswers,
+	getEnglishPrefixes,
+} from '@/src/util/englishWordParts';
 import { useEffect, useLayoutEffect, useReducer, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -37,11 +41,11 @@ interface ResumeWordCardOptions {
 }
 
 /**
- * Start unanswered cards ready to play and mark cards with saved answers as finished.
- * This lets a reopened deck reach its results without asking for the same answer again.
+ * Starts unanswered flashcards ready to play and marks cards with saved answers as finished.
  */
 function getStartingWordCardState({ word, result }: ResumeWordCardOptions): WordCardStateProps {
 	const acceptedPrefixes = getEnglishPrefixes(word);
+	const acceptedWordAnswers = getEnglishFlashcardAnswers(word);
 
 	if (!result) {
 		return initialWordCardState;
@@ -52,7 +56,7 @@ function getStartingWordCardState({ word, result }: ResumeWordCardOptions): Word
 		stage: 'COMPLETED',
 		progress: result.outcome === 'incorrect' ? 'DANGER' : 'SUCCESS',
 		selectedArticle: acceptedPrefixes[0] ?? null,
-		selectedWord: word.englishWords[0] ?? null,
+		selectedWord: acceptedWordAnswers[0] ?? null,
 		isAnswerRevealed: result.outcome === 'skipped',
 	};
 
@@ -79,6 +83,19 @@ function countWrongAnswerChoices(words: string[], correctAnswers: string[]) {
 	}
 
 	return wrongAnswerChoices.size;
+}
+
+/**
+ * Keeps prefixes and other meanings of the current word out of the wrong choices.
+ */
+function isAvailableWordChoice(
+	choice: string,
+	prefixChoices: Set<string>,
+	correctWordChoices: Set<string>,
+): boolean {
+	const normalizedChoice = choice.toLowerCase();
+
+	return !prefixChoices.has(normalizedChoice) && !correctWordChoices.has(normalizedChoice);
 }
 
 /**
@@ -159,7 +176,10 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 			 * Older cards keep their usual article choices.
 			 */
 			const acceptedPrefixes = getEnglishPrefixes(word);
-			const correctWordChoices = new Set(word.englishWords.map(meaning => meaning.toLowerCase()));
+			const acceptedWordAnswers = getEnglishFlashcardAnswers(word);
+			const correctWordChoices = new Set(
+				[...word.englishWords, ...acceptedWordAnswers].map(meaning => meaning.toLowerCase()),
+			);
 			const uniquePrefixChoices = new Set<string>();
 			let prefixChoicePool = englishArticles;
 			let prefixDistractorCount: number | undefined;
@@ -184,20 +204,12 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 			}
 
 			/**
-			 * Keep first-slot choices out of the word buttons.
-			 * For d'un, "of" and "from" belong in the first slot, while "a" stays in the second.
-			 */
-			function isAvailableWordChoice(choice: string) {
-				return !uniquePrefixChoices.has(choice.toLowerCase());
-			}
-
-			/**
 			 * Put all the deck's English meanings into one list.
-			 * Then remove the choices already used by the article buttons.
+			 * Leave out prefixes and other correct meanings so they cannot become wrong choices.
 			 */
 			const deckWordChoices = cardDeckState.cardDeck.wordChoices
 				.flatMap(choice => choice.englishWords)
-				.filter(isAvailableWordChoice);
+				.filter(choice => isAvailableWordChoice(choice, uniquePrefixChoices, correctWordChoices));
 
 			/**
 			 * Start with all word choices. Below, we try to use words of the same kind,
@@ -209,10 +221,10 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 				matchingWordChoices = cardDeckState.cardDeck.wordChoices
 					.filter(choice => choice.partOfSpeech === word.partOfSpeech)
 					.flatMap(choice => choice.englishWords)
-					.filter(isAvailableWordChoice);
+					.filter(choice => isAvailableWordChoice(choice, uniquePrefixChoices, correctWordChoices));
 
 				if (
-					countWrongAnswerChoices(matchingWordChoices, word.englishWords) <
+					countWrongAnswerChoices(matchingWordChoices, acceptedWordAnswers) <
 					MIN_SAME_PART_OF_SPEECH_WRONG_ANSWERS
 				) {
 					matchingWordChoices = deckWordChoices;
@@ -221,7 +233,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 
 			setFillerWords(
 				await getFillerWords({
-					correctWords: word.englishWords,
+					correctWords: acceptedWordAnswers,
 					words: matchingWordChoices,
 				}),
 			);
@@ -240,15 +252,7 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 		}
 
 		loadWords();
-	}, [
-		word.id,
-		word.frenchWord,
-		word.englishWords,
-		word.englishArticle,
-		word.englishPrefixes,
-		word.partOfSpeech,
-		cardDeckState.cardDeck.wordChoices,
-	]);
+	}, [word, cardDeckState.cardDeck.wordChoices]);
 
 	/**
 	 * Handle current card styles

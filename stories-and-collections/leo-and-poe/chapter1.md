@@ -2,6 +2,8 @@ Leo and Poe
 
 Chapter 1: I am a cat.
 
+The `Tip` column refers to IDs in the [shared tips table](../tips.md). Use comma-separated IDs when several tips apply, or leave the cell blank when none apply.
+
 ## Paragraph 1
 
 ### English
@@ -26,10 +28,6 @@ Bonjour. Je suis un chat. Je m'appelle Léo.
 | call    | appelle | A1   | Common      | false        | 1   |
 | Leo     | Léo     | —    | Proper noun | false        |     |
 
-### Tips
-
-1. Je m'appelle is Used when introducing your name. The expression literally means I call myself.
-
 ## Paragraph 2
 
 ### English
@@ -46,12 +44,12 @@ J'habite à Québec, près d'un dépanneur et d'une boulangerie. C'est très bea
 | ----------------- | ----------- | ---- | ------ | ------------ | --- |
 | I                 | J' (je)     | A1   | Common | false        |     |
 | live              | habite      | A1   | Common | false        |     |
-| in                | à           | A1   | Common | false        | 1   |
+| in                | à           | A1   | Common | false        | 2   |
 | Quebec City       | Québec      | A1   | Common | false        |     |
 | near              | près        | A1   | Common | false        |     |
 | of                | d' (de)     | A1   | Common | false        |     |
 | a                 | un          | A1   | Common | false        |     |
-| convenience store | dépanneur   | A2   | Rare   | true         | 2   |
+| convenience store | dépanneur   | A2   | Rare   | true         | 3   |
 | and               | et          | A1   | Common | false        |     |
 | of                | d' (de)     | A1   | Common | false        |     |
 | a                 | une         | A1   | Common | false        |     |
@@ -66,11 +64,6 @@ J'habite à Québec, près d'un dépanneur et d'une boulangerie. C'est très bea
 | a lot             | beaucoup    | A1   | Common | false        |     |
 | the               | la          | A1   | Common | false        |     |
 | city              | ville       | A1   | Common | false        |     |
-
-### Tips
-
-1. French uses à with city names when saying where someone lives.
-2. In Québec, dépanneur means convenience store.
 
 ## Paragraph 3
 
@@ -100,8 +93,8 @@ Un homme gentil travaille à la boulangerie. Il aime me donner à manger et de l
 | to        | à           | A1   | Common | false        |     |
 | eat       | manger      | A1   | Common | false        |     |
 | and       | et          | A1   | Common | false        |     |
-| some      | de          | A1   | Common | false        | 1   |
-| water     | l'eau       | A1   | Common | false        | 1   |
+| some      | de          | A1   | Common | false        | 4   |
+| water     | l'eau       | A1   | Common | false        | 4   |
 | to        | à           | A1   | Common | false        |     |
 | drink     | boire       | A1   | Common | false        |     |
 | I         | Je          | A1   | Common | false        |     |
@@ -121,10 +114,6 @@ Un homme gentil travaille à la boulangerie. Il aime me donner à manger et de l
 | hears     | entend      | A2   | Common | false        |     |
 | meow      | miaou       | A1   | Common | false        |     |
 
-### Tips
-
-1. De l'eau is a common French expression meaning some water. You'll see it often when people talk about drinking or having water.
-
 ## Paragraph 4
 
 ### English
@@ -139,7 +128,7 @@ Est-ce que c'est facile d'être un chat dans la ville? Je ne sais pas. Pour moi,
 
 | English         | French     | CEFR | Rarity | Is Québécois | Tip |
 | --------------- | ---------- | ---- | ------ | ------------ | --- |
-| question marker | Est-ce que | A1   | Common | false        |     |
+| question marker | Est-ce que | A1   | Common | false        | 5   |
 | it              | c' (ce)    | A1   | Common | false        |     |
 | is              | est        | A1   | Common | false        |     |
 | easy            | facile     | A1   | Common | false        |     |
@@ -147,13 +136,13 @@ Est-ce que c'est facile d'être un chat dans la ville? Je ne sais pas. Pour moi,
 | be              | être       | A1   | Common | false        |     |
 | a               | un         | A1   | Common | false        |     |
 | cat             | chat       | A1   | Common | false        |     |
-| in              | dans       | A1   | Common | false        |     |
-| the             | la         | A1   | Common | false        |     |
-| city            | ville      | A1   | Common | false        |     |
+| in              | dans       | A1   | Common | false        | 6   |
+| the             | la         | A1   | Common | false        | 6   |
+| city            | ville      | A1   | Common | false        | 6   |
 | I               | Je         | A1   | Common | false        |     |
-| not             | ne         | A1   | Common | false        |     |
+| not             | ne         | A1   | Common | false        | 7   |
 | know            | sais       | A1   | Common | false        |     |
-| not             | pas        | A1   | Common | false        |     |
+| not             | pas        | A1   | Common | false        | 7   |
 | for             | Pour       | A1   | Common | false        |     |
 | me              | moi        | A1   | Common | false        |     |
 | yes             | oui        | A1   | Common | false        |     |
@@ -172,7 +161,7 @@ Est-ce que c'est facile d'être un chat dans la ville? Je ne sais pas. Pour moi,
 | a               | un         | A1   | Common | false        |     |
 | cat             | chat       | A1   | Common | false        |     |
 | it (weather)    | Il         | A1   | Common | false        |     |
-| is (weather)    | fait       | A1   | Common | false        |     |
+| is (weather)    | fait       | A1   | Common | false        | 8   |
 | very            | très       | A1   | Common | false        |     |
 | cold            | froid      | A1   | Common | false        |     |
 | here            | ici        | A1   | Common | false        |     |
@@ -191,11 +180,11 @@ Le matin, je marche jusqu'au parc. Je vois beaucoup d'oiseaux en chemin. Un, deu
 
 | English              | French      | CEFR | Rarity | Is Québécois | Tip |
 | -------------------- | ----------- | ---- | ------ | ------------ | --- |
-| the (in the morning) | Le          | A1   | Common | false        |     |
-| morning              | matin       | A1   | Common | false        |     |
+| the (in the morning) | Le          | A1   | Common | false        | 9   |
+| morning              | matin       | A1   | Common | false        | 9   |
 | I                    | je          | A1   | Common | false        |     |
 | walk                 | marche      | A1   | Common | false        |     |
-| to the               | jusqu'au    | A2   | Common | false        |     |
+| to the               | jusqu'au    | A2   | Common | false        | 11  |
 | park                 | parc        | A1   | Common | false        |     |
 | I                    | Je          | A1   | Common | false        |     |
 | see                  | vois        | A1   | Common | false        |     |
@@ -248,9 +237,9 @@ Au parc, je joue dans l'herbe ou parfois dans la neige. Ensuite, je fais une sie
 | snow         | neige    | A1   | Common | false        |     |
 | then         | Ensuite  | A1   | Common | false        |     |
 | I            | je       | A1   | Common | false        |     |
-| take (a nap) | fais     | A1   | Common | false        |     |
-| a            | une      | A1   | Common | false        |     |
-| nap          | sieste   | A2   | Common | false        |     |
+| take (a nap) | fais     | A1   | Common | false        | 12  |
+| a            | une      | A1   | Common | false        | 12  |
+| nap          | sieste   | A2   | Common | false        | 12  |
 | in           | dans     | A1   | Common | false        |     |
 | my           | mon      | A1   | Common | false        |     |
 | tree         | arbre    | A1   | Common | false        |     |
@@ -265,9 +254,9 @@ Au parc, je joue dans l'herbe ou parfois dans la neige. Ensuite, je fais une sie
 | is           | est      | A1   | Common | false        |     |
 | perfect      | parfait  | A2   | Common | false        |     |
 | for          | pour     | A1   | Common | false        |     |
-| taking       | faire    | A1   | Common | false        |     |
-| a            | une      | A1   | Common | false        |     |
-| nap          | sieste   | A2   | Common | false        |     |
+| taking       | faire    | A1   | Common | false        | 12  |
+| a            | une      | A1   | Common | false        | 12  |
+| nap          | sieste   | A2   | Common | false        | 12  |
 | the          | Les      | A1   | Common | false        |     |
 | cats         | chats    | A1   | Common | false        |     |
 | like         | aiment   | A1   | Common | false        |     |
@@ -288,16 +277,16 @@ Le soir, je vais au dépanneur du coin. Il fait chaud à l'intérieur et il est 
 
 | English              | French      | CEFR | Rarity | Is Québécois | Tip |
 | -------------------- | ----------- | ---- | ------ | ------------ | --- |
-| the (in the evening) | Le          | A1   | Common | false        |     |
-| evening              | soir        | A1   | Common | false        |     |
+| the (in the evening) | Le          | A1   | Common | false        | 10  |
+| evening              | soir        | A1   | Common | false        | 10  |
 | I                    | je          | A1   | Common | false        |     |
 | go                   | vais        | A1   | Common | false        |     |
 | to the               | au          | A1   | Common | false        |     |
-| convenience store    | dépanneur   | A2   | Common | true         |     |
-| of the               | du          | A1   | Common | false        |     |
-| corner               | coin        | A1   | Common | false        |     |
+| convenience store    | dépanneur   | A2   | Common | true         | 3   |
+| of the               | du          | A1   | Common | false        | 13  |
+| corner               | coin        | A1   | Common | false        | 13  |
 | it (impersonal)      | Il          | A1   | Common | false        |     |
-| is (temperature)     | fait        | A1   | Common | false        |     |
+| is (temperature)     | fait        | A1   | Common | false        | 8   |
 | warm                 | chaud       | A1   | Common | false        |     |
 | in                   | à           | A1   | Common | false        |     |
 | the inside           | l'intérieur | A2   | Common | false        |     |
@@ -312,25 +301,25 @@ Le soir, je vais au dépanneur du coin. Il fait chaud à l'intérieur et il est 
 | watch                | regarde     | A1   | Common | false        |     |
 | the                  | les         | A1   | Common | false        |     |
 | people               | gens        | A1   | Common | false        |     |
-| enter                | entrer      | A1   | Common | false        |     |
+| enter                | entrer      | A1   | Common | false        | 14  |
 | and                  | et          | A1   | Common | false        |     |
-| leave                | sortir      | A1   | Common | false        |     |
-| while                | pendant que | A2   | Common | false        |     |
+| leave                | sortir      | A1   | Common | false        | 14  |
+| while                | pendant que | A2   | Common | false        | 16  |
 | I                    | je          | A1   | Common | false        |     |
-| take                 | fais        | A1   | Common | false        |     |
-| a                    | une         | A1   | Common | false        |     |
-| nap                  | sieste      | A2   | Common | false        |     |
+| take                 | fais        | A1   | Common | false        | 12  |
+| a                    | une         | A1   | Common | false        | 12  |
+| nap                  | sieste      | A2   | Common | false        | 12  |
 | that                 | Ça          | A1   | Common | false        |     |
-| not                  | ne          | A1   | Common | false        |     |
+| not                  | ne          | A1   | Common | false        | 7   |
 | bothers              | dérange     | A2   | Common | false        |     |
-| not                  | pas         | A1   | Common | false        |     |
+| not                  | pas         | A1   | Common | false        | 7   |
 | the                  | l' (le)     | A1   | Common | false        |     |
 | man                  | homme       | A1   | Common | false        |     |
 | who                  | qui         | A1   | Common | false        |     |
 | works                | travaille   | A1   | Common | false        |     |
 | there                | là          | A1   | Common | false        |     |
 | I                    | Je          | A1   | Common | false        |     |
-| to him               | lui         | A1   | Common | false        |     |
+| to him               | lui         | A1   | Common | false        | 15  |
 | say                  | dis         | A1   | Common | false        |     |
 | thank you            | Merci       | A1   | Common | false        |     |
 | but                  | Mais        | A1   | Common | false        |     |

@@ -12,7 +12,7 @@ import { act, fireEvent, render, renderHook, screen } from '@testing-library/rea
 import Storage from 'expo-sqlite/kv-store';
 
 let mockSavedSettings: string | null = null;
-let mockPlayerLevel = 3;
+let mockPlayerLevel = 4;
 let mockProgressById: ProgressById = {};
 
 jest.mock('expo-sqlite/kv-store', () => ({
@@ -33,6 +33,7 @@ jest.mock('@/src/db/useUserProgress', () => ({
 }));
 
 jest.mock('@/src/util/atlasCompletion', () => ({
+	getChapterSolveUnlockLevel: jest.fn(() => undefined),
 	findParagraphById: () => ({
 		wordIds: ['word_one', 'word_two'],
 	}),
@@ -56,14 +57,14 @@ describe('Fast Solve Unlocks', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockSavedSettings = null;
-		mockPlayerLevel = 3;
+		mockPlayerLevel = 4;
 		mockProgressById = {
 			deck_one: {
 				userId: 'user_one',
 				id: 'deck_one',
 				type: 'paragraph',
 				completionPercentage: 50,
-				completedSolveStages: 2,
+				completedSolveStages: 3,
 				hasFirstGem: true,
 				seenWordCount: 2,
 			},
@@ -93,17 +94,17 @@ describe('Fast Solve Unlocks', () => {
 			},
 		);
 
-		expect(result.current.progression.nextStage).toBe(3);
+		expect(result.current.progression.nextStage).toBe(4);
 		expect(result.current.progression.isEligible).toBe(true);
 
 		await act(() => result.current.setSetting('fastSolveUnlocks', false));
 
 		expect(result.current.progression.isEligible).toBe(false);
-		expect(result.current.progression.requiredPlayerLevel).toBe(10);
-		expect(result.current.progression.completedStages).toBe(2);
+		expect(result.current.progression.requiredPlayerLevel).toBe(15);
+		expect(result.current.progression.completedStages).toBe(3);
 		expect(mockProgressById.deck_one.hasFirstGem).toBe(true);
 
-		mockPlayerLevel = 10;
+		mockPlayerLevel = 15;
 		await rerender(undefined);
 
 		expect(result.current.progression.isEligible).toBe(true);
@@ -113,8 +114,8 @@ describe('Fast Solve Unlocks', () => {
 			wrapper: AppSettingsProvider,
 		});
 
-		expect(reopened.result.current.requiredPlayerLevel).toBe(10);
-		expect(reopened.result.current.completedStages).toBe(2);
+		expect(reopened.result.current.requiredPlayerLevel).toBe(15);
+		expect(reopened.result.current.completedStages).toBe(3);
 	});
 
 	test('a high player level still opens only the next incomplete stage', async () => {

@@ -109,13 +109,19 @@ export default function ChapterSelectRow({
 	 */
 	useLayoutEffect(() => {
 		const removeTransitionListener = rootNavigation.addListener('transitionStart', event => {
+			let animationDuration = 300;
+
 			if (event.data.closing) {
 				return;
 			}
 
+			if (reducedMotion) {
+				animationDuration = 0;
+			}
+
 			Animated.timing(polaroidRotation, {
 				toValue: 0,
-				duration: reducedMotion ? 0 : 450,
+				duration: animationDuration,
 				easing: Easing.inOut(Easing.quad),
 				useNativeDriver: true,
 			}).start();
@@ -134,7 +140,7 @@ export default function ChapterSelectRow({
 
 		Animated.timing(polaroidRotation, {
 			toValue: -20,
-			duration: 450,
+			duration: 300,
 			easing: Easing.inOut(Easing.quad),
 			useNativeDriver: true,
 		}).start();

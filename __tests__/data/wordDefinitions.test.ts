@@ -1,4 +1,6 @@
 import { seedWords } from '@/data/french/words';
+import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
+import { getEnglishPrefixes, getEnglishPuzzleAnswers } from '@/src/util/englishWordParts';
 
 /**
  * Check whether an article stored in its own field was also
@@ -14,6 +16,21 @@ function startsWithArticle(word: string, article: string) {
 	}
 
 	return normalizedWord.startsWith(`${normalizedArticle} `);
+}
+
+/**
+ * Checks whether a word meaning repeats a prefix already shown in its own answer slot.
+ */
+function hasDuplicatedEnglishPrefix(word: Word): boolean {
+	const prefixes = getEnglishPrefixes(word);
+
+	for (const prefix of prefixes) {
+		if (word.englishWords.some(meaning => startsWithArticle(meaning, prefix))) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 describe('word definitions', () => {
@@ -32,24 +49,22 @@ describe('word definitions', () => {
 		expect(wordsWithDuplicatedArticles).toEqual([]);
 	});
 
-	test('keep leading English articles in the first answer slot', () => {
-		const wordsWithEmbeddedArticles = seedWords.flatMap(word =>
-			word.englishWords
-				.filter(englishWord => /^(a|an|the)\s/i.test(englishWord))
-				.map(() => word.id),
-		);
+	test('do not duplicate separately stored English prefixes in word meanings', () => {
+		const wordsWithEmbeddedArticles = seedWords
+			.filter(hasDuplicatedEnglishPrefix)
+			.map(word => word.id);
 
 		expect(wordsWithEmbeddedArticles).toEqual([]);
 	});
 
-	test('keep the English infinitive marker in the first answer slot', () => {
+	test('provide a usable English answer for each infinitive', () => {
 		const malformedInfinitives = seedWords
 			.filter(word => word.form === 'infinitive')
-			.filter(
-				word =>
-					word.englishArticle !== 'to' ||
-					word.englishWords.some(englishWord => /^to\s/i.test(englishWord)),
-			)
+			.filter(word => {
+				const answers = getEnglishPuzzleAnswers(word);
+
+				return answers.length === 0 || answers.some(answer => answer.trim() === '');
+			})
 			.map(word => word.id);
 
 		expect(malformedInfinitives).toEqual([]);

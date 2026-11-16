@@ -1,10 +1,11 @@
+import { introducingYourNameTip } from '@/data/french/tips';
 import { createParagraph } from '@/src/util/createParagraph';
 
 export const paragraph1 = createParagraph({
 	id: 'deck__i_am_a_cat',
 	requiredLevel: 1,
 	description: 'Leo introduces himself.',
-	CEFR: ['A1', 'A2'],
+	CEFR: ['A1'],
 	englishPassage: 'Hello. I am a cat. My name is Leo.',
 	passage: [
 		{
@@ -34,8 +35,16 @@ export const paragraph1 = createParagraph({
 			wordId: 'word_pronoun_je',
 		},
 		{
-			text: 'm’appelle',
-			wordId: 'word_expression_m_appelle',
+			text: 'm’',
+			wordId: 'word_pronoun_me_elision',
+			canonicalEnglish: ['myself', 'me'],
+			tipId: introducingYourNameTip.id,
+			after: '',
+		},
+		{
+			text: 'appelle',
+			wordId: 'word_verb_appelle',
+			tipId: introducingYourNameTip.id,
 		},
 		{
 			text: 'Léo',

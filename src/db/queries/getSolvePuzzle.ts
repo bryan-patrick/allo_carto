@@ -7,6 +7,7 @@ import type {
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import {
 	getEnglishPuzzleAnswers,
+	parseCanonicalEnglish,
 	parseEnglishPrefixes,
 	type EnglishWordDefinition,
 } from '@/src/util/englishWordParts';
@@ -152,7 +153,7 @@ export default async function getSolvePuzzle({
 		if (word) {
 			const englishDefinition: EnglishWordDefinition = {
 				englishWords: JSON.parse(word.englishWords),
-				canonicalEnglish: segment.canonicalEnglish ?? word.canonicalEnglish,
+				canonicalEnglish: segment.canonicalEnglish ?? parseCanonicalEnglish(word.canonicalEnglish),
 				englishArticle: word.englishArticle,
 				englishPrefixes: parseEnglishPrefixes(word.englishPrefixes),
 			};

@@ -1,6 +1,8 @@
 /**
  * Typing
  */
+export type CanonicalEnglish = string | string[];
+
 export interface EnglishPrefixDefinition {
 	englishPrefixes?: string[] | null;
 	englishArticle?: string | null;
@@ -8,7 +10,7 @@ export interface EnglishPrefixDefinition {
 
 export interface EnglishWordDefinition extends EnglishPrefixDefinition {
 	englishWords: string[];
-	canonicalEnglish?: string | null;
+	canonicalEnglish?: CanonicalEnglish | null;
 }
 
 /**
@@ -44,6 +46,32 @@ export function parseEnglishPrefixes(savedPrefixes?: string | null): string[] | 
 	}
 
 	return JSON.parse(savedPrefixes);
+}
+
+/**
+ * Reads a word's saved canonical English answers.
+ */
+export function parseCanonicalEnglish(savedAnswers?: string | null): CanonicalEnglish | undefined {
+	if (savedAnswers === undefined || savedAnswers === null) {
+		return undefined;
+	}
+
+	return JSON.parse(savedAnswers);
+}
+
+/**
+ * Lists the canonical English answers for a word or passage segment.
+ */
+export function getCanonicalEnglishAnswers(answers?: CanonicalEnglish | null): string[] {
+	if (answers === undefined || answers === null) {
+		return [];
+	}
+
+	if (Array.isArray(answers)) {
+		return answers;
+	}
+
+	return [answers];
 }
 
 /**
@@ -83,15 +111,28 @@ export function getEnglishTranslations(word: EnglishWordDefinition): string[] {
 }
 
 /**
- * Pick one English meaning for a puzzle card.
- * This is what the canonicalEnglish prop is for.
- * Falls back to its first meaning.
+ * Picks the canonical English answer for a flashcard, falling back to its first meaning.
+ */
+export function getEnglishFlashcardAnswers(word: EnglishWordDefinition): string[] {
+	const canonicalAnswers = getCanonicalEnglishAnswers(word.canonicalEnglish);
+	const meaning = canonicalAnswers[0] ?? word.englishWords[0];
+
+	if (meaning === undefined) {
+		return [];
+	}
+
+	return [meaning];
+}
+
+/**
+ * Lists a puzzle card's canonical English answers, falling back to its first meaning.
  */
 export function getEnglishPuzzleAnswers(word: EnglishWordDefinition): string[] {
+	const canonicalAnswers = getCanonicalEnglishAnswers(word.canonicalEnglish);
 	let meaning = word.englishWords[0];
 
-	if (word.canonicalEnglish !== undefined && word.canonicalEnglish !== null) {
-		return [word.canonicalEnglish];
+	if (canonicalAnswers.length > 0) {
+		return canonicalAnswers;
 	}
 
 	if (word.englishPrefixes) {

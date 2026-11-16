@@ -44,6 +44,7 @@ export default function WordTipModal({ tip, visible, onClose }: WordTipModalProp
 			onFinish={onClose}
 			label="French tip"
 			finishButtonLabel="Got it!"
+			finishButtonVariant="secondary"
 		>
 			<GettingStartedPage
 				title={tip.title}

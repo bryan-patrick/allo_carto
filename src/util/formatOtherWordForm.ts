@@ -1,20 +1,74 @@
+import type { Word, WordForm } from '@/src/components/CardDeck/cardDeckTypes';
 import type { OtherWordForm } from '@/src/db/queries/getOtherWordForms';
 import formatFrenchWordWithArticle from './formatFrenchWordWithArticle';
 
-export default function formatOtherWordForm(candidate: OtherWordForm): string {
+/**
+ * Display labels
+ */
+const formDescriptions: Record<WordForm, string> = {
+	contraction: 'contracted form',
+	elision: 'elided form',
+	feminine: 'feminine form',
+	imperfect: 'imperfect tense conjugation',
+	infinitive: 'infinitive, or base verb form',
+	masculine: 'masculine form',
+	'past participle': 'past participle',
+	'past historic': 'past historic tense conjugation',
+	plural: 'plural form',
+	possessive: 'possessive form',
+	'present participle': 'present participle',
+	present: 'present tense conjugation',
+};
+
+/**
+ * Explains how a related form differs from the current flashcard's word.
+ */
+function getFormDescription(candidate: OtherWordForm, currentWord: Word): string {
+	let description = 'related form';
+
+	if (candidate.form) {
+		description = formDescriptions[candidate.form];
+	} else if (candidate.gender) {
+		description = `${candidate.gender.toLowerCase()} form`;
+	}
+
+	if (candidate.form === 'plural' && candidate.gender) {
+		description = `${candidate.gender.toLowerCase()} plural form`;
+	}
+
+	if (candidate.isQuebecois) {
+		description = 'Québécois variant';
+	} else if (currentWord.isQuebecois) {
+		description = 'standard French variant';
+	}
+
+	if (currentWord.form === 'elision' && candidate.form !== 'elision') {
+		description = 'full form';
+	}
+
+	return description;
+}
+
+/**
+ * Describes another word form with its English meanings and the type of form.
+ */
+export default function formatOtherWordForm(candidate: OtherWordForm, currentWord: Word): string {
+	/**
+	 * Word meanings and grammar details
+	 */
 	const word = formatFrenchWordWithArticle({
 		article: candidate.frenchArticle,
 		word: candidate.frenchWord,
 	});
-	const details = [
-		...new Set(
-			[candidate.partOfSpeech, candidate.form, candidate.tense, candidate.gender]
-				.map(detail => detail?.trim().toLowerCase())
-				.filter(Boolean),
-		),
-	].join(', ');
+	const englishMeanings = candidate.englishWords.join(' / ');
+	const formDescription = getFormDescription(candidate, currentWord);
+	let formattedWord = word;
 
-	if (!details) return word;
+	if (englishMeanings !== '') {
+		formattedWord += ` — ${englishMeanings}`;
+	}
 
-	return `${word} (${details})`;
+	formattedWord += ` (${formDescription})`;
+
+	return formattedWord;
 }

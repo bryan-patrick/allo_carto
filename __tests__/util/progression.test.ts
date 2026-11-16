@@ -181,7 +181,7 @@ describe('progression', () => {
 		).toBe(true);
 	});
 
-	test('opens the next paragraph after the previous paragraph earns its first gem', () => {
+	test('opens the next paragraph after the previous paragraph earns three gems', () => {
 		const atlas = makeAtlas();
 		const progressById = makeProgressById({ deck_one: 12.5, deck_two: 0 });
 		const props = {
@@ -195,6 +195,7 @@ describe('progression', () => {
 		expect(isItemUnlocked(props)).toBe(false);
 
 		progressById.deck_one.hasFirstGem = true;
+		progressById.deck_one.completedSolveStages = 3;
 		expect(isItemUnlocked(props)).toBe(true);
 	});
 
