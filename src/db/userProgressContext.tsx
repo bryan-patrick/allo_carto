@@ -1,4 +1,6 @@
 import { collectionAtlas } from '@/data/french/collectionAtlas';
+import { getAllTips } from '@/data/french/tips';
+import type { TipProgress } from '@/src/components/Tips/tipTypes';
 import type {
 	DeckCompletionReceiptProps,
 	WordAnswerAwardProps,
@@ -45,6 +47,7 @@ import getUserInk from './queries/getUserInk';
 import getUserProgress from './queries/getUserProgress';
 import getUserWordProgress, { type UserWordProgressById } from './queries/getUserWordProgress';
 import { claimSolveReward } from './queries/solveRewards';
+import { getTipDiscoveries, saveTipDiscovery, type TipDiscovery } from './queries/tipDiscoveries';
 import {
 	claimTipReward,
 	getTipRewardClaims,
@@ -87,6 +90,8 @@ interface UserProgressContextProps {
 	dismissAllNotifications: () => Promise<boolean>;
 	claimSolveReward: (request: SolveRewardRequest) => Promise<SolveRewardReceipt | false>;
 	tipClaims: TipRewardClaim[];
+	tips: TipProgress[];
+	discoverTip: (tipId: string) => Promise<boolean>;
 	claimTipReward: (tipId: string) => Promise<TipRewardReceipt | false>;
 	applyMockParagraphProgress: (preset: MockParagraphPresetValue) => Promise<number | false>;
 	collections: VocabularyCollectionProgress[];
@@ -121,6 +126,8 @@ const initialValue: UserProgressContextProps = {
 	dismissAllNotifications: async () => false,
 	claimSolveReward: async () => false,
 	tipClaims: [],
+	tips: [],
+	discoverTip: async () => false,
 	claimTipReward: async () => false,
 	applyMockParagraphProgress: async () => false,
 	collections: [],
@@ -179,6 +186,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const [wordProgressById, setWordProgressById] = useState<UserWordProgressById>({});
 	const [collectionClaims, setCollectionClaims] = useState<CollectionRewardClaim[]>([]);
 	const [tipClaims, setTipClaims] = useState<TipRewardClaim[]>([]);
+	const [tipDiscoveries, setTipDiscoveries] = useState<TipDiscovery[]>([]);
 	const [experience, setExperience] = useState<UserExperience>(() => getUserExperience(0));
 	const [inkBalance, setInkBalance] = useState(0);
 	const [status, setStatus] = useState<ProgressStatus>('loading');
@@ -218,6 +226,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 				nextInkBalance,
 				nextCollectionClaims,
 				nextTipClaims,
+				nextTipDiscoveries,
 				nextActivity,
 				nextNotifications,
 			] = await Promise.all([
@@ -239,6 +248,10 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 					userId,
 				}),
 				getTipRewardClaims({
+					database,
+					userId,
+				}),
+				getTipDiscoveries({
 					database,
 					userId,
 				}),
@@ -274,6 +287,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			setWordProgressById(nextWordProgressById);
 			setCollectionClaims(nextCollectionClaims);
 			setTipClaims(nextTipClaims);
+			setTipDiscoveries(nextTipDiscoveries);
 			setExperience(nextExperience);
 			setInkBalance(nextInkBalance);
 			setStatus('ready');
@@ -309,6 +323,25 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			});
 		});
 	}, [collectionClaims, wordProgressById, previewAllStamps]);
+
+	/**
+	 * Groups tips by discovery and shows which XP rewards are available.
+	 */
+	const tips = useMemo<TipProgress[]>(() => {
+		const discoveredTipIds = new Set(tipDiscoveries.map(discovery => discovery.tipId));
+		const claimedTipIds = new Set(tipClaims.map(claim => claim.tipId));
+
+		return getAllTips().map(tip => {
+			const isDiscovered = discoveredTipIds.has(tip.id);
+			const isXPRewardReadyToClaim = isDiscovered && !claimedTipIds.has(tip.id);
+
+			return {
+				tip,
+				isDiscovered,
+				isXPRewardReadyToClaim,
+			};
+		});
+	}, [tipClaims, tipDiscoveries]);
 
 	/**
 	 * Load userProgress rows when the database is ready
@@ -407,6 +440,24 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 					completedStages,
 					firstGemUnclaimed,
 				});
+			});
+		},
+		[database, runProgressWrite, userId],
+	);
+
+	/**
+	 * Saves an opened tip and refreshes the player's discovered tips.
+	 */
+	const recordTipDiscovery = useCallback(
+		async (tipId: string): Promise<boolean> => {
+			return runProgressWrite(async () => {
+				await saveTipDiscovery({
+					database,
+					userId: userId!,
+					tipId,
+				});
+
+				return true;
 			});
 		},
 		[database, runProgressWrite, userId],
@@ -589,6 +640,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			dismissAllNotifications,
 			claimSolveReward: recordSolveReward,
 			tipClaims,
+			tips,
+			discoverTip: recordTipDiscovery,
 			claimTipReward: recordTipReward,
 			applyMockParagraphProgress: recordMockParagraphProgress,
 			collections,
@@ -615,6 +668,8 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			dismissAllNotifications,
 			recordSolveReward,
 			tipClaims,
+			tips,
+			recordTipDiscovery,
 			recordTipReward,
 			recordMockParagraphProgress,
 			collections,

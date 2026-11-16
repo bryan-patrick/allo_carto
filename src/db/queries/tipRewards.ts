@@ -1,10 +1,9 @@
-import { elisionTip } from '@/data/french/tips';
-import { seedWords } from '@/data/french/words';
-import type { WordTip } from '@/src/components/CardDeck/cardDeckTypes';
+import { getTipById } from '@/data/french/tips';
 import { userExperienceConfig } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import { recordXPActivity } from './userActivity';
+import type { TipDiscovery } from './tipDiscoveries';
 
 /**
  * Typing
@@ -38,25 +37,16 @@ const statements = {
 		SELECT tipId, xp, claimedAt FROM tipRewardClaims
 		WHERE userId = ? AND tipId = ?;
 	`,
+	getDiscovery: `
+		SELECT tipId, discoveredAt FROM userTipDiscoveries
+		WHERE userId = ? AND tipId = ?;
+	`,
 	addXP: 'UPDATE users SET totalXP = totalXP + ? WHERE id = ?;',
 	saveClaim: `
 		INSERT INTO tipRewardClaims (userId, tipId, xp, claimedAt)
 		VALUES (?, ?, ?, ?);
 	`,
 };
-
-/**
- * Finds a shared French tip or a tip from the active flashcards.
- */
-function getTip(tipId: string): WordTip | undefined {
-	const word = seedWords.find(word => word.tip?.id === tipId);
-
-	if (tipId === elisionTip.id) {
-		return elisionTip;
-	}
-
-	return word?.tip;
-}
 
 /**
  * Loads the tips whose XP the player has already claimed.
@@ -76,7 +66,7 @@ export async function claimTipReward({
 	userId,
 	tipId,
 }: ClaimTipRewardOptions): Promise<TipRewardReceipt> {
-	const tip = getTip(tipId);
+	const tip = getTipById(tipId);
 	const xp = userExperienceConfig.tipXP;
 	let receipt: TipRewardReceipt = {
 		status: 'alreadyClaimed',
@@ -100,6 +90,16 @@ export async function claimTipReward({
 				xp: savedClaim.xp,
 			};
 			return;
+		}
+
+		const discovery = await transaction.getFirstAsync<TipDiscovery>(
+			statements.getDiscovery,
+			userId,
+			tipId,
+		);
+
+		if (!discovery) {
+			throw new Error('Open this tip before claiming its XP.');
 		}
 
 		const award = await transaction.runAsync(statements.addXP, xp, userId);

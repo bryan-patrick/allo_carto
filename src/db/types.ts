@@ -5,7 +5,7 @@ export interface WordRow {
 	frenchWord: string;
 	englishWords: string;
 	canonicalEnglish?: string | null;
-	tip?: string | null;
+	tipId?: string | null;
 	frenchArticle?: string;
 	englishArticle?: string;
 	englishPrefixes?: string | null;

@@ -20,7 +20,7 @@ export default function MockParagraphProgressSetting({
 		return preset.value === settings.mockParagraphCompletion;
 	});
 	const isDisabled = disabled || isUpdatingProgress || status === 'loading';
-	const actionLabel = isUpdatingProgress ? 'Saving progress…' : 'Apply preset';
+	const actionLabel = isUpdatingProgress ? 'Saving progress...' : 'Apply preset';
 
 	async function applyPreset() {
 		if (isDisabled || !selectedPreset) {

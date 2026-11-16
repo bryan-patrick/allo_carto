@@ -607,7 +607,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					</Text>
 				</View>
 				{!puzzle ?
-					<Text style={styles.notice}>{loadError || 'Loading puzzle…'}</Text>
+					<Text style={styles.notice}>{loadError || 'Loading puzzle...'}</Text>
 				: isComplete ?
 					<View style={styles.completion}>
 						<MaterialSymbol

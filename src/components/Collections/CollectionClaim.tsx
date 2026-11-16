@@ -83,7 +83,7 @@ export default function CollectionClaim({ progress }: CollectionClaimProps) {
 		claimAccessibilityLabel = `Claim ${nextReward.xp} XP for collection learning level ${nextReward.level}`;
 
 		if (isUpdatingProgress) {
-			actionLabel = 'Saving…';
+			actionLabel = 'Saving...';
 		}
 	}
 
