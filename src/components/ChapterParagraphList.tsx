@@ -8,6 +8,7 @@ import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ParagraphHeader from '@/src/components/ParagraphHeader';
 import ParagraphPostcard from '@/src/components/ParagraphPostcard';
+import ParagraphPostcardCarousel from '@/src/components/ParagraphPostcardCarousel';
 import SolveEligibilityHint from '@/src/components/Solve/SolveEligibilityHint';
 import SolvePuzzleButtons from '@/src/components/Solve/SolvePuzzleButtons';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
@@ -165,112 +166,137 @@ export default function ChapterParagraphList({
 
 	if (isChapterLocked) {
 		return (
-			<ParagraphPostcard index={0}>
-				<View style={styles.lockedChapter}>
-					<LockedSection
-						color={storyColor}
-						unlockCriteria={chapterUnlockCriteria}
-						fontSize={15}
-					/>
-				</View>
-			</ParagraphPostcard>
+			<View style={styles.paragraphList}>
+				<ParagraphPostcard index={0}>
+					<View style={styles.lockedChapter}>
+						<LockedSection
+							color={storyColor}
+							unlockCriteria={chapterUnlockCriteria}
+							fontSize={15}
+						/>
+					</View>
+				</ParagraphPostcard>
+			</View>
 		);
 	}
 
 	return (
 		<View style={styles.paragraphList}>
-			{visibleParagraphs.map((paragraph, index) => {
-				const paragraphLabel = getAtlasItemLabel(paragraph.id);
-				const isLocked = !isItemUnlocked({
-					id: paragraph.id,
-					progressById,
-				});
-				const unlockCriteria = getUnlockCriteria(paragraph, progressById);
-				const isLoadingPassage = loadingPassageId === paragraph.id;
-				const actionLabel = getFlashcardActionLabel(progressById[paragraph.id]?.flashcardProgress);
+			<ParagraphPostcardCarousel
+				key={`${userId}:${chapter.id}`}
+				chapterId={chapter.id}
+				userId={userId ?? ''}
+				paragraphs={visibleParagraphs}
+				progressById={progressById}
+				disabled={Boolean(loadingPassageId) || Boolean(passageState) || isUpdatingProgress}
+			>
+				{visibleParagraphs.map((paragraph, index) => {
+					const paragraphLabel = getAtlasItemLabel(paragraph.id);
+					const isLocked = !isItemUnlocked({
+						id: paragraph.id,
+						progressById,
+					});
+					const unlockCriteria = getUnlockCriteria(paragraph, progressById);
+					const isLoadingPassage = loadingPassageId === paragraph.id;
+					const isNewBadgeVisible = !isLocked && !progressById[paragraph.id]?.hasStartedFlashcards;
+					const actionLabel = getFlashcardActionLabel(
+						progressById[paragraph.id]?.flashcardProgress,
+					);
 
-				return (
-					<ParagraphPostcard
-						key={paragraph.id}
-						index={index}
-						header={
-							!isLocked && (
+					return (
+						<ParagraphPostcard
+							key={paragraph.id}
+							index={index}
+							isInCarousel
+							showNewBadge={isNewBadgeVisible}
+							header={
 								<View style={styles.paragraphHeading}>
 									<ParagraphHeader
 										label={paragraphLabel}
 										progress={progressById[paragraph.id]}
-										fontSize={15}
+										fontSize={22}
+										fontFamily="shadows-400"
 										showGems={false}
+										showNewBadge={false}
 									/>
-									<Pressable
-										accessibilityRole="button"
-										accessibilityLabel={`Read ${paragraphLabel}`}
-										accessibilityState={{
-											disabled: Boolean(loadingPassageId),
-											busy: isLoadingPassage,
-										}}
-										disabled={Boolean(loadingPassageId)}
-										onPress={() => handleShowPassage(paragraph)}
-										hitSlop={8}
-										style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
-									>
-										<Text
-											style={[
-												styles.readLinkText,
-												{
-													color: storyColor,
-												},
-											]}
+									{!isLocked && (
+										<Pressable
+											accessibilityRole="button"
+											accessibilityLabel={`Read ${paragraphLabel}`}
+											accessibilityState={{
+												disabled: Boolean(loadingPassageId),
+												busy: isLoadingPassage,
+											}}
+											disabled={Boolean(loadingPassageId)}
+											onPress={() => handleShowPassage(paragraph)}
+											hitSlop={8}
+											style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
 										>
-											Read paragraph
-										</Text>
-										<MaterialSymbol
-											name="menu_book"
-											size={16}
+											<Text
+												style={[
+													styles.readLinkText,
+													{
+														color: storyColor,
+													},
+												]}
+											>
+												Read paragraph
+											</Text>
+											<MaterialSymbol
+												name="menu_book"
+												size={16}
+												color={storyColor}
+											/>
+										</Pressable>
+									)}
+								</View>
+							}
+						>
+							<View
+								style={[
+									styles.paragraphRow,
+									!isLocked && styles.paragraphDivider,
+									isLocked && styles.lockedParagraphRow,
+								]}
+							>
+								{isLocked && (
+									<LockedSection
+										color={storyColor}
+										unlockCriteria={unlockCriteria}
+										fontSize={15}
+										style={styles.lockedParagraphContent}
+									/>
+								)}
+								{!isLocked && (
+									<View style={styles.actions}>
+										<SolvePuzzleButtons
+											deckId={paragraph.id}
 											color={storyColor}
 										/>
-									</Pressable>
-								</View>
-							)
-						}
-					>
-						<View style={[styles.paragraphRow, !isLocked && styles.paragraphDivider]}>
-							{isLocked && (
-								<LockedSection
-									color={storyColor}
-									unlockCriteria={unlockCriteria}
-									fontSize={15}
-								/>
-							)}
-							{!isLocked && (
-								<View style={styles.actions}>
-									<SolvePuzzleButtons
-										deckId={paragraph.id}
-										color={storyColor}
-									/>
-									<SolveEligibilityHint
-										deck={paragraph}
-										textStyle={styles.helpText}
-									/>
-									<LinkButton
-										accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
-										arrowColor={colors.light.text}
-										color={storyColor}
-										contentPaddingHorizontal={8}
-										contentPaddingVertical={8}
-										handler={() => handleSelectDeck(paragraph)}
-										disabled={isUpdatingProgress}
-										style={styles.flashcardActionButton}
-										textStyle={styles.actionText}
-									>
-										{actionLabel}
-									</LinkButton>
-								</View>
-							)}
-						</View>
-					</ParagraphPostcard>
-				);
-			})}
+										<SolveEligibilityHint
+											deck={paragraph}
+											textStyle={styles.helpText}
+										/>
+										<LinkButton
+											accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
+											arrowColor={colors.light.text}
+											color={storyColor}
+											contentPaddingHorizontal={8}
+											contentPaddingVertical={8}
+											handler={() => handleSelectDeck(paragraph)}
+											disabled={isUpdatingProgress}
+											style={styles.flashcardActionButton}
+											textStyle={styles.actionText}
+										>
+											{actionLabel}
+										</LinkButton>
+									</View>
+								)}
+							</View>
+						</ParagraphPostcard>
+					);
+				})}
+			</ParagraphPostcardCarousel>
 			{passageState && (
 				<DeckBoxModal
 					deck={passageState.paragraph}
@@ -289,7 +315,7 @@ export default function ChapterParagraphList({
  */
 const styles = StyleSheet.create({
 	paragraphList: {
-		gap: 16,
+		flex: 1,
 	},
 	paragraphRow: {
 		margin: 8,
@@ -301,6 +327,12 @@ const styles = StyleSheet.create({
 	paragraphDivider: {
 		borderTopWidth: 1,
 		borderColor: colors.light.border,
+	},
+	lockedParagraphRow: {
+		flexGrow: 1,
+	},
+	lockedParagraphContent: {
+		flexGrow: 1,
 	},
 	lockedChapter: {
 		paddingVertical: 16,
@@ -333,8 +365,8 @@ const styles = StyleSheet.create({
 	},
 	readLinkText: {
 		fontFamily: 'lexend-400',
-		fontSize: 14,
-		lineHeight: 16,
+		fontSize: 15,
+		lineHeight: 17,
 		textDecorationLine: 'underline',
 	},
 	loadingButton: {

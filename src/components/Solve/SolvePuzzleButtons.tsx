@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
 	newBadgeText: {
 		color: colors.light.text,
 		fontFamily: 'lexend-600',
-		fontSize: 9,
+		fontSize: 10,
 		lineHeight: 12,
 	},
 });

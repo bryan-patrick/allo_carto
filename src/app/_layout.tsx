@@ -30,6 +30,8 @@ import alloTheme from './alloTheme';
 /**
  * Set to true to delete/reset the db
  * Remember to put it back!
+ * Don't forget to put it back!
+ *
  */
 const resetDB = false;
 
@@ -295,22 +297,9 @@ export default function AppLayout() {
 											<Stack.Screen
 												name="(routes)/ChapterDetail"
 												options={{
-													headerRight: () => <LevelBadge colorScheme="light" />,
-													unstable_headerRightItems: () => [
-														{
-															type: 'custom',
-															element: <LevelBadge colorScheme="light" />,
-															hidesSharedBackground: true,
-														},
-													],
 													headerShown: true,
-													headerTransparent: true,
-													headerBackTitle: 'Back',
-													headerTitle: '',
-													headerBackButtonDisplayMode: 'minimal',
-													scrollEdgeEffects: {
-														top: 'hidden',
-													},
+													headerTransparent: false,
+													header: () => <ChapterSelectHeader showBackButton />,
 												}}
 											/>
 											<Stack.Screen

@@ -3,20 +3,17 @@ import type { PassageSegment, ReadingPassage } from '@/src/components/CardDeck/c
 import CollectionGems from '@/src/components/CollectionGems';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import PassageHighlightLayer from '@/src/components/PassageHighlightLayer';
-import ProgressBar from '@/src/components/ProgressBar';
 import TTSButton, { type TTSButtonHandle } from '@/src/components/TTSButton';
 import type { DeckWordProgressCounts } from '@/src/db/queries/getDeckWordProgressCounts';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { readingSpeechRates } from '@/src/settings/appSettings';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { findChapterById, getAtlasItemLabel } from '@/src/util/atlasCompletion';
-import { getDeckCompletionPercent } from '@/src/util/deckCompletion';
-import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import type { SolveStage } from '@/src/util/solveProgression';
 import type { SpeechPlaybackState } from '@/src/util/speakFrench';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 /**
  * Typing
@@ -154,7 +151,7 @@ function isPassageWordVisible(
 }
 
 /**
- * Builds the spoken passage and tracks each word so its highlight follows the voice.
+ * Builds the TTS and word tracking so word highlighting follows the voice.
  */
 function getPassageSpeech(
 	passage: PassageSegment[],
@@ -199,8 +196,7 @@ export default function DeckPassageView({
 }: DeckPassageViewProps) {
 	const { progressById } = useUserProgress();
 	const chapter = findChapterById(deck.id);
-	const readingLabel = chapter?.label ?? '';
-	const passageLabel = getAtlasItemLabel(deck.id);
+	const readingLabel = chapter?.label ?? getAtlasItemLabel(deck.id) ?? '';
 	const {
 		settings: {
 			useLearningLevelColors,
@@ -312,32 +308,11 @@ export default function DeckPassageView({
 	/**
 	 * Passage metadata
 	 */
-	const totalWordCount = new Set(deck.wordIds).size;
-	const storyColor = getDeckStoryColor(deck.id);
 	const progressLegendTextColor = getLearningLevelColor('known', useLearningLevelColors);
-	const wordsSeenCount =
-		wordProgressCounts.new +
-		wordProgressCounts.learning +
-		wordProgressCounts.familiar +
-		wordProgressCounts.known +
-		wordProgressCounts.mastered;
-	const deckCompletionPercent = getDeckCompletionPercent({
-		deckWordCount: totalWordCount,
-		wordProgressCounts,
-	});
-	const completionText = `${deckCompletionPercent}% learned`;
-	const seenText = `${wordsSeenCount}/${totalWordCount} words seen`;
-	const completionAccessibilityLabel = `${deckCompletionPercent} percent learned`;
-	const seenAccessibilityLabel = `${wordsSeenCount} of ${totalWordCount} words seen`;
-	const completionAccessibilityValue = { min: 0, max: 100, now: deckCompletionPercent };
-	const seenAccessibilityValue = { min: 0, max: totalWordCount, now: wordsSeenCount };
-	let seenPercent = 0;
 
-	if (totalWordCount > 0) {
-		seenPercent = (wordsSeenCount / totalWordCount) * 100;
-	}
-
-	// Change the reading speed at the current word, keeping a paused reading paused.
+	/**
+	 * Change the reading speed at the current word, keeping a paused reading paused.
+	 */
 	function handleSpeechRateChange(rate: number) {
 		const currentWordRange = spokenWordRanges.find(range => {
 			return spokenCharacterIndex !== null && spokenCharacterIndex < range.end;
@@ -356,7 +331,6 @@ export default function DeckPassageView({
 
 	/**
 	 * Move to the previous word and read from there to the end.
-	 * When stopped, Back starts at the last word.
 	 */
 	function handlePreviousWord() {
 		const lastWordIndex = spokenWordRanges.length - 1;
@@ -472,26 +446,14 @@ export default function DeckPassageView({
 					}
 					style={styles.header}
 				>
-					{showTitle && Boolean(readingLabel) && (
-						<Text style={styles.readingLabel}>{readingLabel}</Text>
-					)}
 					{showTitle && (
 						<View style={styles.titleRow}>
 							<View style={styles.titleDetails}>
-								<Text
-									style={[
-										styles.title,
-										{
-											color: storyColor,
-										},
-									]}
-								>
-									{passageLabel}
-								</Text>
+								{Boolean(readingLabel) && <Text style={styles.readingLabel}>{readingLabel}</Text>}
 								{speechButton}
 							</View>
 							<CollectionGems
-								title={passageLabel}
+								title={readingLabel}
 								progress={progressById[deck.id]}
 								size={24}
 								celebrationStage={celebrationStage}
@@ -499,84 +461,8 @@ export default function DeckPassageView({
 							/>
 						</View>
 					)}
-					{showProgress && (
-						<View style={styles.progressMeta}>
-							<View
-								accessible
-								accessibilityLabel={seenAccessibilityLabel}
-								accessibilityRole="progressbar"
-								accessibilityValue={seenAccessibilityValue}
-								style={styles.progressColumn}
-							>
-								<Text style={styles.progressLabel}>{seenText}</Text>
-								<ProgressBar
-									color={storyColor}
-									percent={seenPercent}
-									style={styles.progressBarContainer}
-								/>
-							</View>
-							<View style={styles.progressDivider} />
-							<View
-								accessible
-								accessibilityLabel={completionAccessibilityLabel}
-								accessibilityRole="progressbar"
-								accessibilityValue={completionAccessibilityValue}
-								style={styles.progressColumn}
-							>
-								<Text style={styles.progressLabel}>{completionText}</Text>
-								<ProgressBar
-									color={storyColor}
-									percent={deckCompletionPercent}
-									style={styles.progressBarContainer}
-								/>
-							</View>
-						</View>
-					)}
-					{showLearningControls && (
-						<View style={styles.passageToggles}>
-							<View style={styles.learningLevelToggle}>
-								<Text style={styles.learningLevelColorsLabel}>
-									Use level&nbsp;
-									<Text style={styles.learningLevelColorsWord}>
-										<Text style={{ color: colors.dark.text }}>c</Text>
-										<Text style={{ color: colors.wordProgress.new }}>o</Text>
-										<Text style={{ color: colors.wordProgress.learning }}>l</Text>
-										<Text style={{ color: colors.wordProgress.familiar }}>o</Text>
-										<Text style={{ color: colors.wordProgress.known }}>r</Text>
-										<Text style={{ color: colors.wordProgress.mastered }}>s</Text>
-									</Text>
-								</Text>
-								<View style={styles.learningLevelColorsSwitchContainer}>
-									<Switch
-										accessibilityLabel="Use learning level colors"
-										hitSlop={12}
-										ios_backgroundColor={colors.light.border}
-										onValueChange={enabled => setSetting('useLearningLevelColors', enabled)}
-										style={styles.learningLevelColorsSwitch}
-										trackColor={{ false: colors.light.border, true: storyColor }}
-										value={useLearningLevelColors}
-									/>
-								</View>
-							</View>
-							<View style={styles.learningLevelToggle}>
-								<Text style={styles.learningLevelColorsLabel}>Use level opacity</Text>
-								<View style={styles.learningLevelColorsSwitchContainer}>
-									<Switch
-										accessibilityLabel="Use level opacity"
-										hitSlop={12}
-										ios_backgroundColor={colors.light.border}
-										onValueChange={enabled => setSetting('useLevelOpacity', enabled)}
-										style={styles.learningLevelColorsSwitch}
-										trackColor={{ false: colors.light.border, true: storyColor }}
-										value={useLevelOpacity}
-									/>
-								</View>
-							</View>
-						</View>
-					)}
 				</View>
 			)}
-
 			<ScrollView
 				indicatorStyle="black"
 				onContentSizeChange={(_width, height) => handleHeightMeasurement('passage', height)}
@@ -674,84 +560,88 @@ export default function DeckPassageView({
 						style={styles.speechControlGroup}
 					>
 						<Text style={styles.speechControlLabel}>Speed</Text>
-						{readingSpeechRates.map(rate => {
-							const isSelected = speechRate === rate;
-							const rateLabel = rate.toFixed(1);
+						<View style={styles.speechControlButtons}>
+							{readingSpeechRates.map(rate => {
+								const isSelected = speechRate === rate;
+								const rateLabel = rate.toFixed(1);
 
-							return (
-								<Pressable
-									key={rate}
-									accessibilityLabel={`TTS speed ${rateLabel} times`}
-									accessibilityRole="radio"
-									accessibilityState={{
-										checked: isSelected,
-									}}
-									onPress={() => handleSpeechRateChange(rate)}
-									style={[styles.speechControlButton, isSelected && styles.activeSpeechControl]}
-								>
-									<Text
-										style={[
-											styles.speechControlLabel,
-											isSelected && styles.activeSpeechControlLabel,
-										]}
+								return (
+									<Pressable
+										key={rate}
+										accessibilityLabel={`TTS speed ${rateLabel} times`}
+										accessibilityRole="radio"
+										accessibilityState={{
+											checked: isSelected,
+										}}
+										onPress={() => handleSpeechRateChange(rate)}
+										style={[styles.speechControlButton, isSelected && styles.activeSpeechControl]}
 									>
-										{rateLabel}
-									</Text>
-								</Pressable>
-							);
-						})}
+										<Text
+											style={[
+												styles.speechControlLabel,
+												isSelected && styles.activeSpeechControlLabel,
+											]}
+										>
+											{rateLabel}
+										</Text>
+									</Pressable>
+								);
+							})}
+						</View>
 					</View>
 					<View style={styles.speechControlsDivider} />
 					<View style={styles.speechControlGroup}>
 						<Text style={styles.speechControlLabel}>Controls</Text>
-						<Pressable
-							accessibilityLabel="Read from previous word"
-							accessibilityHint="When stopped, reads the last word."
-							accessibilityRole="button"
-							accessibilityState={{
-								disabled: !hasSpokenWords,
-							}}
-							disabled={!hasSpokenWords}
-							onPress={handlePreviousWord}
-							style={({ pressed }) => [
-								styles.speechControlButton,
-								styles.speechSkipButton,
-								pressed && styles.activeSpeechControl,
-								!hasSpokenWords && styles.disabledSpeechControl,
-							]}
-						>
-							{({ pressed }) => (
-								<MaterialSymbol
-									color={pressed ? colors.light.text : colors.dark.text}
-									name="fast_rewind"
-									size={20}
-								/>
-							)}
-						</Pressable>
-						<Pressable
-							accessibilityLabel={isSpeechPlaying ? 'Pause reading' : 'Play reading'}
-							accessibilityHint="Resumes a paused reading or starts at the first word."
-							accessibilityRole="button"
-							accessibilityState={{
-								disabled: !hasSpokenWords,
-							}}
-							disabled={!hasSpokenWords}
-							onPress={() => speechButtonRef.current?.togglePlayback()}
-							style={({ pressed }) => [
-								styles.speechControlButton,
-								styles.speechSkipButton,
-								pressed && styles.activeSpeechControl,
-								!hasSpokenWords && styles.disabledSpeechControl,
-							]}
-						>
-							{({ pressed }) => (
-								<MaterialSymbol
-									color={pressed ? colors.light.text : colors.dark.text}
-									name={isSpeechPlaying ? 'pause' : 'play_arrow'}
-									size={20}
-								/>
-							)}
-						</Pressable>
+						<View style={styles.speechControlButtons}>
+							<Pressable
+								accessibilityLabel="Read from previous word"
+								accessibilityHint="When stopped, reads the last word."
+								accessibilityRole="button"
+								accessibilityState={{
+									disabled: !hasSpokenWords,
+								}}
+								disabled={!hasSpokenWords}
+								onPress={handlePreviousWord}
+								style={({ pressed }) => [
+									styles.speechControlButton,
+									styles.speechSkipButton,
+									pressed && styles.activeSpeechControl,
+									!hasSpokenWords && styles.disabledSpeechControl,
+								]}
+							>
+								{({ pressed }) => (
+									<MaterialSymbol
+										color={pressed ? colors.light.text : colors.dark.text}
+										name="fast_rewind"
+										size={20}
+									/>
+								)}
+							</Pressable>
+							<Pressable
+								accessibilityLabel={isSpeechPlaying ? 'Pause reading' : 'Play reading'}
+								accessibilityHint="Resumes a paused reading or starts at the first word."
+								accessibilityRole="button"
+								accessibilityState={{
+									disabled: !hasSpokenWords,
+								}}
+								disabled={!hasSpokenWords}
+								onPress={() => speechButtonRef.current?.togglePlayback()}
+								style={({ pressed }) => [
+									styles.speechControlButton,
+									styles.speechSkipButton,
+									pressed && styles.activeSpeechControl,
+									!hasSpokenWords && styles.disabledSpeechControl,
+								]}
+							>
+								{({ pressed }) => (
+									<MaterialSymbol
+										color={pressed ? colors.light.text : colors.dark.text}
+										name={isSpeechPlaying ? 'pause' : 'play_arrow'}
+										size={20}
+									/>
+								)}
+							</Pressable>
+						</View>
 					</View>
 				</View>
 				{showLearningControls && (
@@ -833,16 +723,15 @@ const styles = StyleSheet.create({
 	},
 	readingLabel: {
 		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 12,
+		fontFamily: 'shadows-400',
+		fontSize: 24,
 	},
 	header: {
 		borderBottomColor: colors.light.goldenBorder,
 		borderBottomWidth: 1,
-		paddingBottom: 12,
+		paddingBottom: 4,
 		paddingHorizontal: 16,
-		paddingTop: 12,
-		gap: 8,
+		gap: 4,
 	},
 	titleRow: {
 		flexDirection: 'row',
@@ -974,7 +863,7 @@ const styles = StyleSheet.create({
 	},
 	footer: {
 		paddingHorizontal: 8,
-		paddingTop: 8,
+		paddingTop: 12,
 	},
 	speechControls: {
 		alignItems: 'center',
@@ -982,13 +871,17 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 		justifyContent: 'space-evenly',
 		gap: 12,
-		paddingHorizontal: 8,
-		paddingBottom: 8,
+		paddingHorizontal: 4,
+		paddingBottom: 4,
 	},
 	speechControlGroup: {
 		alignItems: 'center',
+		gap: 6,
+	},
+	speechControlButtons: {
+		alignItems: 'center',
 		flexDirection: 'row',
-		gap: 8,
+		gap: 6,
 	},
 	speechControlLabel: {
 		color: colors.dark.text,
@@ -1003,11 +896,11 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		minHeight: 32,
 		minWidth: 36,
-		paddingHorizontal: 6,
+		paddingHorizontal: 12,
 		paddingVertical: 4,
 	},
 	speechSkipButton: {
-		paddingHorizontal: 12,
+		paddingHorizontal: 16,
 	},
 	activeSpeechControl: {
 		backgroundColor: colors.dark.primaryActive,
@@ -1017,8 +910,9 @@ const styles = StyleSheet.create({
 		color: colors.light.text,
 	},
 	speechControlsDivider: {
+		alignSelf: 'flex-end',
 		backgroundColor: colors.light.border,
-		height: 24,
+		height: 32,
 		width: 1,
 	},
 	disabledSpeechControl: {
@@ -1050,11 +944,11 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		flexGrow: 1,
 		flexShrink: 1,
-		gap: 4,
 		justifyContent: 'center',
 		minWidth: '40%',
 		paddingHorizontal: 4,
 		paddingVertical: 3,
+		gap: 4,
 	},
 	progressLegendIcon: {
 		width: 18,

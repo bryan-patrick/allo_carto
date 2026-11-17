@@ -3,7 +3,7 @@ import BackgroundImage from '@/src/components/BackgroundImage';
 import { useNavigation, type NativeStackNavigationProp } from 'expo-router';
 import type { ParamListBase } from 'expo-router/react-navigation';
 import { useLayoutEffect, useState, type ReactNode } from 'react';
-import { Animated, Easing, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Animated, Easing, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import PostcardPostmark from './PostcardPostmark';
 
@@ -17,12 +17,49 @@ interface ParagraphPostcardProps {
 	index: number;
 	header?: ReactNode;
 	children: ReactNode;
+	isInCarousel?: boolean;
+	showNewBadge?: boolean;
+}
+
+interface ParagraphPostcardBackingProps {
+	index?: number;
 }
 
 /**
- * Shows a paragraph on a postcard
+ * Shows the striped card behind a paragraph's postcard.
  */
-export default function ParagraphPostcard({ index, header, children }: ParagraphPostcardProps) {
+export function ParagraphPostcardBacking({ index = 0 }: ParagraphPostcardBackingProps) {
+	/**
+	 * Decorative card angle
+	 */
+	let backPostcardTiltStyle: ViewStyle = styles.backPostcardTiltLeft;
+
+	if (index % 2 === 1) {
+		backPostcardTiltStyle = styles.backPostcardTiltRight;
+	}
+
+	return (
+		<BackgroundImage
+			accessible={false}
+			importantForAccessibility="no-hide-descendants"
+			pointerEvents="none"
+			source={borderedPostcardBackground}
+			resizeMode="stretch"
+			style={[styles.postcard, styles.backPostcard, backPostcardTiltStyle]}
+		/>
+	);
+}
+
+/**
+ * Shows a paragraph's heading and activities on a postcard.
+ */
+export default function ParagraphPostcard({
+	index,
+	header,
+	children,
+	isInCarousel = false,
+	showNewBadge = false,
+}: ParagraphPostcardProps) {
 	/**
 	 * Navigation and motion preference
 	 */
@@ -30,12 +67,12 @@ export default function ParagraphPostcard({ index, header, children }: Paragraph
 	const reducedMotion = useReducedMotion();
 
 	/**
-	 * We rotate the postcard a little on page transition
+	 * Turn the postcard during page transitions.
 	 */
 	const [postcardRotation] = useState(function createPostcardRotation() {
 		let initialRotation = 10;
 
-		if (reducedMotion) {
+		if (reducedMotion || isInCarousel) {
 			initialRotation = 0;
 		}
 
@@ -43,7 +80,7 @@ export default function ParagraphPostcard({ index, header, children }: Paragraph
 	});
 
 	/**
-	 * Front animation and decorative card angle
+	 * Front animation
 	 */
 	const frontPostcardStyle = {
 		transform: [
@@ -58,11 +95,6 @@ export default function ParagraphPostcard({ index, header, children }: Paragraph
 			},
 		],
 	};
-	let backPostcardTiltStyle: ViewStyle = styles.backPostcardTiltLeft;
-
-	if (index % 2 === 1) {
-		backPostcardTiltStyle = styles.backPostcardTiltRight;
-	}
 
 	/**
 	 * Start the card's turn when the page moves, so it is visible during the slide.
@@ -103,25 +135,34 @@ export default function ParagraphPostcard({ index, header, children }: Paragraph
 	}, [navigation, postcardRotation, reducedMotion]);
 
 	return (
-		<View style={styles.stack}>
-			<BackgroundImage
-				accessible={false}
-				pointerEvents="none"
-				source={borderedPostcardBackground}
-				resizeMode="stretch"
-				style={[styles.postcard, styles.backPostcard, backPostcardTiltStyle]}
-			/>
-			<View style={styles.frontLayer}>
-				<Animated.View style={frontPostcardStyle}>
+		<View style={[styles.stack, isInCarousel && styles.carouselStack]}>
+			{!isInCarousel && <ParagraphPostcardBacking index={index} />}
+			<View style={[styles.frontLayer, isInCarousel && styles.carouselFace]}>
+				<Animated.View
+					style={[styles.postcardFace, frontPostcardStyle, isInCarousel && styles.carouselFace]}
+				>
 					<BackgroundImage
 						source={postcardBackground}
-						style={styles.postcard}
+						style={[styles.postcard, isInCarousel && styles.carouselFace]}
 					>
-						<View style={styles.border}>
+						<View style={[styles.border, isInCarousel && styles.carouselFace]}>
 							{Boolean(header) && <PostcardPostmark>{header}</PostcardPostmark>}
 							{children}
 						</View>
 					</BackgroundImage>
+					{showNewBadge && (
+						<View
+							pointerEvents="none"
+							style={styles.newBadge}
+						>
+							<Text
+								numberOfLines={1}
+								style={styles.newBadgeText}
+							>
+								New!
+							</Text>
+						</View>
+					)}
 				</Animated.View>
 			</View>
 		</View>
@@ -136,12 +177,22 @@ const styles = StyleSheet.create({
 		margin: 12,
 		position: 'relative',
 	},
+	carouselStack: {
+		margin: 0,
+		flexGrow: 1,
+	},
+	carouselFace: {
+		flexGrow: 1,
+	},
 	/**
 	 * Keeps the turning postcard in front of the striped card beneath it.
 	 */
 	frontLayer: {
 		zIndex: 1,
 		elevation: 1,
+	},
+	postcardFace: {
+		position: 'relative',
 	},
 	postcard: {
 		padding: 6,
@@ -178,5 +229,27 @@ const styles = StyleSheet.create({
 		borderWidth: 0,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
+	},
+	newBadge: {
+		position: 'absolute',
+		top: -4,
+		right: -4,
+		zIndex: 2,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: colors.dark.primary,
+		borderRadius: 4,
+		paddingHorizontal: 10,
+		paddingVertical: 5,
+		transform: [
+			{
+				rotate: '10deg',
+			},
+		],
+	},
+	newBadgeText: {
+		color: colors.light.text,
+		fontFamily: 'lexend-600',
+		fontSize: 15,
 	},
 });

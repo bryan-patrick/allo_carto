@@ -2,7 +2,8 @@ import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { useSoftTapSound } from '@/src/util/softTapSound';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useButtonWiggle } from '@/src/util/useButtonWiggle';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { FrenchTip, TipProgress } from './tipTypes';
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
@@ -24,6 +25,7 @@ export default function TipCard({ progress, onSelectTip }: TipCardProps) {
 	 */
 	const playSoftTap = useSoftTapSound();
 	const { tip, isDiscovered, isXPRewardReadyToClaim } = progress;
+	const claimBadgeAnimatedStyle = useButtonWiggle(isXPRewardReadyToClaim);
 	const accessibilityState = {
 		disabled: !isDiscovered,
 	};
@@ -57,6 +59,7 @@ export default function TipCard({ progress, onSelectTip }: TipCardProps) {
 			disabled={!isDiscovered}
 			onPress={() => onSelectTip(tip)}
 			onPressIn={playSoftTap}
+			style={!isDiscovered && styles.undiscoveredCard}
 		>
 			<BackgroundImage
 				source={postcardBackground}
@@ -66,9 +69,9 @@ export default function TipCard({ progress, onSelectTip }: TipCardProps) {
 				<View style={styles.titleRow}>
 					<Text style={styles.title}>{title}</Text>
 					{isXPRewardReadyToClaim && (
-						<View style={styles.claimBadge}>
+						<Animated.View style={[styles.claimBadge, claimBadgeAnimatedStyle]}>
 							<Text style={styles.claimBadgeText}>Claim!</Text>
-						</View>
+						</Animated.View>
 					)}
 				</View>
 				<MaterialSymbol
@@ -85,6 +88,9 @@ export default function TipCard({ progress, onSelectTip }: TipCardProps) {
  * Styles
  */
 const styles = StyleSheet.create({
+	undiscoveredCard: {
+		opacity: 0.45,
+	},
 	card: {
 		flexDirection: 'row',
 		alignItems: 'center',

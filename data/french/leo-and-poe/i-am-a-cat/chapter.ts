@@ -13,7 +13,7 @@ import { paragraph7 } from './paragraph_7';
 export const iAmACatChapter: Chapter = {
 	id: 'leo-and-poe-chapter-1',
 	label: 'Chapter 1',
-	name: 'I am a cat',
+	name: 'I Am a Cat',
 	characterImage: require('@/src/app/assets/images/chapter-images/welcome-to-allo-carto/CH01.png'),
 	solveUnlockLevels: {
 		4: 5,

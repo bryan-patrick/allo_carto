@@ -107,14 +107,6 @@ export default function Story({
 						/>
 					</View>
 					<View style={styles.storyImageContainer} />
-					{/** We're on the fence about keeping this paragraph and word progress row. */}
-					{/** <StoryMeta
-						completedParagraphCount={completedParagraphCount}
-						paragraphCount={paragraphCount}
-						progressColor={color}
-						seenWordCount={seenWordCount}
-						wordCount={wordCount}
-					/> */}
 					<StorySelectButton
 						story={story}
 						isSelected={isSelected}

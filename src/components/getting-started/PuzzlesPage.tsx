@@ -1,6 +1,6 @@
 import GettingStartedPage from './GettingStartedPage';
 
-const description = `Unlock the first puzzle by seeing all flashcards in a paragraph once. Solve the first three puzzles to unlock the next paragraph.`;
+const description = `Puzzles are fun challenges to see how well you know the words in the current paragraph.`;
 
 export default function PuzzlesPage() {
 	return (

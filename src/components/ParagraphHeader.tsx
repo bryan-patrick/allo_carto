@@ -12,7 +12,9 @@ interface ParagraphHeaderProps {
 	progress?: UserProgressRow;
 	children?: ReactNode;
 	fontSize?: number;
+	fontFamily?: string;
 	showGems?: boolean;
+	showNewBadge?: boolean;
 }
 
 /**
@@ -23,26 +25,31 @@ export default function ParagraphHeader({
 	progress,
 	children,
 	fontSize = 12,
+	fontFamily = 'lexend-600',
 	showGems = true,
+	showNewBadge = true,
 }: ParagraphHeaderProps) {
 	/**
 	 * Badge visibility and text size
 	 */
-	const showNewBadge = !progress?.hasStartedFlashcards;
+	const isNewBadgeVisible = showNewBadge && !progress?.hasStartedFlashcards;
 	const labelTextSize = {
 		fontSize,
+	};
+	const labelFontStyle = {
+		fontFamily,
 	};
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.labelRow}>
 				<View style={styles.labelDetails}>
-					<Text style={[styles.label, labelTextSize]}>{label}</Text>
-					{showNewBadge && (
+					<Text style={[styles.label, labelTextSize, labelFontStyle]}>{label}</Text>
+					{isNewBadgeVisible && (
 						<View style={styles.newBadge}>
 							<Text
 								numberOfLines={1}
-								style={[styles.newBadgeText, labelTextSize]}
+								style={styles.newBadgeText}
 							>
 								New!
 							</Text>
@@ -83,11 +90,12 @@ const styles = StyleSheet.create({
 	},
 	label: {
 		color: colors.dark.text,
-		fontFamily: 'lexend-600',
 	},
 	newBadge: {
 		flexShrink: 0,
 		alignSelf: 'flex-start',
+		justifyContent: 'center',
+		alignItems: 'center',
 		backgroundColor: colors.dark.primary,
 		borderRadius: 4,
 		paddingHorizontal: 7,
@@ -96,5 +104,6 @@ const styles = StyleSheet.create({
 	newBadgeText: {
 		color: colors.light.text,
 		fontFamily: 'lexend-600',
+		fontSize: 12,
 	},
 });

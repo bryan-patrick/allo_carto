@@ -215,98 +215,110 @@ export default function CardDeck() {
 				/>
 			:	<CardDeckView
 					currentCard={currentCard}
-					wordActions={
-						<View style={sharedWordCardStyles.wordMetaContainer}>
-							<Pressable
-								accessibilityLabel="Read paragraph"
-								accessibilityRole="button"
-								accessibilityState={{
-									disabled: isPassageDisabled,
-								}}
-								disabled={isPassageDisabled}
-								hitSlop={8}
-								onPress={handleShowPassage}
-								style={styles.wordLink}
+					paragraphAction={
+						<Pressable
+							accessibilityLabel="Read paragraph"
+							accessibilityRole="button"
+							accessibilityState={{
+								disabled: isPassageDisabled,
+							}}
+							disabled={isPassageDisabled}
+							hitSlop={8}
+							onPress={handleShowPassage}
+							style={styles.wordLink}
+						>
+							<Text
+								style={[
+									sharedWordCardStyles.wordDetailText,
+									styles.wordLinkText,
+									styles.paragraphLinkText,
+								]}
 							>
-								<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>Read</Text>
-								<MaterialSymbol
-									name="menu_book"
-									size={16}
-									color={colors.dark.primary}
-								/>
-							</Pressable>
-							{shouldShowOtherForms && (
-								<>
-									<View
-										accessible={false}
-										style={sharedWordCardStyles.wordDetailDivider}
-									/>
-									<Pressable
-										accessibilityLabel="Other forms of this word"
-										accessibilityRole="button"
-										hitSlop={8}
-										onPress={handleShowOtherForms}
-										style={styles.wordLink}
-									>
-										<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
-											Other forms
-										</Text>
-										<MaterialSymbol
-											name="language"
-											size={16}
-											color={colors.dark.primary}
-										/>
-									</Pressable>
-								</>
-							)}
-							{shouldShowElision && (
-								<>
-									<View
-										accessible={false}
-										style={sharedWordCardStyles.wordDetailDivider}
-									/>
-									<Pressable
-										accessibilityLabel="Learn about elisions"
-										accessibilityRole="button"
-										hitSlop={8}
-										onPress={() => setIsElisionVisible(true)}
-										style={styles.wordLink}
-									>
-										<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
-											Elision!
-										</Text>
-										<MaterialSymbol
-											name="lightbulb_2"
-											size={16}
-											color={colors.dark.primary}
-										/>
-									</Pressable>
-								</>
-							)}
-							{currentTip && (
-								<>
-									<View
-										accessible={false}
-										style={sharedWordCardStyles.wordDetailDivider}
-									/>
-									<Pressable
-										accessibilityLabel="Read a tip about this word"
-										accessibilityRole="button"
-										hitSlop={8}
-										onPress={() => setIsWordTipVisible(true)}
-										style={styles.wordLink}
-									>
-										<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
-											Tip!
-										</Text>
-										<MaterialSymbol
-											name="lightbulb_2"
-											size={16}
-											color={colors.dark.primary}
-										/>
-									</Pressable>
-								</>
-							)}
+								Read paragraph
+							</Text>
+							<MaterialSymbol
+								name="menu_book"
+								size={16}
+								color={colors.light.primary}
+							/>
+						</Pressable>
+					}
+					wordActions={
+						<View style={styles.wordActions}>
+							<View style={sharedWordCardStyles.wordMetaContainer}>
+								{shouldShowOtherForms && (
+									<>
+										<Pressable
+											accessibilityLabel="Other forms of this word"
+											accessibilityRole="button"
+											hitSlop={8}
+											onPress={handleShowOtherForms}
+											style={styles.wordLink}
+										>
+											<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
+												Other forms
+											</Text>
+											<MaterialSymbol
+												name="language"
+												size={16}
+												color={colors.dark.primary}
+											/>
+										</Pressable>
+									</>
+								)}
+								{shouldShowElision && (
+									<>
+										{shouldShowOtherForms && (
+											<View
+												accessible={false}
+												style={sharedWordCardStyles.wordDetailDivider}
+											/>
+										)}
+										<Pressable
+											accessibilityLabel="Learn about elisions"
+											accessibilityRole="button"
+											hitSlop={8}
+											onPress={() => setIsElisionVisible(true)}
+											style={styles.wordLink}
+										>
+											<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
+												Elision!
+											</Text>
+											<MaterialSymbol
+												name="lightbulb_2"
+												size={16}
+												color={colors.dark.primary}
+											/>
+										</Pressable>
+									</>
+								)}
+								{currentTip && (
+									<>
+										{(shouldShowOtherForms || shouldShowElision) && (
+											<View
+												accessible={false}
+												style={sharedWordCardStyles.wordDetailDivider}
+											/>
+										)}
+										<Pressable
+											accessibilityLabel="Read a tip about this word"
+											accessibilityRole="button"
+											hitSlop={8}
+											onPress={() => setIsWordTipVisible(true)}
+											style={styles.wordLink}
+										>
+											<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
+												Tip!
+											</Text>
+											<MaterialSymbol
+												name="lightbulb_2"
+												size={16}
+												color={colors.dark.primary}
+											/>
+										</Pressable>
+									</>
+								)}
+							</View>
 						</View>
 					}
 				/>
@@ -341,6 +353,13 @@ export default function CardDeck() {
  * Styles
  */
 const styles = StyleSheet.create({
+	paragraphLinkText: {
+		color: colors.light.primary,
+	},
+	wordActions: {
+		alignItems: 'center',
+		gap: 8,
+	},
 	wordLink: {
 		flexDirection: 'row',
 		alignItems: 'center',

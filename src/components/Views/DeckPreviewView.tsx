@@ -91,10 +91,6 @@ export default function DeckPreviewView({
 	};
 	let deckLabel = `Deck ${currentDeckNumber} of ${deckCount}`;
 
-	if (paragraphNumber !== undefined) {
-		deckLabel = `Paragraph ${paragraphNumber}  -  ${deckLabel}`;
-	}
-
 	return (
 		<BackgroundImage
 			source={cardPageBackground}
@@ -116,7 +112,7 @@ export default function DeckPreviewView({
 						<View style={styles.heading}>
 							<View style={styles.headingRow}>
 								<MaterialSymbol
-									name="raven"
+									name="cards_stack"
 									size={32}
 									color={storyColor}
 								/>
@@ -126,7 +122,7 @@ export default function DeckPreviewView({
 											accessibilityRole="header"
 											style={[styles.title, headingStyle]}
 										>
-											Words in this deck
+											{`${deckLabel}`}
 										</Text>
 										<Pressable
 											accessibilityRole="button"
@@ -139,7 +135,7 @@ export default function DeckPreviewView({
 											onPress={onRead}
 											style={[styles.readLink, isReadDisabled && styles.disabledReadLink]}
 										>
-											<Text style={[styles.readLinkText, headingStyle]}>Read</Text>
+											<Text style={[styles.readLinkText, headingStyle]}>Read paragraph</Text>
 											<MaterialSymbol
 												name="menu_book"
 												size={18}
@@ -147,12 +143,9 @@ export default function DeckPreviewView({
 											/>
 										</Pressable>
 									</View>
-									<Text style={styles.deckLabel}>{deckLabel}</Text>
 								</View>
 							</View>
-							<Text style={styles.description}>
-								These are the words you will see in this deck and their translations.
-							</Text>
+							<Text style={styles.description}>Below are the flashcards in this deck.</Text>
 						</View>
 						<ScrollView contentContainerStyle={styles.wordList}>
 							{deck.words.map(word => (
@@ -244,22 +237,22 @@ const styles = StyleSheet.create({
 		gap: 4,
 	},
 	readLinkText: {
-		fontSize: 16,
-		fontFamily: 'lexend-600',
+		fontSize: 15,
+		fontFamily: 'lexend-400',
 		textDecorationLine: 'underline',
 	},
 	disabledReadLink: {
 		opacity: 0.5,
 	},
 	deckLabel: {
-		fontSize: 13,
+		fontSize: 14,
 		lineHeight: 20,
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
 	description: {
-		fontSize: 14,
-		lineHeight: 18,
+		fontSize: 16,
+		lineHeight: 20,
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
@@ -284,7 +277,7 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	cefrBadge: {
-		fontSize: 11,
+		fontSize: 12,
 		fontFamily: 'azeret-mono-600',
 		color: colors.dark.text,
 		borderRadius: 4,
@@ -292,14 +285,14 @@ const styles = StyleSheet.create({
 		paddingVertical: 3,
 	},
 	frenchWord: {
-		fontSize: 15,
-		lineHeight: 20,
+		fontSize: 17,
+		lineHeight: 22,
 		fontFamily: 'lexend-600',
 		color: colors.dark.text,
 	},
 	translation: {
-		fontSize: 13,
-		lineHeight: 18,
+		fontSize: 15,
+		lineHeight: 22,
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},

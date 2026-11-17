@@ -50,6 +50,7 @@ export const sharedWordCardStyles = StyleSheet.create({
 		alignItems: 'center',
 		flexDirection: 'row',
 		justifyContent: 'center',
+		flexWrap: 'wrap',
 		gap: 8,
 	},
 	wordDetailText: {
