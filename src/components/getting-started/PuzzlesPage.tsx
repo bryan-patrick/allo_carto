@@ -7,7 +7,7 @@ export default function PuzzlesPage() {
 		<GettingStartedPage
 			title="The proof is in the puzzles."
 			imageSource={require('@/src/app/assets/images/getting-started/solve.png')}
-			imageLabel="Paragraph postcard with the Solve button circled"
+			imageLabel="Paragraph postcard with the puzzle buttons circled"
 			description={description}
 		/>
 	);

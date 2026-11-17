@@ -74,7 +74,7 @@ export const userActivityDisplay: Record<UserActivityType, UserActivityDisplay> 
 		icon: 'library_add_check',
 	},
 	paragraphSolveCompleted: {
-		title: 'All five Solve stages completed',
+		title: 'All five puzzles completed',
 		icon: 'workspace_premium',
 	},
 	puzzleCompleted: {

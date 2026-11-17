@@ -1,11 +1,12 @@
 import CollectionsSection from '@/src/components/Collections/CollectionsSection';
 import { collectionsPageStyles } from '@/src/components/Collections/collectionsPageStyles';
+import type { CollectionsPageScrollProps } from '@/src/components/Collections/collectionsPageTypes';
 import TipCard from '@/src/components/Tips/TipCard';
 import type { FrenchTip, TipProgress } from '@/src/components/Tips/tipTypes';
 import WordTipModal from '@/src/components/WordCard/WordTipModal';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useState } from 'react';
-import { ScrollView, Text } from 'react-native';
+import { Animated, Text } from 'react-native';
 
 /**
  * Typing
@@ -41,7 +42,7 @@ function TipsSection({ title, tips, emptyMessage, onSelectTip }: TipsSectionProp
 /**
  * Lists discovered and undiscovered tips and opens the selected tip's modal.
  */
-export default function TipsView() {
+export default function TipsView(scrollProps: CollectionsPageScrollProps) {
 	/**
 	 * Saved progress and selected tip
 	 */
@@ -52,7 +53,11 @@ export default function TipsView() {
 
 	return (
 		<>
-			<ScrollView
+			<Animated.ScrollView
+				{...scrollProps}
+				bounces={false}
+				overScrollMode="never"
+				scrollEventThrottle={16}
 				style={collectionsPageStyles.scrollView}
 				contentContainerStyle={collectionsPageStyles.content}
 			>
@@ -71,7 +76,7 @@ export default function TipsView() {
 					emptyMessage="You've discovered every tip so far!"
 					onSelectTip={setSelectedTip}
 				/>
-			</ScrollView>
+			</Animated.ScrollView>
 			{selectedTip && (
 				<WordTipModal
 					key={selectedTip.id}

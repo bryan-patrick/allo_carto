@@ -94,7 +94,7 @@ const pronunciationOptions: PronunciationOption[] = [
 ];
 
 /**
- * We explain both unlock settings using the same levels that open Solve stages.
+ * Explains both unlock settings
  */
 function getSolveUnlockDescription(): string {
 	const stageDefinitions = Object.values(solveStages);
@@ -104,7 +104,7 @@ function getSolveUnlockDescription(): string {
 	const fastLevelsText = fastLevels.join(', ');
 	const normalLevelsText = normalLevels.join(', ');
 
-	return `Use player levels ${fastLevelsText} instead of ${normalLevelsText}. Complete each Solve stage before starting the next one.`;
+	return `Use player levels ${fastLevelsText} instead of ${normalLevelsText}. Complete each puzzle before starting the next one.`;
 }
 
 export default function Settings() {
@@ -291,15 +291,15 @@ export default function Settings() {
 				<View style={styles.section}>
 					<Text style={styles.heading}>Debug</Text>
 					<View style={styles.section}>
-						<Text style={styles.heading}>Solve progression</Text>
+						<Text style={styles.heading}>Puzzle progression</Text>
 						<View style={styles.settingRow}>
 							<View style={styles.settingText}>
-								<Text style={styles.settingLabel}>Fast Solve Unlocks</Text>
+								<Text style={styles.settingLabel}>Fast puzzle unlocks</Text>
 								<Text style={styles.text}>{solveUnlockDescription}</Text>
 							</View>
 							<Switch
-								accessibilityLabel="Fast Solve Unlocks"
-								accessibilityHint="Change player level requirements. Saved Solve progress is kept."
+								accessibilityLabel="Fast puzzle unlocks"
+								accessibilityHint="Change player level requirements. Saved puzzle progress is kept."
 								ios_backgroundColor={colors.dark.border}
 								onValueChange={enabled => setSetting('fastSolveUnlocks', enabled)}
 								trackColor={{

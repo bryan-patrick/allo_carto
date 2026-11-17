@@ -7,6 +7,7 @@ import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ParagraphHeader from '@/src/components/ParagraphHeader';
+import ParagraphPostcard from '@/src/components/ParagraphPostcard';
 import SolveEligibilityHint from '@/src/components/Solve/SolveEligibilityHint';
 import SolvePuzzleButtons from '@/src/components/Solve/SolvePuzzleButtons';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
@@ -67,6 +68,11 @@ export default function ChapterParagraphList({
 	const [passageState, setPassageState] = useState<PassageState>();
 	const storyColor = colors.category[story.category];
 	const visibleParagraphs = getVisibleParagraphs(chapter, progressById);
+	const isChapterLocked = !isItemUnlocked({
+		id: chapter.id,
+		progressById,
+	});
+	const chapterUnlockCriteria = getUnlockCriteria(chapter, progressById);
 
 	/**
 	 * Load and begin the paragraph’s next flashcard deck.
@@ -157,12 +163,23 @@ export default function ChapterParagraphList({
 		}
 	}
 
-	/**
-	 * Shows each paragraph with its number, reading link, flashcards, and puzzles.
-	 */
+	if (isChapterLocked) {
+		return (
+			<ParagraphPostcard index={0}>
+				<View style={styles.lockedChapter}>
+					<LockedSection
+						color={storyColor}
+						unlockCriteria={chapterUnlockCriteria}
+						fontSize={15}
+					/>
+				</View>
+			</ParagraphPostcard>
+		);
+	}
+
 	return (
 		<View style={styles.paragraphList}>
-			{visibleParagraphs.map(paragraph => {
+			{visibleParagraphs.map((paragraph, index) => {
 				const paragraphLabel = getAtlasItemLabel(paragraph.id);
 				const isLocked = !isItemUnlocked({
 					id: paragraph.id,
@@ -173,84 +190,85 @@ export default function ChapterParagraphList({
 				const actionLabel = getFlashcardActionLabel(progressById[paragraph.id]?.flashcardProgress);
 
 				return (
-					<View
+					<ParagraphPostcard
 						key={paragraph.id}
-						style={styles.paragraphRow}
-					>
-						{!isLocked && (
-							<View style={styles.paragraphHeading}>
-								<View style={styles.paragraphTitle}>
+						index={index}
+						header={
+							!isLocked && (
+								<View style={styles.paragraphHeading}>
 									<ParagraphHeader
 										label={paragraphLabel}
 										progress={progressById[paragraph.id]}
 										fontSize={15}
 										showGems={false}
 									/>
-								</View>
-								<Pressable
-									accessibilityRole="button"
-									accessibilityLabel={`Read ${paragraphLabel}`}
-									accessibilityState={{
-										disabled: Boolean(loadingPassageId),
-										busy: isLoadingPassage,
-									}}
-									disabled={Boolean(loadingPassageId)}
-									onPress={() => handleShowPassage(paragraph)}
-									hitSlop={8}
-									style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
-								>
-									<Text
-										style={[
-											styles.readLinkText,
-											{
-												color: storyColor,
-											},
-										]}
+									<Pressable
+										accessibilityRole="button"
+										accessibilityLabel={`Read ${paragraphLabel}`}
+										accessibilityState={{
+											disabled: Boolean(loadingPassageId),
+											busy: isLoadingPassage,
+										}}
+										disabled={Boolean(loadingPassageId)}
+										onPress={() => handleShowPassage(paragraph)}
+										hitSlop={8}
+										style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
 									>
-										Read paragraph
-									</Text>
-									<MaterialSymbol
-										name="menu_book"
-										size={16}
+										<Text
+											style={[
+												styles.readLinkText,
+												{
+													color: storyColor,
+												},
+											]}
+										>
+											Read paragraph
+										</Text>
+										<MaterialSymbol
+											name="menu_book"
+											size={16}
+											color={storyColor}
+										/>
+									</Pressable>
+								</View>
+							)
+						}
+					>
+						<View style={[styles.paragraphRow, !isLocked && styles.paragraphDivider]}>
+							{isLocked && (
+								<LockedSection
+									color={storyColor}
+									unlockCriteria={unlockCriteria}
+									fontSize={15}
+								/>
+							)}
+							{!isLocked && (
+								<View style={styles.actions}>
+									<SolvePuzzleButtons
+										deckId={paragraph.id}
 										color={storyColor}
 									/>
-								</Pressable>
-							</View>
-						)}
-
-						{isLocked && (
-							<LockedSection
-								color={storyColor}
-								unlockCriteria={unlockCriteria}
-								fontSize={15}
-							/>
-						)}
-						{!isLocked && (
-							<View style={styles.actions}>
-								<SolvePuzzleButtons
-									deckId={paragraph.id}
-									color={storyColor}
-								/>
-								<SolveEligibilityHint
-									deck={paragraph}
-									textStyle={styles.helpText}
-								/>
-								<LinkButton
-									accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
-									arrowColor={colors.light.text}
-									color={storyColor}
-									contentPaddingHorizontal={8}
-									contentPaddingVertical={8}
-									handler={() => handleSelectDeck(paragraph)}
-									disabled={isUpdatingProgress}
-									style={styles.flashcardActionButton}
-									textStyle={styles.actionText}
-								>
-									{actionLabel}
-								</LinkButton>
-							</View>
-						)}
-					</View>
+									<SolveEligibilityHint
+										deck={paragraph}
+										textStyle={styles.helpText}
+									/>
+									<LinkButton
+										accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
+										arrowColor={colors.light.text}
+										color={storyColor}
+										contentPaddingHorizontal={8}
+										contentPaddingVertical={8}
+										handler={() => handleSelectDeck(paragraph)}
+										disabled={isUpdatingProgress}
+										style={styles.flashcardActionButton}
+										textStyle={styles.actionText}
+									>
+										{actionLabel}
+									</LinkButton>
+								</View>
+							)}
+						</View>
+					</ParagraphPostcard>
 				);
 			})}
 			{passageState && (
@@ -271,23 +289,26 @@ export default function ChapterParagraphList({
  */
 const styles = StyleSheet.create({
 	paragraphList: {
-		margin: 8,
+		gap: 16,
 	},
 	paragraphRow: {
-		borderTopWidth: 1,
-		borderColor: colors.light.border,
+		margin: 8,
 		padding: 12,
+		paddingBottom: 6,
 		paddingHorizontal: 2,
 		gap: 8,
 	},
-	paragraphHeading: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		gap: 8,
+	paragraphDivider: {
+		borderTopWidth: 1,
+		borderColor: colors.light.border,
 	},
-	paragraphTitle: {
-		flex: 1,
+	lockedChapter: {
+		paddingVertical: 16,
+		marginBottom: 24,
+	},
+	paragraphHeading: {
+		marginTop: 6,
+		gap: 4,
 	},
 	actions: {
 		justifyContent: 'center',

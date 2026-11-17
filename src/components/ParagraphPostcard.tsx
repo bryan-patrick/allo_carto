@@ -1,16 +1,11 @@
-import type { Chapter, Story } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
-import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
-import type { ProgressById } from '@/src/util/progression';
 import { useNavigation, type NativeStackNavigationProp } from 'expo-router';
 import type { ParamListBase } from 'expo-router/react-navigation';
-import { useLayoutEffect, useState } from 'react';
-import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { useLayoutEffect, useState, type ReactNode } from 'react';
+import { Animated, Easing, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
-import ChapterHeader from './ChapterHeader';
-import ChapterParagraphList from './ChapterParagraphList';
-import LockedSection from './LockedSection';
+import PostcardPostmark from './PostcardPostmark';
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 const borderedPostcardBackground = require('@/src/app/assets/images/postcard-parts/background-bordered.jpg');
@@ -18,17 +13,16 @@ const borderedPostcardBackground = require('@/src/app/assets/images/postcard-par
 /**
  * Typing
  */
-interface ChapterPostcardProps {
-	chapter: Chapter;
-	story: Story;
-	progressById: ProgressById;
+interface ParagraphPostcardProps {
+	index: number;
+	header?: ReactNode;
+	children: ReactNode;
 }
 
 /**
- * Show the chapter's progress and paragraphs on a postcard,
- * or explain how to unlock it.
+ * Shows a paragraph on a postcard
  */
-export default function ChapterPostcard({ chapter, story, progressById }: ChapterPostcardProps) {
+export default function ParagraphPostcard({ index, header, children }: ParagraphPostcardProps) {
 	/**
 	 * Navigation and motion preference
 	 */
@@ -36,7 +30,7 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 	const reducedMotion = useReducedMotion();
 
 	/**
-	 * Keep one animation value for this postcard while it is open.
+	 * We rotate the postcard a little on page transition
 	 */
 	const [postcardRotation] = useState(function createPostcardRotation() {
 		let initialRotation = 10;
@@ -49,15 +43,8 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 	});
 
 	/**
-	 * Chapter progress and display values
+	 * Front animation and decorative card angle
 	 */
-	const color = colors.category[story.category];
-	const isLocked = !isItemUnlocked({
-		id: chapter.id,
-		progressById,
-	});
-	const unlockCriteria = getUnlockCriteria(chapter, progressById);
-	const hasParagraphs = chapter.paragraphs.length > 0;
 	const frontPostcardStyle = {
 		transform: [
 			{
@@ -71,6 +58,11 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 			},
 		],
 	};
+	let backPostcardTiltStyle: ViewStyle = styles.backPostcardTiltLeft;
+
+	if (index % 2 === 1) {
+		backPostcardTiltStyle = styles.backPostcardTiltRight;
+	}
 
 	/**
 	 * Start the card's turn when the page moves, so it is visible during the slide.
@@ -113,9 +105,11 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 	return (
 		<View style={styles.stack}>
 			<BackgroundImage
+				accessible={false}
+				pointerEvents="none"
 				source={borderedPostcardBackground}
 				resizeMode="stretch"
-				style={[styles.postcard, styles.backPostcard]}
+				style={[styles.postcard, styles.backPostcard, backPostcardTiltStyle]}
 			/>
 			<View style={styles.frontLayer}>
 				<Animated.View style={frontPostcardStyle}>
@@ -124,26 +118,8 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
 						style={styles.postcard}
 					>
 						<View style={styles.border}>
-							<ChapterHeader
-								chapter={chapter}
-								progressById={progressById}
-							/>
-							{isLocked && (
-								<View style={styles.lockedInner}>
-									<LockedSection
-										color={color}
-										unlockCriteria={unlockCriteria}
-										fontSize={15}
-									/>
-								</View>
-							)}
-							{!isLocked && hasParagraphs && (
-								<ChapterParagraphList
-									chapter={chapter}
-									progressById={progressById}
-									story={story}
-								/>
-							)}
+							{Boolean(header) && <PostcardPostmark>{header}</PostcardPostmark>}
+							{children}
 						</View>
 					</BackgroundImage>
 				</Animated.View>
@@ -157,10 +133,12 @@ export default function ChapterPostcard({ chapter, story, progressById }: Chapte
  */
 const styles = StyleSheet.create({
 	stack: {
-		margin: 8,
+		margin: 12,
 		position: 'relative',
 	},
-	// Keep the turning postcard in front of the striped card beneath it.
+	/**
+	 * Keeps the turning postcard in front of the striped card beneath it.
+	 */
 	frontLayer: {
 		zIndex: 1,
 		elevation: 1,
@@ -175,7 +153,6 @@ const styles = StyleSheet.create({
 	},
 	backPostcard: {
 		zIndex: 0,
-		transform: [{ rotate: '-4deg' }],
 		padding: 0,
 		position: 'absolute',
 		top: 0,
@@ -183,13 +160,23 @@ const styles = StyleSheet.create({
 		height: '100%',
 		width: '100%',
 	},
+	backPostcardTiltLeft: {
+		transform: [
+			{
+				rotate: '-4deg',
+			},
+		],
+	},
+	backPostcardTiltRight: {
+		transform: [
+			{
+				rotate: '4deg',
+			},
+		],
+	},
 	border: {
 		borderWidth: 0,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
-	},
-	lockedInner: {
-		paddingVertical: 16,
-		marginBottom: 24,
 	},
 });

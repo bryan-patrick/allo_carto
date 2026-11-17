@@ -1,12 +1,13 @@
 import CollectionCard from '@/src/components/Collections/CollectionCard';
 import CollectionsSection from '@/src/components/Collections/CollectionsSection';
 import { collectionsPageStyles } from '@/src/components/Collections/collectionsPageStyles';
+import type { CollectionsPageScrollProps } from '@/src/components/Collections/collectionsPageTypes';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import type {
 	CollectionSection,
 	VocabularyCollectionProgress,
 } from '@/src/util/vocabularyCollections';
-import { ScrollView, Text } from 'react-native';
+import { Animated, Text } from 'react-native';
 
 /**
  * Typing
@@ -66,16 +67,20 @@ function StampSection({ section, collections }: StampSectionProps) {
 }
 
 /**
- * Groups stamp albums by their sectionsd
+ * Groups stamp albums by their learning and reward progress.
  */
-export default function StampsView() {
+export default function StampsView(scrollProps: CollectionsPageScrollProps) {
 	/**
 	 * Saved collections
 	 */
 	const { collections } = useUserProgress();
 
 	return (
-		<ScrollView
+		<Animated.ScrollView
+			{...scrollProps}
+			bounces={false}
+			overScrollMode="never"
+			scrollEventThrottle={16}
 			style={collectionsPageStyles.scrollView}
 			contentContainerStyle={collectionsPageStyles.content}
 		>
@@ -90,6 +95,6 @@ export default function StampsView() {
 			{collections.length === 0 && (
 				<Text style={collectionsPageStyles.introduction}>New collections are on their way.</Text>
 			)}
-		</ScrollView>
+		</Animated.ScrollView>
 	);
 }
