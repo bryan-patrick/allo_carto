@@ -12,41 +12,56 @@ interface ParagraphHeaderProps {
 	progress?: UserProgressRow;
 	children?: ReactNode;
 	fontSize?: number;
+	fontFamily?: string;
+	showGems?: boolean;
+	showNewBadge?: boolean;
 }
 
 /**
- * Show a paragraph's number, gems, and New badge together.
- * Any extra paragraph details appear below that row.
+ * Shows a paragraph's number, New badge, optional gems, and extra details.
  */
 export default function ParagraphHeader({
 	label,
 	progress,
 	children,
 	fontSize = 12,
+	fontFamily = 'lexend-600',
+	showGems = true,
+	showNewBadge = true,
 }: ParagraphHeaderProps) {
 	/**
 	 * Badge visibility and text size
 	 */
-	const showNewBadge = !progress?.hasStartedFlashcards;
+	const isNewBadgeVisible = showNewBadge && !progress?.hasStartedFlashcards;
 	const labelTextSize = {
 		fontSize,
+	};
+	const labelFontStyle = {
+		fontFamily,
 	};
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.labelRow}>
 				<View style={styles.labelDetails}>
-					<Text style={[styles.label, labelTextSize]}>{label}</Text>
-					{showNewBadge && (
+					<Text style={[styles.label, labelTextSize, labelFontStyle]}>{label}</Text>
+					{isNewBadgeVisible && (
 						<View style={styles.newBadge}>
-							<Text style={[styles.newBadgeText, labelTextSize]}>New!</Text>
+							<Text
+								numberOfLines={1}
+								style={styles.newBadgeText}
+							>
+								New!
+							</Text>
 						</View>
 					)}
 				</View>
-				<CollectionGems
-					title={label}
-					progress={progress}
-				/>
+				{showGems && (
+					<CollectionGems
+						title={label}
+						progress={progress}
+					/>
+				)}
 			</View>
 			{children}
 		</View>
@@ -75,10 +90,12 @@ const styles = StyleSheet.create({
 	},
 	label: {
 		color: colors.dark.text,
-		fontFamily: 'lexend-600',
 	},
 	newBadge: {
+		flexShrink: 0,
 		alignSelf: 'flex-start',
+		justifyContent: 'center',
+		alignItems: 'center',
 		backgroundColor: colors.dark.primary,
 		borderRadius: 4,
 		paddingHorizontal: 7,
@@ -87,5 +104,6 @@ const styles = StyleSheet.create({
 	newBadgeText: {
 		color: colors.light.text,
 		fontFamily: 'lexend-600',
+		fontSize: 12,
 	},
 });

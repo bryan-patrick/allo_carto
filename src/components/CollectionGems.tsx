@@ -50,12 +50,12 @@ interface PrismaticGemGradient {
 const gemSpinDuration = 4000;
 const gemSpinDegrees = 10 * 360;
 
-const gemColors = [colors.gems.first, colors.gems.second, colors.gems.third];
+const gemColors = [colors.gems.earned, colors.gems.earned, colors.gems.earned];
 
-const glowGemColors = [colors.glowGems.first, colors.glowGems.second, colors.glowGems.third];
+const glowGemColors = [colors.gems.earned, colors.gems.earned, colors.gems.earned];
 
 const prismaticGemGradient: PrismaticGemGradient = {
-	colors: [colors.rarity.Legendary, colors.gems.second, colors.gems.third, colors.gems.first],
+	colors: [colors.rarity.Legendary, colors.gems.second, colors.gems.third, colors.gems.earned],
 };
 
 const gemAppearanceDescriptions: Partial<Record<CompletedSolveStages, string>> = {
@@ -115,8 +115,8 @@ function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStage
 	const wordCount = progress?.wordCount ?? 0;
 	const requirements: Record<ProgressType, string> = {
 		paragraph: `${seenWordCount} of ${wordCount} words seen. See every word in flashcards, then solve every puzzle card to earn the first gem.`,
-		chapter: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Complete the first Solve puzzle for every paragraph in this chapter to earn its first gem.`,
-		story: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Complete the first Solve puzzle for every paragraph in this story to earn its first gem.`,
+		chapter: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Complete Puzzle 1 for every paragraph in this chapter to earn its first gem.`,
+		story: `${completedParagraphCount} of ${paragraphCount} paragraphs solved. Complete Puzzle 1 for every paragraph in this story to earn its first gem.`,
 	};
 	const targets: Record<ProgressType, string> = {
 		paragraph: 'this paragraph',
@@ -146,27 +146,27 @@ function getGemResponses(progress?: UserProgressRow): Record<CompletedSolveStage
 		1: {
 			label: '1/3 Gems',
 			filledCount: 1,
-			description: `First gem earned! Complete Solve+ for ${target} to earn the second gem.${paragraphProgressHint}`,
+			description: `First gem earned! Complete Puzzle 2 for ${target} to earn the second gem.${paragraphProgressHint}`,
 		},
 		2: {
 			label: '2/3 Gems',
 			filledCount: 2,
-			description: `Second gem earned! Complete Solve++ for ${target} to earn the third gem.${paragraphProgressHint}`,
+			description: `Second gem earned! Complete Puzzle 3 for ${target} to earn the third gem.${paragraphProgressHint}`,
 		},
 		3: {
 			label: '3/3 Gems',
 			filledCount: 3,
-			description: `All three gems earned!${paragraphUnlockedHint} Complete Solve+++ for ${target} to make them glow.`,
+			description: `All three gems earned!${paragraphUnlockedHint} Complete Puzzle 4 for ${target} to make them glow.`,
 		},
 		4: {
 			label: '3/3 Gems',
 			filledCount: 3,
-			description: `All three gems are glowing! Complete Solve++++ for ${target} to reach final mastery.`,
+			description: `All three gems are glowing! Complete Puzzle 5 for ${target} to reach final mastery.`,
 		},
 		5: {
 			label: '3/3 Gems',
 			filledCount: 3,
-			description: `Prismatic gems earned! All five Solve puzzles are complete for ${target}.`,
+			description: `Prismatic gems earned! All five puzzles are complete for ${target}.`,
 		},
 	};
 }
@@ -301,7 +301,7 @@ function CollectionGemsContent({
 	return (
 		<Pressable
 			accessibilityRole="button"
-			accessibilityLabel={`${title}: ${response.filledCount} of 3 gems. ${completedStages} of 5 Solve stages complete.${appearanceDescription}`}
+			accessibilityLabel={`${title}: ${response.filledCount} of 3 gems. ${completedStages} of 5 puzzles complete.${appearanceDescription}`}
 			accessibilityHint="Show puzzle progress and gem requirements."
 			hitSlop={8}
 			onPress={showProgress}

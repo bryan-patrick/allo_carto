@@ -52,11 +52,11 @@ export interface SolveStageEligibility {
 }
 
 /**
- * Keeps the names, required player levels, Ink prices, and colors for all five Solve puzzles in one place.
+ * Keeps the names, required player levels, Ink prices, and colors for all five puzzles in one place.
  */
 export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 	1: {
-		label: 'Solve',
+		label: 'Puzzle 1',
 		isImplemented: true,
 		challengeType: 'word',
 		answerLanguage: 'english',
@@ -69,7 +69,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		backgroundTint: `${colors.gems.first}0A`,
 	},
 	2: {
-		label: 'Solve+',
+		label: 'Puzzle 2',
 		isImplemented: true,
 		challengeType: 'word',
 		answerLanguage: 'french',
@@ -82,7 +82,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		backgroundTint: `${colors.gems.second}0A`,
 	},
 	3: {
-		label: 'Solve++',
+		label: 'Puzzle 3',
 		isImplemented: true,
 		challengeType: 'wordOrder',
 		answerLanguage: null,
@@ -95,7 +95,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		backgroundTint: `${colors.gems.third}0A`,
 	},
 	4: {
-		label: 'Solve+++',
+		label: 'Puzzle 4',
 		isImplemented: true,
 		challengeType: 'sentence',
 		answerLanguage: 'english',
@@ -108,7 +108,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		backgroundTint: `${colors.gems.third}0A`,
 	},
 	5: {
-		label: 'Solve++++',
+		label: 'Puzzle 5',
 		isImplemented: true,
 		challengeType: 'sentence',
 		answerLanguage: 'french',
@@ -128,7 +128,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 };
 
 /**
- * Reports how many Solve puzzles have been completed for a paragraph, chapter, or story.
+ * Reports how many puzzles have been completed for a paragraph, chapter, or story.
  */
 export function getCompletedSolveStages(progress?: UserProgressRow): CompletedSolveStages {
 	if (progress?.completedSolveStages !== undefined) {
@@ -139,7 +139,7 @@ export function getCompletedSolveStages(progress?: UserProgressRow): CompletedSo
 }
 
 /**
- * Finds the next puzzle for the Solve button.
+ * Finds the paragraph's next unfinished puzzle.
  */
 export function getNextSolveStage(completedStages: CompletedSolveStages): SolveStage | null {
 	if (completedStages === 5) {
@@ -161,7 +161,7 @@ export function getSolveCardInkCost(stage: SolveWordStage, rarity: CardRarity): 
 }
 
 /**
- * Decides whether the player can open a Solve puzzle or what is keeping it locked.
+ * Decides whether the player can open a puzzle or what is keeping it locked.
  */
 export function getSolveStageEligibility({
 	stage,
@@ -214,7 +214,7 @@ export interface SolveUnlockMessageOptions {
 }
 
 /**
- * Explains a locked Solve button beside the paragraph's other actions.
+ * Explains how to unlock a paragraph's puzzle.
  */
 export function getSolveUnlockMessage({
 	stage,
@@ -224,12 +224,12 @@ export function getSolveUnlockMessage({
 }: SolveUnlockMessageOptions): string {
 	const definition = solveStages[stage];
 	const previousStage = stage > 1 ? ((stage - 1) as SolveStage) : null;
-	const previousLabel = previousStage ? solveStages[previousStage].label : 'Solve';
+	const previousLabel = previousStage ? solveStages[previousStage].label : 'Puzzle';
 	const messages: Record<SolveLockReason, string> = {
 		completed: '',
-		paragraphLocked: 'Earn 3 gems from each paragraph to unlock.',
+		paragraphLocked: 'Complete 3 paragraph puzzles to unlock.',
 		noWords: '',
-		unseenWords: `See every flashcard to solve (${seenWordCount} of ${wordCount} seen).`,
+		unseenWords: `See all cards to unlock puzzles (${seenWordCount} of ${wordCount}).`,
 		previousStageRequired: `Complete ${previousLabel} to unlock ${definition.label}.`,
 		playerLevelRequired: `${definition.label} unlocks at player level ${eligibility.requiredPlayerLevel}.`,
 	};

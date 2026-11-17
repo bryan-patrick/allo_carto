@@ -1,8 +1,6 @@
 import GettingStartedPage from './GettingStartedPage';
 
-const description = `Listen to any word, paragraph, chapter, or story with text to speech.
-			
-The rewind button is especially useful!`;
+const description = `Listen to any paragraph, chapter, or story with text to speech. The rewind control is especially useful!`;
 
 export default function ReadingPage() {
 	return (

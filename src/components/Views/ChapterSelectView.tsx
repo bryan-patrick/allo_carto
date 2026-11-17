@@ -2,7 +2,6 @@ import type { Story } from '@/data/french/storyAtlas';
 import ChapterMap from '@/src/components/ChapterMap';
 import Loader from '@/src/components/Loader';
 import ReadingLink from '@/src/components/ReadingLink';
-import RepeatingBackgroundImage from '@/src/components/RepeatingBackgroundImage';
 import StorySelectModal from '@/src/components/StorySelectModal';
 import StorySelector from '@/src/components/StorySelector';
 import { useUserContext } from '@/src/db/useUserContext';
@@ -10,18 +9,56 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import { getSelectedStory } from '@/src/util/getSelectedStory';
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
+import { Alert, Animated, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 import colors from '../../app/colors';
 
 const chapterSelectBackground = require('@/src/app/assets/images/chapters/background-alt.jpg');
 
-// Keep the story picker above the scrolling chapter map and save the player's story choice.
+/**
+ * Shows the story picker and chapter map with a parallax background
+ */
 export default function ChapterSelectView() {
+	/**
+	 * Saved progress and motion preference
+	 */
 	const { progressById, status } = useUserProgress();
 	const user = useUserContext();
+	const isReducedMotionEnabled = useReducedMotion();
+
+	/**
+	 * Story picker state
+	 */
 	const [isStoryModalVisible, setIsStoryModalVisible] = useState(false);
 	const [isSelectingStory, setIsSelectingStory] = useState(false);
 	const [storyTabHeight, setStoryTabHeight] = useState(44);
+
+	/**
+	 * Scroll position and page sizes
+	 */
+	const [scrollOffset] = useState(() => new Animated.Value(0));
+	const [viewportHeight, setViewportHeight] = useState(0);
+	const [scrollContentHeight, setScrollContentHeight] = useState(0);
+	const maximumScrollDistance = Math.max(scrollContentHeight - viewportHeight, 1);
+	const backgroundScrollDistance = Math.min(maximumScrollDistance, viewportHeight);
+	const handleScroll = Animated.event(
+		[
+			{
+				nativeEvent: {
+					contentOffset: {
+						y: scrollOffset,
+					},
+				},
+			},
+		],
+		{
+			useNativeDriver: true,
+		},
+	);
+
+	/**
+	 * Selected story and background movement
+	 */
 	const selectedStory = getSelectedStory({
 		selectedStoryId: user?.selectedStoryId,
 		progressById,
@@ -29,14 +66,40 @@ export default function ChapterSelectView() {
 	const chapterContentInsetStyle = {
 		paddingTop: storyTabHeight + 8,
 	};
+	let backgroundTravel = 0;
 
-	// Leave room for the tab even when a long story title wraps onto another line.
+	if (!isReducedMotionEnabled && scrollContentHeight > viewportHeight) {
+		backgroundTravel = backgroundScrollDistance * 0.2;
+	}
+
+	/**
+	 * The extra image height keeps the background covered while it moves.
+	 */
+	const backgroundImageStyle = {
+		height: viewportHeight + backgroundTravel,
+		transform: [
+			{
+				translateY: scrollOffset.interpolate({
+					inputRange: [0, maximumScrollDistance],
+					outputRange: [0, -backgroundTravel],
+					extrapolate: 'clamp',
+				}),
+			},
+		],
+	};
+
+	/**
+	 * Leaves room for the story picker when its title wraps onto another line.
+	 */
 	function handleStoryPickerLayout(event: LayoutChangeEvent) {
 		const { height } = event.nativeEvent.layout;
 
 		setStoryTabHeight(height);
 	}
 
+	/**
+	 * Saves the selected story and closes the story picker.
+	 */
 	async function handleSelectStory(story: Story) {
 		let didSave = false;
 
@@ -77,18 +140,30 @@ export default function ChapterSelectView() {
 
 	return (
 		<>
-			<View style={styles.background}>
-				<ScrollView
+			<View
+				onLayout={event => setViewportHeight(event.nativeEvent.layout.height)}
+				style={styles.background}
+			>
+				<Animated.Image
+					accessible={false}
+					pointerEvents="none"
+					source={chapterSelectBackground}
+					resizeMode="cover"
+					style={[styles.backgroundImage, backgroundImageStyle]}
+				/>
+				<Animated.ScrollView
 					key={selectedStory.id}
 					bounces={false}
 					overScrollMode="never"
+					onScroll={handleScroll}
+					scrollEventThrottle={16}
+					onContentSizeChange={(_contentWidth, contentHeight) =>
+						setScrollContentHeight(contentHeight)
+					}
 					style={styles.chapterList}
 					contentContainerStyle={styles.scrollContent}
 				>
-					<RepeatingBackgroundImage
-						source={chapterSelectBackground}
-						style={[styles.chapterContent, chapterContentInsetStyle]}
-					>
+					<View style={[styles.chapterContent, chapterContentInsetStyle]}>
 						<View style={styles.readStoryAction}>
 							<ReadingLink
 								item={selectedStory}
@@ -102,8 +177,8 @@ export default function ChapterSelectView() {
 							story={selectedStory}
 							progressById={progressById}
 						/>
-					</RepeatingBackgroundImage>
-				</ScrollView>
+					</View>
+				</Animated.ScrollView>
 				<View
 					pointerEvents="box-none"
 					onLayout={handleStoryPickerLayout}
@@ -149,8 +224,14 @@ const styles = StyleSheet.create({
 	},
 	background: {
 		flex: 1,
-		backgroundColor: colors.dark.background,
+		backgroundColor: colors.light.secondary,
 		overflow: 'hidden',
+	},
+	backgroundImage: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		width: '100%',
 	},
 	chapterList: {
 		flex: 1,

@@ -9,7 +9,7 @@ interface SolveEligibilityHintProps {
 }
 
 /**
- * We show this beside a locked Solve button to explain how the player can open its puzzle.
+ * Explains how to unlock the next puzzle above the flashcards button.
  */
 export default function SolveEligibilityHint({ deck, textStyle }: SolveEligibilityHintProps) {
 	const { unlockMessage } = useSolveProgress(deck.id);

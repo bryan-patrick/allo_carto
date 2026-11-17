@@ -7,7 +7,7 @@ import {
 	getEnglishPrefixes,
 } from '@/src/util/englishWordParts';
 import { useEffect, useLayoutEffect, useReducer, useRef, useState, type ReactNode } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { englishArticles } from '../../util/filterFillerWords';
 import getFillerWords from '../../util/getFillerWords';
@@ -33,6 +33,7 @@ interface CardContainerProps {
 	word: Word;
 	isCurrent: boolean;
 	wordActions?: ReactNode;
+	paragraphAction?: ReactNode;
 }
 
 interface ResumeWordCardOptions {
@@ -101,7 +102,12 @@ function isAvailableWordChoice(
 /**
  * WordCardContainer Component
  */
-export default function WordCardContainer({ word, isCurrent, wordActions }: CardContainerProps) {
+export default function WordCardContainer({
+	word,
+	isCurrent,
+	wordActions,
+	paragraphAction,
+}: CardContainerProps) {
 	/**
 	 * State
 	 */
@@ -307,19 +313,22 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
 					articleWords={articleWords}
 					fillerWords={fillerWords}
 				/>
-				<WordCardButton
-					SVGElement={
-						isNextCardButton ?
-							<SVGRightArrow
-								color={nextCardArrowColor}
-								height="24"
-								width="24"
-							/>
-						:	<></>
-					}
-				>
-					{isNextCardButton ? 'Next card' : 'Check'}
-				</WordCardButton>
+				<View style={styles.cardActions}>
+					{paragraphAction}
+					<WordCardButton
+						SVGElement={
+							isNextCardButton ?
+								<SVGRightArrow
+									color={nextCardArrowColor}
+									height="24"
+									width="24"
+								/>
+							:	<></>
+						}
+					>
+						{isNextCardButton ? 'Next card' : 'Check'}
+					</WordCardButton>
+				</View>
 			</Animated.View>
 		</WordCardUIContext.Provider>
 	);
@@ -329,6 +338,9 @@ export default function WordCardContainer({ word, isCurrent, wordActions }: Card
  * Styles
  */
 const styles = StyleSheet.create({
+	cardActions: {
+		gap: 16,
+	},
 	container: {
 		height: '100%',
 		display: 'flex',

@@ -91,7 +91,7 @@ const answerReviewWordStyles: Record<SentenceAnswerWordStatus, TextStyle> = {
 		color: colors.ink.available,
 	},
 	incorrect: {
-		color: colors.gems.first,
+		color: colors.gems.earned,
 		textDecorationLine: 'underline',
 	},
 	neutral: {

@@ -1,31 +1,54 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
-import ChapterPostcard from '@/src/components/ChapterPostcard';
+import ChapterParagraphList from '@/src/components/ChapterParagraphList';
 import CollectionGems from '@/src/components/CollectionGems';
 import Loader from '@/src/components/Loader';
 import ReadingLink from '@/src/components/ReadingLink';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findAtlasLocationByChapterId } from '@/src/util/atlasCompletion';
-import { hasChapterContent } from '@/src/util/atlasContent';
+import { hasChapterContent, hasParagraphContent } from '@/src/util/atlasContent';
+import { getCompletedSolveStages, solveStages } from '@/src/util/solveProgression';
 import { useLocalSearchParams } from 'expo-router';
-import { useHeaderHeight } from 'expo-router/react-navigation';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const pageBackground = require('@/src/app/assets/images/chapters/background-alt.jpg');
+const headingBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 interface ChapterDetailParams extends Record<string, string | string[] | undefined> {
 	chapterId?: string;
 }
 
-// Show the chapter's introduction above a postcard with its progress and paragraphs.
+/**
+ * Shows a fixed chapter heading above its paragraph postcard carousel.
+ */
 export default function ChapterDetailView() {
+	/**
+	 * Chapter progress and screen edges
+	 */
 	const { chapterId } = useLocalSearchParams<ChapterDetailParams>();
 	const { progressById, status } = useUserProgress();
-	const headerHeight = useHeaderHeight();
-	const scrollContentStyle = {
-		paddingTop: headerHeight + 8,
-	};
+	const safeAreaInsets = useSafeAreaInsets();
 	const location = findAtlasLocationByChapterId(chapterId);
+
+	/**
+	 * Chapter progress totals
+	 */
+	const chapterProgress = progressById[location?.chapter.id ?? ''];
+	const chapterParagraphs = location?.chapter.paragraphs.filter(hasParagraphContent) ?? [];
+	const puzzlesPerParagraph = Object.keys(solveStages).length;
+	const puzzleCount = chapterParagraphs.length * puzzlesPerParagraph;
+	let solvedPuzzleCount = 0;
+
+	/**
+	 * Space around the chapter content
+	 */
+	const chapterContentStyle = {
+		paddingBottom: Math.max(safeAreaInsets.bottom, 12),
+	};
+
+	for (const paragraph of chapterParagraphs) {
+		solvedPuzzleCount += getCompletedSolveStages(progressById[paragraph.id]);
+	}
 
 	if (status === 'loading') {
 		return <Loader />;
@@ -37,7 +60,7 @@ export default function ChapterDetailView() {
 
 	if (!location || !hasChapterContent(location.chapter)) {
 		return (
-			<View style={[styles.background, scrollContentStyle]}>
+			<View style={[styles.background, chapterContentStyle]}>
 				<Text style={styles.chapterTitle}>Unknown chapter</Text>
 				<Text style={styles.message}>Please go back and select a chapter.</Text>
 			</View>
@@ -45,54 +68,63 @@ export default function ChapterDetailView() {
 	}
 
 	const { chapter, story } = location;
+	const chapterNameStyle = {
+		color: colors.category[story.category],
+	};
 
 	return (
-		<BackgroundImage
-			source={pageBackground}
-			resizeMode="cover"
-			style={styles.background}
-		>
-			<ScrollView
+		<View style={styles.background}>
+			<View
 				key={chapter.id}
-				contentInsetAdjustmentBehavior="never"
-				automaticallyAdjustContentInsets={false}
-				contentContainerStyle={[styles.scrollContent, scrollContentStyle]}
-				scrollIndicatorInsets={{
-					top: headerHeight,
-				}}
+				style={[styles.chapterContent, chapterContentStyle]}
 			>
-				<View style={styles.chapterHeading}>
-					<CollectionGems
-						title={chapter.name}
-						progress={progressById[chapter.id]}
-						size={24}
-					/>
-					<View style={styles.chapterTitles}>
-						<Text style={styles.chapterTitle}>{chapter.label}</Text>
-						<Text
-							accessibilityRole="header"
-							style={styles.chapterName}
-						>
-							{chapter.name}
-						</Text>
+				<BackgroundImage
+					source={headingBackground}
+					resizeMode="cover"
+					style={styles.chapterHeading}
+				>
+					<View style={styles.chapterSummary}>
+						<View style={styles.chapterSummaryRow}>
+							<Text style={styles.chapterTitle}>{chapter.label}</Text>
+							<CollectionGems
+								title={chapter.name}
+								progress={chapterProgress}
+								size={24}
+							/>
+						</View>
+						<View style={styles.chapterSummaryRow}>
+							<Text
+								accessibilityRole="header"
+								style={[styles.chapterName, chapterNameStyle]}
+							>
+								{chapter.name}
+							</Text>
+							<ReadingLink
+								item={chapter}
+								color={colors.category[story.category]}
+								label="Read chapter"
+								style={styles.readChapterLink}
+							/>
+						</View>
 					</View>
+				</BackgroundImage>
+				<View style={styles.chapterDetails}>
+					<Text style={styles.chapterProgress}>
+						{solvedPuzzleCount} of {puzzleCount} puzzles solved
+					</Text>
 					{chapter.description && (
 						<Text style={styles.chapterDescription}>{chapter.description}</Text>
 					)}
-					<ReadingLink
-						item={chapter}
-						color={colors.category[story.category]}
-						label="Read chapter"
-						style={styles.readChapterLink}
+				</View>
+				<View style={styles.paragraphArea}>
+					<ChapterParagraphList
+						chapter={chapter}
+						story={story}
+						progressById={progressById}
 					/>
 				</View>
-				<ChapterPostcard
-					chapter={chapter}
-					story={story}
-					progressById={progressById}
-				/>
-			</ScrollView>
-		</BackgroundImage>
+			</View>
+		</View>
 	);
 }
 
@@ -103,46 +135,85 @@ const styles = StyleSheet.create({
 	background: {
 		flex: 1,
 		backgroundColor: colors.light.secondary,
+		overflow: 'hidden',
 	},
-	scrollContent: {
-		flexGrow: 1,
-		justifyContent: 'flex-start',
+	chapterContent: {
+		flex: 1,
+	},
+	paragraphArea: {
+		flex: 1,
 		paddingHorizontal: 8,
-		paddingBottom: 32,
+		borderBottomWidth: 1,
+		borderColor: colors.light.goldenBorder,
 	},
 	readChapterLink: {
 		fontFamily: 'lexend-400',
-		fontSize: 15,
+		fontSize: 16,
+		lineHeight: 20,
 	},
 	chapterHeading: {
-		alignItems: 'center',
-		gap: 8,
-		paddingHorizontal: 12,
-		marginBottom: 16,
+		backgroundColor: colors.light.background,
+		gap: 2,
+		paddingHorizontal: 20,
+		paddingTop: 12,
+		paddingBottom: 8,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.light.border,
+		// elevation: 3,
+		// shadowColor: colors.dark.background,
+		// shadowOffset: {
+		// 	width: 0,
+		// 	height: 3,
+		// },
+		// shadowOpacity: 0.12,
+		// shadowRadius: 4,
+		zIndex: 1,
 	},
-	chapterTitles: {
+	chapterSummary: {
 		alignItems: 'center',
-		gap: 4,
+		justifyContent: 'space-between',
+		gap: 0,
+	},
+	chapterSummaryRow: {
+		flexDirection: 'row',
+		alignContent: 'center',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		width: '100%',
 	},
 	chapterTitle: {
-		fontFamily: 'lexend-700',
-		fontSize: 15,
-		textAlign: 'center',
-		textTransform: 'uppercase',
+		flexShrink: 1,
+		fontFamily: 'shadows-400',
+		fontSize: 28,
+		lineHeight: 36,
 		color: colors.dark.text,
+	},
+	chapterDetails: {
+		alignItems: 'center',
+		paddingHorizontal: 20,
+		paddingVertical: 4,
+		borderBottomWidth: 1,
+		borderColor: colors.light.goldenBorder,
+		gap: 4,
 	},
 	chapterName: {
 		fontFamily: 'lexend-600',
-		fontSize: 22,
-		lineHeight: 24,
+		fontSize: 18,
+		lineHeight: 18,
+		textAlign: 'center',
+	},
+	chapterProgress: {
+		fontFamily: 'lexend-400',
+		fontSize: 13,
+		lineHeight: 13,
+		paddingVertical: 3,
 		textAlign: 'center',
 		color: colors.dark.text,
 	},
 	chapterDescription: {
 		fontFamily: 'lexend-400',
-		fontSize: 15,
+		fontSize: 16,
 		lineHeight: 20,
-		textAlign: 'center',
 		color: colors.dark.text,
 	},
 	message: {

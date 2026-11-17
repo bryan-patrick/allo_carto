@@ -7,8 +7,10 @@ import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ParagraphHeader from '@/src/components/ParagraphHeader';
-import SolveButton from '@/src/components/Solve/SolveButton';
+import ParagraphPostcard from '@/src/components/ParagraphPostcard';
+import ParagraphPostcardCarousel from '@/src/components/ParagraphPostcardCarousel';
 import SolveEligibilityHint from '@/src/components/Solve/SolveEligibilityHint';
+import SolvePuzzleButtons from '@/src/components/Solve/SolvePuzzleButtons';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
@@ -67,6 +69,11 @@ export default function ChapterParagraphList({
 	const [passageState, setPassageState] = useState<PassageState>();
 	const storyColor = colors.category[story.category];
 	const visibleParagraphs = getVisibleParagraphs(chapter, progressById);
+	const isChapterLocked = !isItemUnlocked({
+		id: chapter.id,
+		progressById,
+	});
+	const chapterUnlockCriteria = getUnlockCriteria(chapter, progressById);
 
 	/**
 	 * Load and begin the paragraph’s next flashcard deck.
@@ -157,103 +164,139 @@ export default function ChapterParagraphList({
 		}
 	}
 
-	/**
-	 * Show each paragraph with its number, gems, and reading and flashcard actions.
-	 */
+	if (isChapterLocked) {
+		return (
+			<View style={styles.paragraphList}>
+				<ParagraphPostcard index={0}>
+					<View style={styles.lockedChapter}>
+						<LockedSection
+							color={storyColor}
+							unlockCriteria={chapterUnlockCriteria}
+							fontSize={15}
+						/>
+					</View>
+				</ParagraphPostcard>
+			</View>
+		);
+	}
+
 	return (
 		<View style={styles.paragraphList}>
-			{visibleParagraphs.map(paragraph => {
-				const paragraphLabel = getAtlasItemLabel(paragraph.id);
-				const isLocked = !isItemUnlocked({
-					id: paragraph.id,
-					progressById,
-				});
-				const unlockCriteria = getUnlockCriteria(paragraph, progressById);
-				const isLoadingPassage = loadingPassageId === paragraph.id;
-				const actionLabel = getFlashcardActionLabel(progressById[paragraph.id]?.flashcardProgress);
+			<ParagraphPostcardCarousel
+				key={`${userId}:${chapter.id}`}
+				chapterId={chapter.id}
+				userId={userId ?? ''}
+				paragraphs={visibleParagraphs}
+				progressById={progressById}
+				disabled={Boolean(loadingPassageId) || Boolean(passageState) || isUpdatingProgress}
+			>
+				{visibleParagraphs.map((paragraph, index) => {
+					const paragraphLabel = getAtlasItemLabel(paragraph.id);
+					const isLocked = !isItemUnlocked({
+						id: paragraph.id,
+						progressById,
+					});
+					const unlockCriteria = getUnlockCriteria(paragraph, progressById);
+					const isLoadingPassage = loadingPassageId === paragraph.id;
+					const isNewBadgeVisible = !isLocked && !progressById[paragraph.id]?.hasStartedFlashcards;
+					const actionLabel = getFlashcardActionLabel(
+						progressById[paragraph.id]?.flashcardProgress,
+					);
 
-				return (
-					<View
-						key={paragraph.id}
-						style={styles.paragraphRow}
-					>
-						{!isLocked && (
-							<ParagraphHeader
-								label={paragraphLabel}
-								progress={progressById[paragraph.id]}
-								fontSize={15}
-							/>
-						)}
-						{!isLocked && (
-							<Pressable
-								accessibilityRole="button"
-								accessibilityLabel={`Read ${paragraphLabel}`}
-								accessibilityState={{
-									disabled: Boolean(loadingPassageId),
-									busy: isLoadingPassage,
-								}}
-								disabled={Boolean(loadingPassageId)}
-								onPress={() => handleShowPassage(paragraph)}
-								hitSlop={8}
-								style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
+					return (
+						<ParagraphPostcard
+							key={paragraph.id}
+							index={index}
+							isInCarousel
+							showNewBadge={isNewBadgeVisible}
+							header={
+								<View style={styles.paragraphHeading}>
+									<ParagraphHeader
+										label={paragraphLabel}
+										progress={progressById[paragraph.id]}
+										fontSize={22}
+										fontFamily="shadows-400"
+										showGems={false}
+										showNewBadge={false}
+									/>
+									{!isLocked && (
+										<Pressable
+											accessibilityRole="button"
+											accessibilityLabel={`Read ${paragraphLabel}`}
+											accessibilityState={{
+												disabled: Boolean(loadingPassageId),
+												busy: isLoadingPassage,
+											}}
+											disabled={Boolean(loadingPassageId)}
+											onPress={() => handleShowPassage(paragraph)}
+											hitSlop={8}
+											style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
+										>
+											<Text
+												style={[
+													styles.readLinkText,
+													{
+														color: storyColor,
+													},
+												]}
+											>
+												Read paragraph
+											</Text>
+											<MaterialSymbol
+												name="menu_book"
+												size={16}
+												color={storyColor}
+											/>
+										</Pressable>
+									)}
+								</View>
+							}
+						>
+							<View
+								style={[
+									styles.paragraphRow,
+									!isLocked && styles.paragraphDivider,
+									isLocked && styles.lockedParagraphRow,
+								]}
 							>
-								<Text
-									style={[
-										styles.readLinkText,
-										{
-											color: storyColor,
-										},
-									]}
-								>
-									Read paragraph
-								</Text>
-								<MaterialSymbol
-									name="menu_book"
-									size={16}
-									color={storyColor}
-								/>
-							</Pressable>
-						)}
-
-						{isLocked && (
-							<LockedSection
-								color={storyColor}
-								unlockCriteria={unlockCriteria}
-								fontSize={15}
-							/>
-						)}
-						{!isLocked && (
-							<SolveEligibilityHint
-								deck={paragraph}
-								textStyle={styles.helpText}
-							/>
-						)}
-						{!isLocked && (
-							<View style={styles.actions}>
-								<SolveButton
-									deckId={paragraph.id}
-									color={storyColor}
-									style={styles.solveActionButton}
-									textStyle={styles.actionText}
-								/>
-								<LinkButton
-									accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
-									arrowColor={colors.light.text}
-									color={storyColor}
-									contentPaddingHorizontal={8}
-									contentPaddingVertical={8}
-									handler={() => handleSelectDeck(paragraph)}
-									disabled={isUpdatingProgress}
-									style={styles.flashcardActionButton}
-									textStyle={styles.actionText}
-								>
-									{actionLabel}
-								</LinkButton>
+								{isLocked && (
+									<LockedSection
+										color={storyColor}
+										unlockCriteria={unlockCriteria}
+										fontSize={15}
+										style={styles.lockedParagraphContent}
+									/>
+								)}
+								{!isLocked && (
+									<View style={styles.actions}>
+										<SolvePuzzleButtons
+											deckId={paragraph.id}
+											color={storyColor}
+										/>
+										<SolveEligibilityHint
+											deck={paragraph}
+											textStyle={styles.helpText}
+										/>
+										<LinkButton
+											accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
+											arrowColor={colors.light.text}
+											color={storyColor}
+											contentPaddingHorizontal={8}
+											contentPaddingVertical={8}
+											handler={() => handleSelectDeck(paragraph)}
+											disabled={isUpdatingProgress}
+											style={styles.flashcardActionButton}
+											textStyle={styles.actionText}
+										>
+											{actionLabel}
+										</LinkButton>
+									</View>
+								)}
 							</View>
-						)}
-					</View>
-				);
-			})}
+						</ParagraphPostcard>
+					);
+				})}
+			</ParagraphPostcardCarousel>
 			{passageState && (
 				<DeckBoxModal
 					deck={passageState.paragraph}
@@ -272,28 +315,39 @@ export default function ChapterParagraphList({
  */
 const styles = StyleSheet.create({
 	paragraphList: {
-		margin: 8,
+		flex: 1,
 	},
 	paragraphRow: {
-		borderTopWidth: 1,
-		borderColor: colors.light.border,
+		margin: 8,
 		padding: 12,
+		paddingBottom: 6,
+		paddingHorizontal: 2,
 		gap: 8,
 	},
+	paragraphDivider: {
+		borderTopWidth: 1,
+		borderColor: colors.light.border,
+	},
+	lockedParagraphRow: {
+		flexGrow: 1,
+	},
+	lockedParagraphContent: {
+		flexGrow: 1,
+	},
+	lockedChapter: {
+		paddingVertical: 16,
+		marginBottom: 24,
+	},
+	paragraphHeading: {
+		marginTop: 6,
+		gap: 4,
+	},
 	actions: {
-		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'stretch',
 		gap: 8,
 	},
-	solveActionButton: {
-		/**
-		 * Leaves the same space below both buttons for the linkbutton’s shadow.
-		 */
-		marginBottom: 2,
-	},
 	flashcardActionButton: {
-		flex: 2,
 		shadowOpacity: 0,
 	},
 	actionText: {
@@ -301,10 +355,10 @@ const styles = StyleSheet.create({
 	},
 	helpText: {
 		fontSize: 15,
-		lineHeight: 20,
+		lineHeight: 15,
+		textAlign: 'center',
 	},
 	readLink: {
-		alignSelf: 'flex-start',
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 4,
@@ -312,12 +366,10 @@ const styles = StyleSheet.create({
 	readLinkText: {
 		fontFamily: 'lexend-400',
 		fontSize: 15,
-		lineHeight: 20,
-		marginTop: 1,
-		marginBottom: 4,
+		lineHeight: 17,
 		textDecorationLine: 'underline',
 	},
 	loadingButton: {
-		opacity: 0.5,
+		opacity: 0.75,
 	},
 });

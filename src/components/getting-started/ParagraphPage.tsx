@@ -1,6 +1,6 @@
 import GettingStartedPage from './GettingStartedPage';
 
-const description = `Every flashcard comes from the current paragraph.`;
+const description = `Flashcards show words from the current paragraph.`;
 
 export default function ParagraphPage() {
 	return (

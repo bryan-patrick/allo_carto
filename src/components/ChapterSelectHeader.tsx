@@ -2,6 +2,7 @@ import colors from '@/src/app/colors';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { getSelectedStory } from '@/src/util/getSelectedStory';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,20 +10,47 @@ import GettingStartedModal from './getting-started/GettingStartedModal';
 import LevelBadge from './LevelBadge';
 import MaterialSymbol from './MaterialSymbol';
 
-// Show the player level and a guide that opens automatically for new players.
-export default function ChapterSelectHeader() {
+/**
+ * Typing
+ */
+interface ChapterSelectHeaderProps {
+	showBackButton?: boolean;
+}
+
+/**
+ * Shows the player level, getting started guide, and an optional back button.
+ */
+export default function ChapterSelectHeader({ showBackButton = false }: ChapterSelectHeaderProps) {
+	/**
+	 * Navigation, screen edges, and player progress
+	 */
+	const router = useRouter();
 	const insets = useSafeAreaInsets();
 	const user = useUserContext();
 	const { progressById, status } = useUserProgress();
-	// Follow saved progress until the player opens or finishes the guide.
+
+	/**
+	 * Guide visibility and selected story
+	 */
 	const [gettingStartedVisibility, setGettingStartedVisibility] = useState<boolean | null>(null);
 	const hasCompletedGettingStarted = user?.hasCompletedGettingStarted;
 	const selectedStory = getSelectedStory({
 		selectedStoryId: user?.selectedStoryId,
 		progressById,
 	});
-	const storyColor =
-		selectedStory ? colors.categoryLight[selectedStory.category] : colors.light.primary;
+	const isChapterProgressReady = status === 'ready' && Boolean(selectedStory);
+	const isGettingStartedVisible =
+		gettingStartedVisibility ?? (status === 'ready' && hasCompletedGettingStarted === 0);
+
+	/**
+	 * Header color and screen edges
+	 */
+	let storyColor = colors.light.primary;
+
+	if (selectedStory) {
+		storyColor = colors.categoryLight[selectedStory.category];
+	}
+
 	const headerBorderStyle = {
 		borderBottomColor: `${storyColor}30`,
 	};
@@ -31,10 +59,17 @@ export default function ChapterSelectHeader() {
 		paddingLeft: Math.max(insets.left, 12),
 		paddingRight: Math.max(insets.right, 12),
 	};
-	const isReady = status === 'ready' && selectedStory;
-	const isGettingStartedVisible =
-		gettingStartedVisibility ?? (status === 'ready' && hasCompletedGettingStarted === 0);
 
+	/**
+	 * Returns to the chapter selection screen.
+	 */
+	function handleGoBack() {
+		router.back();
+	}
+
+	/**
+	 * Closes the guide and saves that the player has finished it.
+	 */
 	function handleFinishGettingStarted() {
 		setGettingStartedVisibility(false);
 
@@ -46,8 +81,23 @@ export default function ChapterSelectHeader() {
 	return (
 		<View style={[styles.header, insetStyle, headerBorderStyle]}>
 			<View style={styles.headerRow}>
+				{showBackButton && (
+					<Pressable
+						accessibilityLabel="Back to chapters"
+						accessibilityRole="button"
+						onPress={handleGoBack}
+						hitSlop={8}
+						style={styles.backButton}
+					>
+						<MaterialSymbol
+							name="arrow_back"
+							color={colors.light.text}
+							size={24}
+						/>
+					</Pressable>
+				)}
 				<View style={styles.guideColumn}>
-					{isReady && (
+					{isChapterProgressReady && (
 						<Pressable
 							accessibilityLabel="Getting started"
 							accessibilityRole="button"
@@ -87,6 +137,12 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 12,
+	},
+	backButton: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		width: 32,
+		minHeight: 44,
 	},
 	guideColumn: {
 		flex: 1,

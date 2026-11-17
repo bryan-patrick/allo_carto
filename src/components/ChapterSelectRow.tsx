@@ -306,8 +306,6 @@ const styles = StyleSheet.create({
 		fontSize: 11,
 		color: colors.light.text,
 		backgroundColor: colors.dark.success,
-		borderWidth: 1,
-		borderColor: colors.light.success,
 		borderRadius: 4,
 		paddingHorizontal: 12,
 		paddingVertical: 4,

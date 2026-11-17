@@ -50,7 +50,7 @@ export default function MockParagraphProgressSetting({
 
 		Alert.alert(
 			`Apply ${selectedPreset.label.toLowerCase()} to all paragraphs?`,
-			'This replaces your saved Solve answers and completions, and marks paragraph words as seen. Your XP, Ink, and correct flashcard answers are kept.',
+			'This replaces your saved puzzle answers and completions, and marks paragraph words as seen. Your XP, Ink, and correct flashcard answers are kept.',
 			[
 				{
 					text: 'Cancel',

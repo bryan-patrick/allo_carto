@@ -44,12 +44,12 @@ const colors = {
 		},
 	},
 	wordProgress: {
-		unseen: '#5a4732',
-		new: '#4b6663',
-		learning: '#54192a',
-		familiar: '#652299',
-		known: '#1A1A1A',
-		mastered: '#0e6162',
+		unseen: '#504F4E',
+		new: '#54192A',
+		learning: '#75443C',
+		familiar: '#596848',
+		known: '#0E6162',
+		mastered: '#365A70',
 	},
 	wordProgressLight: {
 		unseen: '#E4D7C3',
@@ -88,6 +88,7 @@ const colors = {
 	},
 	gems: {
 		unsolved: '#90846F',
+		earned: '#1F5E60',
 		first: '#a13e53',
 		second: '#467d9a',
 		third: '#b052ca',
