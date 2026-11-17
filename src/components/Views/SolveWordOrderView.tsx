@@ -624,7 +624,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 							name="diamond"
 							filled
 							size={32}
-							color={colors.gems.third}
+							color={colors.gems.earned}
 						/>
 						<Text style={styles.title}>Third gem earned!</Text>
 						<Text style={styles.text}>{completionMessage}</Text>

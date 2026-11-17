@@ -50,12 +50,12 @@ interface PrismaticGemGradient {
 const gemSpinDuration = 4000;
 const gemSpinDegrees = 10 * 360;
 
-const gemColors = [colors.gems.first, colors.gems.second, colors.gems.third];
+const gemColors = [colors.gems.earned, colors.gems.earned, colors.gems.earned];
 
-const glowGemColors = [colors.glowGems.first, colors.glowGems.second, colors.glowGems.third];
+const glowGemColors = [colors.gems.earned, colors.gems.earned, colors.gems.earned];
 
 const prismaticGemGradient: PrismaticGemGradient = {
-	colors: [colors.rarity.Legendary, colors.gems.second, colors.gems.third, colors.gems.first],
+	colors: [colors.rarity.Legendary, colors.gems.second, colors.gems.third, colors.gems.earned],
 };
 
 const gemAppearanceDescriptions: Partial<Record<CompletedSolveStages, string>> = {

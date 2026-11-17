@@ -332,7 +332,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	let isSubmitDisabled = disabled || (!needsRetry && !canSubmit);
 	let submitLabel = stageDefinition.label;
 	let puzzleTitle = 'Solve';
-	let gemColor = colors.gems.first;
+	const gemColor = colors.gems.earned;
 	let gemTitle = 'First gem earned!';
 	let keyboardBehavior: 'padding' | 'height' = 'height';
 	let prompt = 'No card selected.';
@@ -368,7 +368,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 
 	if (stage === 2) {
 		parchmentTint.backgroundColor = stageDefinition.backgroundTint;
-		gemColor = colors.gems.second;
 		gemTitle = 'Second gem earned!';
 		completionMessage = 'Complete Solve++ and claim your third gem to unlock the next paragraph.';
 	}

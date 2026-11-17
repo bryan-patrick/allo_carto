@@ -12,17 +12,18 @@ interface ParagraphHeaderProps {
 	progress?: UserProgressRow;
 	children?: ReactNode;
 	fontSize?: number;
+	showGems?: boolean;
 }
 
 /**
- * Show a paragraph's number, gems, and New badge together.
- * Any extra paragraph details appear below that row.
+ * Shows a paragraph's number, New badge, optional gems, and extra details.
  */
 export default function ParagraphHeader({
 	label,
 	progress,
 	children,
 	fontSize = 12,
+	showGems = true,
 }: ParagraphHeaderProps) {
 	/**
 	 * Badge visibility and text size
@@ -39,14 +40,21 @@ export default function ParagraphHeader({
 					<Text style={[styles.label, labelTextSize]}>{label}</Text>
 					{showNewBadge && (
 						<View style={styles.newBadge}>
-							<Text style={[styles.newBadgeText, labelTextSize]}>New!</Text>
+							<Text
+								numberOfLines={1}
+								style={[styles.newBadgeText, labelTextSize]}
+							>
+								New!
+							</Text>
 						</View>
 					)}
 				</View>
-				<CollectionGems
-					title={label}
-					progress={progress}
-				/>
+				{showGems && (
+					<CollectionGems
+						title={label}
+						progress={progress}
+					/>
+				)}
 			</View>
 			{children}
 		</View>
@@ -78,6 +86,7 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-600',
 	},
 	newBadge: {
+		flexShrink: 0,
 		alignSelf: 'flex-start',
 		backgroundColor: colors.dark.primary,
 		borderRadius: 4,

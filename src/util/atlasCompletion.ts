@@ -294,7 +294,7 @@ export function formatUnlockCriterion(criterion: UnlockCriteria): string {
 		return `Earn 3 gems from each paragraph in “${criterion.title}” to continue (${criterion.completedParagraphCount} of ${criterion.paragraphCount} paragraphs have 3 gems).`;
 	}
 
-	return `Earn 3 puzzle gems from ${criterion.title} to continue.`;
+	return `Compplete 3 puzzles from ${criterion.title} to continue.`;
 }
 
 export function findStoryById(

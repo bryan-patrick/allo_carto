@@ -88,6 +88,7 @@ const colors = {
 	},
 	gems: {
 		unsolved: '#90846F',
+		earned: '#1F5E60',
 		first: '#a13e53',
 		second: '#467d9a',
 		third: '#b052ca',

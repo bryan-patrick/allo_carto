@@ -224,12 +224,12 @@ export function getSolveUnlockMessage({
 }: SolveUnlockMessageOptions): string {
 	const definition = solveStages[stage];
 	const previousStage = stage > 1 ? ((stage - 1) as SolveStage) : null;
-	const previousLabel = previousStage ? solveStages[previousStage].label : 'Solve';
+	const previousLabel = previousStage ? solveStages[previousStage].label : 'Puzzle';
 	const messages: Record<SolveLockReason, string> = {
 		completed: '',
-		paragraphLocked: 'Earn 3 gems from each paragraph to unlock.',
+		paragraphLocked: 'Complete 3 paragraph puzzles to unlock.',
 		noWords: '',
-		unseenWords: `See every flashcard to solve (${seenWordCount} of ${wordCount} seen).`,
+		unseenWords: `See all cards to unlock puzzles (${seenWordCount} of ${wordCount}).`,
 		previousStageRequired: `Complete ${previousLabel} to unlock ${definition.label}.`,
 		playerLevelRequired: `${definition.label} unlocks at player level ${eligibility.requiredPlayerLevel}.`,
 	};

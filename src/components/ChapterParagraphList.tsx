@@ -7,8 +7,8 @@ import LinkButton from '@/src/components/LinkButton';
 import LockedSection from '@/src/components/LockedSection';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ParagraphHeader from '@/src/components/ParagraphHeader';
-import SolveButton from '@/src/components/Solve/SolveButton';
 import SolveEligibilityHint from '@/src/components/Solve/SolveEligibilityHint';
+import SolvePuzzleButtons from '@/src/components/Solve/SolvePuzzleButtons';
 import { getDB, getDeck, getWordProgressById } from '@/src/db/interface';
 import getDeckWordProgressCounts, {
 	type DeckWordProgressCounts,
@@ -158,7 +158,7 @@ export default function ChapterParagraphList({
 	}
 
 	/**
-	 * Show each paragraph with its number, gems, and reading and flashcard actions.
+	 * Shows each paragraph with its number, reading link, flashcards, and puzzles.
 	 */
 	return (
 		<View style={styles.paragraphList}>
@@ -178,41 +178,44 @@ export default function ChapterParagraphList({
 						style={styles.paragraphRow}
 					>
 						{!isLocked && (
-							<ParagraphHeader
-								label={paragraphLabel}
-								progress={progressById[paragraph.id]}
-								fontSize={15}
-							/>
-						)}
-						{!isLocked && (
-							<Pressable
-								accessibilityRole="button"
-								accessibilityLabel={`Read ${paragraphLabel}`}
-								accessibilityState={{
-									disabled: Boolean(loadingPassageId),
-									busy: isLoadingPassage,
-								}}
-								disabled={Boolean(loadingPassageId)}
-								onPress={() => handleShowPassage(paragraph)}
-								hitSlop={8}
-								style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
-							>
-								<Text
-									style={[
-										styles.readLinkText,
-										{
-											color: storyColor,
-										},
-									]}
+							<View style={styles.paragraphHeading}>
+								<View style={styles.paragraphTitle}>
+									<ParagraphHeader
+										label={paragraphLabel}
+										progress={progressById[paragraph.id]}
+										fontSize={15}
+										showGems={false}
+									/>
+								</View>
+								<Pressable
+									accessibilityRole="button"
+									accessibilityLabel={`Read ${paragraphLabel}`}
+									accessibilityState={{
+										disabled: Boolean(loadingPassageId),
+										busy: isLoadingPassage,
+									}}
+									disabled={Boolean(loadingPassageId)}
+									onPress={() => handleShowPassage(paragraph)}
+									hitSlop={8}
+									style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
 								>
-									Read paragraph
-								</Text>
-								<MaterialSymbol
-									name="menu_book"
-									size={16}
-									color={storyColor}
-								/>
-							</Pressable>
+									<Text
+										style={[
+											styles.readLinkText,
+											{
+												color: storyColor,
+											},
+										]}
+									>
+										Read paragraph
+									</Text>
+									<MaterialSymbol
+										name="menu_book"
+										size={16}
+										color={storyColor}
+									/>
+								</Pressable>
+							</View>
 						)}
 
 						{isLocked && (
@@ -223,18 +226,14 @@ export default function ChapterParagraphList({
 							/>
 						)}
 						{!isLocked && (
-							<SolveEligibilityHint
-								deck={paragraph}
-								textStyle={styles.helpText}
-							/>
-						)}
-						{!isLocked && (
 							<View style={styles.actions}>
-								<SolveButton
+								<SolvePuzzleButtons
 									deckId={paragraph.id}
 									color={storyColor}
-									style={styles.solveActionButton}
-									textStyle={styles.actionText}
+								/>
+								<SolveEligibilityHint
+									deck={paragraph}
+									textStyle={styles.helpText}
 								/>
 								<LinkButton
 									accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
@@ -278,22 +277,24 @@ const styles = StyleSheet.create({
 		borderTopWidth: 1,
 		borderColor: colors.light.border,
 		padding: 12,
+		paddingHorizontal: 2,
 		gap: 8,
 	},
-	actions: {
+	paragraphHeading: {
 		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		gap: 8,
+	},
+	paragraphTitle: {
+		flex: 1,
+	},
+	actions: {
 		justifyContent: 'center',
 		alignItems: 'stretch',
 		gap: 8,
 	},
-	solveActionButton: {
-		/**
-		 * Leaves the same space below both buttons for the linkbutton’s shadow.
-		 */
-		marginBottom: 2,
-	},
 	flashcardActionButton: {
-		flex: 2,
 		shadowOpacity: 0,
 	},
 	actionText: {
@@ -301,23 +302,21 @@ const styles = StyleSheet.create({
 	},
 	helpText: {
 		fontSize: 15,
-		lineHeight: 20,
+		lineHeight: 15,
+		textAlign: 'center',
 	},
 	readLink: {
-		alignSelf: 'flex-start',
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 4,
 	},
 	readLinkText: {
 		fontFamily: 'lexend-400',
-		fontSize: 15,
-		lineHeight: 20,
-		marginTop: 1,
-		marginBottom: 4,
+		fontSize: 14,
+		lineHeight: 16,
 		textDecorationLine: 'underline',
 	},
 	loadingButton: {
-		opacity: 0.5,
+		opacity: 0.75,
 	},
 });
