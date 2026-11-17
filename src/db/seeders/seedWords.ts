@@ -18,9 +18,14 @@ export default async function seedWords(): Promise<void> {
 
 		await logThisIfItFails(`Oops we messed up seeding word ${word.id}`, async () => {
 			let savedEnglishPrefixes: string | null = null;
+			let savedCanonicalEnglish: string | null = null;
 
 			if (word.englishPrefixes) {
 				savedEnglishPrefixes = JSON.stringify(word.englishPrefixes);
+			}
+
+			if (word.canonicalEnglish !== undefined && word.canonicalEnglish !== null) {
+				savedCanonicalEnglish = JSON.stringify(word.canonicalEnglish);
 			}
 
 			await database.runAsync(
@@ -72,7 +77,7 @@ export default async function seedWords(): Promise<void> {
 					word.id,
 					word.frenchWord,
 					JSON.stringify(word.englishWords),
-					word.canonicalEnglish ?? null,
+					savedCanonicalEnglish,
 					word.tipId ?? null,
 					word.frenchArticle ?? null,
 					word.englishArticle ?? null,

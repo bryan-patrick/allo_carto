@@ -4,6 +4,7 @@ import {
 	type CollectionRewardLevel,
 	type VocabularyCollection,
 } from '@/data/french/collectionAtlas';
+import { getParagraphs } from '@/data/french/storyAtlas';
 import { seedWords } from '@/data/french/words';
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import {
@@ -72,11 +73,19 @@ for (const word of seedWords) {
 }
 
 /**
- * Checks collection words and rewards so invalid albums are caught when the app loads.
+ * Checks that stamp collections use words from active paragraphs and have valid rewards.
  */
 export function validateCollectionAtlas(): void {
 	const collectionIds = new Set<string>();
 	const collectedWordIds = new Set<string>();
+	const paragraphs = getParagraphs();
+	const paragraphWordIds = new Set<string>();
+
+	for (const paragraph of paragraphs) {
+		for (const wordId of paragraph.wordIds) {
+			paragraphWordIds.add(wordId);
+		}
+	}
 
 	for (const collection of collectionAtlas.collections) {
 		const rewardLevels = new Set<CollectionRewardLevel>();
@@ -91,6 +100,10 @@ export function validateCollectionAtlas(): void {
 		for (const entry of collection.words) {
 			if (!vocabularyById.has(entry.wordId)) {
 				throw new Error(`Collection word ${entry.wordId} is missing from the vocabulary.`);
+			}
+
+			if (!paragraphWordIds.has(entry.wordId)) {
+				throw new Error(`Collection word ${entry.wordId} must be used in an active paragraph.`);
 			}
 
 			if (collectedWordIds.has(entry.wordId)) {

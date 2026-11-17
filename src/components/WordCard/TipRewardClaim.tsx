@@ -1,11 +1,12 @@
 import colors from '@/src/app/colors';
 import LinkButton from '@/src/components/LinkButton';
+import { useSolveXPFeedback, type SolveXPFeedback } from '@/src/components/Solve/SolveXPFeedback';
 import type { FrenchTip } from '@/src/components/Tips/tipTypes';
 import type { TipRewardReceipt } from '@/src/db/queries/tipRewards';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { userExperienceConfig } from '@/src/util/userExperience';
 import { useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 
 /**
  * Typing
@@ -15,25 +16,42 @@ interface TipRewardClaimProps {
 }
 
 interface SaveTipRewardOptions {
+	event: GestureResponderEvent;
 	tipId: string;
 	claimTipReward: (tipId: string) => Promise<TipRewardReceipt | false>;
 	setClaimFeedback: Dispatch<SetStateAction<string>>;
+	showXPFeedback: (request: SolveXPFeedback) => void;
 }
 
 /**
- * Claims a tip's XP and shows a message if the save fails.
+ * Claims a tip's XP and shows the earned XP or a save error.
  */
 async function saveTipReward({
+	event,
 	tipId,
 	claimTipReward,
 	setClaimFeedback,
+	showXPFeedback,
 }: SaveTipRewardOptions): Promise<void> {
+	const feedbackOrigin: SolveXPFeedback = {
+		centerX: event.nativeEvent.pageX,
+		top: event.nativeEvent.pageY,
+	};
+
 	setClaimFeedback('');
 
 	const receipt = await claimTipReward(tipId);
 
 	if (!receipt) {
 		setClaimFeedback('Could not save your reward. Please try again.');
+		return;
+	}
+
+	if (receipt.status === 'claimed') {
+		showXPFeedback({
+			...feedbackOrigin,
+			xp: receipt.xp,
+		});
 	}
 }
 
@@ -46,6 +64,7 @@ export default function TipRewardClaim({ tip }: TipRewardClaimProps) {
 	 */
 	const { tips, tipClaims, claimTipReward, isUpdatingProgress, status, reloadProgress } =
 		useUserProgress();
+	const showXPFeedback = useSolveXPFeedback();
 	const [claimFeedback, setClaimFeedback] = useState('');
 
 	/**
@@ -71,11 +90,13 @@ export default function TipRewardClaim({ tip }: TipRewardClaimProps) {
 			accessibilityRole="button"
 			accessibilityLabel={`Claim ${userExperienceConfig.tipXP} XP for ${tip.title}`}
 			disabled={!canClaimTipReward}
-			handler={() =>
+			onPress={event =>
 				saveTipReward({
+					event,
 					tipId: tip.id,
 					claimTipReward,
 					setClaimFeedback,
+					showXPFeedback,
 				})
 			}
 			useArrow={false}

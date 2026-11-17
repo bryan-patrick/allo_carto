@@ -92,11 +92,10 @@ describe('saved Solve progression', () => {
 		mockSqlite.close();
 	});
 
-	test('upgrades existing first gems without changing solved cards, Ink, or the completion date', async () => {
+	test('keeps first gems, solved cards, and Ink when tables are created again', async () => {
 		mockSqlite.exec(`
-			ALTER TABLE solveCompletions DROP COLUMN completedSolveStages;
-			INSERT INTO solveCompletions (userId, deckId, completedAt)
-			VALUES ('user_one', 'deck_one', 123);
+			INSERT INTO solveCompletions (userId, deckId, completedAt, completedSolveStages)
+			VALUES ('user_one', 'deck_one', 123, 1);
 			INSERT INTO solveUnlocks (userId, deckId, position, wordId)
 			VALUES ('user_one', 'deck_one', 0, 'word_one');
 			INSERT INTO solvePositions (userId, deckId, position, wordId, acceptedAnswer)

@@ -55,6 +55,10 @@ describe('<WordCardContainer />', () => {
 		mockRecordWordSeen.mockResolvedValue(true);
 		mockUseUserProgress.mockReturnValue({
 			activity: [],
+			tipClaims: [],
+			tips: [],
+			discoverTip: jest.fn(),
+			claimTipReward: jest.fn(),
 			notifications: [],
 			dismissNotification: jest.fn(),
 			dismissAllNotifications: jest.fn(),
@@ -191,7 +195,7 @@ describe('<WordCardContainer />', () => {
 		await waitFor(() => {
 			expect(mockGetFillerWords).toHaveBeenNthCalledWith(1, {
 				correctWords: ['how much'],
-				words: ['how much', 'market', 'clue', 'hidden'],
+				words: ['market', 'clue', 'hidden'],
 			});
 		});
 	});

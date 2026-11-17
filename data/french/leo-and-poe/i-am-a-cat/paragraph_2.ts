@@ -1,15 +1,16 @@
+import { cityNamesTip, depanneurTip } from '@/data/french/tips';
 import { createParagraph } from '@/src/util/createParagraph';
 
 export const paragraph2 = createParagraph({
 	id: 'deck__where_i_live',
-	description: 'Leo describes his home in Québec City and the nearby bakery.',
+	description: 'Leo describes where he lives and how much he likes the city.',
 	CEFR: ['A1', 'A2'],
 	englishPassage:
-		'I live in Quebec City close to a convenience store and a bakery. A nice man works there.',
+		'I live in Quebec City, near a convenience store and a bakery. It is very beautiful here. I like the city a lot.',
 	passage: [
 		{
 			text: 'J’',
-			wordId: 'word_pronoun_je',
+			wordId: 'word_pronoun_je_elision',
 			after: '',
 		},
 		{
@@ -20,6 +21,7 @@ export const paragraph2 = createParagraph({
 			text: 'à',
 			wordId: 'word_preposition_a',
 			canonicalEnglish: 'in',
+			tipId: cityNamesTip.id,
 		},
 		{
 			text: 'Québec',
@@ -32,7 +34,7 @@ export const paragraph2 = createParagraph({
 		},
 		{
 			text: 'd’',
-			wordId: 'word_preposition_de',
+			wordId: 'word_preposition_de_elision',
 			after: '',
 		},
 		{
@@ -42,6 +44,7 @@ export const paragraph2 = createParagraph({
 		{
 			text: 'dépanneur',
 			wordId: 'word_noun_depanneur',
+			tipId: depanneurTip.id,
 		},
 		{
 			text: 'et',
@@ -49,7 +52,7 @@ export const paragraph2 = createParagraph({
 		},
 		{
 			text: 'd’',
-			wordId: 'word_preposition_de',
+			wordId: 'word_preposition_de_elision',
 			after: '',
 		},
 		{
@@ -62,33 +65,47 @@ export const paragraph2 = createParagraph({
 			after: '. ',
 		},
 		{
-			text: 'Un',
-			wordId: 'word_article_un',
+			text: 'C’',
+			wordId: 'word_pronoun_ce_elision',
+			after: '',
 		},
 		{
-			text: 'gentil',
-			wordId: 'word_adjective_gentil',
+			text: 'est',
+			wordId: 'word_auxiliary_est',
 		},
 		{
-			text: 'homme',
-			wordId: 'word_noun_homme',
+			text: 'très',
+			wordId: 'word_adverb_tres',
 		},
 		{
-			text: 'travaille',
-			wordId: 'word_verb_travaille',
+			text: 'beau',
+			wordId: 'word_adjective_beau',
 		},
 		{
-			text: 'à',
-			wordId: 'word_preposition_a',
-			canonicalEnglish: 'at',
+			text: 'ici',
+			wordId: 'word_adverb_ici',
+			after: '. ',
+		},
+		{
+			text: 'J’',
+			wordId: 'word_pronoun_je_elision',
+			after: '',
+		},
+		{
+			text: 'aime',
+			wordId: 'word_verb_aime',
+		},
+		{
+			text: 'beaucoup',
+			wordId: 'word_adverb_beaucoup',
 		},
 		{
 			text: 'la',
 			wordId: 'word_article_la',
 		},
 		{
-			text: 'boulangerie',
-			wordId: 'word_noun_boulangerie',
+			text: 'ville',
+			wordId: 'word_noun_ville',
 			after: '.',
 		},
 	],

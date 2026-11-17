@@ -1,4 +1,5 @@
 import type { Progression } from '@/src/util/progression';
+import type { CanonicalEnglish } from '@/src/util/englishWordParts';
 
 /**
  * Typing
@@ -27,7 +28,8 @@ export interface DeckWordChoice {
 export interface PassageSegment {
 	text: string;
 	wordId?: string;
-	canonicalEnglish?: string;
+	canonicalEnglish?: CanonicalEnglish;
+	tipId?: string;
 	unlockExempt?: boolean;
 	isLocked?: boolean;
 	after?: string;
@@ -99,10 +101,14 @@ export interface Word {
 	frenchWord: string;
 	englishWords: string[];
 	/**
-	 * The full English meaning used in puzzles. A passage can choose a different meaning.
+	 * The English answer or answers used in puzzles, which a passage can override.
 	 */
-	canonicalEnglish?: string | null;
+	canonicalEnglish?: CanonicalEnglish | null;
 	elision?: WordElision;
+	/**
+	 * The full spelling of an elision, such as me for m’.
+	 */
+	fullFrenchWord?: string;
 	tipId?: string;
 	frenchArticle?: string;
 	englishArticle?: string;

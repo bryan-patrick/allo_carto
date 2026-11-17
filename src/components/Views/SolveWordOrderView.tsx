@@ -155,6 +155,10 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	});
 	const hasEnoughInk = inkBalance >= inkCost;
 	const disabled = isSaving || isUpdatingProgress || isDragging;
+	/**
+	 * Keep the finished puzzle open until its gem reward has been claimed.
+	 */
+	const isCloseDisabled = disabled || Boolean(pendingGem && !isComplete);
 	const isEligible = Boolean(puzzle && eligibility.isEligible);
 	const boardDisabled =
 		isSaving || isUpdatingProgress || needsRetry || !isEligible || isSentenceSolved;
@@ -538,8 +542,11 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		}
 	}
 
+	/**
+	 * Closes the puzzle and returns to the paragraph selection screen.
+	 */
 	function handleClose() {
-		if (disabled || isBusy.current) {
+		if (isCloseDisabled || isBusy.current) {
 			return;
 		}
 
@@ -580,9 +587,12 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					<Pressable
 						accessibilityRole="button"
 						accessibilityLabel="Close Solve++"
-						disabled={disabled}
+						accessibilityState={{
+							disabled: isCloseDisabled,
+						}}
+						disabled={isCloseDisabled}
 						onPress={handleClose}
-						style={styles.closeButton}
+						style={[styles.closeButton, isCloseDisabled && styles.disabledCloseButton]}
 					>
 						<MaterialSymbol
 							name="close"
@@ -674,7 +684,11 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						<View style={styles.actionButton}>
 							<SecondaryButton
 								onPress={handleClose}
-								disabled={disabled}
+								disabled={isCloseDisabled}
+								accessibilityState={{
+									disabled: isCloseDisabled,
+								}}
+								style={isCloseDisabled && styles.disabledCloseButton}
 								color={storyColor}
 								type="outline"
 								fullwidth
@@ -719,6 +733,9 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
  * Styles
  */
 const styles = StyleSheet.create({
+	disabledCloseButton: {
+		opacity: 0.4,
+	},
 	warningHighlight: {
 		backgroundColor: colors.light.warning,
 	},

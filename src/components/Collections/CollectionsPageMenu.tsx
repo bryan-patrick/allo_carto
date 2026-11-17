@@ -1,6 +1,21 @@
+import colors from '@/src/app/colors';
 import { useSoftTapSound } from '@/src/util/softTapSound';
-import { SegmentedControl } from '@expo/ui/community/segmented-control';
+import NativeSegmentedControl, {
+	type SegmentedControlProps,
+} from '@react-native-segmented-control/segmented-control';
+import type { ComponentType } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+/**
+ * This is an interesting issue.
+ *
+ * React native intersects its types with react's.
+ *
+ * This is an example of them not actually matching up.
+ *
+ * React native thinks that this isn't a React.component...
+ */
+const SegmentedControl = NativeSegmentedControl as unknown as ComponentType<SegmentedControlProps>;
 
 /**
  * Typing
@@ -48,6 +63,8 @@ export default function CollectionsPageMenu({
 				accessibilityLabel="Collection pages"
 				values={pageLabels}
 				selectedIndex={selectedIndex}
+				tintColor={colors.light.text}
+				fontStyle={{ color: colors.dark.text }}
 				onChange={event => {
 					const selectedOption = pageOptions[event.nativeEvent.selectedSegmentIndex];
 

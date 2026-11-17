@@ -1,0 +1,55 @@
+import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
+
+/**
+ * Earlier combined cards kept for reference after splitting their words in Chapter 1.
+ */
+export const retiredLeoAndPoeCombinedElisions: Word[] = [
+	{
+		id: 'word_expression_cest',
+		frenchWord: 'c’est',
+		englishWords: ['it is', 'this is'],
+		canonicalEnglish: ['it is', 'this is'],
+		pronunciation: 'say',
+		ipaPronunciation: 'se',
+		CEFR: 'A1',
+		partOfSpeech: 'expression',
+		rarity: 'Common',
+		lemmaId: 'word_expression_cest',
+		form: 'present',
+		tense: 'présent',
+		isVulgar: false,
+		correctCount: 0,
+	},
+	{
+		id: 'word_expression_j_aime',
+		frenchWord: 'j’aime',
+		englishWords: ['I like', 'I love'],
+		canonicalEnglish: ['I like', 'I love'],
+		pronunciation: 'zhem',
+		ipaPronunciation: 'ʒɛm',
+		CEFR: 'A1',
+		partOfSpeech: 'expression',
+		lemmaId: 'word_expression_j_aime',
+		form: 'present',
+		tense: 'présent',
+		rarity: 'Common',
+		isVulgar: false,
+		correctCount: 0,
+	},
+	{
+		id: 'word_expression_m_aiment',
+		frenchWord: 'm’aiment',
+		englishWords: ['like me', 'love me'],
+		canonicalEnglish: 'like me',
+		pronunciation: 'mem',
+		ipaPronunciation: 'mɛm',
+		CEFR: 'A1',
+		partOfSpeech: 'expression',
+		lemmaId: 'word_expression_m_aiment',
+		form: 'present',
+		tense: 'présent',
+		rarity: 'Common',
+		isVulgar: false,
+		correctCount: 0,
+	},
+];

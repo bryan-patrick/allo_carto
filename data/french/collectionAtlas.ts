@@ -1,6 +1,6 @@
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import type { ImageSourcePropType } from 'react-native';
-import { leosKitchenCollection } from './collections/leos-kitchen';
+import { ourFavoritePlacesCollection } from './collections/our-favorite-places';
 
 /**
  * Typing
@@ -31,8 +31,8 @@ export interface CollectionAtlas {
 export const placeholderStampImage: ImageSourcePropType = require('@/src/app/assets/images/chapters/how-it-works.png');
 
 /**
- * List active albums, including Léo’s Kitchen with bread from Leo and Poe.
+ * Stamp albums.
  */
 export const collectionAtlas: CollectionAtlas = {
-	collections: [leosKitchenCollection],
+	collections: [ourFavoritePlacesCollection],
 };

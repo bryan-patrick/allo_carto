@@ -1,6 +1,6 @@
+import { parseCanonicalEnglish, parseEnglishPrefixes } from '@/src/util/englishWordParts';
 import type { Paragraph, Word } from '../../components/CardDeck/cardDeckTypes';
 import type { LoadedFlashcardDeck } from '../../components/CardDeck/deckSessionTypes';
-import { parseEnglishPrefixes } from '@/src/util/englishWordParts';
 import { getDB } from '../connection';
 import type { WordRow } from '../types';
 import { getFlashcardCycle } from './flashcardCycles';
@@ -28,6 +28,7 @@ interface DeckWordRow extends WordRow {
 function parseWordRow(row: DeckWordRow): Word {
 	const {
 		englishWords,
+		canonicalEnglish,
 		englishPrefixes,
 		tipId,
 		isVulgar,
@@ -39,6 +40,7 @@ function parseWordRow(row: DeckWordRow): Word {
 	return {
 		...wordFields,
 		englishWords: JSON.parse(englishWords),
+		canonicalEnglish: parseCanonicalEnglish(canonicalEnglish),
 		englishPrefixes: parseEnglishPrefixes(englishPrefixes),
 		tipId: tipId ?? undefined,
 		isVulgar: Boolean(isVulgar),
@@ -49,9 +51,7 @@ function parseWordRow(row: DeckWordRow): Word {
 }
 
 /**
- * Prepare a paragraph when the learner selects Flashcards.
- * Load the words, shuffle, then return the current deck and its answers.
- * The learner continues at the next unanswered card
+ * Loads a paragraph's flashcards and continues at the next card.
  */
 export default async function getDeck({
 	deck,
@@ -87,6 +87,17 @@ export default async function getDeck({
 		const wordIds = words.map(word => word.id);
 		const unseenWords = words.filter(word => (word.seenCount ?? 0) === 0);
 		const unseenWordIds = unseenWords.map(word => word.id);
+
+		/**
+		 * Attach this paragraph's tips so the same word can have a different tip elsewhere.
+		 */
+		for (const segment of deck.passage) {
+			const word = wordsById.get(segment.wordId ?? '');
+
+			if (word && segment.tipId) {
+				word.tipId = segment.tipId;
+			}
+		}
 
 		if (wordIds.length === 0) {
 			return;

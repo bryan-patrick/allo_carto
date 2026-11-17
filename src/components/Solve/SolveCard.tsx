@@ -40,13 +40,14 @@ export default function SolveCard({
 	const isDisabled = disabled || card.acceptedAnswer !== null;
 
 	/**
-	 * Card colors
+	 * Card colors and selection shadow
 	 */
 	const wordColor = {
 		color: storyColor,
 	};
-	const selectedBorder = {
+	const selectedCardStyle = {
 		borderColor: storyColor,
+		boxShadow: `0 3px 6px ${storyColor}`,
 	};
 
 	/**
@@ -96,7 +97,7 @@ export default function SolveCard({
 			style={[
 				styles.wordCardContainer,
 				styles.card,
-				isSelected && selectedBorder,
+				isSelected && selectedCardStyle,
 				isSolved && styles.solvedBorder,
 			]}
 		>
@@ -168,7 +169,6 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
 		borderWidth: 2,
-		overflow: 'hidden',
 		padding: 2,
 	},
 	cardContent: {
@@ -189,8 +189,9 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: 'transparent',
-		borderColor: 'transparent',
-		borderWidth: 2,
+		borderColor: colors.light.border,
+		borderWidth: 1,
+		borderRadius: 8,
 	},
 	solvedBorder: {
 		backgroundColor: colors.light.success,

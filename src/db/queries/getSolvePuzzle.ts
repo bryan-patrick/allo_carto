@@ -1,4 +1,4 @@
-import type { CardRarity } from '@/src/components/CardDeck/cardDeckTypes';
+import type { CardRarity, Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import type {
 	SolvePosition,
 	SolvePuzzle,
@@ -7,11 +7,14 @@ import type {
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import {
 	getEnglishPuzzleAnswers,
+	parseCanonicalEnglish,
 	parseEnglishPrefixes,
 	type EnglishWordDefinition,
 } from '@/src/util/englishWordParts';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
+import { getFrenchWordForms } from '@/src/util/frenchWordForms';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
+import { splitFrenchSentences } from '@/src/util/splitFrenchSentences';
 import {
 	getCompletedSolveStages,
 	getSolveCardInkCost,
@@ -47,6 +50,24 @@ interface SolveWordRow {
 }
 
 /**
+ * Finds the first word of each sentence so its English prompt can start with a capital letter.
+ */
+function getSentenceStartPositions(paragraph: Paragraph): Set<number> {
+	const sentences = splitFrenchSentences(paragraph);
+	const sentenceStartPositions = new Set<number>();
+
+	for (const sentence of sentences) {
+		const firstWord = sentence.segments.find(segment => /[\p{L}\p{N}]/u.test(segment.text));
+
+		if (firstWord) {
+			sentenceStartPositions.add(firstWord.position);
+		}
+	}
+
+	return sentenceStartPositions;
+}
+
+/**
  * Opens a paragraph's Solve or Solve+ puzzle with its saved cards.
  */
 export default async function getSolvePuzzle({
@@ -66,6 +87,7 @@ export default async function getSolvePuzzle({
 	}
 
 	const solvePassage = getSolvePassage(deck.passage);
+	const sentenceStartPositions = getSentenceStartPositions(deck);
 	const solveWordIds = getPassageWordIds(solvePassage);
 	const placeholders = solveWordIds.map(() => '?').join(',');
 	const progressById = await getUserProgress({
@@ -152,14 +174,27 @@ export default async function getSolvePuzzle({
 		if (word) {
 			const englishDefinition: EnglishWordDefinition = {
 				englishWords: JSON.parse(word.englishWords),
-				canonicalEnglish: segment.canonicalEnglish ?? word.canonicalEnglish,
+				canonicalEnglish: segment.canonicalEnglish ?? parseCanonicalEnglish(word.canonicalEnglish),
 				englishArticle: word.englishArticle,
 				englishPrefixes: parseEnglishPrefixes(word.englishPrefixes),
 			};
 
 			englishWords = getEnglishPuzzleAnswers(englishDefinition);
-			englishPrompt = englishWords.join(' / ');
+			englishPrompt = englishWords[0] ?? '';
+
+			if (sentenceStartPositions.has(position)) {
+				const firstCharacter = englishPrompt.charAt(0);
+				const capitalizedFirstCharacter = firstCharacter.toUpperCase();
+				const remainingText = englishPrompt.slice(1);
+
+				englishPrompt = `${capitalizedFirstCharacter}${remainingText}`;
+			}
+
 			frenchWords.add(word.frenchWord);
+
+			for (const frenchWordForm of getFrenchWordForms(word.id)) {
+				frenchWords.add(frenchWordForm);
+			}
 
 			if (word.frenchArticle) {
 				let articleSeparator = ' ';

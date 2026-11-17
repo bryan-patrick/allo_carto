@@ -91,6 +91,10 @@ describe('<WordCardButton />', () => {
 		});
 		mockUseUserProgress.mockReturnValue({
 			activity: [],
+			tipClaims: [],
+			tips: [],
+			discoverTip: jest.fn(),
+			claimTipReward: jest.fn(),
 			notifications: [],
 			dismissNotification: jest.fn(),
 			dismissAllNotifications: jest.fn(),
@@ -189,6 +193,10 @@ describe('<WordCardButton />', () => {
 		mockDeckState();
 		mockUseUserProgress.mockReturnValue({
 			activity: [],
+			tipClaims: [],
+			tips: [],
+			discoverTip: jest.fn(),
+			claimTipReward: jest.fn(),
 			notifications: [],
 			dismissNotification: jest.fn(),
 			dismissAllNotifications: jest.fn(),

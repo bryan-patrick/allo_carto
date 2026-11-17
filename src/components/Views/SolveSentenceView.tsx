@@ -222,6 +222,10 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const isEligible = Boolean(puzzle && eligibility.isEligible);
 	const hasEnoughInk = inkBalance >= inkCost;
 	const disabled = isSaving || isUpdatingProgress;
+	/**
+	 * Keep the finished puzzle open until its gem reward has been claimed.
+	 */
+	const isCloseDisabled = disabled || Boolean(pendingGem && !isComplete);
 	const inputDisabled = disabled || needsRetry || !isEligible || !hasEnoughInk || isSentenceSolved;
 	const hasUnchangedSubmission = Boolean(pendingAttempt.current) && !needsRetry;
 	const submitDisabled =
@@ -479,8 +483,11 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		}
 	}
 
+	/**
+	 * Closes the puzzle and returns to the paragraph selection screen.
+	 */
 	function handleClose() {
-		if (disabled || isBusy.current) {
+		if (isCloseDisabled || isBusy.current) {
 			return;
 		}
 
@@ -521,9 +528,12 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					<Pressable
 						accessibilityRole="button"
 						accessibilityLabel={`Close ${stageDefinition.label}`}
-						disabled={disabled}
+						accessibilityState={{
+							disabled: isCloseDisabled,
+						}}
+						disabled={isCloseDisabled}
 						onPress={handleClose}
-						style={styles.closeButton}
+						style={[styles.closeButton, isCloseDisabled && styles.disabledCloseButton]}
 					>
 						<MaterialSymbol
 							name="close"
@@ -721,7 +731,11 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 						<View style={styles.actionButton}>
 							<SecondaryButton
 								onPress={handleClose}
-								disabled={disabled}
+								disabled={isCloseDisabled}
+								accessibilityState={{
+									disabled: isCloseDisabled,
+								}}
+								style={isCloseDisabled && styles.disabledCloseButton}
 								color={storyColor}
 								type="outline"
 								fullwidth
@@ -766,6 +780,9 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
  * Styles
  */
 const styles = StyleSheet.create({
+	disabledCloseButton: {
+		opacity: 0.4,
+	},
 	container: {
 		flex: 1,
 		paddingHorizontal: 8,

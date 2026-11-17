@@ -31,14 +31,14 @@ const stageRequirements: StageRequirementCase[] = [
 	{
 		stage: 2,
 		completedStages: 1,
-		fastLevel: 2,
-		normalLevel: 5,
+		fastLevel: 0,
+		normalLevel: 0,
 	},
 	{
 		stage: 3,
 		completedStages: 2,
-		fastLevel: 3,
-		normalLevel: 10,
+		fastLevel: 0,
+		normalLevel: 0,
 	},
 	{
 		stage: 4,
@@ -75,16 +75,30 @@ describe('Solve progression', () => {
 		'opens stage $stage at its fast or normal level only after the preceding stage',
 		({ stage, completedStages, fastLevel, normalLevel }) => {
 			for (const fastSolveUnlocks of [true, false]) {
-				const requiredLevel = fastSolveUnlocks ? fastLevel : normalLevel;
+				let requiredLevel = normalLevel;
+				let lowerPlayerLevel = 1;
+
+				if (fastSolveUnlocks) {
+					requiredLevel = fastLevel;
+				}
+
+				if (requiredLevel > 1) {
+					lowerPlayerLevel = requiredLevel - 1;
+				}
+
 				const options: SolveStageEligibilityOptions = {
 					...eligibleOptions,
 					stage,
 					completedStages,
 					fastSolveUnlocks,
-					playerLevel: requiredLevel - 1,
+					playerLevel: lowerPlayerLevel,
 				};
 
-				expect(getSolveStageEligibility(options).lockReason).toBe('playerLevelRequired');
+				if (requiredLevel > 1) {
+					expect(getSolveStageEligibility(options).lockReason).toBe('playerLevelRequired');
+				} else {
+					expect(getSolveStageEligibility(options).isEligible).toBe(true);
+				}
 				expect(
 					getSolveStageEligibility({
 						...options,

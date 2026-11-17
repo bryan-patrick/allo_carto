@@ -6,6 +6,7 @@ import {
 } from '@/src/util/atlasCompletion';
 import {
 	getEnglishPuzzleAnswers,
+	parseCanonicalEnglish,
 	parseEnglishPrefixes,
 	type EnglishWordDefinition,
 } from '@/src/util/englishWordParts';
@@ -110,7 +111,7 @@ export default async function getSolveSentencePuzzle({
 	const words: SolveSentenceWord[] = wordRows.map(word => {
 		const englishDefinition: EnglishWordDefinition = {
 			englishWords: JSON.parse(word.englishWords),
-			canonicalEnglish: word.canonicalEnglish,
+			canonicalEnglish: parseCanonicalEnglish(word.canonicalEnglish),
 			englishPrefixes: parseEnglishPrefixes(word.englishPrefixes),
 		};
 
