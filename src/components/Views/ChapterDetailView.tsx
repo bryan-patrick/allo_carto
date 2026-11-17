@@ -68,6 +68,9 @@ export default function ChapterDetailView() {
 	}
 
 	const { chapter, story } = location;
+	const chapterNameStyle = {
+		color: colors.category[story.category],
+	};
 
 	return (
 		<View style={styles.background}>
@@ -92,7 +95,7 @@ export default function ChapterDetailView() {
 						<View style={styles.chapterSummaryRow}>
 							<Text
 								accessibilityRole="header"
-								style={styles.chapterName}
+								style={[styles.chapterName, chapterNameStyle]}
 							>
 								{chapter.name}
 							</Text>
@@ -198,7 +201,6 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		lineHeight: 18,
 		textAlign: 'center',
-		color: colors.dark.text,
 	},
 	chapterProgress: {
 		fontFamily: 'lexend-400',
