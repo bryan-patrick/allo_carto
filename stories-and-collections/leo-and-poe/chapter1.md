@@ -94,7 +94,8 @@ Un homme gentil travaille à la boulangerie. Il aime me donner à manger et de l
 | eat       | manger      | A1   | Common | false        |     |
 | and       | et          | A1   | Common | false        |     |
 | some      | de          | A1   | Common | false        | 4   |
-| water     | l'eau       | A1   | Common | false        | 4   |
+| the       | l' (la)     | A1   | Common | false        | 4   |
+| water     | eau         | A1   | Common | false        | 4   |
 | to        | à           | A1   | Common | false        |     |
 | drink     | boire       | A1   | Common | false        |     |
 | I         | Je          | A1   | Common | false        |     |
@@ -126,45 +127,47 @@ Est-ce que c'est facile d'être un chat dans la ville? Je ne sais pas. Pour moi,
 
 ### Vocabulary
 
-| English         | French     | CEFR | Rarity | Is Québécois | Tip |
-| --------------- | ---------- | ---- | ------ | ------------ | --- |
-| question marker | Est-ce que | A1   | Common | false        | 5   |
-| it              | c' (ce)    | A1   | Common | false        |     |
-| is              | est        | A1   | Common | false        |     |
-| easy            | facile     | A1   | Common | false        |     |
-| to              | d' (de)    | A1   | Common | false        |     |
-| be              | être       | A1   | Common | false        |     |
-| a               | un         | A1   | Common | false        |     |
-| cat             | chat       | A1   | Common | false        |     |
-| in              | dans       | A1   | Common | false        | 6   |
-| the             | la         | A1   | Common | false        | 6   |
-| city            | ville      | A1   | Common | false        | 6   |
-| I               | Je         | A1   | Common | false        |     |
-| not             | ne         | A1   | Common | false        | 7   |
-| know            | sais       | A1   | Common | false        |     |
-| not             | pas        | A1   | Common | false        | 7   |
-| for             | Pour       | A1   | Common | false        |     |
-| me              | moi        | A1   | Common | false        |     |
-| yes             | oui        | A1   | Common | false        |     |
-| and             | et         | A1   | Common | false        |     |
-| no              | non        | A1   | Common | false        |     |
-| it              | C' (ce)    | A1   | Common | false        |     |
-| is              | est        | A1   | Common | false        |     |
-| fun             | amusant    | A2   | Common | false        |     |
-| but             | mais       | A1   | Common | false        |     |
-| it              | c' (ce)    | A1   | Common | false        |     |
-| is              | est        | A1   | Common | false        |     |
-| also            | aussi      | A1   | Common | false        |     |
-| very            | très       | A1   | Common | false        |     |
-| dangerous       | dangereux  | A2   | Common | false        |     |
-| for             | pour       | A1   | Common | false        |     |
-| a               | un         | A1   | Common | false        |     |
-| cat             | chat       | A1   | Common | false        |     |
-| it (weather)    | Il         | A1   | Common | false        |     |
-| is (weather)    | fait       | A1   | Common | false        | 8   |
-| very            | très       | A1   | Common | false        |     |
-| cold            | froid      | A1   | Common | false        |     |
-| here            | ici        | A1   | Common | false        |     |
+| English      | French    | CEFR | Rarity | Is Québécois | Tip |
+| ------------ | --------- | ---- | ------ | ------------ | --- |
+| is           | Est       | A1   | Common | false        | 5   |
+| it           | ce        | A1   | Common | false        | 5   |
+| that         | que       | A1   | Common | false        | 5   |
+| it           | c' (ce)   | A1   | Common | false        |     |
+| is           | est       | A1   | Common | false        |     |
+| easy         | facile    | A1   | Common | false        |     |
+| to           | d' (de)   | A1   | Common | false        |     |
+| be           | être      | A1   | Common | false        |     |
+| a            | un        | A1   | Common | false        |     |
+| cat          | chat      | A1   | Common | false        |     |
+| in           | dans      | A1   | Common | false        | 6   |
+| the          | la        | A1   | Common | false        | 6   |
+| city         | ville     | A1   | Common | false        | 6   |
+| I            | Je        | A1   | Common | false        |     |
+| not          | ne        | A1   | Common | false        | 7   |
+| know         | sais      | A1   | Common | false        |     |
+| not          | pas       | A1   | Common | false        | 7   |
+| for          | Pour      | A1   | Common | false        |     |
+| me           | moi       | A1   | Common | false        |     |
+| yes          | oui       | A1   | Common | false        |     |
+| and          | et        | A1   | Common | false        |     |
+| no           | non       | A1   | Common | false        |     |
+| it           | C' (ce)   | A1   | Common | false        |     |
+| is           | est       | A1   | Common | false        |     |
+| fun          | amusant   | A2   | Common | false        |     |
+| but          | mais      | A1   | Common | false        |     |
+| it           | c' (ce)   | A1   | Common | false        |     |
+| is           | est       | A1   | Common | false        |     |
+| also         | aussi     | A1   | Common | false        |     |
+| very         | très      | A1   | Common | false        |     |
+| dangerous    | dangereux | A2   | Common | false        |     |
+| for          | pour      | A1   | Common | false        |     |
+| a            | un        | A1   | Common | false        |     |
+| cat          | chat      | A1   | Common | false        |     |
+| it (weather) | Il        | A1   | Common | false        |     |
+| is (weather) | fait      | A1   | Common | false        | 8   |
+| very         | très      | A1   | Common | false        |     |
+| cold         | froid     | A1   | Common | false        |     |
+| here         | ici       | A1   | Common | false        |     |
 
 ## Paragraph 5
 
@@ -184,14 +187,16 @@ Le matin, je marche jusqu'au parc. Je vois beaucoup d'oiseaux en chemin. Un, deu
 | morning              | matin       | A1   | Common | false        | 9   |
 | I                    | je          | A1   | Common | false        |     |
 | walk                 | marche      | A1   | Common | false        |     |
-| to the               | jusqu'au    | A2   | Common | false        | 11  |
+| up to                | jusqu'      | A2   | Common | false        | 11  |
+| to the               | au          | A1   | Common | false        | 11  |
 | park                 | parc        | A1   | Common | false        |     |
 | I                    | Je          | A1   | Common | false        |     |
 | see                  | vois        | A1   | Common | false        |     |
 | a lot                | beaucoup    | A1   | Common | false        |     |
 | of                   | d' (de)     | A1   | Common | false        |     |
 | birds                | oiseaux     | A1   | Common | false        |     |
-| on my way            | en chemin   | A2   | Common | false        |     |
+| on                   | en          | A1   | Common | false        |     |
+| way                  | chemin      | A2   | Common | false        |     |
 | one                  | Un          | A1   | Common | false        |     |
 | two                  | deux        | A1   | Common | false        |     |
 | three                | trois       | A1   | Common | false        |     |
@@ -204,7 +209,8 @@ Le matin, je marche jusqu'au parc. Je vois beaucoup d'oiseaux en chemin. Un, deu
 | them                 | eux         | A1   | Common | false        |     |
 | but                  | mais        | A1   | Common | false        |     |
 | they                 | ils         | A1   | Common | false        |     |
-| fly away             | s'envolent  | A2   | Common | false        |     |
+| themselves           | s' (se)     | A1   | Common | false        |     |
+| fly away             | envolent    | A2   | Common | false        |     |
 | the                  | Les         | A1   | Common | false        |     |
 | birds                | oiseaux     | A1   | Common | false        |     |
 | are                  | sont        | A1   | Common | false        |     |
@@ -229,7 +235,8 @@ Au parc, je joue dans l'herbe ou parfois dans la neige. Ensuite, je fais une sie
 | I            | je       | A1   | Common | false        |     |
 | play         | joue     | A1   | Common | false        |     |
 | in           | dans     | A1   | Common | false        |     |
-| the grass    | l'herbe  | A2   | Common | false        |     |
+| the          | l' (la)  | A1   | Common | false        |     |
+| grass        | herbe    | A2   | Common | false        |     |
 | or           | ou       | A1   | Common | false        |     |
 | sometimes    | parfois  | A1   | Common | false        |     |
 | in           | dans     | A1   | Common | false        |     |
@@ -275,59 +282,61 @@ Le soir, je vais au dépanneur du coin. Il fait chaud à l'intérieur et il est 
 
 ### Vocabulary
 
-| English              | French      | CEFR | Rarity | Is Québécois | Tip |
-| -------------------- | ----------- | ---- | ------ | ------------ | --- |
-| the (in the evening) | Le          | A1   | Common | false        | 10  |
-| evening              | soir        | A1   | Common | false        | 10  |
-| I                    | je          | A1   | Common | false        |     |
-| go                   | vais        | A1   | Common | false        |     |
-| to the               | au          | A1   | Common | false        |     |
-| convenience store    | dépanneur   | A2   | Common | true         | 3   |
-| of the               | du          | A1   | Common | false        | 13  |
-| corner               | coin        | A1   | Common | false        | 13  |
-| it (impersonal)      | Il          | A1   | Common | false        |     |
-| is (temperature)     | fait        | A1   | Common | false        | 8   |
-| warm                 | chaud       | A1   | Common | false        |     |
-| in                   | à           | A1   | Common | false        |     |
-| the inside           | l'intérieur | A2   | Common | false        |     |
-| and                  | et          | A1   | Common | false        |     |
-| it                   | il          | A1   | Common | false        |     |
-| is                   | est         | A1   | Common | false        |     |
-| open                 | ouvert      | A1   | Common | false        |     |
-| all                  | toute       | A1   | Common | false        |     |
-| the                  | la          | A1   | Common | false        |     |
-| night                | nuit        | A1   | Common | false        |     |
-| I                    | Je          | A1   | Common | false        |     |
-| watch                | regarde     | A1   | Common | false        |     |
-| the                  | les         | A1   | Common | false        |     |
-| people               | gens        | A1   | Common | false        |     |
-| enter                | entrer      | A1   | Common | false        | 14  |
-| and                  | et          | A1   | Common | false        |     |
-| leave                | sortir      | A1   | Common | false        | 14  |
-| while                | pendant que | A2   | Common | false        | 16  |
-| I                    | je          | A1   | Common | false        |     |
-| take                 | fais        | A1   | Common | false        | 12  |
-| a                    | une         | A1   | Common | false        | 12  |
-| nap                  | sieste      | A2   | Common | false        | 12  |
-| that                 | Ça          | A1   | Common | false        |     |
-| not                  | ne          | A1   | Common | false        | 7   |
-| bothers              | dérange     | A2   | Common | false        |     |
-| not                  | pas         | A1   | Common | false        | 7   |
-| the                  | l' (le)     | A1   | Common | false        |     |
-| man                  | homme       | A1   | Common | false        |     |
-| who                  | qui         | A1   | Common | false        |     |
-| works                | travaille   | A1   | Common | false        |     |
-| there                | là          | A1   | Common | false        |     |
-| I                    | Je          | A1   | Common | false        |     |
-| to him               | lui         | A1   | Common | false        | 15  |
-| say                  | dis         | A1   | Common | false        |     |
-| thank you            | Merci       | A1   | Common | false        |     |
-| but                  | Mais        | A1   | Common | false        |     |
-| I                    | je          | A1   | Common | false        |     |
-| am                   | suis        | A1   | Common | false        |     |
-| a                    | un          | A1   | Common | false        |     |
-| cat                  | chat        | A1   | Common | false        |     |
-| so                   | alors       | A1   | Common | false        |     |
-| he                   | il          | A1   | Common | false        |     |
-| hears                | entend      | A2   | Common | false        |     |
-| meow                 | Miaou       | A1   | Common | false        |     |
+| English              | French    | CEFR | Rarity | Is Québécois | Tip |
+| -------------------- | --------- | ---- | ------ | ------------ | --- |
+| the (in the evening) | Le        | A1   | Common | false        | 10  |
+| evening              | soir      | A1   | Common | false        | 10  |
+| I                    | je        | A1   | Common | false        |     |
+| go                   | vais      | A1   | Common | false        |     |
+| to the               | au        | A1   | Common | false        |     |
+| convenience store    | dépanneur | A2   | Common | true         | 3   |
+| of the               | du        | A1   | Common | false        | 13  |
+| corner               | coin      | A1   | Common | false        | 13  |
+| it (impersonal)      | Il        | A1   | Common | false        |     |
+| is (temperature)     | fait      | A1   | Common | false        | 8   |
+| warm                 | chaud     | A1   | Common | false        |     |
+| in                   | à         | A1   | Common | false        |     |
+| the                  | l' (le)   | A1   | Common | false        |     |
+| inside               | intérieur | A2   | Common | false        |     |
+| and                  | et        | A1   | Common | false        |     |
+| it                   | il        | A1   | Common | false        |     |
+| is                   | est       | A1   | Common | false        |     |
+| open                 | ouvert    | A1   | Common | false        |     |
+| all                  | toute     | A1   | Common | false        |     |
+| the                  | la        | A1   | Common | false        |     |
+| night                | nuit      | A1   | Common | false        |     |
+| I                    | Je        | A1   | Common | false        |     |
+| watch                | regarde   | A1   | Common | false        |     |
+| the                  | les       | A1   | Common | false        |     |
+| people               | gens      | A1   | Common | false        |     |
+| enter                | entrer    | A1   | Common | false        | 14  |
+| and                  | et        | A1   | Common | false        |     |
+| leave                | sortir    | A1   | Common | false        | 14  |
+| during               | pendant   | A2   | Common | false        | 16  |
+| that                 | que       | A1   | Common | false        | 16  |
+| I                    | je        | A1   | Common | false        |     |
+| take                 | fais      | A1   | Common | false        | 12  |
+| a                    | une       | A1   | Common | false        | 12  |
+| nap                  | sieste    | A2   | Common | false        | 12  |
+| that                 | Ça        | A1   | Common | false        |     |
+| not                  | ne        | A1   | Common | false        | 7   |
+| bothers              | dérange   | A2   | Common | false        |     |
+| not                  | pas       | A1   | Common | false        | 7   |
+| the                  | l' (le)   | A1   | Common | false        |     |
+| man                  | homme     | A1   | Common | false        |     |
+| who                  | qui       | A1   | Common | false        |     |
+| works                | travaille | A1   | Common | false        |     |
+| there                | là        | A1   | Common | false        |     |
+| I                    | Je        | A1   | Common | false        |     |
+| to him               | lui       | A1   | Common | false        | 15  |
+| say                  | dis       | A1   | Common | false        |     |
+| thank you            | Merci     | A1   | Common | false        |     |
+| but                  | Mais      | A1   | Common | false        |     |
+| I                    | je        | A1   | Common | false        |     |
+| am                   | suis      | A1   | Common | false        |     |
+| a                    | un        | A1   | Common | false        |     |
+| cat                  | chat      | A1   | Common | false        |     |
+| so                   | alors     | A1   | Common | false        |     |
+| he                   | il        | A1   | Common | false        |     |
+| hears                | entend    | A2   | Common | false        |     |
+| meow                 | Miaou     | A1   | Common | false        |     |

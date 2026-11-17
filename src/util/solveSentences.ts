@@ -1,7 +1,7 @@
 import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveSentence, SolveSentenceKeyword } from '@/src/components/Solve/solveTypes';
-import type { SolvePassageSegment } from './getSolvePassage';
 import { getCanonicalEnglishAnswers } from './englishWordParts';
+import type { SolvePassageSegment } from './getSolvePassage';
 import { getFrenchSentencePreposition, getSentenceKeywords } from './solveSentenceAnswer';
 import { getWordOrderCards, isCompleteWordOrder } from './solveWordOrder';
 import { splitFrenchSentences, type SentencePassage } from './splitFrenchSentences';
@@ -168,7 +168,11 @@ function getSentenceCardKeywords(
  */
 export function getSolveSentences(deck: Paragraph, words: SolveSentenceWord[]): SolveSentence[] {
 	const frenchSentences = splitFrenchSentences(deck);
-	const englishParts = deck.englishPassage?.match(/[^.!?...]+(?:[.!?...]+|$)/gu) ?? [];
+
+	/**
+	 * Keep a closing quote with its sentence so the next English prompt starts with its own words. One of those problems I would have never thought to think of.
+	 */
+	const englishParts = deck.englishPassage?.match(/[^.!?...]+(?:[.!?...]+[»”"'’)\]]*|$)/gu) ?? [];
 	const englishSentences = englishParts.filter(text => /[\p{L}\p{N}]/u.test(text));
 	const canPairEnglish = englishSentences.length === frenchSentences.length;
 	const wordsById = new Map(words.map(word => [word.id, word]));

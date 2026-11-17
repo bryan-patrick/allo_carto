@@ -11,6 +11,7 @@ import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import type {
 	SolveAttemptRequest,
 	SolveAttemptResult,
+	SolvePosition,
 	SolvePuzzle,
 	SolveReward,
 } from '@/src/components/Solve/solveTypes';
@@ -28,6 +29,7 @@ import {
 	solveStages,
 	type SolveWordStage,
 } from '@/src/util/solveProgression';
+import { getSolveSentenceGroups } from '@/src/util/solveSentenceGroups';
 import { useSoundEffect } from '@/src/util/useSoundEffect';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
@@ -63,7 +65,62 @@ interface SolveFeedback {
 	backgroundColor: string;
 }
 
+interface SolveSentencePage {
+	cards: SolvePosition[];
+	hasUnansweredWords: boolean;
+	hasPendingRewards: boolean;
+}
+
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
+
+/**
+ * The puzzles are chunked up by sentence for pagination. They were getting long.
+ */
+function getSolveSentencePages(puzzle?: SolvePuzzle): SolveSentencePage[] {
+	const unclaimedCardPositions = new Set<number>();
+
+	if (!puzzle) {
+		return [];
+	}
+
+	for (const reward of puzzle.rewards) {
+		if (reward.kind === 'card' && reward.claimedAt === null) {
+			unclaimedCardPositions.add(reward.position);
+		}
+	}
+
+	return getSolveSentenceGroups(puzzle.deck).map(sentenceGroup => {
+		const sentencePositions = new Set(sentenceGroup.segments.map(segment => segment.position));
+		const cards = puzzle.positions.filter(card => sentencePositions.has(card.position));
+		const hasUnansweredWords = cards.some(card => card.wordId && card.acceptedAnswer === null);
+		const hasPendingRewards = cards.some(card => unclaimedCardPositions.has(card.position));
+
+		return {
+			cards,
+			hasUnansweredWords,
+			hasPendingRewards,
+		};
+	});
+}
+
+/**
+ * Get the next sentence
+ */
+function getSolveSentencePageToOpen(sentencePages: SolveSentencePage[]): number | undefined {
+	let pageWithUnansweredWords: number | undefined;
+
+	for (const [pageIndex, sentencePage] of sentencePages.entries()) {
+		if (sentencePage.hasPendingRewards) {
+			return pageIndex;
+		}
+
+		if (sentencePage.hasUnansweredWords && pageWithUnansweredWords === undefined) {
+			pageWithUnansweredWords = pageIndex;
+		}
+	}
+
+	return pageWithUnansweredWords;
+}
 
 /**
  * Choose the message and color shown after a word answer is checked.
@@ -83,7 +140,7 @@ function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): So
 			backgroundColor: colors.light.danger,
 		},
 		empty: {
-			text: stage === 2 ? 'A French answer is required.' : 'An English answer is required.',
+			text: 'An English answer is required.',
 			backgroundColor: colors.light.warning,
 		},
 		notEnoughInk: {
@@ -100,13 +157,20 @@ function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): So
 		},
 	};
 
+	if (stage === 2) {
+		messages.empty.text = 'A French answer is required.';
+	}
+
 	return messages[result.status];
 }
 
 /**
- * Let the player select word cards and submit English or French answers for Ink.
+ * Lets the player solve English or French word cards one sentence page at a time.
  */
 export default function SolveView({ deckId, stage }: SolveViewProps) {
+	/**
+	 * Hooks and player progress
+	 */
 	const router = useRouter();
 	const { bottom, top } = useSafeAreaInsets();
 	const { id: userId } = useUserContext() ?? {};
@@ -120,12 +184,14 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	} = useUserProgress();
 	const { settings } = useAppSettings();
 	const playCorrectWord = useSoundEffect('correctWord');
-	const fastSolveUnlocks = settings.fastSolveUnlocks;
-	const stageDefinition = solveStages[stage];
-	const isFrenchAnswer = stageDefinition.answerLanguage === 'french';
+
+	/**
+	 * State
+	 */
 	const [puzzle, setPuzzle] = useState<SolvePuzzle>();
 	const [claimedGem, setClaimedGem] = useState<SolveReward>();
 	const [loadError, setLoadError] = useState('');
+	const [selectedSentencePageIndex, setSelectedSentencePageIndex] = useState(0);
 	const [selectedPosition, setSelectedPosition] = useState<number>();
 	const [answer, setAnswer] = useState('');
 	const [answerSelection, setAnswerSelection] = useState<SolveAnswerSelection>({
@@ -135,22 +201,55 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const [feedback, setFeedback] = useState<SolveFeedback | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
 	const [needsRetry, setNeedsRetry] = useState(false);
+
+	/**
+	 * Inputs and pending saves
+	 */
 	const isBusy = useRef(false);
 	const answerInput = useRef<TextInputInstance>(null);
 	const pendingAttempt = useRef<SolveAttemptRequest | null>(null);
-	const selectedCard = puzzle?.positions.find(card => card.position === selectedPosition);
+
+	/**
+	 * Sentence pages and paragraph progress
+	 */
+	const fastSolveUnlocks = settings.fastSolveUnlocks;
+	const stageDefinition = solveStages[stage];
+	const isFrenchAnswer = stageDefinition.answerLanguage === 'french';
+	const sentencePages = getSolveSentencePages(puzzle);
+	const selectedSentencePage = sentencePages[selectedSentencePageIndex];
+	const sentenceCards = selectedSentencePage?.cards ?? [];
+	const selectedCard = sentenceCards.find(card => card.position === selectedPosition);
+	const isSentenceSolved = sentenceCards.length > 0 && !selectedSentencePage?.hasUnansweredWords;
 	const cards = puzzle?.positions.filter(card => card.wordId) ?? [];
 	const solvedCount = cards.filter(card => card.acceptedAnswer !== null).length;
 	const savedCompletedStages = getCompletedSolveStages(progressById[deckId]);
 	const puzzleCompletedStages = puzzle?.completedSolveStages ?? 0;
-	const completedStages =
-		savedCompletedStages >= puzzleCompletedStages ? savedCompletedStages : puzzleCompletedStages;
+	let completedStages = savedCompletedStages;
+
+	if (puzzleCompletedStages > completedStages) {
+		completedStages = puzzleCompletedStages;
+	}
+
 	const isComplete = cards.length > 0 && solvedCount === cards.length && completedStages >= stage;
+
+	/**
+	 * XP claims and the next sentence
+	 */
 	const rewards = puzzle?.rewards ?? [];
 	const hasPendingCardRewards = rewards.some(
 		reward => reward.kind === 'card' && reward.claimedAt === null,
 	);
+	const hasPendingSentenceRewards = selectedSentencePage?.hasPendingRewards ?? false;
 	const pendingGem = rewards.find(reward => reward.kind === 'gem' && reward.claimedAt === null);
+	const isShowingGemClaim = Boolean(pendingGem && !hasPendingCardRewards);
+	const nextSentencePageIndex = sentencePages.findIndex(sentencePage => {
+		return sentencePage.hasUnansweredWords || sentencePage.hasPendingRewards;
+	});
+	const isShowingNextSentence = isSentenceSolved && !isComplete && !isShowingGemClaim;
+
+	/**
+	 * Puzzle eligibility
+	 */
 	const eligibility = getSolveStageEligibility({
 		stage,
 		completedStages,
@@ -169,29 +268,42 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	const isEligible = Boolean(
 		puzzle && (eligibility.isEligible || eligibility.lockReason === 'completed'),
 	);
+
+	/**
+	 * Answer availability
+	 */
 	const cardCost = selectedCard?.inkCost ?? 0;
-	const hasEnoughInk = selectedCard ? inkBalance >= cardCost : inkBalance > 0;
+	let hasEnoughInk = inkBalance > 0;
+
+	if (selectedCard) {
+		hasEnoughInk = inkBalance >= cardCost;
+	}
+
 	const hasUnsolvedCard = Boolean(selectedCard?.wordId && selectedCard.acceptedAnswer === null);
-	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
 	const disabled = isSaving || isUpdatingProgress;
+
+	/**
+	 * Keep the finished puzzle open until it has been claimed.
+	 */
+	const isCloseDisabled = disabled || Boolean(pendingGem && !isComplete);
 	const isInputDisabled =
 		disabled || needsRetry || !isEligible || !hasEnoughInk || !hasUnsolvedCard;
 	const canSubmit = isEligible && hasUnsolvedCard && hasEnoughInk && Boolean(answer.trim());
-	const isSubmitDisabled = disabled || (!needsRetry && !canSubmit);
-	const submitColor = isSubmitDisabled ? colors.dark.border : inkColor;
+	const isNextSentenceDisabled =
+		disabled || needsRetry || hasPendingSentenceRewards || nextSentencePageIndex === -1;
 	const needsInk = hasUnsolvedCard && !hasEnoughInk && !needsRetry;
+
+	/**
+	 * Story and layout
+	 */
 	const storyColor = getDeckStoryColor(deckId);
 	const paragraphNumber = getParagraphNumber(deckId);
-	const puzzleTitle = paragraphNumber ? `Solve Paragraph ${paragraphNumber}` : 'Solve';
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
 	const isLoading = !puzzle && !loadError;
 	const wordColor = {
 		color: storyColor,
-	};
-	const balanceColor = {
-		color: inkColor,
 	};
 	const containerInsets = {
 		paddingTop: top + 8,
@@ -200,32 +312,90 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		marginBottom: Math.max(bottom, 8),
 	};
 	const parchmentTint = {
-		backgroundColor: stage === 2 ? stageDefinition.backgroundTint : 'transparent',
+		backgroundColor: 'transparent',
 	};
-	const gemColor = stage === 2 ? colors.gems.second : colors.gems.first;
-	const gemTitle = stage === 2 ? 'Second gem earned!' : 'First gem earned!';
 	const statusTextStyle = {
 		backgroundColor: 'transparent',
 	};
 	const feedbackTextStyle = {
 		backgroundColor: feedback?.backgroundColor ?? 'transparent',
 	};
-	let submitLabel =
-		selectedCard ? `${stageDefinition.label} (${cardCost} Ink)` : stageDefinition.label;
+	const balanceColor = {
+		color: colors.ink.available,
+	};
+
+	/**
+	 * Initial display values
+	 */
+	let inkColor = colors.ink.available;
+	let submitColor = inkColor;
+	let isSubmitDisabled = disabled || (!needsRetry && !canSubmit);
+	let submitLabel = stageDefinition.label;
+	let puzzleTitle = 'Solve';
+	let gemColor = colors.gems.first;
+	let gemTitle = 'First gem earned!';
+	let keyboardBehavior: 'padding' | 'height' = 'height';
 	let prompt = 'No card selected.';
 	let statusMessage = '';
+	let puzzleNotice = loadError || unlockMessage;
 	let completionMessage =
 		'Complete Solve+ and Solve++ and claim all 3 gems to unlock the next paragraph.';
 
+	/**
+	 * Screen reader descriptions
+	 */
+	let answerAccessibilityLabel = 'English answer';
+	let answerPlaceholder = 'Type the English meaning';
+
+	if (!hasEnoughInk) {
+		inkColor = colors.ink.insufficient;
+	}
+
+	submitColor = inkColor;
+	balanceColor.color = inkColor;
+
+	if (isLoading) {
+		puzzleNotice = 'Loading puzzle...';
+	}
+
+	if (paragraphNumber) {
+		puzzleTitle = `Solve Paragraph ${paragraphNumber}`;
+	}
+
+	if (Platform.OS === 'ios') {
+		keyboardBehavior = 'padding';
+	}
+
 	if (stage === 2) {
+		parchmentTint.backgroundColor = stageDefinition.backgroundTint;
+		gemColor = colors.gems.second;
+		gemTitle = 'Second gem earned!';
 		completionMessage = 'Complete Solve++ and claim your third gem to unlock the next paragraph.';
 	}
 
+	if (isFrenchAnswer) {
+		answerAccessibilityLabel = 'French answer';
+		answerPlaceholder = 'Type the French word';
+	}
+
 	if (selectedCard) {
-		prompt =
-			isFrenchAnswer ?
-				`French word for “${selectedCard.englishPrompt}”`
-			:	`English meaning of “${selectedCard.text}”`;
+		submitLabel = `${stageDefinition.label} (${cardCost} Ink)`;
+		prompt = `English meaning of “${selectedCard.text}”`;
+
+		if (isFrenchAnswer) {
+			prompt = `French word for “${selectedCard.englishPrompt}”`;
+		}
+	}
+
+	if (isShowingNextSentence) {
+		submitLabel = 'Next sentence';
+		submitColor = storyColor;
+		isSubmitDisabled = isNextSentenceDisabled;
+		prompt = 'Sentence solved! Continue to the next sentence.';
+
+		if (hasPendingSentenceRewards) {
+			prompt = 'Claim the XP on this sentence’s solved cards to continue.';
+		}
 	}
 
 	if (needsInk) {
@@ -242,6 +412,10 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	if (disabled) {
 		statusMessage = 'Saving...';
 		statusTextStyle.backgroundColor = 'transparent';
+	}
+
+	if (isSubmitDisabled) {
+		submitColor = colors.dark.border;
 	}
 
 	useFocusEffect(
@@ -267,9 +441,12 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 						stage,
 						fastSolveUnlocks,
 					});
+					const savedSentencePages = getSolveSentencePages(savedPuzzle);
+					const sentencePageToOpen = getSolveSentencePageToOpen(savedSentencePages);
 
 					if (isActive) {
 						setPuzzle(savedPuzzle);
+						setSelectedSentencePageIndex(sentencePageToOpen ?? 0);
 						setSelectedPosition(undefined);
 						setAnswer('');
 						setAnswerSelection({
@@ -297,7 +474,14 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		}, [deckId, userId, stage, fastSolveUnlocks]),
 	);
 
+	/**
+	 * Selects a word card and clears the previous answer and feedback.
+	 */
 	function handleSelectCard(position: number) {
+		if (disabled || needsRetry || isBusy.current) {
+			return;
+		}
+
 		setSelectedPosition(position);
 		setAnswer('');
 		setAnswerSelection({
@@ -307,6 +491,33 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		setFeedback(null);
 	}
 
+	/**
+	 * Opens the next sentence that needs answers or XP claims.
+	 */
+	function handleNextSentence() {
+		if (
+			isNextSentenceDisabled ||
+			isBusy.current ||
+			!isSentenceSolved ||
+			nextSentencePageIndex === -1
+		) {
+			return;
+		}
+
+		setSelectedSentencePageIndex(nextSentencePageIndex);
+		setSelectedPosition(undefined);
+		setAnswer('');
+		setAnswerSelection({
+			start: 0,
+			end: 0,
+		});
+		setFeedback(null);
+		pendingAttempt.current = null;
+	}
+
+	/**
+	 * Updates the cursor position used by the French character keyboard.
+	 */
 	function handleAnswerSelection(event: TextInputSelectionChangeEvent) {
 		setAnswerSelection(event.nativeEvent.selection);
 	}
@@ -334,10 +545,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	/**
-	 * Show the saved answer on every occurrence of the solved word.
-	 *
-	 * For example, if chat appears three times, answering
-	 * “cat” once fills answers all three occurrences.
+	 * Shows the accepted answer and XP claims on every solved word.
 	 */
 	function updateSavedCard(position: number, result: SolveAttemptResult) {
 		const acceptedAnswer = result.acceptedAnswer;
@@ -383,8 +591,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	/**
-	 * Show the solved card's usual success
-	 * appearance after its XP has been claimed.
+	 * Shows the solved card's usual success appearance after its XP has been claimed.
 	 */
 	function handleCardRewardClaimed(reward: SolveReward) {
 		setPuzzle(current => {
@@ -408,9 +615,14 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	/**
-	 * Submit an answer and keep its ID for receipt
+	 * Submits a word answer or opens the next sentence when the current sentence is finished.
 	 */
 	async function handleSubmit() {
+		if (isShowingNextSentence) {
+			handleNextSentence();
+			return;
+		}
+
 		if (disabled || isBusy.current || (!needsRetry && !canSubmit) || !selectedCard) {
 			return;
 		}
@@ -442,9 +654,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 			setFeedback(getSolveFeedback(result, stage));
 			updateSavedCard(selectedCard.position, result);
 
-			/**
-			 * Play once for the accepted answer, even when it solves several repeated cards.
-			 */
 			if (result.status === 'exact' || result.status === 'close') {
 				void playCorrectWord();
 			}
@@ -466,8 +675,11 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		}
 	}
 
+	/**
+	 * Closes the puzzle and returns to the paragraph selection view.
+	 */
 	function handleClose() {
-		if (disabled || isBusy.current) {
+		if (isCloseDisabled || isBusy.current) {
 			return;
 		}
 
@@ -492,7 +704,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	return (
 		<KeyboardAvoidingView
 			style={[styles.container, containerInsets]}
-			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+			behavior={keyboardBehavior}
 		>
 			<BackgroundImage
 				source={postcardBackground}
@@ -522,9 +734,12 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 						accessibilityRole="button"
 						accessibilityLabel={`Close ${stageDefinition.label}`}
 						accessibilityHint="Return to paragraph selection. Your solved cards are saved."
-						disabled={disabled}
+						accessibilityState={{
+							disabled: isCloseDisabled,
+						}}
+						disabled={isCloseDisabled}
 						onPress={handleClose}
-						style={styles.closeButton}
+						style={[styles.closeButton, isCloseDisabled && styles.disabledCloseButton]}
 					>
 						<MaterialSymbol
 							name="close"
@@ -535,9 +750,16 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 				</View>
 				<View style={styles.progressHeader}>
 					{isEligible && (
-						<Text style={styles.progress}>
-							{solvedCount} / {cards.length} cards solved
-						</Text>
+						<View style={styles.progressDetails}>
+							{!isComplete && !isShowingGemClaim && sentencePages.length > 0 && (
+								<Text style={styles.progress}>
+									Sentence {selectedSentencePageIndex + 1} of {sentencePages.length}
+								</Text>
+							)}
+							<Text style={styles.progress}>
+								{solvedCount} / {cards.length} cards solved
+							</Text>
+						</View>
 					)}
 					<View style={styles.ink}>
 						<MaterialSymbol
@@ -550,19 +772,16 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 						</Text>
 					</View>
 				</View>
-				{!isEligible && (
-					<Text style={styles.notice}>
-						{isLoading ? 'Loading puzzle...' : loadError || unlockMessage}
-					</Text>
-				)}
+				{!isEligible && <Text style={styles.notice}>{puzzleNotice}</Text>}
 				{isEligible && (
 					<>
 						<ScrollView
+							key={`${deckId}-${stage}-${selectedSentencePageIndex}`}
 							style={styles.scroll}
 							contentContainerStyle={styles.grid}
 							keyboardShouldPersistTaps="handled"
 						>
-							{puzzle?.positions.map(card => (
+							{sentenceCards.map(card => (
 								<SolveCard
 									key={card.position}
 									deckId={deckId}
@@ -584,7 +803,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 				<View style={styles.editor}>
 					{isEligible && (
 						<>
-							{isComplete ?
+							{isComplete && (
 								<View style={styles.completion}>
 									<MaterialSymbol
 										name="diamond"
@@ -596,18 +815,17 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 									<Text style={styles.word}>{gemTitle}</Text>
 									<Text style={styles.text}>{completionMessage}</Text>
 								</View>
-							: pendingGem && !hasPendingCardRewards ?
+							)}
+							{!isComplete && isShowingGemClaim && pendingGem && (
 								<SolveGemClaim
 									deckId={deckId}
 									reward={pendingGem}
 									disabled={disabled}
 									onClaimed={setClaimedGem}
 								/>
-							: pendingGem ?
-								<Text style={styles.text}>
-									Claim the XP on your solved cards to reveal your gem.
-								</Text>
-							:	<>
+							)}
+							{!isComplete && !isShowingGemClaim && (
+								<>
 									<Text style={styles.text}>{prompt}</Text>
 									{Boolean(statusMessage) && (
 										<Text
@@ -625,28 +843,28 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 											<Text style={feedbackTextStyle}>{feedback.text}</Text>
 										</Text>
 									)}
-									<TextInput
-										ref={answerInput}
-										accessibilityLabel={isFrenchAnswer ? 'French answer' : 'English answer'}
-										accessibilityState={{
-											disabled: isInputDisabled,
-										}}
-										placeholder={
-											isFrenchAnswer ? 'Type the French word' : 'Type the English meaning'
-										}
-										placeholderTextColor={colors.light.border}
-										value={answer}
-										selection={answerSelection}
-										onChangeText={setAnswer}
-										onSelectionChange={handleAnswerSelection}
-										editable={!isInputDisabled}
-										autoCorrect={false}
-										autoCapitalize="none"
-										returnKeyType="done"
-										onSubmitEditing={handleSubmit}
-										style={[styles.input, isInputDisabled && styles.disabledInput]}
-									/>
-									{isFrenchAnswer && (
+									{!isShowingNextSentence && (
+										<TextInput
+											ref={answerInput}
+											accessibilityLabel={answerAccessibilityLabel}
+											accessibilityState={{
+												disabled: isInputDisabled,
+											}}
+											placeholder={answerPlaceholder}
+											placeholderTextColor={colors.light.border}
+											value={answer}
+											selection={answerSelection}
+											onChangeText={setAnswer}
+											onSelectionChange={handleAnswerSelection}
+											editable={!isInputDisabled}
+											autoCorrect={false}
+											autoCapitalize="none"
+											returnKeyType="done"
+											onSubmitEditing={handleSubmit}
+											style={[styles.input, isInputDisabled && styles.disabledInput]}
+										/>
+									)}
+									{isFrenchAnswer && !isShowingNextSentence && (
 										<SolveCharacterKeyboard
 											color={storyColor}
 											disabled={isInputDisabled}
@@ -654,14 +872,18 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 										/>
 									)}
 								</>
-							}
+							)}
 						</>
 					)}
 					<View style={styles.actions}>
 						<View style={styles.actionButton}>
 							<SecondaryButton
 								onPress={handleClose}
-								disabled={disabled}
+								disabled={isCloseDisabled}
+								accessibilityState={{
+									disabled: isCloseDisabled,
+								}}
+								style={isCloseDisabled && styles.disabledCloseButton}
 								color={storyColor}
 								type="outline"
 								fullwidth
@@ -669,7 +891,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 								Close
 							</SecondaryButton>
 						</View>
-						{isEligible && !isComplete && !pendingGem && (
+						{isEligible && !isComplete && !isShowingGemClaim && (
 							<View style={styles.solveActionButton}>
 								<LinkButton
 									handler={handleSubmit}
@@ -706,6 +928,9 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
  * Styles
  */
 const styles = StyleSheet.create({
+	disabledCloseButton: {
+		opacity: 0.4,
+	},
 	disabledSubmit: {
 		opacity: 0.8,
 	},
@@ -785,6 +1010,10 @@ const styles = StyleSheet.create({
 	progress: {
 		fontFamily: 'lexend-400',
 		fontSize: 14,
+	},
+	progressDetails: {
+		flexShrink: 1,
+		gap: 4,
 	},
 	scroll: {
 		flex: 1,

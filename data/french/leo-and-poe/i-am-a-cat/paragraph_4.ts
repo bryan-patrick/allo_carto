@@ -1,142 +1,151 @@
+import { cityExpressionsTip, negationTip, questionMarkerTip, weatherTip } from '@/data/french/tips';
 import { createParagraph } from '@/src/util/createParagraph';
 
 export const paragraph4 = createParagraph({
 	id: 'deck__life_in_the_city',
-	description: 'Leo shares what he likes about the city and what makes life difficult.',
+	description: 'Leo considers the fun and dangers of being a cat in the city.',
 	CEFR: ['A1', 'A2'],
 	englishPassage:
-		'I like the city. It is very beautiful. There is a lot to see and do. People like me and they often give me food. However, it can be dangerous for a cat. It can be very cold here.',
+		'Is it easy to be a cat in the city? I do not know. For me, yes and no. It is fun, but it is also very dangerous for a cat. It is very cold here.',
 	passage: [
 		{
-			text: 'J’aime',
-			wordId: 'word_expression_j_aime',
+			text: 'Est',
+			wordId: 'word_auxiliary_est',
+			tipId: questionMarkerTip.id,
+			after: '-',
 		},
 		{
-			text: 'la',
-			wordId: 'word_article_la',
+			text: 'ce',
+			wordId: 'word_pronoun_ce',
+			tipId: questionMarkerTip.id,
 		},
 		{
-			text: 'ville',
-			wordId: 'word_noun_ville',
-			after: '. ',
+			text: 'que',
+			wordId: 'word_conjunction_que',
+			tipId: questionMarkerTip.id,
 		},
 		{
-			text: 'Elle',
-			wordId: 'word_pronoun_elle',
+			text: 'c’',
+			wordId: 'word_pronoun_ce_elision',
+			after: '',
 		},
 		{
 			text: 'est',
 			wordId: 'word_auxiliary_est',
 		},
 		{
-			text: 'très',
-			wordId: 'word_adverb_tres',
+			text: 'facile',
+			wordId: 'word_adjective_facile',
 		},
 		{
-			text: 'belle',
-			wordId: 'word_adjective_belle',
-			after: '. ',
-		},
-		{
-			text: 'Il y a',
-			wordId: 'word_expression_il_y_a',
-		},
-		{
-			text: 'beaucoup',
-			wordId: 'word_adverb_beaucoup',
-			canonicalEnglish: 'a lot',
-		},
-		{
-			text: 'de',
-			wordId: 'word_preposition_de',
-		},
-		{
-			text: 'choses',
-			wordId: 'word_noun_choses',
-		},
-		{
-			text: 'à',
-			wordId: 'word_preposition_a',
-		},
-		{
-			text: 'voir',
-			wordId: 'word_verb_voir',
-		},
-		{
-			text: 'et',
-			wordId: 'word_conjunction_et',
-		},
-		{
-			text: 'à',
-			wordId: 'word_preposition_a',
-		},
-		{
-			text: 'faire',
-			wordId: 'word_verb_faire',
-			after: '. ',
-		},
-		{
-			text: 'Les',
-			wordId: 'word_article_les',
-		},
-		{
-			text: 'gens',
-			wordId: 'word_noun_gens',
-		},
-		{
-			text: 'm’aiment',
-			wordId: 'word_expression_m_aiment',
-		},
-		{
-			text: 'bien',
-			wordId: 'word_adverb_bien',
-		},
-		{
-			text: 'et',
-			wordId: 'word_conjunction_et',
-		},
-		{
-			text: 'me',
-			wordId: 'word_pronoun_me',
-			canonicalEnglish: 'me',
-		},
-		{
-			text: 'donnent',
-			wordId: 'word_verb_donnent',
-		},
-		{
-			text: 'souvent',
-			wordId: 'word_adverb_souvent',
-		},
-		{
-			text: 'à',
-			wordId: 'word_preposition_a',
-		},
-		{
-			text: 'manger',
-			wordId: 'word_verb_manger',
-			after: '. ',
-		},
-		{
-			text: 'Par',
-			wordId: 'word_preposition_par',
-		},
-		{
-			text: 'contre',
-			wordId: 'word_preposition_contre',
-			after: ', ',
-		},
-		{
-			text: 'ça',
-			wordId: 'word_pronoun_ca',
-		},
-		{
-			text: 'peut',
-			wordId: 'word_verb_peut',
+			text: 'd’',
+			wordId: 'word_preposition_de_elision',
+			canonicalEnglish: 'to',
+			after: '',
 		},
 		{
 			text: 'être',
 			wordId: 'word_verb_etre',
+		},
+		{
+			text: 'un',
+			wordId: 'word_article_un',
+		},
+		{
+			text: 'chat',
+			wordId: 'word_noun_chat',
+		},
+		{
+			text: 'dans',
+			wordId: 'word_preposition_dans',
+			tipId: cityExpressionsTip.id,
+		},
+		{
+			text: 'la',
+			wordId: 'word_article_la',
+			tipId: cityExpressionsTip.id,
+		},
+		{
+			text: 'ville',
+			wordId: 'word_noun_ville',
+			tipId: cityExpressionsTip.id,
+			after: '? ',
+		},
+		{
+			text: 'Je',
+			wordId: 'word_pronoun_je',
+		},
+		{
+			text: 'ne',
+			wordId: 'word_adverb_ne',
+			tipId: negationTip.id,
+		},
+		{
+			text: 'sais',
+			wordId: 'word_verb_sais',
+		},
+		{
+			text: 'pas',
+			wordId: 'word_adverb_pas',
+			tipId: negationTip.id,
+			after: '. ',
+		},
+		{
+			text: 'Pour',
+			wordId: 'word_preposition_pour',
+		},
+		{
+			text: 'moi',
+			wordId: 'word_pronoun_moi',
+			after: ', ',
+		},
+		{
+			text: 'oui',
+			wordId: 'word_adverb_oui',
+		},
+		{
+			text: 'et',
+			wordId: 'word_conjunction_et',
+		},
+		{
+			text: 'non',
+			wordId: 'word_adverb_non',
+			after: '. ',
+		},
+		{
+			text: 'C’',
+			wordId: 'word_pronoun_ce_elision',
+			after: '',
+		},
+		{
+			text: 'est',
+			wordId: 'word_auxiliary_est',
+		},
+		{
+			text: 'amusant',
+			wordId: 'word_adjective_amusant',
+			after: ', ',
+		},
+		{
+			text: 'mais',
+			wordId: 'word_conjunction_mais',
+		},
+		{
+			text: 'c’',
+			wordId: 'word_pronoun_ce_elision',
+			after: '',
+		},
+		{
+			text: 'est',
+			wordId: 'word_auxiliary_est',
+		},
+		{
+			text: 'aussi',
+			wordId: 'word_adverb_aussi',
+		},
+		{
+			text: 'très',
+			wordId: 'word_adverb_tres',
 		},
 		{
 			text: 'dangereux',
@@ -161,13 +170,10 @@ export const paragraph4 = createParagraph({
 			canonicalEnglish: 'it',
 		},
 		{
-			text: 'peut',
-			wordId: 'word_verb_peut',
-		},
-		{
-			text: 'faire',
-			wordId: 'word_verb_faire',
-			canonicalEnglish: 'be',
+			text: 'fait',
+			wordId: 'word_verb_fait',
+			canonicalEnglish: 'is',
+			tipId: weatherTip.id,
 		},
 		{
 			text: 'très',
@@ -178,8 +184,8 @@ export const paragraph4 = createParagraph({
 			wordId: 'word_adjective_froid',
 		},
 		{
-			text: 'icitte',
-			wordId: 'word_adverb_icitte',
+			text: 'ici',
+			wordId: 'word_adverb_ici',
 			after: '.',
 		},
 	],

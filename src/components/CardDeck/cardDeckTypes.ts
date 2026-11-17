@@ -105,6 +105,10 @@ export interface Word {
 	 */
 	canonicalEnglish?: CanonicalEnglish | null;
 	elision?: WordElision;
+	/**
+	 * The full spelling of an elision, such as me for m’.
+	 */
+	fullFrenchWord?: string;
 	tipId?: string;
 	frenchArticle?: string;
 	englishArticle?: string;

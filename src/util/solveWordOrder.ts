@@ -2,7 +2,12 @@ import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveWordOrderCard } from '@/src/components/Solve/solveTypes';
 import { getSolvePassage, type SolvePassageSegment } from './getSolvePassage';
 import shuffleArray from './shuffleArray';
-import { splitFrenchSentences, type SentencePassage } from './splitFrenchSentences';
+import { getSolveSentenceGroups } from './solveSentenceGroups';
+
+export {
+	getSolveSentenceGroups as getWordOrderSentences,
+	type SolveSentenceGroup as WordOrderSentence,
+} from './solveSentenceGroups';
 
 /**
  * Typing
@@ -12,64 +17,6 @@ export interface CheckWordOrderAnswerOptions {
 	positions: number[];
 	sentencePosition?: number;
 	lockedCardIds?: number[];
-}
-
-export interface WordOrderSentence extends SentencePassage {
-	originalSentencePositions: number[];
-}
-
-/**
- * Sometimes sentences are one word. It is actually super confusing looking
- * on the puzzle view when this happens so instead of having one word
- * sentences to solve we just combine them with the next or previous
- * sentence instead.
- */
-export function getWordOrderSentences(deck: Paragraph): WordOrderSentence[] {
-	/**
-	 * Store the original sentences and puzzle groups
-	 */
-	const sentences = splitFrenchSentences(deck);
-	const groups: WordOrderSentence[] = [];
-	let pendingGroup: WordOrderSentence | undefined;
-
-	for (const [sentencePosition, sentence] of sentences.entries()) {
-		const wordCards = sentence.segments.filter(segment => /[\p{L}\p{N}]/u.test(segment.text));
-
-		if (!pendingGroup) {
-			pendingGroup = {
-				text: '',
-				segments: [],
-				originalSentencePositions: [],
-			};
-		}
-
-		if (pendingGroup.text) {
-			pendingGroup.text += ' ';
-		}
-
-		pendingGroup.text += sentence.text;
-		pendingGroup.segments.push(...sentence.segments);
-		pendingGroup.originalSentencePositions.push(sentencePosition);
-
-		if (wordCards.length > 1) {
-			groups.push(pendingGroup);
-			pendingGroup = undefined;
-		}
-	}
-
-	if (pendingGroup) {
-		const previousGroup = groups[groups.length - 1];
-
-		if (previousGroup) {
-			previousGroup.text += ` ${pendingGroup.text}`;
-			previousGroup.segments.push(...pendingGroup.segments);
-			previousGroup.originalSentencePositions.push(...pendingGroup.originalSentencePositions);
-		} else {
-			groups.push(pendingGroup);
-		}
-	}
-
-	return groups;
 }
 
 /**
@@ -105,7 +52,7 @@ export function getWordOrderCards(
 	let passage = getSolvePassage(deck.passage);
 
 	if (sentencePosition !== undefined) {
-		passage = getWordOrderSentences(deck)[sentencePosition]?.segments ?? [];
+		passage = getSolveSentenceGroups(deck)[sentencePosition]?.segments ?? [];
 	}
 
 	return getWordOrderCardsFromSegments(passage);

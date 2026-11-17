@@ -50,25 +50,17 @@ function getFormDescription(candidate: OtherWordForm, currentWord: Word): string
 }
 
 /**
- * Describes another word form with its English meanings and the type of form.
+ * Shows a related French word and its type of form.
  */
 export default function formatOtherWordForm(candidate: OtherWordForm, currentWord: Word): string {
 	/**
-	 * Word meanings and grammar details
+	 * French word and form description
 	 */
 	const word = formatFrenchWordWithArticle({
 		article: candidate.frenchArticle,
 		word: candidate.frenchWord,
 	});
-	const englishMeanings = candidate.englishWords.join(' / ');
 	const formDescription = getFormDescription(candidate, currentWord);
-	let formattedWord = word;
 
-	if (englishMeanings !== '') {
-		formattedWord += ` — ${englishMeanings}`;
-	}
-
-	formattedWord += ` (${formDescription})`;
-
-	return formattedWord;
+	return `${word} (${formDescription})`;
 }

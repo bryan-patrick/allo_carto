@@ -2,28 +2,9 @@ import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import type { VocabularyCollection } from '../collectionAtlas';
 
 /**
- * Keep dictionary details for kitchen stamps that are outside the current story.
- * Bread uses its existing word from Leo and Poe.
+ *
  */
 export const leosKitchenWords: Word[] = [
-	{
-		id: 'word_noun_croissant',
-		frenchWord: 'croissant',
-		englishWords: ['croissant'],
-		canonicalEnglish: 'croissant',
-		pronunciation: 'luh krwah-sahn',
-		ipaPronunciation: 'lə kʁwɑsɑ̃',
-		CEFR: 'A1',
-		partOfSpeech: 'noun',
-		rarity: 'Common',
-		frenchArticle: 'le',
-		englishArticle: 'the',
-		gender: 'Masculine',
-		lemmaId: 'croissant',
-		form: 'masculine',
-		isVulgar: false,
-		correctCount: 0,
-	},
 	{
 		id: 'word_noun_grille_pain',
 		frenchWord: 'grille-pain',

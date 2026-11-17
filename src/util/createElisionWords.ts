@@ -1,8 +1,7 @@
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 
 /**
- * Add each word's short apostrophe form.
- * A shared lemma makes the full and short forms appear under Other forms (I hope).
+ * Add each word's elision with its full spelling and shared words.
  */
 export function createElisionWords(words: Word[]): Word[] {
 	/**
@@ -30,6 +29,7 @@ export function createElisionWords(words: Word[]): Word[] {
 			lemmaId,
 			form: 'elision',
 			elision: undefined,
+			fullFrenchWord: word.frenchWord,
 		});
 	}
 

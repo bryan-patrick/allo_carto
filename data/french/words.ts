@@ -1,8 +1,7 @@
 import { createElisionWords } from '@/src/util/createElisionWords';
-import { leosKitchenWords } from './collections/leos-kitchen';
 import { leoAndPoeWords } from './leo-and-poe/words';
 
 /**
- * Builds the active story and collection vocabulary
+ * Builds the vocabulary used by the active story paragraphs and their related word forms.
  */
-export const seedWords = createElisionWords([...leoAndPoeWords, ...leosKitchenWords]);
+export const seedWords = createElisionWords(leoAndPoeWords);
