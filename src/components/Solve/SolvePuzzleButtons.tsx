@@ -29,10 +29,17 @@ interface SolvePuzzleButtonProps extends SolvePuzzleButtonsProps {
 	unlockMessage: string;
 }
 
+interface PuzzleButtonGradient {
+	colors: readonly [string, string, ...string[]];
+}
+
 /**
- * Puzzle order
+ * Puzzle order and completed colors
  */
 const puzzleStages: SolveStage[] = [1, 2, 3, 4, 5];
+const completedPuzzleGradient: PuzzleButtonGradient = {
+	colors: [`${colors.gems.earned}0D`, `${colors.gems.earned}33`],
+};
 
 /**
  * Shows all five paragraph puzzles with their progress and next available puzzle.
@@ -130,6 +137,7 @@ function SolvePuzzleButton({
 	const isDisabled = disabled || !isUnlocked;
 	const isCurrentPuzzleUnlocked = isCurrentPuzzle && isUnlocked;
 	const definition = solveStages[stage];
+	let gradientColors = definition.buttonGradient;
 	let borderColor = color;
 	let iconColor = color;
 	let actionSymbol = 'extension';
@@ -153,6 +161,7 @@ function SolvePuzzleButton({
 	}
 
 	if (isCompleted) {
+		gradientColors = completedPuzzleGradient.colors;
 		actionSymbol = 'check';
 		iconColor = colors.dark.success;
 		accessibilityLabel = `Puzzle ${stage}, completed`;
@@ -201,9 +210,9 @@ function SolvePuzzleButton({
 							},
 						]}
 					>
-						{isUnlocked && (
+						{(isUnlocked || isCompleted) && (
 							<LinearGradient
-								colors={definition.buttonGradient}
+								colors={gradientColors}
 								start={{
 									x: 0,
 									y: 1,
