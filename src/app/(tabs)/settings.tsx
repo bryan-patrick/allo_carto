@@ -1,3 +1,4 @@
+import { buttonContentStyles } from '@/src/components/buttonContentStyles';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { useState } from 'react';
 import {
@@ -218,7 +219,10 @@ export default function Settings() {
 								accessibilityRole="link"
 								accessibilityHint="Opens the support guide in your browser."
 								onPress={() => openVoiceDownloadGuide(guide.url)}
-								style={styles.voiceGuideLink}
+								style={({ pressed }) => [
+									styles.voiceGuideLink,
+									pressed && buttonContentStyles.pressedMiniButton,
+								]}
 							>
 								<Text style={[styles.text, styles.linkText]}>{guide.linkLabel}</Text>
 							</Pressable>
@@ -372,12 +376,13 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	voiceGuideLink: {
-		minHeight: 44,
+		...buttonContentStyles.miniButton,
+		borderColor: colors.light.goldenBorder,
 		justifyContent: 'center',
 	},
 	linkText: {
+		...buttonContentStyles.label,
 		color: colors.light.goldenBorder,
-		textDecorationLine: 'underline',
 	},
 	cardCountOptions: {
 		flexDirection: 'row',

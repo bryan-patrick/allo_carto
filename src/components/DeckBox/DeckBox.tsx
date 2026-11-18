@@ -1,3 +1,8 @@
+import {
+	buttonContentStyles,
+	buttonIconGap,
+	buttonIconSize,
+} from '@/src/components/buttonContentStyles';
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
@@ -306,16 +311,26 @@ export default function DeckBox({ deck, isLocked, unlockCriteria }: DeckBoxProps
 										onPressOut={handlePassageButtonPressOut}
 										style={[styles.passageButton, { borderColor: storyColor }]}
 									>
-										<Text style={[styles.passageButtonText, { color: storyColor }]}>Read</Text>
 										<Animated.View
 											style={{ transform: [{ translateY: passageChevronTranslateY }] }}
 										>
 											<MaterialSymbol
+												style={buttonContentStyles.icon}
 												name="keyboard_arrow_up"
-												size={20}
+												size={buttonIconSize}
 												color={storyColor}
 											/>
 										</Animated.View>
+										<Text
+											style={[
+												styles.passageButtonText,
+												{
+													color: storyColor,
+												},
+											]}
+										>
+											Read
+										</Text>
 									</Pressable>
 									<SolvePuzzleButtons
 										deckId={deck.id}
@@ -456,6 +471,7 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	passageButton: {
+		gap: buttonIconGap,
 		display: 'flex',
 		justifyContent: 'center',
 		alignContent: 'center',
@@ -466,8 +482,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 4,
 	},
 	passageButtonText: {
-		fontFamily: 'lexend-700',
-		fontSize: 14,
+		...buttonContentStyles.label,
 	},
 	deckInfoContainer: {
 		display: 'flex',

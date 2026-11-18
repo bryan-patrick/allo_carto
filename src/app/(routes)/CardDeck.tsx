@@ -1,3 +1,8 @@
+import {
+	buttonContentStyles,
+	buttonIconGap,
+	buttonIconSize,
+} from '@/src/components/buttonContentStyles';
 import { getTipById } from '@/data/french/tips';
 import colors from '@/src/app/colors';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
@@ -215,37 +220,33 @@ export default function CardDeck() {
 				/>
 			:	<CardDeckView
 					currentCard={currentCard}
-					paragraphAction={
-						<Pressable
-							accessibilityLabel="Read paragraph"
-							accessibilityRole="button"
-							accessibilityState={{
-								disabled: isPassageDisabled,
-							}}
-							disabled={isPassageDisabled}
-							hitSlop={8}
-							onPress={handleShowPassage}
-							style={styles.wordLink}
-						>
-							<Text
-								style={[
-									sharedWordCardStyles.wordDetailText,
-									styles.wordLinkText,
-									styles.paragraphLinkText,
-								]}
-							>
-								Read paragraph
-							</Text>
-							<MaterialSymbol
-								name="menu_book"
-								size={16}
-								color={colors.light.primary}
-							/>
-						</Pressable>
-					}
 					wordActions={
 						<View style={styles.wordActions}>
-							<View style={sharedWordCardStyles.wordMetaContainer}>
+							<View style={[sharedWordCardStyles.wordMetaContainer, styles.wordActionButtons]}>
+								<Pressable
+									accessibilityRole="button"
+									accessibilityLabel="Read paragraph"
+									accessibilityState={{
+										disabled: isPassageDisabled,
+									}}
+									disabled={isPassageDisabled}
+									onPress={handleShowPassage}
+									hitSlop={8}
+									style={({ pressed }) => [
+										styles.wordLink,
+										pressed && buttonContentStyles.pressedMiniButton,
+									]}
+								>
+									<MaterialSymbol
+										name="menu_book"
+										style={buttonContentStyles.icon}
+										size={buttonIconSize}
+										color={colors.dark.primary}
+									/>
+									<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
+										Read
+									</Text>
+								</Pressable>
 								{shouldShowOtherForms && (
 									<>
 										<Pressable
@@ -253,68 +254,68 @@ export default function CardDeck() {
 											accessibilityRole="button"
 											hitSlop={8}
 											onPress={handleShowOtherForms}
-											style={styles.wordLink}
+											style={({ pressed }) => [
+												styles.wordLink,
+												pressed && buttonContentStyles.pressedMiniButton,
+											]}
 										>
+											<MaterialSymbol
+												style={buttonContentStyles.icon}
+												name="language"
+												size={buttonIconSize}
+												color={colors.dark.primary}
+											/>
 											<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
 												Other forms
 											</Text>
-											<MaterialSymbol
-												name="language"
-												size={16}
-												color={colors.dark.primary}
-											/>
 										</Pressable>
 									</>
 								)}
 								{shouldShowElision && (
 									<>
-										{shouldShowOtherForms && (
-											<View
-												accessible={false}
-												style={sharedWordCardStyles.wordDetailDivider}
-											/>
-										)}
 										<Pressable
 											accessibilityLabel="Learn about elisions"
 											accessibilityRole="button"
 											hitSlop={8}
 											onPress={() => setIsElisionVisible(true)}
-											style={styles.wordLink}
+											style={({ pressed }) => [
+												styles.wordLink,
+												pressed && buttonContentStyles.pressedMiniButton,
+											]}
 										>
+											<MaterialSymbol
+												style={buttonContentStyles.icon}
+												name="lightbulb_2"
+												size={buttonIconSize}
+												color={colors.dark.primary}
+											/>
 											<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
 												Elision!
 											</Text>
-											<MaterialSymbol
-												name="lightbulb_2"
-												size={16}
-												color={colors.dark.primary}
-											/>
 										</Pressable>
 									</>
 								)}
 								{currentTip && (
 									<>
-										{(shouldShowOtherForms || shouldShowElision) && (
-											<View
-												accessible={false}
-												style={sharedWordCardStyles.wordDetailDivider}
-											/>
-										)}
 										<Pressable
 											accessibilityLabel="Read a tip about this word"
 											accessibilityRole="button"
 											hitSlop={8}
 											onPress={() => setIsWordTipVisible(true)}
-											style={styles.wordLink}
+											style={({ pressed }) => [
+												styles.wordLink,
+												pressed && buttonContentStyles.pressedMiniButton,
+											]}
 										>
+											<MaterialSymbol
+												style={buttonContentStyles.icon}
+												name="lightbulb_2"
+												size={buttonIconSize}
+												color={colors.dark.primary}
+											/>
 											<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
 												Tip!
 											</Text>
-											<MaterialSymbol
-												name="lightbulb_2"
-												size={16}
-												color={colors.dark.primary}
-											/>
 										</Pressable>
 									</>
 								)}
@@ -353,23 +354,24 @@ export default function CardDeck() {
  * Styles
  */
 const styles = StyleSheet.create({
-	paragraphLinkText: {
-		color: colors.light.primary,
+	wordActionButtons: {
+		flexWrap: 'wrap',
 	},
 	wordActions: {
 		alignItems: 'center',
 		gap: 8,
 	},
 	wordLink: {
+		...buttonContentStyles.miniButton,
+		borderColor: colors.dark.primary,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		gap: 4,
+		gap: buttonIconGap,
 	},
 	wordLinkText: {
-		lineHeight: 16,
+		...buttonContentStyles.label,
 		color: colors.dark.primary,
-		textDecorationLine: 'underline',
 		textShadowColor: '#00000055',
 		textShadowRadius: 1,
 		textShadowOffset: { width: 0, height: 0 },

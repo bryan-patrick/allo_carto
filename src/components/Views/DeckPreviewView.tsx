@@ -1,16 +1,16 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { buttonContentStyles, buttonIconSize } from '@/src/components/buttonContentStyles';
 import type { CardDeck, Word } from '@/src/components/CardDeck/cardDeckTypes';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import TTSButton from '@/src/components/TTSButton';
-import { getParagraphNumber } from '@/src/util/atlasCompletion';
 import { getEnglishTranslations } from '@/src/util/englishWordParts';
 import formatFrenchWordWithArticle from '@/src/util/formatFrenchWordWithArticle';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import { ImageBackground } from 'expo-image';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const cardPageBackground = require('@/src/app/assets/images/card-bgs/card-page-bg.jpg');
@@ -82,7 +82,6 @@ export default function DeckPreviewView({
 	const storyColor = getDeckStoryColor(deck.id);
 	const currentDeckNumber = (deck.flashcardProgress?.deckIndex ?? 0) + 1;
 	const deckCount = deck.flashcardProgress?.deckCount ?? 1;
-	const paragraphNumber = getParagraphNumber(deck.id);
 	const contentInsetStyle = {
 		paddingTop: headerHeight,
 	};
@@ -124,28 +123,9 @@ export default function DeckPreviewView({
 										>
 											{`${deckLabel}`}
 										</Text>
-										<Pressable
-											accessibilityRole="button"
-											accessibilityLabel="Read paragraph"
-											accessibilityState={{
-												disabled: isReadDisabled,
-											}}
-											disabled={isReadDisabled}
-											hitSlop={8}
-											onPress={onRead}
-											style={[styles.readLink, isReadDisabled && styles.disabledReadLink]}
-										>
-											<Text style={[styles.readLinkText, headingStyle]}>Read paragraph</Text>
-											<MaterialSymbol
-												name="menu_book"
-												size={18}
-												color={storyColor}
-											/>
-										</Pressable>
 									</View>
 								</View>
 							</View>
-							<Text style={styles.description}>Below are the flashcards in this deck.</Text>
 						</View>
 						<ScrollView contentContainerStyle={styles.wordList}>
 							{deck.words.map(word => (
@@ -158,14 +138,43 @@ export default function DeckPreviewView({
 						<View style={styles.footer}>
 							<LinkButton
 								accessibilityRole="button"
+								accessibilityLabel="Read paragraph"
+								accessibilityState={{
+									disabled: isReadDisabled,
+								}}
+								disabled={isReadDisabled}
+								handler={onRead}
+								type="outline"
+								color={storyColor}
+								contentPaddingHorizontal={6}
+								contentPaddingVertical={6}
+								showInnerBorder={false}
+								useArrow={false}
+								iconPosition="left"
+								SVGElement={
+									<MaterialSymbol
+										name="menu_book"
+										style={buttonContentStyles.icon}
+										size={buttonIconSize}
+										color={storyColor}
+									/>
+								}
+								textStyle={styles.actionButtonText}
+								style={[styles.actionButton, isReadDisabled && styles.disabledReadLink]}
+							>
+								Read
+							</LinkButton>
+							<LinkButton
+								accessibilityRole="button"
 								handler={onStart}
 								color={storyColor}
-								contentPaddingHorizontal={8}
-								contentPaddingVertical={8}
+								contentPaddingHorizontal={6}
+								contentPaddingVertical={6}
 								type="fill"
-								fullwidth
+								style={styles.actionButton}
+								textStyle={styles.actionButtonText}
 							>
-								Start flashcards
+								Start
 							</LinkButton>
 						</View>
 					</View>
@@ -224,22 +233,12 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		gap: 8,
+		gap: 4,
 	},
 	title: {
 		flexShrink: 1,
 		fontSize: 18,
 		fontFamily: 'lexend-600',
-	},
-	readLink: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 4,
-	},
-	readLinkText: {
-		fontSize: 15,
-		fontFamily: 'lexend-400',
-		textDecorationLine: 'underline',
 	},
 	disabledReadLink: {
 		opacity: 0.5,
@@ -257,19 +256,18 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	wordList: {
-		paddingHorizontal: 10,
+		paddingHorizontal: 12,
 	},
 	wordRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		paddingVertical: 6,
+		paddingVertical: 8,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
 		gap: 8,
 	},
 	wordDetails: {
 		flex: 1,
-		gap: 2,
 	},
 	wordMetadata: {
 		flexDirection: 'row',
@@ -281,22 +279,35 @@ const styles = StyleSheet.create({
 		fontFamily: 'azeret-mono-600',
 		color: colors.dark.text,
 		borderRadius: 4,
-		paddingHorizontal: 6,
-		paddingVertical: 3,
+		paddingHorizontal: 4,
+		paddingVertical: 4,
 	},
 	frenchWord: {
-		fontSize: 17,
-		lineHeight: 22,
+		fontSize: 18,
+		lineHeight: 18,
 		fontFamily: 'lexend-600',
 		color: colors.dark.text,
 	},
 	translation: {
-		fontSize: 15,
+		fontSize: 16,
 		lineHeight: 22,
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
+	actionButton: {
+		flexBasis: 0,
+		flexGrow: 1,
+		flexShrink: 1,
+		minWidth: 0,
+		paddingVertical: 0,
+	},
+	actionButtonText: {
+		flexShrink: 1,
+	},
 	footer: {
+		flexDirection: 'row',
+		alignItems: 'stretch',
+		gap: 8,
 		padding: 12,
 		borderTopWidth: 1,
 		borderTopColor: colors.light.goldenBorder,

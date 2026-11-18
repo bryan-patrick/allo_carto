@@ -1,3 +1,8 @@
+import {
+	buttonContentStyles,
+	buttonIconGap,
+	buttonIconSize,
+} from '@/src/components/buttonContentStyles';
 import type { Chapter, Story } from '@/data/french/storyAtlas';
 import type {
 	Paragraph,
@@ -163,6 +168,7 @@ export default function ReadingLink({
 				disabled={!canRead || loading}
 				hitSlop={8}
 				onPress={handleRead}
+				style={({ pressed }) => [pressed && buttonContentStyles.pressedMiniButton]}
 			>
 				{showDescription ?
 					<Text style={style}>
@@ -185,11 +191,24 @@ export default function ReadingLink({
 						)}
 					</Text>
 				: canRead ?
-					<View style={styles.linkRow}>
+					<View
+						style={[
+							styles.linkRow,
+							{
+								borderColor: color,
+							},
+						]}
+					>
+						<MaterialSymbol
+							style={buttonContentStyles.icon}
+							name="menu_book"
+							size={buttonIconSize}
+							color={color}
+						/>
 						<Text
 							style={[
-								styles.readLink,
 								style,
+								styles.readLink,
 								{
 									color,
 								},
@@ -198,11 +217,6 @@ export default function ReadingLink({
 						>
 							{readLabel}
 						</Text>
-						<MaterialSymbol
-							name="menu_book"
-							size={16}
-							color={color}
-						/>
 					</View>
 				:	null}
 			</Pressable>
@@ -224,14 +238,13 @@ export default function ReadingLink({
  */
 const styles = StyleSheet.create({
 	linkRow: {
+		...buttonContentStyles.miniButton,
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 4,
-		minHeight: 32,
+		gap: buttonIconGap,
 	},
 	readLink: {
-		fontFamily: 'lexend-700',
-		textDecorationLine: 'underline',
+		...buttonContentStyles.label,
 	},
 	loading: {
 		opacity: 0.5,

@@ -88,8 +88,8 @@ Un homme gentil travaille à la boulangerie. Il aime me donner à manger et de l
 | bakery    | boulangerie | A1   | Common | false        |     |
 | he        | Il          | A1   | Common | false        |     |
 | likes     | aime        | A1   | Common | false        |     |
-| me        | me          | A1   | Common | false        |     |
-| to give   | donner      | A1   | Common | false        |     |
+| me        | me          | A1   | Common | false        | 17  |
+| to give   | donner      | A1   | Common | false        | 17  |
 | to        | à           | A1   | Common | false        |     |
 | eat       | manger      | A1   | Common | false        |     |
 | and       | et          | A1   | Common | false        |     |

@@ -291,9 +291,10 @@ const styles = StyleSheet.create({
 	section: {
 		alignSelf: 'stretch',
 		alignItems: 'center',
-		gap: 4,
-		paddingVertical: 10,
+		paddingVertical: 8,
+		paddingBottom: 12,
 		paddingHorizontal: 2,
+		gap: 4,
 	},
 	heading: {
 		flexDirection: 'row',
@@ -301,14 +302,14 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	headingLine: {
-		width: 28,
+		width: 32,
 		height: 1,
 		backgroundColor: colors.light.border,
 	},
 	headingText: {
 		fontFamily: 'lexend-400',
 		fontSize: 12,
-		color: colors.wordProgress.unseen,
+		color: colors.dark.text,
 	},
 	puzzleRow: {
 		width: '100%',
@@ -348,6 +349,9 @@ const styles = StyleSheet.create({
 	},
 	pressedButton: {
 		transform: [
+			{
+				translateY: 2,
+			},
 			{
 				scale: 0.94,
 			},
