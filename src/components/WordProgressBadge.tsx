@@ -1,16 +1,22 @@
 import colors from '@/src/app/colors';
+import { buttonContentStyles } from '@/src/components/buttonContentStyles';
 import { getWordProgressDefinitionByKey, type WordProgressKey } from '@/src/util/wordProgress';
 import { StyleSheet, Text, View } from 'react-native';
+import { WordProgressIcon } from './WordProgress';
 
 interface WordProgressBadgeProps {
 	progress: WordProgressKey;
 	placement?: 'corner' | 'inline';
+	showIcon?: boolean;
 }
 
-// Show a word or collection's learning stage beside content or as a tilted corner sticker.
+/**
+ * Shows a word'a learning level as a badge
+ */
 export default function WordProgressBadge({
 	progress,
 	placement = 'corner',
+	showIcon = false,
 }: WordProgressBadgeProps) {
 	const definition = getWordProgressDefinitionByKey(progress);
 	const badgeStyle = {
@@ -23,21 +29,42 @@ export default function WordProgressBadge({
 	return (
 		<View
 			pointerEvents="none"
-			style={[styles.badge, placement === 'corner' && styles.cornerBadge, badgeStyle]}
+			style={[
+				styles.badge,
+				placement === 'corner' && styles.cornerBadge,
+				showIcon && styles.badgeWithIcon,
+				badgeStyle,
+			]}
 		>
+			{showIcon && (
+				<WordProgressIcon
+					progress={progress}
+					size={12}
+					color={colors.wordProgressLight[progress]}
+					style={styles.icon}
+				/>
+			)}
 			<Text style={[styles.label, textStyle]}>{definition.name}</Text>
 		</View>
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	badge: {
-		borderRadius: 3,
+		borderRadius: buttonContentStyles.miniButton.borderRadius,
 		borderWidth: 1,
 		borderColor: colors.light.border,
-		paddingHorizontal: 6,
-		paddingVertical: 2,
-		minWidth: 60,
+		paddingHorizontal: 4,
+		paddingVertical: 1,
+	},
+	badgeWithIcon: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 3,
 	},
 	cornerBadge: {
 		position: 'absolute',
@@ -53,6 +80,12 @@ const styles = StyleSheet.create({
 	label: {
 		fontFamily: 'lexend-600',
 		textAlign: 'center',
-		fontSize: 12,
+		fontSize: 10,
+		lineHeight: 12,
+		includeFontPadding: false,
+	},
+	icon: {
+		lineHeight: 12,
+		includeFontPadding: false,
 	},
 });

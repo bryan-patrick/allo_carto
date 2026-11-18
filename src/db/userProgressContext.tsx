@@ -103,6 +103,7 @@ interface UserProgressContextProps {
 	experience: UserExperience;
 	isUpdatingProgress: boolean;
 	progressById: ProgressById;
+	wordProgressById: UserWordProgressById;
 	status: ProgressStatus;
 	writeCorrectAnswer: (request: CorrectAnswerRequest) => Promise<WordAnswerAwardProps | false>;
 	writeIncorrectAnswer: (request: IncorrectAnswerRequest) => Promise<boolean>;
@@ -137,6 +138,7 @@ const initialValue: UserProgressContextProps = {
 	experience: getUserExperience(0),
 	isUpdatingProgress: false,
 	progressById: {},
+	wordProgressById: {},
 	status: 'loading',
 	writeCorrectAnswer: async () => false,
 	writeIncorrectAnswer: async () => false,
@@ -651,6 +653,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			experience,
 			isUpdatingProgress,
 			progressById,
+			wordProgressById,
 			writeCorrectAnswer: recordCorrectAnswer,
 			writeIncorrectAnswer: recordIncorrectAnswer,
 			writeDeckCompletion: recordDeckCompletion,
@@ -678,6 +681,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			experience,
 			isUpdatingProgress,
 			progressById,
+			wordProgressById,
 			recordCorrectAnswer,
 			recordIncorrectAnswer,
 			recordDeckCompletion,

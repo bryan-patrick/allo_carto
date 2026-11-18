@@ -20,7 +20,7 @@ const SegmentedControl = NativeSegmentedControl as unknown as ComponentType<Segm
 /**
  * Typing
  */
-export type CollectionsPage = 'stamps' | 'tips';
+export type CollectionsPage = 'stamps' | 'tips' | 'glossary';
 
 interface CollectionsPageMenuProps {
 	selectedPage: CollectionsPage;
@@ -41,11 +41,15 @@ const pageOptions: CollectionsPageOption[] = [
 		page: 'tips',
 		label: 'Tips',
 	},
+	{
+		page: 'glossary',
+		label: 'Glossary',
+	},
 ];
 const pageLabels = pageOptions.map(option => option.label);
 
 /**
- * Lets the player switch between Stamps and Tips with a native segmented control.
+ * Lets the player switch between Stamps, Tips, and Glossary.
  */
 export default function CollectionsPageMenu({
 	selectedPage,
@@ -64,7 +68,9 @@ export default function CollectionsPageMenu({
 				values={pageLabels}
 				selectedIndex={selectedIndex}
 				tintColor={colors.light.text}
-				fontStyle={{ color: colors.dark.text }}
+				fontStyle={{
+					color: colors.dark.text,
+				}}
 				onChange={event => {
 					const selectedOption = pageOptions[event.nativeEvent.selectedSegmentIndex];
 

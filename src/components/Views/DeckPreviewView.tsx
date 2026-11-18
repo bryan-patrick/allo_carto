@@ -283,14 +283,14 @@ const styles = StyleSheet.create({
 		paddingVertical: 4,
 	},
 	frenchWord: {
-		fontSize: 18,
-		lineHeight: 18,
+		fontSize: 15,
+		lineHeight: 17,
 		fontFamily: 'lexend-600',
 		color: colors.dark.text,
 	},
 	translation: {
-		fontSize: 16,
-		lineHeight: 22,
+		fontSize: 15,
+		lineHeight: 17,
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
