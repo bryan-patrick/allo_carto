@@ -11,6 +11,7 @@ import MaterialSymbol from './MaterialSymbol';
  */
 interface TTSButtonProps {
 	wordsToSay: string;
+	iconSize?: number;
 	ref?: Ref<TTSButtonHandle>;
 	rate?: number;
 	autoPlay?: boolean;
@@ -32,6 +33,7 @@ export interface TTSButtonHandle {
  */
 export default function TTSButton({
 	wordsToSay,
+	iconSize = 24,
 	ref,
 	rate,
 	autoPlay = false,
@@ -162,7 +164,7 @@ export default function TTSButton({
 			<Animated.View style={buttonStyles}>
 				<MaterialSymbol
 					name="volume_up"
-					size={24}
+					size={iconSize}
 					style={iconStyles}
 				/>
 			</Animated.View>

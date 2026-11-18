@@ -12,11 +12,12 @@ import { Animated, StyleSheet, Text, View } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import StampsView from './StampsView';
 import TipsView from './TipsView';
+import GlossaryView from './GlossaryView';
 
 const collectionsPageBackground = require('@/src/app/assets/images/collections/page-background.jpg');
 
 /**
- * Shows the Stamps or Tips page over a slowly scrolling background.
+ * Shows the selected collections page over a slowly scrolling background.
  */
 export default function CollectionsView() {
 	/**
@@ -93,6 +94,10 @@ export default function CollectionsView() {
 
 	if (selectedPage === 'tips') {
 		pageContent = <TipsView {...pageScrollProps} />;
+	}
+
+	if (selectedPage === 'glossary') {
+		pageContent = <GlossaryView {...pageScrollProps} />;
 	}
 
 	if (status === 'loading') {
