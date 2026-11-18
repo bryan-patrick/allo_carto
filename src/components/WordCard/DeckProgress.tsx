@@ -3,7 +3,9 @@ import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { type CardRarity, Word } from '../CardDeck/cardDeckTypes';
 import { useCardDeck } from '../CardDeck/useCardDeck';
 
-// Show the deck number, card number, and marks for correct and incorrect answers.
+/**
+ * Shows the current deck and each flashcard’s progress.
+ */
 export default function DeckProgress() {
 	/**
 	 * State
@@ -19,7 +21,6 @@ export default function DeckProgress() {
 	/**
 	 * Card vars
 	 */
-	const totalCards = words.length;
 	const currentCard = currentIndex + 1;
 	const flashcardProgress = currentCardDeck.flashcardProgress;
 	const correctWordIds: Set<string> = new Set(correctWords.map(word => word.id));

@@ -4,8 +4,8 @@ import { iAmACatChapter } from './i-am-a-cat/chapter';
 export const leoAndPoeStory: Story = {
 	id: 'leo-and-poe',
 	requiredLevel: 1,
-	name: 'Leo and Poe',
-	description: 'Meet Leo, a cat living in Québec City.',
+	name: 'Léo and Poe',
+	description: 'The backstory of a cat and a raven who live in Québec City.',
 	category: 'Beginner',
 	materialSymbolName: 'pets',
 	chapters: [

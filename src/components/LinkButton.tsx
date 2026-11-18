@@ -1,3 +1,8 @@
+import {
+	buttonContentStyles,
+	buttonIconGap,
+	buttonIconSize,
+} from '@/src/components/buttonContentStyles';
 import { useSoundEffect } from '@/src/util/useSoundEffect';
 import { Link, type Href, type RoutePath } from 'expo-router';
 import { cloneElement, isValidElement, ReactElement, ReactNode, useEffect, useState } from 'react';
@@ -31,6 +36,7 @@ const linkButtonShadowHeight = 2;
  */
 interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> {
 	SVGElement?: ReactElement;
+	iconPosition?: 'left' | 'right';
 	handler?: () => Promise<void> | void;
 	children?: ReactNode;
 	props?: any;
@@ -96,11 +102,12 @@ function Button({
 	handler = () => {},
 	children,
 	SVGElement,
+	iconPosition = 'right',
 	style,
 	textStyle,
 	props,
 	useArrow = true,
-	arrowSize = 18,
+	arrowSize = buttonIconSize,
 	disabled = false,
 	arrowColor = colors.light.text,
 	color,
@@ -129,19 +136,27 @@ function Button({
 
 	const allTheProps = { ...pressableProps, ...props };
 	let typeStyle: ViewStyle = {};
-	let outlineTextStyle = {};
+	let outlineTextStyle: TextStyle = {};
 	let iconElement = SVGElement;
 	let resolvedArrowColor = arrowColor;
+	let resolvedContentPaddingHorizontal = contentPaddingHorizontal;
+
+	if (type === 'fill') {
+		resolvedContentPaddingHorizontal = contentPaddingHorizontal + 6;
+	}
 
 	if (type === 'outline') {
 		typeStyle = { backgroundColor: 'transparent' };
+		outlineTextStyle = {
+			fontFamily: 'lexend-600',
+		};
 
 		if (color) {
 			typeStyle = {
 				backgroundColor: 'transparent',
 				borderColor: color,
 			};
-			outlineTextStyle = { color };
+			outlineTextStyle.color = color;
 			resolvedArrowColor = color;
 
 			if (isValidElement<ButtonIconProps>(SVGElement)) {
@@ -175,7 +190,7 @@ function Button({
 	useEffect(() => {
 		if (isPressed) {
 			top.set(
-				withTiming(buttonShadowHeight, {
+				withTiming(linkButtonShadowHeight, {
 					duration: 100,
 					easing: Easing.inOut(Easing.ease),
 				}),
@@ -224,13 +239,14 @@ function Button({
 					styles.innerRow,
 					!showInnerBorder && styles.innerRowWithoutBorder,
 					{
-						paddingHorizontal: contentPaddingHorizontal,
+						paddingHorizontal: resolvedContentPaddingHorizontal,
 						paddingVertical: contentPaddingVertical,
 					},
 				]}
 			>
+				{iconPosition === 'left' && iconElement}
 				<Text style={[styles.linkText, outlineTextStyle, textStyle]}>{children}</Text>
-				{iconElement}
+				{iconPosition === 'right' && iconElement}
 			</View>
 		</AnimatedPressable>
 	);
@@ -270,17 +286,16 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		flexDirection: 'row',
-		gap: 4,
+		gap: buttonIconGap,
 	},
 	innerRowWithoutBorder: {
 		borderColor: 'transparent',
 		borderWidth: 0,
 	},
 	linkText: {
-		textAlign: 'center',
-		paddingHorizontal: 24,
-		color: colors.light.text,
+		...buttonContentStyles.label,
 		fontFamily: 'lexend-600',
-		fontSize: 14,
+		textAlign: 'center',
+		color: colors.light.text,
 	},
 });

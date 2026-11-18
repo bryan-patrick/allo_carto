@@ -1,4 +1,5 @@
 import colors from '@/src/app/colors';
+import { buttonContentStyles } from '@/src/components/buttonContentStyles';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { useAppSettings } from '@/src/settings/useAppSettings';
 import { getEnglishPrefixes } from '@/src/util/englishWordParts';
@@ -103,6 +104,15 @@ export default function WordCardButton({
 		isUpdatingProgress,
 		sessionId,
 	]);
+	/**
+	 * Saving blocks extra taps and keeps color/text changes
+	 * in sync
+	 */
+	const isButtonVisuallyDisabled =
+		!sessionId ||
+		cardState.progress === 'WARNING' ||
+		(isEnglishPrefixRequired && !cardState.selectedArticle) ||
+		!cardState.selectedWord;
 	let buttonContent = children;
 
 	if (hasSaveError) {
@@ -114,6 +124,15 @@ export default function WordCardButton({
 	 */
 	const top = useSharedValue(0);
 	const shadowOffsetHeight = useSharedValue(8);
+	let buttonShadowColor = colors.dark.border;
+
+	if (cardState.progress === 'SUCCESS') {
+		buttonShadowColor = colors.dark.success;
+	}
+
+	if (isButtonVisuallyDisabled) {
+		buttonShadowColor = 'transparent';
+	}
 
 	const animatedContainerStyle = useAnimatedStyle(() => ({
 		top: top.get(),
@@ -121,10 +140,7 @@ export default function WordCardButton({
 	}));
 
 	const animatedShadowStyle = useAnimatedStyle(() => ({
-		shadowOffset: {
-			width: 0,
-			height: shadowOffsetHeight.get(),
-		},
+		boxShadow: `0 ${shadowOffsetHeight.get()}px 0 0 ${buttonShadowColor}`,
 	}));
 
 	/**
@@ -365,7 +381,11 @@ export default function WordCardButton({
 					accessibilityRole="link"
 					disabled={isRevealDisabled}
 					onPress={handleRevealAnswer}
-					style={[styles.revealLink, isRevealDisabled && styles.disabledRevealLink]}
+					style={({ pressed }) => [
+						styles.revealLink,
+						isRevealDisabled && styles.disabledRevealLink,
+						pressed && buttonContentStyles.pressedMiniButton,
+					]}
 				>
 					<Text style={styles.revealText}>I don&apos;t know (no XP or Ink)</Text>
 				</Pressable>
@@ -382,14 +402,16 @@ export default function WordCardButton({
 						styles.pressable,
 						pressableStateStyle,
 						animatedShadowStyle,
-						isDisabled && styles.disabledPressable,
+						isButtonVisuallyDisabled && styles.disabledPressable,
 					]}
 				>
 					<View
 						style={styles.textRow}
 						testID="word-card-button-content"
 					>
-						<Text style={[styles.text, textStateStyle, isDisabled && styles.disabledText]}>
+						<Text
+							style={[styles.text, textStateStyle, isButtonVisuallyDisabled && styles.disabledText]}
+						>
 							{buttonContent}
 						</Text>
 						{SVGElement}
@@ -414,42 +436,32 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 	},
 	revealLink: {
+		...buttonContentStyles.miniButton,
+		borderColor: colors.light.primary,
 		alignSelf: 'center',
-		paddingVertical: 6,
-		paddingHorizontal: 12,
 	},
 	disabledRevealLink: {
 		opacity: 0.5,
 	},
 	revealText: {
+		...buttonContentStyles.label,
 		color: colors.light.primary,
-		fontFamily: 'lexend-400',
-		fontSize: 14,
-		textDecorationLine: 'underline',
 	},
 	pressable: {
 		alignItems: 'center',
 		justifyContent: 'center',
-		borderColor: colors.dark.border,
 		backgroundColor: colors.dark.primary,
 		borderRadius: 12,
-		borderWidth: 2,
-		paddingHorizontal: 12,
-		paddingVertical: 12,
+		paddingHorizontal: 20,
+		paddingVertical: 14,
 		gap: 16,
-		shadowColor: colors.dark.border,
-		shadowOffset: { width: 0, height: 8 },
-		shadowOpacity: 1,
-		shadowRadius: 0,
 	},
 	successPressable: {
 		backgroundColor: colors.light.success,
-		shadowColor: colors.dark.success,
 	},
 	disabledPressable: {
 		backgroundColor: colors.dark.border,
 		top: 6,
-		shadowColor: 'transparent',
 	},
 	textRow: {
 		alignItems: 'center',

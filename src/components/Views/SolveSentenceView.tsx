@@ -734,6 +734,13 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					<View style={styles.actions}>
 						<View style={styles.actionButton}>
 							<SecondaryButton
+								SVGElement={
+									<MaterialSymbol
+										name="close"
+										size={20}
+										color={storyColor}
+									/>
+								}
 								onPress={handleClose}
 								disabled={isCloseDisabled}
 								accessibilityState={{

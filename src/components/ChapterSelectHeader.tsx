@@ -1,3 +1,8 @@
+import {
+	buttonContentStyles,
+	buttonIconGap,
+	buttonIconSize,
+} from '@/src/components/buttonContentStyles';
 import colors from '@/src/app/colors';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
@@ -118,14 +123,18 @@ export default function ChapterSelectHeader({
 							accessibilityLabel="Getting started"
 							accessibilityRole="button"
 							onPress={() => setGettingStartedVisibility(true)}
-							style={styles.gettingStartedLink}
+							style={({ pressed }) => [
+								styles.gettingStartedLink,
+								pressed && buttonContentStyles.pressedMiniButton,
+							]}
 						>
-							<Text style={styles.gettingStartedText}>Getting started</Text>
 							<MaterialSymbol
+								style={buttonContentStyles.icon}
 								name="help"
 								color={colors.light.text}
-								size={20}
+								size={buttonIconSize}
 							/>
+							<Text style={styles.gettingStartedText}>Getting started</Text>
 						</Pressable>
 					)}
 				</View>
@@ -171,16 +180,17 @@ const styles = StyleSheet.create({
 		flexShrink: 0,
 	},
 	gettingStartedLink: {
+		...buttonContentStyles.miniButton,
+		borderWidth: 0,
 		alignSelf: 'flex-start',
 		alignItems: 'center',
 		flexDirection: 'row',
 		justifyContent: 'flex-start',
-		gap: 4,
+		gap: buttonIconGap,
 	},
 	gettingStartedText: {
+		...buttonContentStyles.label,
 		color: colors.light.text,
-		fontFamily: 'lexend-400',
-		fontSize: 14,
 		textDecorationLine: 'underline',
 	},
 });

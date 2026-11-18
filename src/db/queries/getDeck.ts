@@ -89,10 +89,14 @@ export default async function getDeck({
 		const unseenWordIds = unseenWords.map(word => word.id);
 
 		/**
-		 * Attach this paragraph's tips so the same word can have a different tip elsewhere.
+		 * Attach this paragraph's answers and tips to its flashcards.
 		 */
 		for (const segment of deck.passage) {
 			const word = wordsById.get(segment.wordId ?? '');
+
+			if (word && segment.canonicalEnglish) {
+				word.canonicalEnglish = segment.canonicalEnglish;
+			}
 
 			if (word && segment.tipId) {
 				word.tipId = segment.tipId;

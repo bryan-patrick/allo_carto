@@ -1,5 +1,6 @@
 import type { Chapter, Story } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import { buttonContentStyles, buttonIconSize } from '@/src/components/buttonContentStyles';
 import type { Paragraph, ReadingPassage } from '@/src/components/CardDeck/cardDeckTypes';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckBoxModal from '@/src/components/DeckBox/DeckBoxModal';
@@ -29,7 +30,7 @@ import type { ProgressById } from '@/src/util/progression';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 /**
  * Typing
@@ -228,36 +229,6 @@ export default function ChapterParagraphList({
 										showGems={false}
 										showNewBadge={false}
 									/>
-									{!isLocked && (
-										<Pressable
-											accessibilityRole="button"
-											accessibilityLabel={`Read ${paragraphLabel}`}
-											accessibilityState={{
-												disabled: arePostcardActionsDisabled,
-												busy: isLoadingPassage,
-											}}
-											disabled={arePostcardActionsDisabled}
-											onPress={() => handleShowPassage(paragraph)}
-											hitSlop={8}
-											style={[styles.readLink, arePostcardActionsDisabled && styles.disabledButton]}
-										>
-											<Text
-												style={[
-													styles.readLinkText,
-													{
-														color: storyColor,
-													},
-												]}
-											>
-												Read paragraph
-											</Text>
-											<MaterialSymbol
-												name="menu_book"
-												size={16}
-												color={storyColor}
-											/>
-										</Pressable>
-									)}
 								</View>
 							}
 						>
@@ -278,33 +249,70 @@ export default function ChapterParagraphList({
 								)}
 								{!isLocked && (
 									<View style={styles.actions}>
-										<SolvePuzzleButtons
-											deckId={paragraph.id}
-											color={storyColor}
-											disabled={arePostcardActionsDisabled}
-										/>
-										<SolveEligibilityHint
-											deck={paragraph}
-											textStyle={styles.helpText}
-										/>
-										<LinkButton
-											accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
-											arrowColor={colors.light.text}
-											color={storyColor}
-											contentPaddingHorizontal={6}
-											contentPaddingVertical={6}
-											handler={() => handleSelectDeck(paragraph)}
-											disabled={arePostcardActionsDisabled}
-											accessibilityState={{
-												disabled: arePostcardActionsDisabled,
-											}}
-											style={[
-												styles.flashcardActionButton,
-												arePostcardActionsDisabled && styles.disabledButton,
-											]}
-										>
-											{actionLabel}
-										</LinkButton>
+										<View style={styles.puzzleSection}>
+											<SolvePuzzleButtons
+												deckId={paragraph.id}
+												color={storyColor}
+												disabled={arePostcardActionsDisabled}
+											/>
+											<SolveEligibilityHint
+												deck={paragraph}
+												textStyle={styles.helpText}
+											/>
+										</View>
+										<View style={styles.paragraphActionRow}>
+											<LinkButton
+												accessibilityRole="button"
+												accessibilityLabel={`Read ${paragraphLabel}`}
+												accessibilityState={{
+													disabled: arePostcardActionsDisabled,
+													busy: isLoadingPassage,
+												}}
+												disabled={arePostcardActionsDisabled}
+												handler={() => handleShowPassage(paragraph)}
+												type="outline"
+												color={storyColor}
+												contentPaddingHorizontal={6}
+												contentPaddingVertical={6}
+												showInnerBorder={false}
+												useArrow={false}
+												iconPosition="left"
+												SVGElement={
+													<MaterialSymbol
+														name="menu_book"
+														style={buttonContentStyles.icon}
+														size={buttonIconSize}
+														color={storyColor}
+													/>
+												}
+												textStyle={styles.actionButtonText}
+												style={[
+													styles.paragraphActionButton,
+													arePostcardActionsDisabled && styles.disabledButton,
+												]}
+											>
+												Read
+											</LinkButton>
+											<LinkButton
+												accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
+												arrowColor={colors.light.text}
+												color={storyColor}
+												contentPaddingHorizontal={6}
+												contentPaddingVertical={6}
+												handler={() => handleSelectDeck(paragraph)}
+												disabled={arePostcardActionsDisabled}
+												accessibilityState={{
+													disabled: arePostcardActionsDisabled,
+												}}
+												textStyle={[styles.actionButtonText, styles.flashcardButtonText]}
+												style={[
+													styles.paragraphActionButton,
+													arePostcardActionsDisabled && styles.disabledButton,
+												]}
+											>
+												{actionLabel}
+											</LinkButton>
+										</View>
 									</View>
 								)}
 							</View>
@@ -335,7 +343,7 @@ const styles = StyleSheet.create({
 	paragraphRow: {
 		margin: 8,
 		padding: 12,
-		paddingBottom: 6,
+		paddingBottom: 4,
 		paddingHorizontal: 2,
 		gap: 8,
 	},
@@ -354,7 +362,7 @@ const styles = StyleSheet.create({
 		marginBottom: 24,
 	},
 	paragraphHeading: {
-		marginTop: 6,
+		marginTop: 4,
 		gap: 4,
 	},
 	actions: {
@@ -362,25 +370,36 @@ const styles = StyleSheet.create({
 		alignItems: 'stretch',
 		gap: 8,
 	},
-	flashcardActionButton: {
-		alignSelf: 'center',
+	puzzleSection: {
+		borderBottomWidth: 1,
+		borderBottomColor: colors.light.border,
+		marginHorizontal: -2,
+		marginBottom: 8,
+		paddingHorizontal: 2,
+		paddingBottom: 4,
+		gap: 8,
+	},
+	paragraphActionRow: {
+		flexDirection: 'row',
+		alignItems: 'stretch',
+		justifyContent: 'center',
+		gap: 8,
+	},
+	paragraphActionButton: {
+		flex: 1,
+		minWidth: 0,
 		paddingVertical: 0,
+	},
+	actionButtonText: {
+		flexShrink: 1,
+	},
+	flashcardButtonText: {
+		fontFamily: 'lexend-600',
 	},
 	helpText: {
 		fontSize: 15,
 		lineHeight: 15,
 		textAlign: 'center',
-	},
-	readLink: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 4,
-	},
-	readLinkText: {
-		fontFamily: 'lexend-400',
-		fontSize: 15,
-		lineHeight: 17,
-		textDecorationLine: 'underline',
 	},
 	disabledButton: {
 		opacity: 0.45,

@@ -1,7 +1,6 @@
 import type { Story } from '@/data/french/storyAtlas';
 import ChapterMap from '@/src/components/ChapterMap';
 import Loader from '@/src/components/Loader';
-import ReadingLink from '@/src/components/ReadingLink';
 import StorySelectModal from '@/src/components/StorySelectModal';
 import StorySelector from '@/src/components/StorySelector';
 import { useUserContext } from '@/src/db/useUserContext';
@@ -165,12 +164,12 @@ export default function ChapterSelectView() {
 				>
 					<View style={[styles.chapterContent, chapterContentInsetStyle]}>
 						<View style={styles.readStoryAction}>
-							<ReadingLink
+							{/* <ReadingLink
 								item={selectedStory}
 								color={colors.category[selectedStory.category]}
 								label="Read story"
 								style={styles.readStoryLink}
-							/>
+							/> */}
 						</View>
 						<ChapterMap
 							key={selectedStory.id}
@@ -216,7 +215,7 @@ const styles = StyleSheet.create({
 	},
 	readStoryAction: {
 		alignItems: 'center',
-		marginBottom: 4,
+		marginVertical: 12,
 	},
 	readStoryLink: {
 		fontSize: 14,

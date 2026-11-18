@@ -14,15 +14,10 @@ const cardPageBackground = require('@/src/app/assets/images/card-bgs/card-page-b
 interface CardDeckViewProps {
 	currentCard: Word;
 	wordActions?: ReactNode;
-	paragraphAction?: ReactNode;
 }
 
 // Show each flashcard over the page background, leaving room for the header controls.
-export default function CardDeckView({
-	currentCard,
-	wordActions,
-	paragraphAction,
-}: CardDeckViewProps) {
+export default function CardDeckView({ currentCard, wordActions }: CardDeckViewProps) {
 	const headerHeight = useHeaderHeight();
 	const contentInsetStyle = {
 		paddingTop: headerHeight,
@@ -47,7 +42,6 @@ export default function CardDeckView({
 					word={currentCard}
 					isCurrent={true}
 					wordActions={wordActions}
-					paragraphAction={paragraphAction}
 				/>
 			</Animated.View>
 		</BackgroundImage>

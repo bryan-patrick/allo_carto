@@ -1,4 +1,4 @@
-import { someWaterTip } from '@/data/french/tips';
+import { meBeforeTheVerbTip, someWaterTip } from '@/data/french/tips';
 import { createParagraph } from '@/src/util/createParagraph';
 
 export const paragraph3 = createParagraph({
@@ -51,10 +51,12 @@ export const paragraph3 = createParagraph({
 			text: 'me',
 			wordId: 'word_pronoun_me',
 			canonicalEnglish: 'me',
+			tipId: meBeforeTheVerbTip.id,
 		},
 		{
 			text: 'donner',
 			wordId: 'word_verb_donner',
+			tipId: meBeforeTheVerbTip.id,
 		},
 		{
 			text: 'à',

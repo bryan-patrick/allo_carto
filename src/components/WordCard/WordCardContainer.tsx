@@ -33,7 +33,6 @@ interface CardContainerProps {
 	word: Word;
 	isCurrent: boolean;
 	wordActions?: ReactNode;
-	paragraphAction?: ReactNode;
 }
 
 interface ResumeWordCardOptions {
@@ -102,12 +101,7 @@ function isAvailableWordChoice(
 /**
  * WordCardContainer Component
  */
-export default function WordCardContainer({
-	word,
-	isCurrent,
-	wordActions,
-	paragraphAction,
-}: CardContainerProps) {
+export default function WordCardContainer({ word, isCurrent, wordActions }: CardContainerProps) {
 	/**
 	 * State
 	 */
@@ -314,7 +308,6 @@ export default function WordCardContainer({
 					fillerWords={fillerWords}
 				/>
 				<View style={styles.cardActions}>
-					{paragraphAction}
 					<WordCardButton
 						SVGElement={
 							isNextCardButton ?
