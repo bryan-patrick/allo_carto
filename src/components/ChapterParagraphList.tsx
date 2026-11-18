@@ -38,6 +38,8 @@ interface ChapterParagraphListProps {
 	chapter: Chapter;
 	progressById: ProgressById;
 	story: Story;
+	paragraphToRevealId?: string;
+	onUnlockRevealComplete: (paragraphId: string) => void;
 }
 
 interface PassageState {
@@ -53,6 +55,8 @@ export default function ChapterParagraphList({
 	chapter,
 	progressById,
 	story,
+	paragraphToRevealId,
+	onUnlockRevealComplete,
 }: ChapterParagraphListProps) {
 	const router = useRouter();
 
@@ -74,12 +78,15 @@ export default function ChapterParagraphList({
 		progressById,
 	});
 	const chapterUnlockCriteria = getUnlockCriteria(chapter, progressById);
+	const isUnlockRevealActive = Boolean(paragraphToRevealId);
+	const arePostcardActionsDisabled =
+		isUnlockRevealActive || isUpdatingProgress || Boolean(loadingPassageId);
 
 	/**
 	 * Load and begin the paragraph’s next flashcard deck.
 	 */
 	async function handleSelectDeck(paragraph: Paragraph) {
-		if (!userId || isUpdatingProgress || isStartingDeck.current) {
+		if (!userId || arePostcardActionsDisabled || isStartingDeck.current) {
 			return;
 		}
 		if (
@@ -124,7 +131,7 @@ export default function ChapterParagraphList({
 	 * Load passage progress before opening the passage view
 	 */
 	async function handleShowPassage(paragraph: ReadingPassage) {
-		if (!userId || loadingPassageId) {
+		if (!userId || arePostcardActionsDisabled) {
 			return;
 		}
 		if (
@@ -188,7 +195,9 @@ export default function ChapterParagraphList({
 				userId={userId ?? ''}
 				paragraphs={visibleParagraphs}
 				progressById={progressById}
-				disabled={Boolean(loadingPassageId) || Boolean(passageState) || isUpdatingProgress}
+				disabled={arePostcardActionsDisabled || Boolean(passageState)}
+				paragraphToRevealId={paragraphToRevealId}
+				onUnlockRevealComplete={onUnlockRevealComplete}
 			>
 				{visibleParagraphs.map((paragraph, index) => {
 					const paragraphLabel = getAtlasItemLabel(paragraph.id);
@@ -224,13 +233,13 @@ export default function ChapterParagraphList({
 											accessibilityRole="button"
 											accessibilityLabel={`Read ${paragraphLabel}`}
 											accessibilityState={{
-												disabled: Boolean(loadingPassageId),
+												disabled: arePostcardActionsDisabled,
 												busy: isLoadingPassage,
 											}}
-											disabled={Boolean(loadingPassageId)}
+											disabled={arePostcardActionsDisabled}
 											onPress={() => handleShowPassage(paragraph)}
 											hitSlop={8}
-											style={[styles.readLink, isLoadingPassage && styles.loadingButton]}
+											style={[styles.readLink, arePostcardActionsDisabled && styles.disabledButton]}
 										>
 											<Text
 												style={[
@@ -272,6 +281,7 @@ export default function ChapterParagraphList({
 										<SolvePuzzleButtons
 											deckId={paragraph.id}
 											color={storyColor}
+											disabled={arePostcardActionsDisabled}
 										/>
 										<SolveEligibilityHint
 											deck={paragraph}
@@ -281,12 +291,17 @@ export default function ChapterParagraphList({
 											accessibilityLabel={`${actionLabel} for ${paragraphLabel}`}
 											arrowColor={colors.light.text}
 											color={storyColor}
-											contentPaddingHorizontal={8}
-											contentPaddingVertical={8}
+											contentPaddingHorizontal={6}
+											contentPaddingVertical={6}
 											handler={() => handleSelectDeck(paragraph)}
-											disabled={isUpdatingProgress}
-											style={styles.flashcardActionButton}
-											textStyle={styles.actionText}
+											disabled={arePostcardActionsDisabled}
+											accessibilityState={{
+												disabled: arePostcardActionsDisabled,
+											}}
+											style={[
+												styles.flashcardActionButton,
+												arePostcardActionsDisabled && styles.disabledButton,
+											]}
 										>
 											{actionLabel}
 										</LinkButton>
@@ -348,10 +363,8 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	flashcardActionButton: {
-		shadowOpacity: 0,
-	},
-	actionText: {
-		fontSize: 15,
+		alignSelf: 'center',
+		paddingVertical: 0,
 	},
 	helpText: {
 		fontSize: 15,
@@ -369,7 +382,7 @@ const styles = StyleSheet.create({
 		lineHeight: 17,
 		textDecorationLine: 'underline',
 	},
-	loadingButton: {
-		opacity: 0.75,
+	disabledButton: {
+		opacity: 0.45,
 	},
 });

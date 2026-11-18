@@ -27,8 +27,6 @@ interface SaveUserActivityOptions extends UserActivityOptions {
 
 interface RecordXPActivityOptions extends UserActivityOptions {
 	xp: number;
-	source?: string;
-	isClaim?: boolean;
 }
 
 interface UserXPRow {
@@ -56,7 +54,13 @@ const unlockActivityTypes: Record<ProgressType, UserActivityType> = {
 const statements = {
 	getActivity: `
 		SELECT id, type, description, createdAt FROM userActivity
-		WHERE userId = ? AND type NOT IN ('xpEarned', 'deckCompleted')
+		WHERE userId = ?
+			AND type NOT IN (
+				'xpEarned',
+				'xpClaimed',
+				'deckCompleted',
+				'paragraphFlashcardsCompleted'
+			)
 		ORDER BY id DESC LIMIT ?;
 	`,
 	saveActivity: `
@@ -137,15 +141,12 @@ export async function recordStampUnlockActivity({
 }
 
 /**
- * Record XP claims and any levels or extra Ink space earned from XP.
- * Automatic XP rewards only add entries when they raise the player's level.
+ * Records new levels and extra Ink space earned from XP.
  */
 export async function recordXPActivity({
 	database,
 	userId,
 	xp,
-	source,
-	isClaim = false,
 }: RecordXPActivityOptions): Promise<void> {
 	const user = await database.getFirstAsync<UserXPRow>(statements.getUserXP, userId);
 
@@ -157,15 +158,6 @@ export async function recordXPActivity({
 	const nextExperience = getUserExperience(user.totalXP);
 	const previousInkCapacity = getMaxInkBalance(previousExperience.level);
 	const nextInkCapacity = getMaxInkBalance(nextExperience.level);
-
-	if (isClaim && source) {
-		await saveUserActivity({
-			database,
-			userId,
-			type: 'xpClaimed',
-			description: `+${xp.toLocaleString()} XP · ${source}`,
-		});
-	}
 
 	for (let level = previousExperience.level + 1; level <= nextExperience.level; level++) {
 		await saveUserActivity({

@@ -150,19 +150,18 @@ export default function WordOrderBoard({
 		}
 	}
 
+	/**
+	 * Selects or deselects a word.
+	 */
 	function handleSelect(cardId: number) {
-		const targetIndex = positions.indexOf(cardId);
-
 		if (disabled || currentDrag.current || lockedCards.has(cardId)) {
 			return;
 		}
 
-		if (selectedCardId === null || lockedCards.has(selectedCardId)) {
-			setSelectedCardId(cardId);
-		} else if (selectedCardId === cardId) {
+		if (selectedCardId === cardId) {
 			setSelectedCardId(null);
 		} else {
-			moveCard(selectedCardId, targetIndex);
+			setSelectedCardId(cardId);
 		}
 	}
 
@@ -352,7 +351,11 @@ export default function WordOrderBoard({
 				collapsable={false}
 				style={styles.viewport}
 			>
-				<ScrollView scrollEnabled={!isDragging}>
+				<ScrollView
+					scrollEnabled={!isDragging}
+					bounces={false}
+					overScrollMode="never"
+				>
 					<View
 						ref={board}
 						collapsable={false}
@@ -371,7 +374,7 @@ export default function WordOrderBoard({
 							const hasPendingReward = reward?.claimedAt === null;
 							const isRewardClaimed = Boolean(reward && reward.claimedAt !== null);
 							let accessibilityHint =
-								'Select this card, then tap its new position. Actions can also move it earlier or later.';
+								'Select this card, then use Move earlier or Move later to change its position, or drag it by its handle.';
 							let accessibilityActions = [
 								{
 									name: 'moveEarlier',

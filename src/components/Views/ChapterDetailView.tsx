@@ -1,21 +1,31 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import ChapterParagraphList from '@/src/components/ChapterParagraphList';
+import ChapterSelectHeader from '@/src/components/ChapterSelectHeader';
 import CollectionGems from '@/src/components/CollectionGems';
 import Loader from '@/src/components/Loader';
 import ReadingLink from '@/src/components/ReadingLink';
+import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { findAtlasLocationByChapterId } from '@/src/util/atlasCompletion';
+import { findAtlasLocationByChapterId, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { hasChapterContent, hasParagraphContent } from '@/src/util/atlasContent';
 import { getCompletedSolveStages, solveStages } from '@/src/util/solveProgression';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useIsFocused, usePreventRemove } from 'expo-router/react-navigation';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const headingBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
+const headingBackground = require('@/src/app/assets/images/postcard-parts/background-old.jpg');
 
 interface ChapterDetailParams extends Record<string, string | string[] | undefined> {
 	chapterId?: string;
+}
+
+interface ChapterUnlockProgress {
+	chapterId: string;
+	userId: string;
+	unlockedParagraphIds: string[];
 }
 
 /**
@@ -26,9 +36,22 @@ export default function ChapterDetailView() {
 	 * Chapter progress and screen edges
 	 */
 	const { chapterId } = useLocalSearchParams<ChapterDetailParams>();
+	const navigation = useNavigation();
+	const isFocused = useIsFocused();
+	const { id: userId = '' } = useUserContext() ?? {};
 	const { progressById, status } = useUserProgress();
 	const safeAreaInsets = useSafeAreaInsets();
 	const location = findAtlasLocationByChapterId(chapterId);
+
+	/**
+	 * Newly unlocked paragraph
+	 */
+	const previousUnlockProgress = useRef<ChapterUnlockProgress | undefined>(undefined);
+	const [paragraphToRevealId, setParagraphToRevealId] = useState<string>();
+	const isUnlockRevealActive = isFocused && Boolean(paragraphToRevealId);
+	let visibleRevealParagraphId: string | undefined;
+	let chapterPointerEvents: 'auto' | 'none' = 'auto';
+	let chapterAccessibility: 'auto' | 'no-hide-descendants' = 'auto';
 
 	/**
 	 * Chapter progress totals
@@ -46,9 +69,100 @@ export default function ChapterDetailView() {
 		paddingBottom: Math.max(safeAreaInsets.bottom, 12),
 	};
 
+	if (isUnlockRevealActive) {
+		visibleRevealParagraphId = paragraphToRevealId;
+		chapterPointerEvents = 'none';
+		chapterAccessibility = 'no-hide-descendants';
+	}
+
 	for (const paragraph of chapterParagraphs) {
 		solvedPuzzleCount += getCompletedSolveStages(progressById[paragraph.id]);
 	}
+
+	/**
+	 * Queues up a reveal animation when another paragraph unlocks.
+	 */
+	useLayoutEffect(() => {
+		const chapter = location?.chapter;
+		const previousProgress = previousUnlockProgress.current;
+		const unlockedParagraphIds: string[] = [];
+		let nextParagraphToRevealId: string | undefined;
+
+		if (status !== 'ready' || !chapter || !userId) {
+			return;
+		}
+
+		for (const paragraph of chapter.paragraphs.filter(hasParagraphContent)) {
+			if (
+				isItemUnlocked({
+					id: paragraph.id,
+					progressById,
+				})
+			) {
+				unlockedParagraphIds.push(paragraph.id);
+			}
+		}
+
+		previousUnlockProgress.current = {
+			chapterId: chapter.id,
+			userId,
+			unlockedParagraphIds,
+		};
+
+		if (
+			!previousProgress ||
+			previousProgress.chapterId !== chapter.id ||
+			previousProgress.userId !== userId
+		) {
+			setParagraphToRevealId(undefined);
+			return;
+		}
+
+		for (const paragraphId of unlockedParagraphIds.slice(1)) {
+			if (!previousProgress.unlockedParagraphIds.includes(paragraphId)) {
+				nextParagraphToRevealId = paragraphId;
+			}
+		}
+
+		if (nextParagraphToRevealId) {
+			setParagraphToRevealId(nextParagraphToRevealId);
+		} else if (paragraphToRevealId && !unlockedParagraphIds.includes(paragraphToRevealId)) {
+			setParagraphToRevealId(undefined);
+		}
+	}, [location?.chapter, paragraphToRevealId, progressById, status, userId]);
+
+	/**
+	 * Restores the chapter's buttons after its new postcard finishes moving.
+	 */
+	const handleUnlockRevealComplete = useCallback(
+		(paragraphId: string) => {
+			setParagraphToRevealId(currentParagraphId => {
+				if (currentParagraphId === paragraphId) {
+					return undefined;
+				}
+
+				return currentParagraphId;
+			});
+		},
+		[setParagraphToRevealId],
+	);
+
+	/**
+	 * Keeps the header and back gesture unavailable during the postcard reveal.
+	 */
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			gestureEnabled: !isUnlockRevealActive,
+			header: () => (
+				<ChapterSelectHeader
+					showBackButton
+					disabled={isUnlockRevealActive}
+				/>
+			),
+		});
+	}, [isUnlockRevealActive, navigation]);
+
+	usePreventRemove(isUnlockRevealActive);
 
 	if (status === 'loading') {
 		return <Loader />;
@@ -73,7 +187,12 @@ export default function ChapterDetailView() {
 	};
 
 	return (
-		<View style={styles.background}>
+		<View
+			style={styles.background}
+			pointerEvents={chapterPointerEvents}
+			accessibilityElementsHidden={isUnlockRevealActive}
+			importantForAccessibility={chapterAccessibility}
+		>
 			<View
 				key={chapter.id}
 				style={[styles.chapterContent, chapterContentStyle]}
@@ -84,26 +203,26 @@ export default function ChapterDetailView() {
 					style={styles.chapterHeading}
 				>
 					<View style={styles.chapterSummary}>
+						<Text style={styles.chapterTitle}>{chapter.label}</Text>
+						<Text
+							accessibilityRole="header"
+							style={[styles.chapterName, chapterNameStyle]}
+						>
+							{chapter.name}
+						</Text>
 						<View style={styles.chapterSummaryRow}>
-							<Text style={styles.chapterTitle}>{chapter.label}</Text>
-							<CollectionGems
-								title={chapter.name}
-								progress={chapterProgress}
-								size={24}
-							/>
-						</View>
-						<View style={styles.chapterSummaryRow}>
-							<Text
-								accessibilityRole="header"
-								style={[styles.chapterName, chapterNameStyle]}
-							>
-								{chapter.name}
-							</Text>
 							<ReadingLink
 								item={chapter}
 								color={colors.category[story.category]}
 								label="Read chapter"
 								style={styles.readChapterLink}
+							/>
+						</View>
+						<View style={styles.absgems}>
+							<CollectionGems
+								title={chapter.name}
+								progress={chapterProgress}
+								size={20}
 							/>
 						</View>
 					</View>
@@ -121,6 +240,8 @@ export default function ChapterDetailView() {
 						chapter={chapter}
 						story={story}
 						progressById={progressById}
+						paragraphToRevealId={visibleRevealParagraphId}
+						onUnlockRevealComplete={handleUnlockRevealComplete}
 					/>
 				</View>
 			</View>
@@ -169,24 +290,29 @@ const styles = StyleSheet.create({
 		// shadowRadius: 4,
 		zIndex: 1,
 	},
+	absgems: {
+		position: 'absolute',
+		top: 0,
+		right: 0,
+	},
 	chapterSummary: {
 		alignItems: 'center',
-		justifyContent: 'space-between',
 		gap: 0,
 	},
 	chapterSummaryRow: {
 		flexDirection: 'row',
-		alignContent: 'center',
 		alignItems: 'center',
-		justifyContent: 'space-between',
-		width: '100%',
+		justifyContent: 'center',
+		gap: 12,
+		paddingTop: 4,
 	},
 	chapterTitle: {
 		flexShrink: 1,
 		fontFamily: 'shadows-400',
-		fontSize: 28,
-		lineHeight: 36,
+		fontSize: 24,
+		lineHeight: 28,
 		color: colors.dark.text,
+		textAlign: 'center',
 	},
 	chapterDetails: {
 		alignItems: 'center',
@@ -198,8 +324,8 @@ const styles = StyleSheet.create({
 	},
 	chapterName: {
 		fontFamily: 'lexend-600',
-		fontSize: 18,
-		lineHeight: 18,
+		fontSize: 24,
+		lineHeight: 30,
 		textAlign: 'center',
 	},
 	chapterProgress: {

@@ -34,6 +34,8 @@ export default function WordOrderClaims({
 		<ScrollView
 			style={styles.container}
 			contentContainerStyle={styles.grid}
+			bounces={false}
+			overScrollMode="never"
 		>
 			{positions.map(cardId => {
 				const card = cardsById.get(cardId);

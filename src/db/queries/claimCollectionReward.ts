@@ -108,8 +108,6 @@ export default async function claimCollectionReward({
 			database: transaction,
 			userId,
 			xp: reward.xp,
-			source: `${collection.name} · ${requiredWordProgress} collection reward`,
-			isClaim: true,
 		});
 
 		receipt = {

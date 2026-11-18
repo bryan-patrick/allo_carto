@@ -113,8 +113,6 @@ export async function claimTipReward({
 			database: transaction,
 			userId,
 			xp,
-			source: `${tip.title} · French tip`,
-			isClaim: true,
 		});
 
 		receipt = {

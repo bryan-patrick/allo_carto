@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	postmark: {
-		width: 100,
+		width: 115,
 		flexShrink: 0,
 		aspectRatio: '12 / 5',
 		opacity: 0.6,
