@@ -8,7 +8,7 @@ import { solveStages, type SolveStage } from '@/src/util/solveProgression';
 import { useButtonWiggle } from '@/src/util/useButtonWiggle';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
 /**
@@ -38,7 +38,7 @@ interface PuzzleButtonGradient {
  */
 const puzzleStages: SolveStage[] = [1, 2, 3, 4, 5];
 const completedPuzzleGradient: PuzzleButtonGradient = {
-	colors: [`${colors.gems.earned}0D`, `${colors.gems.earned}33`],
+	colors: ['#EBF1EC', '#C3D5C6'],
 };
 
 /**
@@ -127,9 +127,19 @@ function SolvePuzzleButton({
 	unlockMessage,
 }: SolvePuzzleButtonProps) {
 	/**
+	 * Pressed state
+	 */
+	const [isPressed, setIsPressed] = useState(false);
+
+	/**
 	 * Movement
 	 */
-	const animatedStyle = useButtonWiggle(showNewBadge);
+	const animatedStyle = useButtonWiggle(showNewBadge && !isPressed);
+	const buttonStyle = StyleSheet.flatten([
+		styles.button,
+		isPressed && styles.pressedButton,
+		disabled && styles.disabledButton,
+	]);
 
 	/**
 	 * Button availability and colors
@@ -199,12 +209,16 @@ function SolvePuzzleButton({
 						selected: isCurrentPuzzleUnlocked,
 					}}
 					disabled={isDisabled}
-					style={styles.button}
+					onPressIn={() => setIsPressed(true)}
+					onPressOut={() => setIsPressed(false)}
+					style={buttonStyle}
 				>
 					<View
 						pointerEvents="none"
 						style={[
-							styles.diamond,
+							styles.circle,
+							isCurrentPuzzleUnlocked && styles.activeCircle,
+							isPressed && styles.pressedCircle,
 							{
 								borderColor,
 							},
@@ -221,9 +235,10 @@ function SolvePuzzleButton({
 									x: 1,
 									y: 0.1,
 								}}
-								style={StyleSheet.absoluteFill}
+								style={[StyleSheet.absoluteFill, styles.circleGradient]}
 							/>
 						)}
+						{isCurrentPuzzleUnlocked && <View style={styles.activeInnerBorder} />}
 					</View>
 					<View
 						pointerEvents="none"
@@ -231,7 +246,7 @@ function SolvePuzzleButton({
 					>
 						<MaterialSymbol
 							name={actionSymbol}
-							size={20}
+							size={22}
 							color={iconColor}
 							style={styles.icon}
 						/>
@@ -303,23 +318,25 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	puzzleSlot: {
-		width: 44,
-		height: 44,
+		width: 40,
+		height: 40,
 		flexShrink: 0,
 		zIndex: 1,
 	},
 	currentPuzzleSlot: {
-		width: 68,
-		height: 68,
+		width: 64,
+		height: 64,
 	},
 	connector: {
-		width: 4,
+		width: 16,
+		minWidth: 6,
+		flexShrink: 1,
 		height: 2,
 	},
 	connectorLine: {
 		position: 'absolute',
-		left: -4,
-		right: -4,
+		left: 0,
+		right: 0,
 		height: 2,
 		backgroundColor: colors.light.border,
 	},
@@ -329,18 +346,51 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	diamond: {
-		position: 'absolute',
-		width: '70.7%',
-		height: '70.7%',
-		borderWidth: 1.5,
-		borderRadius: 7,
-		overflow: 'hidden',
+	pressedButton: {
 		transform: [
 			{
-				rotate: '45deg',
+				scale: 0.94,
 			},
 		],
+	},
+	disabledButton: {
+		opacity: 0.45,
+	},
+	circle: {
+		position: 'absolute',
+		width: '100%',
+		height: '100%',
+		borderWidth: 1.5,
+		borderRadius: 999,
+	},
+	circleGradient: {
+		borderRadius: 999,
+	},
+	activeCircle: {
+		borderWidth: 2,
+		backgroundColor: colors.light.background,
+		shadowColor: colors.dark.border,
+		shadowOffset: {
+			width: 0,
+			height: 3,
+		},
+		shadowOpacity: 0.4,
+		shadowRadius: 1,
+		elevation: 4,
+	},
+	pressedCircle: {
+		shadowOpacity: 0,
+		elevation: 0,
+	},
+	activeInnerBorder: {
+		position: 'absolute',
+		top: 3,
+		right: 3,
+		bottom: 3,
+		left: 3,
+		borderRadius: 999,
+		borderWidth: 1.5,
+		borderColor: '#A0A0A0',
 	},
 	buttonContent: {
 		alignItems: 'center',
@@ -358,17 +408,12 @@ const styles = StyleSheet.create({
 	},
 	newBadge: {
 		position: 'absolute',
-		top: '8%',
-		right: '-5%',
+		top: -6,
+		alignSelf: 'center',
 		backgroundColor: colors.dark.primary,
 		borderRadius: 3,
 		paddingHorizontal: 4,
 		paddingVertical: 1,
-		transform: [
-			{
-				rotate: '45deg',
-			},
-		],
 	},
 	newBadgeText: {
 		color: colors.light.text,

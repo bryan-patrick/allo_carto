@@ -15,12 +15,16 @@ import MaterialSymbol from './MaterialSymbol';
  */
 interface ChapterSelectHeaderProps {
 	showBackButton?: boolean;
+	disabled?: boolean;
 }
 
 /**
  * Shows the player level, getting started guide, and an optional back button.
  */
-export default function ChapterSelectHeader({ showBackButton = false }: ChapterSelectHeaderProps) {
+export default function ChapterSelectHeader({
+	showBackButton = false,
+	disabled = false,
+}: ChapterSelectHeaderProps) {
 	/**
 	 * Navigation, screen edges, and player progress
 	 */
@@ -46,6 +50,13 @@ export default function ChapterSelectHeader({ showBackButton = false }: ChapterS
 	 * Header color and screen edges
 	 */
 	let storyColor = colors.light.primary;
+	let headerPointerEvents: 'auto' | 'none' = 'auto';
+	let headerAccessibility: 'auto' | 'no-hide-descendants' = 'auto';
+
+	if (disabled) {
+		headerPointerEvents = 'none';
+		headerAccessibility = 'no-hide-descendants';
+	}
 
 	if (selectedStory) {
 		storyColor = colors.categoryLight[selectedStory.category];
@@ -80,7 +91,12 @@ export default function ChapterSelectHeader({ showBackButton = false }: ChapterS
 
 	return (
 		<View style={[styles.header, insetStyle, headerBorderStyle]}>
-			<View style={styles.headerRow}>
+			<View
+				style={[styles.headerRow, disabled && styles.disabledHeader]}
+				pointerEvents={headerPointerEvents}
+				accessibilityElementsHidden={disabled}
+				importantForAccessibility={headerAccessibility}
+			>
 				{showBackButton && (
 					<Pressable
 						accessibilityLabel="Back to chapters"
@@ -137,6 +153,9 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 12,
+	},
+	disabledHeader: {
+		opacity: 0.45,
 	},
 	backButton: {
 		alignItems: 'center',

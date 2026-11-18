@@ -3,22 +3,33 @@ import BackgroundImage from '@/src/components/BackgroundImage';
 import { useNavigation, type NativeStackNavigationProp } from 'expo-router';
 import type { ParamListBase } from 'expo-router/react-navigation';
 import { useLayoutEffect, useState, type ReactNode } from 'react';
-import { Animated, Easing, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import {
+	Animated,
+	Easing,
+	StyleSheet,
+	Text,
+	View,
+	type LayoutChangeEvent,
+	type ViewStyle,
+} from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import PostcardPostmark from './PostcardPostmark';
 
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 const borderedPostcardBackground = require('@/src/app/assets/images/postcard-parts/background-bordered.jpg');
+const postcardPadding = 6;
+const postcardBorderWidth = 2;
 
 /**
  * Typing
  */
-interface ParagraphPostcardProps {
+export interface ParagraphPostcardProps {
 	index: number;
 	header?: ReactNode;
 	children: ReactNode;
 	isInCarousel?: boolean;
 	showNewBadge?: boolean;
+	onContentHeightChange?: (height: number) => void;
 }
 
 interface ParagraphPostcardBackingProps {
@@ -26,11 +37,25 @@ interface ParagraphPostcardBackingProps {
 }
 
 /**
+ * Tells us the height needed for the postcard's content, padding, and border.
+ */
+function reportPostcardContentHeight(
+	onContentHeightChange: ParagraphPostcardProps['onContentHeightChange'],
+	event: LayoutChangeEvent,
+) {
+	const contentHeight = event.nativeEvent.layout.height;
+	const frameHeight = 2 * (postcardPadding + postcardBorderWidth);
+	const postcardHeight = Math.ceil(contentHeight + frameHeight);
+
+	onContentHeightChange?.(postcardHeight);
+}
+
+/**
  * Shows the striped card behind a paragraph's postcard.
  */
 export function ParagraphPostcardBacking({ index = 0 }: ParagraphPostcardBackingProps) {
 	/**
-	 * Decorative card angle
+	 * The decorative card
 	 */
 	let backPostcardTiltStyle: ViewStyle = styles.backPostcardTiltLeft;
 
@@ -51,7 +76,7 @@ export function ParagraphPostcardBacking({ index = 0 }: ParagraphPostcardBacking
 }
 
 /**
- * Shows a paragraph's heading and activities on a postcard.
+ * The actual content postcard/paragraph
  */
 export default function ParagraphPostcard({
 	index,
@@ -59,6 +84,7 @@ export default function ParagraphPostcard({
 	children,
 	isInCarousel = false,
 	showNewBadge = false,
+	onContentHeightChange,
 }: ParagraphPostcardProps) {
 	/**
 	 * Navigation and motion preference
@@ -146,8 +172,11 @@ export default function ParagraphPostcard({
 						style={[styles.postcard, isInCarousel && styles.carouselFace]}
 					>
 						<View style={[styles.border, isInCarousel && styles.carouselFace]}>
-							{Boolean(header) && <PostcardPostmark>{header}</PostcardPostmark>}
-							{children}
+							{/* Measure the content before the frame stretches to match the other postcards. */}
+							<View onLayout={event => reportPostcardContentHeight(onContentHeightChange, event)}>
+								{Boolean(header) && <PostcardPostmark>{header}</PostcardPostmark>}
+								{children}
+							</View>
 						</View>
 					</BackgroundImage>
 					{showNewBadge && (
@@ -195,9 +224,9 @@ const styles = StyleSheet.create({
 		position: 'relative',
 	},
 	postcard: {
-		padding: 6,
+		padding: postcardPadding,
 		backgroundColor: colors.dark.background,
-		borderWidth: 2,
+		borderWidth: postcardBorderWidth,
 		borderColor: colors.light.border,
 		borderRadius: 12,
 		overflow: 'hidden',

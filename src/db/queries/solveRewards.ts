@@ -165,9 +165,6 @@ export async function claimSolveReward({
 		});
 		const reward = rewards.find(saved => saved.kind === kind && saved.position === position);
 		const claimedAt = Date.now();
-		const paragraphLabel = getActivityItemLabel(deckId);
-		const puzzleLabel = solveStages[stage].label;
-		const rewardLabel = kind === 'card' ? `Card ${position + 1}` : 'Gem reward';
 		let previousProgress: ProgressById | undefined;
 
 		if (!reward) {
@@ -238,8 +235,6 @@ export async function claimSolveReward({
 			database: transaction,
 			userId,
 			xp: reward.xp,
-			source: `${puzzleLabel} · ${rewardLabel} · ${paragraphLabel}`,
-			isClaim: true,
 		});
 
 		if (previousProgress) {

@@ -330,7 +330,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	let inkColor = colors.ink.available;
 	let submitColor = inkColor;
 	let isSubmitDisabled = disabled || (!needsRetry && !canSubmit);
-	let submitLabel = stageDefinition.label;
+	let submitLabel = 'Solve';
 	let puzzleTitle = 'Solve';
 	const gemColor = colors.gems.earned;
 	let gemTitle = 'First gem earned!';
@@ -359,7 +359,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	if (paragraphNumber) {
-		puzzleTitle = `Solve Paragraph ${paragraphNumber}`;
+		puzzleTitle = `Paragraph ${paragraphNumber} Puzzle ${stage}`;
 	}
 
 	if (Platform.OS === 'ios') {
@@ -378,7 +378,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	if (selectedCard) {
-		submitLabel = `${stageDefinition.label} (${cardCost} Ink)`;
+		submitLabel = `Solve (${cardCost} Ink)`;
 		prompt = `English meaning of “${selectedCard.text}”`;
 
 		if (isFrenchAnswer) {
@@ -779,6 +779,8 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 							style={styles.scroll}
 							contentContainerStyle={styles.grid}
 							keyboardShouldPersistTaps="handled"
+							bounces={false}
+							overScrollMode="never"
 						>
 							{sentenceCards.map(card => (
 								<SolveCard

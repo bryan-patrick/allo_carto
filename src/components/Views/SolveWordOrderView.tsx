@@ -165,7 +165,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const inkColor = hasEnoughInk ? colors.ink.available : colors.ink.insufficient;
 	const storyColor = getDeckStoryColor(deckId);
 	const paragraphNumber = getParagraphNumber(deckId);
-	const puzzleTitle = paragraphNumber ? `Solve Paragraph ${paragraphNumber}` : 'Solve';
+	const puzzleTitle = `Paragraph ${paragraphNumber ?? '?'} Puzzle 3`;
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];

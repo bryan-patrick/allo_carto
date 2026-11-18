@@ -7,7 +7,6 @@ import type {
 import { getAtlasItemsContainingWord } from '@/src/util/atlasCompletion';
 import { getMaxInkBalance, inkConfig } from '@/src/util/ink';
 import { getCompletionPercentage } from '@/src/util/progression';
-import { getActivityItemLabel } from '@/src/util/userActivity';
 import {
 	correctAnswerXPByRarity,
 	correctAnswerXPMultiplierByCEFR,
@@ -23,7 +22,7 @@ import getUserInk from './getUserInk';
 import { incrementCorrectCount } from './incrementCorrectCount';
 import { incrementSeenCount } from './incrementSeenCount';
 import updateUserProgress from './updateUserProgress';
-import { recordStampUnlockActivity, recordXPActivity, saveUserActivity } from './userActivity';
+import { recordStampUnlockActivity, recordXPActivity } from './userActivity';
 
 /**
  * Typing
@@ -390,7 +389,6 @@ export async function writeDeckCompletion({
 			sessionId,
 		);
 		const bonuses: XPBonusProps[] = [];
-		const paragraphLabel = getActivityItemLabel(deckId);
 		let pendingInk = 0;
 		let earnedInk = 0;
 
@@ -504,15 +502,6 @@ export async function writeDeckCompletion({
 			user.totalXP,
 			earnedInk,
 		);
-
-		if (isParagraphComplete) {
-			await saveUserActivity({
-				database,
-				userId,
-				type: 'paragraphFlashcardsCompleted',
-				description: paragraphLabel,
-			});
-		}
 
 		receipt = {
 			bonuses,

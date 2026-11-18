@@ -1,17 +1,29 @@
 import colors from '@/src/app/colors';
 import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
-import { ParagraphPostcardBacking } from '@/src/components/ParagraphPostcard';
+import {
+	ParagraphPostcardBacking,
+	type ParagraphPostcardProps,
+} from '@/src/components/ParagraphPostcard';
 import { readSelectedParagraph, saveSelectedParagraph } from '@/src/settings/selectedParagraph';
 import { getAtlasItemLabel, isItemUnlocked } from '@/src/util/atlasCompletion';
 import type { ProgressById } from '@/src/util/progression';
-import { useEffect, useState, type ReactNode } from 'react';
 import {
+	cloneElement,
+	useCallback,
+	useEffect,
+	useState,
+	type ReactElement,
+	type ReactNode,
+} from 'react';
+import {
+	AccessibilityInfo,
 	StyleSheet,
 	View,
 	type AccessibilityActionEvent,
 	type AccessibilityActionInfo,
 	type LayoutChangeEvent,
 	type ViewProps,
+	type ViewStyle,
 } from 'react-native';
 import {
 	GestureDetector,
@@ -20,12 +32,16 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
 	cancelAnimation,
+	Easing,
 	ReduceMotion,
 	useAnimatedProps,
 	useAnimatedStyle,
 	useReducedMotion,
 	useSharedValue,
+	withDelay,
+	withSequence,
 	withSpring,
+	withTiming,
 	type SharedValue,
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -43,8 +59,10 @@ interface ChapterParagraphSelection {
 }
 
 interface ParagraphPostcardCarouselProps extends ChapterParagraphSelection {
-	children: ReactNode[];
+	children: ReactElement<ParagraphPostcardProps>[];
 	disabled: boolean;
+	paragraphToRevealId?: string;
+	onUnlockRevealComplete: (paragraphId: string) => void;
 }
 
 interface CarouselPostcardProps {
@@ -56,7 +74,9 @@ interface CarouselPostcardProps {
 	position: SharedValue<number>;
 	isMoving: SharedValue<boolean>;
 	isReducedMotionEnabled: boolean;
-	onLayout: (event: LayoutChangeEvent) => void;
+	disabled: boolean;
+	isRevealTarget: boolean;
+	revealRotation: SharedValue<number>;
 	children: ReactNode;
 }
 
@@ -126,7 +146,7 @@ function getInitialParagraphId({
 }
 
 /**
- * Provides the easing to create that magnetic carousel feel
+ * This determines the gap between cards while in motion.
  */
 function getPostcardOffset(distance: number, cardSpacing: number): number {
 	'worklet';
@@ -135,14 +155,53 @@ function getPostcardOffset(distance: number, cardSpacing: number): number {
 	let easedDistance = absoluteDistance;
 
 	if (absoluteDistance < 1) {
-		easedDistance = Math.pow(absoluteDistance, 1.35);
+		easedDistance = Math.pow(absoluteDistance, 1.15);
 	}
 
 	return Math.sign(distance) * easedDistance * cardSpacing;
 }
 
 /**
- * Shows a moving postcard and keeps its actions available only while it settles tf down.
+ * WIGGLE WIGGLE
+ */
+function wiggleUnlockedPostcard(
+	revealRotation: SharedValue<number>,
+	paragraphId: string,
+	onComplete: (paragraphId: string) => void,
+) {
+	'worklet';
+
+	revealRotation.set(
+		withSequence(
+			withTiming(-2.5, {
+				duration: 100,
+			}),
+			withTiming(2.5, {
+				duration: 140,
+			}),
+			withTiming(-1.5, {
+				duration: 120,
+			}),
+			withTiming(1, {
+				duration: 100,
+			}),
+			withTiming(
+				0,
+				{
+					duration: 100,
+				},
+				finished => {
+					if (finished) {
+						scheduleOnRN(onComplete, paragraphId);
+					}
+				},
+			),
+		),
+	);
+}
+
+/**
+ * Shows a moving postcard and keeps its actions available only when it is still.
  */
 function CarouselPostcard({
 	index,
@@ -153,7 +212,9 @@ function CarouselPostcard({
 	position,
 	isMoving,
 	isReducedMotionEnabled,
-	onLayout,
+	disabled,
+	isRevealTarget,
+	revealRotation,
 	children,
 }: CarouselPostcardProps) {
 	/**
@@ -166,7 +227,7 @@ function CarouselPostcard({
 	};
 	let importantForAccessibility: ViewProps['importantForAccessibility'] = 'no-hide-descendants';
 
-	if (isActive) {
+	if (isActive && !disabled) {
 		importantForAccessibility = 'auto';
 	}
 
@@ -176,7 +237,7 @@ function CarouselPostcard({
 	const animatedProps = useAnimatedProps<ViewProps>(() => {
 		let pointerEvents: ViewProps['pointerEvents'] = 'none';
 
-		if (isActive && !isMoving.get()) {
+		if (isActive && !disabled && !isMoving.get()) {
 			pointerEvents = 'auto';
 		}
 
@@ -184,13 +245,18 @@ function CarouselPostcard({
 			pointerEvents,
 		};
 	});
-	const animatedStyle = useAnimatedStyle(() => {
+	const animatedStyle = useAnimatedStyle<ViewStyle>(() => {
 		const distance = index - position.get();
 		const absoluteDistance = Math.abs(distance);
 		const visibleDistance = Math.min(absoluteDistance, 1);
 		const postcardOffset = getPostcardOffset(distance, cardSpacing);
 		let scale = 1 - visibleDistance * 0.035;
 		let opacity = 1 - visibleDistance * 0.3;
+		let rotation = 0;
+
+		if (isRevealTarget && !isReducedMotionEnabled) {
+			rotation = revealRotation.get();
+		}
 
 		if (isReducedMotionEnabled) {
 			scale = 1;
@@ -210,16 +276,18 @@ function CarouselPostcard({
 				{
 					scale,
 				},
+				{
+					rotateZ: `${rotation}deg`,
+				},
 			],
 		};
 	});
 
 	return (
 		<Animated.View
-			accessibilityElementsHidden={!isActive}
+			accessibilityElementsHidden={!isActive || disabled}
 			importantForAccessibility={importantForAccessibility}
 			animatedProps={animatedProps}
-			onLayout={onLayout}
 			style={[styles.card, cardSizeStyle, animatedStyle]}
 		>
 			{children}
@@ -234,7 +302,15 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 	/**
 	 * Chapter content and motion preference
 	 */
-	const { chapterId, userId, paragraphs, children, disabled } = props;
+	const {
+		chapterId,
+		userId,
+		paragraphs,
+		children,
+		disabled,
+		paragraphToRevealId,
+		onUnlockRevealComplete,
+	} = props;
 	const isReducedMotionEnabled = useReducedMotion();
 
 	/**
@@ -251,6 +327,9 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 	const activeIndex = Math.max(0, selectedParagraphIndex);
 	const selectedParagraph = paragraphs[activeIndex];
 	const selectedVisibleParagraphId = selectedParagraph?.id;
+	const revealParagraphIndex = paragraphs.findIndex(
+		paragraph => paragraph.id === paragraphToRevealId,
+	);
 	const minimumCardSpacing = cardHeight + 8;
 	const previewCardSpacing = (viewportHeight + cardHeight) / 2 - 88;
 	const cardSpacing = Math.max(minimumCardSpacing, previewCardSpacing);
@@ -269,6 +348,16 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 	const isDragging = useSharedValue(false);
 	const isSettling = useSharedValue(false);
 	const isMoving = useSharedValue(false);
+	const revealRotation = useSharedValue(0);
+	const backingRevealStyle = useAnimatedStyle<ViewStyle>(() => {
+		return {
+			transform: [
+				{
+					rotateZ: `${revealRotation.get()}deg`,
+				},
+			],
+		};
+	});
 
 	/**
 	 * Moves the background more slowly than the postcards and keeps its edges covered.
@@ -330,14 +419,69 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 	}
 
 	/**
-	 * Keeps the selected card in place when progress changes the available paragraphs.
+	 * Selects the new paragraph and restores its buttons after the reveal finishes.
+	 */
+	const handleUnlockRevealComplete = useCallback(
+		(paragraphId: string) => {
+			setSelectedParagraphId(paragraphId);
+			isSettling.set(false);
+			isMoving.set(false);
+			onUnlockRevealComplete(paragraphId);
+			AccessibilityInfo.announceForAccessibility(`${getAtlasItemLabel(paragraphId)} unlocked.`);
+		},
+		[isMoving, isSettling, onUnlockRevealComplete],
+	);
+
+	/**
+	 * Moves to a newly unlocked paragraph and wiggles its postcard after the screen returns.
 	 */
 	useEffect(() => {
 		cancelAnimation(position);
+		cancelAnimation(revealRotation);
 		position.set(activeIndex);
+		revealRotation.set(0);
 		isDragging.set(false);
 		isSettling.set(false);
 		isMoving.set(false);
+
+		if (paragraphToRevealId && revealParagraphIndex >= 0 && cardHeight > 0 && viewportHeight > 0) {
+			isSettling.set(true);
+			isMoving.set(true);
+			position.set(
+				withDelay(
+					400,
+					withTiming(
+						revealParagraphIndex,
+						{
+							duration: 1300,
+							easing: Easing.inOut(Easing.cubic),
+							reduceMotion: ReduceMotion.System,
+						},
+						finished => {
+							if (!finished) {
+								return;
+							}
+
+							if (isReducedMotionEnabled) {
+								scheduleOnRN(handleUnlockRevealComplete, paragraphToRevealId);
+								return;
+							}
+
+							wiggleUnlockedPostcard(
+								revealRotation,
+								paragraphToRevealId,
+								handleUnlockRevealComplete,
+							);
+						},
+					),
+				),
+			);
+		}
+
+		return () => {
+			cancelAnimation(position);
+			cancelAnimation(revealRotation);
+		};
 	}, [
 		activeIndex,
 		paragraphs.length,
@@ -347,6 +491,13 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 		isDragging,
 		isSettling,
 		isMoving,
+		revealRotation,
+		paragraphToRevealId,
+		revealParagraphIndex,
+		cardHeight,
+		viewportHeight,
+		isReducedMotionEnabled,
+		handleUnlockRevealComplete,
 	]);
 
 	/**
@@ -361,13 +512,6 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 			});
 		}
 	}, [chapterId, userId, selectedVisibleParagraphId]);
-
-	/**
-	 * Stops the postcard spring when the chapter closes.
-	 */
-	useEffect(() => {
-		return () => cancelAnimation(position);
-	}, [position]);
 
 	/**
 	 * Updates the selected paragraph when its postcard has finished settling.
@@ -391,11 +535,9 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 	}
 
 	/**
-	 * Gives every postcard enough room for the chapter's tallest card.
+	 * Gives every postcard enough room for the chapter's tallest content.
 	 */
-	function handleCardLayout(event: LayoutChangeEvent) {
-		const measuredHeight = Math.ceil(event.nativeEvent.layout.height);
-
+	function handleCardContentHeightChange(measuredHeight: number) {
 		setCardHeight(currentHeight => Math.max(currentHeight, measuredHeight));
 	}
 
@@ -534,12 +676,12 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 						onLayout={handleViewportLayout}
 						style={styles.viewport}
 					>
-						<View
-							style={[styles.holder, holderStyle]}
+						<Animated.View
+							style={[styles.holder, holderStyle, backingRevealStyle]}
 							pointerEvents="none"
 						>
 							<ParagraphPostcardBacking />
-						</View>
+						</Animated.View>
 						{children.map((postcard, index) => (
 							<CarouselPostcard
 								key={paragraphs[index].id}
@@ -551,9 +693,13 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 								position={position}
 								isMoving={isMoving}
 								isReducedMotionEnabled={isReducedMotionEnabled}
-								onLayout={handleCardLayout}
+								disabled={disabled}
+								isRevealTarget={index === revealParagraphIndex}
+								revealRotation={revealRotation}
 							>
-								{postcard}
+								{cloneElement(postcard, {
+									onContentHeightChange: handleCardContentHeightChange,
+								})}
 							</CarouselPostcard>
 						))}
 					</View>

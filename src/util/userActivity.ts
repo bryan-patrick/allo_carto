@@ -9,8 +9,6 @@ import {
  * Typing
  */
 export type UserActivityType =
-	| 'xpClaimed'
-	| 'paragraphFlashcardsCompleted'
 	| 'paragraphSolveCompleted'
 	| 'puzzleCompleted'
 	| 'gemEarned'
@@ -65,14 +63,6 @@ export function isUserNotificationType(type: UserActivityType): type is UserNoti
 export const userActivityLimit = 50;
 
 export const userActivityDisplay: Record<UserActivityType, UserActivityDisplay> = {
-	xpClaimed: {
-		title: 'XP claimed',
-		icon: 'stars',
-	},
-	paragraphFlashcardsCompleted: {
-		title: 'All flashcard decks completed',
-		icon: 'library_add_check',
-	},
 	paragraphSolveCompleted: {
 		title: 'All five puzzles completed',
 		icon: 'workspace_premium',

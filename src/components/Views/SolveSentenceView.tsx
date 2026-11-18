@@ -238,7 +238,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const storyColor = getDeckStoryColor(deckId);
 	const paragraphNumber = getParagraphNumber(deckId);
 	const paragraphLabel = getAtlasItemLabel(deckId);
-	const puzzleTitle = paragraphNumber ? `Solve Paragraph ${paragraphNumber}` : 'Solve';
+	const puzzleTitle = `Paragraph ${paragraphNumber ?? '?'} Puzzle ${stage}`;
 	const chapter = findCompletionPath({
 		id: deckId,
 	})[1];
@@ -555,6 +555,8 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 				<ScrollView
 					contentContainerStyle={styles.body}
 					keyboardShouldPersistTaps="handled"
+					bounces={false}
+					overScrollMode="never"
 				>
 					{!puzzle ?
 						<Text style={styles.text}>{loadError || 'Loading puzzle...'}</Text>
@@ -694,6 +696,8 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 									style={styles.feedbackScroll}
 									contentContainerStyle={styles.feedbackContent}
 									keyboardShouldPersistTaps="handled"
+									bounces={false}
+									overScrollMode="never"
 								>
 									<Text
 										accessibilityLiveRegion="polite"
