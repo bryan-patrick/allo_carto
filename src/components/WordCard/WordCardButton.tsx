@@ -56,6 +56,7 @@ export default function WordCardButton({
 	const playIncorrect = useSoundEffect('incorrect');
 	const lastSoundedAnswer = useRef<string | null>(null);
 	const isEnglishPrefixRequired = getEnglishPrefixes(currentCard).length > 0;
+	const isCardCompleted = cardState.stage === 'COMPLETED';
 
 	/**
 	 * Style vars
@@ -86,6 +87,7 @@ export default function WordCardButton({
 	const isDisabled = useMemo(() => {
 		if (
 			!sessionId ||
+			isCardCompleted ||
 			cardState.progress === 'WARNING' ||
 			isAnswerPending ||
 			isUpdatingProgress ||
@@ -97,6 +99,7 @@ export default function WordCardButton({
 		return false;
 	}, [
 		isEnglishPrefixRequired,
+		isCardCompleted,
 		cardState.progress,
 		cardState.selectedArticle,
 		cardState.selectedWord,
@@ -110,6 +113,7 @@ export default function WordCardButton({
 	 */
 	const isButtonVisuallyDisabled =
 		!sessionId ||
+		isCardCompleted ||
 		cardState.progress === 'WARNING' ||
 		(isEnglishPrefixRequired && !cardState.selectedArticle) ||
 		!cardState.selectedWord;
