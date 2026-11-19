@@ -131,7 +131,7 @@ const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 		answerLanguage: 'French',
 		instruction: "Translate the sentence to French. Don't give up!",
 		completionTitle: 'Paragraph mastered!',
-		completionMessage: 'All five Solve stages are complete. Your gems are now prismatic.',
+		completionMessage: 'All five puzzles are complete. Your gems are now prismatic.',
 	},
 };
 
@@ -175,7 +175,7 @@ function getSentenceFeedback(result: SolveAttemptResult, answerLanguage: string)
 
 	return (
 		messages[result.status] ?? {
-			text: 'This puzzle is locked. Check its unlock requirements beside the Solve button.',
+			text: 'This puzzle is locked. Check the unlock requirements on the paragraph selection screen.',
 			backgroundColor: colors.light.warning,
 		}
 	);
@@ -807,6 +807,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 									/>
 								}
 								handler={handleClose}
+								iconPosition="left"
 								disabled={isCloseDisabled}
 								accessibilityState={{
 									disabled: isCloseDisabled,

@@ -13,7 +13,7 @@ import type { SolveStage } from '@/src/util/solveProgression';
 import type { SpeechPlaybackState } from '@/src/util/speakFrench';
 import { type WordProgressKey, wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 /**
  * Typing
@@ -52,9 +52,41 @@ interface PassageSpeech {
 	wordRanges: PassageWordRange[];
 }
 
+interface LearningLevelColorLetter {
+	letter: string;
+	progress: WordProgressKey;
+}
+
 /**
  * Constants
  */
+const learningLevelColorLetters: LearningLevelColorLetter[] = [
+	{
+		letter: 'c',
+		progress: 'unseen',
+	},
+	{
+		letter: 'o',
+		progress: 'new',
+	},
+	{
+		letter: 'l',
+		progress: 'learning',
+	},
+	{
+		letter: 'o',
+		progress: 'familiar',
+	},
+	{
+		letter: 'r',
+		progress: 'known',
+	},
+	{
+		letter: 's',
+		progress: 'mastered',
+	},
+];
+
 const learningLevelOpacity: Record<WordProgressKey, number> = {
 	unseen: 0.2,
 	new: 0.4,
@@ -250,21 +282,19 @@ export default function DeckPassageView({
 		const trailingText = getPassageTrailingText(after);
 		const progress = wordProgressKeyByWordId[wordId ?? ''] ?? 'unseen';
 		const isVisible = isPassageWordVisible(progress, unlockExempt, showUnseenWords);
-		let displayProgress = progress;
 		let displayText = text;
 		let opacity = wordProgressOpacityByKey[progress];
-		let wordColor: string;
+		let wordColor = getLearningLevelColor(progress, useLearningLevelColors);
 		let backgroundColor: string | undefined;
 		let displayOpacity: number | Animated.Value;
 
 		if (unlockExempt) {
-			displayProgress = 'known';
+			wordColor = colors.dark.text;
 			opacity = exemptWordOpacity;
 		} else if (!isVisible) {
 			displayText = '?';
 		}
 
-		wordColor = getLearningLevelColor(displayProgress, useLearningLevelColors);
 		displayOpacity = opacity;
 
 		if (isCurrentWord) {
@@ -282,8 +312,14 @@ export default function DeckPassageView({
 			accessibilityLabel: displayText,
 			displayText,
 			trailingText,
-			textStyle: { color: wordColor, opacity: displayOpacity },
-			highlightStyle: { backgroundColor, opacity: displayOpacity },
+			textStyle: {
+				color: wordColor,
+				opacity: displayOpacity,
+			},
+			highlightStyle: {
+				backgroundColor,
+				opacity: displayOpacity,
+			},
 		};
 	});
 
@@ -304,11 +340,6 @@ export default function DeckPassageView({
 			wordsToSay={passageSpeech.text}
 		/>
 	);
-
-	/**
-	 * Passage metadata
-	 */
-	const progressLegendTextColor = getLearningLevelColor('known', useLearningLevelColors);
 
 	/**
 	 * Change the reading speed at the current word, keeping a paused reading paused.
@@ -645,67 +676,101 @@ export default function DeckPassageView({
 					</View>
 				</View>
 				{showLearningControls && (
-					<Pressable
-						accessibilityRole="button"
-						accessibilityState={{
-							expanded: areFiltersExpanded,
-						}}
-						onPress={handleToggleFilters}
-						style={styles.filterAccordionHeader}
-					>
-						<Text style={styles.filterAccordionTitle}>Filters</Text>
-						<MaterialSymbol
-							color={colors.dark.text}
-							name={areFiltersExpanded ? 'expand_less' : 'expand_more'}
-							size={20}
-						/>
-					</Pressable>
-				)}
-				{showLearningControls && areFiltersExpanded && (
-					<View style={styles.progressLegend}>
-						{wordProgressDefinitions.map(({ key, name, symbolName }) => {
-							const progressColor = getLearningLevelColor(key, useLearningLevelColors);
-							const isActive = activeWordProgressFilter === key;
-							const wordCount = wordProgressCounts[key];
-							let wordCountLabel = 'words';
-
-							if (wordCount === 1) {
-								wordCountLabel = 'word';
-							}
-
-							/**
-							 * Render the filter
-							 */
-							return (
-								<Pressable
-									key={key}
-									accessibilityLabel={`${name}, ${wordCount} ${wordCountLabel}`}
-									accessibilityRole="radio"
-									accessibilityState={{ checked: isActive }}
-									onPress={() => handleWordProgressFilterPress(key)}
-									style={[
-										styles.progressLegendItem,
-										isActive && {
-											backgroundColor: `${progressColor}26`,
-											borderColor: `${progressColor}99`,
-										},
-									]}
-								>
-									<MaterialSymbol
-										color={progressColor}
-										name={symbolName}
-										size={16}
-										style={styles.progressLegendIcon}
+					<View style={styles.filterAccordion}>
+						<Pressable
+							accessibilityRole="button"
+							accessibilityState={{
+								expanded: areFiltersExpanded,
+							}}
+							onPress={handleToggleFilters}
+							style={styles.filterAccordionHeader}
+						>
+							<Text style={styles.filterAccordionTitle}>Filters</Text>
+							<MaterialSymbol
+								color={colors.dark.text}
+								name={areFiltersExpanded ? 'expand_less' : 'expand_more'}
+								size={20}
+							/>
+						</Pressable>
+						{areFiltersExpanded && (
+							<View style={styles.filterAccordionContent}>
+								<View style={styles.learningLevelToggle}>
+									<Text style={styles.learningLevelColorsLabel}>
+										{'Use learning level '}
+										{learningLevelColorLetters.map(({ letter, progress }) => (
+											<Text
+												key={progress}
+												style={[
+													styles.learningLevelColorsWord,
+													{
+														color: colors.wordProgress[progress],
+													},
+												]}
+											>
+												{letter}
+											</Text>
+										))}
+									</Text>
+									<Switch
+										accessibilityLabel="Use learning level colors"
+										ios_backgroundColor={colors.dark.border}
+										trackColor={{
+											false: colors.dark.border,
+											true: colors.dark.primaryActive,
+										}}
+										style={styles.learningLevelColorsSwitch}
+										value={useLearningLevelColors}
+										onValueChange={value => setSetting('useLearningLevelColors', value)}
 									/>
-									<Text style={[styles.progressLegendText, { color: progressLegendTextColor }]}>
-										{name}
-									</Text>
-									<Text style={[styles.progressLegendText, { color: progressLegendTextColor }]}>
-										({wordCount})
-									</Text>
-								</Pressable>
-							);
-						})}
+								</View>
+								<View style={styles.progressLegend}>
+									{wordProgressDefinitions.map(({ key, name, symbolName }) => {
+										const progressColor = getLearningLevelColor(key, useLearningLevelColors);
+										const progressTextStyle = {
+											color: progressColor,
+										};
+										const isActive = activeWordProgressFilter === key;
+										const wordCount = wordProgressCounts[key];
+										let wordCountLabel = 'words';
+
+										if (wordCount === 1) {
+											wordCountLabel = 'word';
+										}
+
+										/**
+										 * Render the filter
+										 */
+										return (
+											<Pressable
+												key={key}
+												accessibilityLabel={`${name}, ${wordCount} ${wordCountLabel}`}
+												accessibilityRole="radio"
+												accessibilityState={{ checked: isActive }}
+												onPress={() => handleWordProgressFilterPress(key)}
+												style={[
+													styles.progressLegendItem,
+													isActive && {
+														backgroundColor: `${progressColor}26`,
+														borderColor: `${progressColor}99`,
+													},
+												]}
+											>
+												<MaterialSymbol
+													color={progressColor}
+													name={symbolName}
+													size={16}
+													style={styles.progressLegendIcon}
+												/>
+												<Text style={[styles.progressLegendText, progressTextStyle]}>{name}</Text>
+												<Text style={[styles.progressLegendText, progressTextStyle]}>
+													({wordCount})
+												</Text>
+											</Pressable>
+										);
+									})}
+								</View>
+							</View>
+						)}
 					</View>
 				)}
 			</View>
@@ -782,25 +847,28 @@ const styles = StyleSheet.create({
 		width: '100%',
 	},
 	learningLevelToggle: {
-		flex: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'space-between',
+		minHeight: 44,
+		paddingHorizontal: 8,
 		gap: 8,
 	},
 	learningLevelColorsLabel: {
+		flexShrink: 1,
 		color: colors.dark.text,
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 14,
 	},
 	learningLevelColorsWord: {
 		fontFamily: 'lexend-700',
 	},
-	learningLevelColorsSwitchContainer: {
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
 	learningLevelColorsSwitch: {
-		transform: [{ scale: 0.65 }, { translateX: '-35%' }],
+		transform: [
+			{
+				scale: 0.85,
+			},
+		],
 	},
 	passageScrollView: {
 		backgroundColor: '#FFFCF7',
@@ -829,7 +897,14 @@ const styles = StyleSheet.create({
 		left: 0,
 		right: 0,
 	},
-	passageTextLayout: { position: 'relative' },
+	passageTextLayout: {
+		position: 'relative',
+		transform: [
+			{
+				translateY: 4,
+			},
+		],
+	},
 	passageHighlightText: { color: 'transparent' },
 	passageText: {
 		color: colors.dark.text,
@@ -918,6 +993,12 @@ const styles = StyleSheet.create({
 	disabledSpeechControl: {
 		opacity: 0.35,
 	},
+	filterAccordion: {
+		marginTop: 12,
+		borderTopWidth: 1,
+		borderBottomWidth: 1,
+		borderColor: colors.light.goldenBorder,
+	},
 	filterAccordionHeader: {
 		alignItems: 'center',
 		flexDirection: 'row',
@@ -929,6 +1010,10 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 		fontFamily: 'lexend-600',
 		fontSize: 14,
+	},
+	filterAccordionContent: {
+		gap: 8,
+		paddingBottom: 8,
 	},
 	progressLegend: {
 		flexDirection: 'row',

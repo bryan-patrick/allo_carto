@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		flexShrink: 1,
-		fontSize: 18,
+		fontSize: 16,
 		fontFamily: 'lexend-600',
 	},
 	disabledReadLink: {
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
 	wordRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		paddingVertical: 8,
+		paddingVertical: 12,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
 		gap: 8,
@@ -280,17 +280,17 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 		borderRadius: 4,
 		paddingHorizontal: 4,
-		paddingVertical: 4,
+		paddingVertical: 3,
 	},
 	frenchWord: {
 		fontSize: 15,
-		lineHeight: 17,
+		lineHeight: 20,
 		fontFamily: 'lexend-600',
 		color: colors.dark.text,
 	},
 	translation: {
 		fontSize: 15,
-		lineHeight: 17,
+		lineHeight: 20,
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},

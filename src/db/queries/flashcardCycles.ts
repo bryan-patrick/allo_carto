@@ -1,6 +1,7 @@
 import type {
 	DeckSessionProps,
 	DeckWordResultProps,
+	XPBonusProps,
 } from '@/src/components/CardDeck/deckSessionTypes';
 import { createDeckSession } from '@/src/util/createDeckSession';
 import { createFlashcardDecks } from '@/src/util/createFlashcardDecks';
@@ -31,6 +32,10 @@ interface FlashcardCycleRow {
 
 interface UserXPRow {
 	totalXP: number;
+}
+
+interface FlashcardCompletionRow {
+	bonuses: string;
 }
 
 export interface FlashcardCycle {
@@ -64,6 +69,10 @@ const statements = {
 		FROM flashcardCycles WHERE userId = ? AND sessionId = ?;
 	`,
 	getUserXP: 'SELECT totalXP FROM users WHERE id = ?;',
+	getPreviousCompletions: `
+		SELECT bonuses FROM deckCompletions
+		WHERE userId = ? AND deckId = ?;
+	`,
 	saveCycle: `
 		INSERT INTO flashcardCycles (
 			userId, deckId, cycleId, decks, deckIndex, sessionId, xpBefore, unseenWordIds, results
@@ -91,8 +100,16 @@ const statements = {
 };
 
 /**
- * Reopen a paragraph's saved flashcard decks or start a new cycle.
- * Keeps the same order until every deck is finished.
+ * Check whether a receipt includes finishing every flashcard deck in the paragraph.
+ */
+function hasParagraphCompletionBonus(completion: FlashcardCompletionRow): boolean {
+	const bonuses: XPBonusProps[] = JSON.parse(completion.bonuses);
+
+	return bonuses.some(bonus => bonus.kind === 'paragraphCompletion');
+}
+
+/**
+ * Reopen a paragraph's saved flashcard decks or start its next pass.
  */
 export async function getFlashcardCycle({
 	database,
@@ -135,7 +152,21 @@ export async function getFlashcardCycle({
 			session = createDeckSession(user.totalXP);
 
 			if (needsNewCycle) {
-				plannedDecks = createFlashcardDecks(wordIds, targetCardsPerDeck);
+				const previousCompletions = await transaction.getAllAsync<FlashcardCompletionRow>(
+					statements.getPreviousCompletions,
+					userId,
+					deckId,
+				);
+				const hasCompletedParagraphPass = previousCompletions.some(hasParagraphCompletionBonus);
+
+				/**
+				 * Keep the first pass in passage order until every deck is finished.
+				 */
+				plannedDecks = createFlashcardDecks({
+					wordIds,
+					targetCardsPerDeck,
+					shouldShuffle: hasCompletedParagraphPass,
+				});
 				cycleId = session.id;
 				deckIndex = 0;
 			}

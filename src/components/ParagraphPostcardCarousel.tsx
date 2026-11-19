@@ -146,7 +146,7 @@ function getInitialParagraphId({
 }
 
 /**
- * This determines the gap between cards while in motion.
+ * Positions each postcard closer to its neighbor during a swipe.
  */
 function getPostcardOffset(distance: number, cardSpacing: number): number {
 	'worklet';
@@ -155,7 +155,7 @@ function getPostcardOffset(distance: number, cardSpacing: number): number {
 	let easedDistance = absoluteDistance;
 
 	if (absoluteDistance < 1) {
-		easedDistance = Math.pow(absoluteDistance, 1.15);
+		easedDistance = Math.pow(absoluteDistance, 1.2);
 	}
 
 	return Math.sign(distance) * easedDistance * cardSpacing;
@@ -330,8 +330,8 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 	const revealParagraphIndex = paragraphs.findIndex(
 		paragraph => paragraph.id === paragraphToRevealId,
 	);
-	const minimumCardSpacing = cardHeight + 8;
-	const previewCardSpacing = (viewportHeight + cardHeight) / 2 - 88;
+	const minimumCardSpacing = cardHeight + 4;
+	const previewCardSpacing = (viewportHeight + cardHeight) / 2 - 96;
 	const cardSpacing = Math.max(minimumCardSpacing, previewCardSpacing);
 	const requestedDragThreshold = cardSpacing * 0.22;
 	const minimumDragThreshold = Math.max(48, requestedDragThreshold);

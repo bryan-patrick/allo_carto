@@ -2,7 +2,6 @@ import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import ReadingLink from '@/src/components/ReadingLink';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
@@ -151,7 +150,7 @@ function getSolveFeedback(result: SolveAttemptResult, stage: SolveWordStage): So
 			backgroundColor: colors.light.success,
 		},
 		unavailable: {
-			text: 'This puzzle is locked. Check its unlock requirements beside the Solve button.',
+			text: 'This puzzle is locked. Check the unlock requirements on the paragraph selection screen.',
 			backgroundColor: colors.light.warning,
 		},
 	};
@@ -329,8 +328,9 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	let inkColor = colors.ink.available;
 	let submitColor = inkColor;
 	let isSubmitDisabled = disabled || (!needsRetry && !canSubmit);
-	let submitLabel = 'Solve';
-	let puzzleTitle = 'Solve';
+	let submitLabel = 'Submit';
+	let isNextSentenceArrowVisible = false;
+	let puzzleTitle = stageDefinition.label;
 	const gemColor = colors.gems.earned;
 	let gemTitle = 'First gem earned!';
 	let keyboardBehavior: 'padding' | 'height' = 'height';
@@ -339,7 +339,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	let puzzleNotice = loadError || unlockMessage;
 	let visibleCards = sentenceCards;
 	let completionMessage =
-		'Complete Solve+ and Solve++ and claim all 3 gems to unlock the next paragraph.';
+		'Complete Puzzles 2 and 3 and claim all 3 gems to unlock the next paragraph.';
 
 	/**
 	 * Screen reader descriptions
@@ -373,7 +373,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	if (stage === 2) {
 		parchmentTint.backgroundColor = stageDefinition.backgroundTint;
 		gemTitle = 'Second gem earned!';
-		completionMessage = 'Complete Solve++ and claim your third gem to unlock the next paragraph.';
+		completionMessage = 'Complete Puzzle 3 and claim your third gem to unlock the next paragraph.';
 	}
 
 	if (isFrenchAnswer) {
@@ -382,7 +382,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	}
 
 	if (selectedCard) {
-		submitLabel = `Solve (${cardCost} Ink)`;
+		submitLabel = `Submit (${cardCost} Ink)`;
 		prompt = `English meaning of “${selectedCard.text}”`;
 
 		if (isFrenchAnswer) {
@@ -392,6 +392,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 
 	if (isShowingNextSentence) {
 		submitLabel = 'Next sentence';
+		isNextSentenceArrowVisible = true;
 		submitColor = storyColor;
 		isSubmitDisabled = isNextSentenceDisabled;
 		prompt = 'Sentence solved! Continue to the next sentence.';
@@ -408,6 +409,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 
 	if (needsRetry) {
 		submitLabel = 'Retry save';
+		isNextSentenceArrowVisible = false;
 		statusMessage = 'Changes could not be saved.';
 		statusTextStyle.backgroundColor = colors.light.danger;
 	}
@@ -725,13 +727,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 						>
 							{puzzleTitle}
 						</Text>
-						{puzzle?.isUnlocked && (stage === 1 || isComplete) && (
-							<ReadingLink
-								item={puzzle.deck}
-								color={storyColor}
-								style={styles.readLink}
-							/>
-						)}
 					</View>
 					<Pressable
 						accessibilityRole="button"
@@ -891,6 +886,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 									/>
 								}
 								handler={handleClose}
+								iconPosition="left"
 								disabled={isCloseDisabled}
 								accessibilityState={{
 									disabled: isCloseDisabled,
@@ -916,7 +912,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 									}}
 									style={isSubmitDisabled && styles.disabledSubmit}
 									color={submitColor}
-									useArrow={false}
+									useArrow={isNextSentenceArrowVisible}
 									fullwidth
 								>
 									{submitLabel}
@@ -986,9 +982,6 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		fontFamily: 'lexend-600',
 		fontSize: 18,
-	},
-	readLink: {
-		fontSize: 14,
 	},
 	ink: {
 		marginLeft: 'auto',

@@ -81,7 +81,7 @@ function getWordOrderFeedback(result: SolveAttemptResult): WordOrderFeedback {
 
 	return (
 		messages[result.status] ?? {
-			text: 'This puzzle is locked. Check its unlock requirements beside the Solve button.',
+			text: 'This puzzle is locked. Check the unlock requirements on the paragraph selection screen.',
 			backgroundColor: colors.light.warning,
 		}
 	);
@@ -192,6 +192,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	 * Initial submission button values
 	 */
 	let submitLabel = `Submit (${inkCost} Ink)`;
+	let isNextSentenceArrowVisible = false;
 	let submitColor = inkColor;
 	let submitDisabled = disabled || isComplete;
 
@@ -211,11 +212,13 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 
 	if (isSentenceSolved) {
 		submitLabel = 'Next sentence';
+		isNextSentenceArrowVisible = true;
 		submitColor = storyColor;
 	}
 
 	if (needsRetry) {
 		submitLabel = 'Retry save';
+		isNextSentenceArrowVisible = false;
 	}
 
 	if (submitDisabled) {
@@ -585,7 +588,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					</Text>
 					<Pressable
 						accessibilityRole="button"
-						accessibilityLabel="Close Solve++"
+						accessibilityLabel={`Close ${stageDefinition.label}`}
 						accessibilityState={{
 							disabled: isCloseDisabled,
 						}}
@@ -700,6 +703,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 									/>
 								}
 								handler={handleClose}
+								iconPosition="left"
 								disabled={isCloseDisabled}
 								accessibilityState={{
 									disabled: isCloseDisabled,
@@ -725,7 +729,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 									}}
 									color={submitColor}
 									style={submitDisabled && styles.disabled}
-									useArrow={false}
+									useArrow={isNextSentenceArrowVisible}
 									fullwidth
 								>
 									{submitLabel}
