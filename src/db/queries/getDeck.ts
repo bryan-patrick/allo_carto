@@ -84,7 +84,10 @@ export default async function getDeck({
 
 		const words = rows?.map(parseWordRow) ?? [];
 		const wordsById = new Map(words.map(word => [word.id, word]));
-		const wordIds = words.map(word => word.id);
+		/**
+		 * Keep the passage order because database rows can arrive in a different order.
+		 */
+		const wordIds = deck.wordIds.filter(wordId => wordsById.has(wordId));
 		const unseenWords = words.filter(word => (word.seenCount ?? 0) === 0);
 		const unseenWordIds = unseenWords.map(word => word.id);
 

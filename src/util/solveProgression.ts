@@ -65,7 +65,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		cardCostIncrease: 0,
 		attemptInkCost: null,
 		incorrectAttemptInkCost: inkConfig.incorrectSolveAttempt,
-		buttonGradient: ['#F6EBEF', '#E0BAC7'],
+		buttonGradient: ['#F8DFD4', '#DC9ABF'],
 		backgroundTint: `${colors.gems.first}0A`,
 	},
 	2: {
@@ -78,7 +78,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		cardCostIncrease: 1,
 		attemptInkCost: null,
 		incorrectAttemptInkCost: inkConfig.incorrectSolveAttempt + 1,
-		buttonGradient: ['#ECF3F7', '#BDD4E2'],
+		buttonGradient: ['#D5EEE9', '#A4BEE5'],
 		backgroundTint: `${colors.gems.second}0A`,
 	},
 	3: {
@@ -91,7 +91,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		cardCostIncrease: 0,
 		attemptInkCost: 5,
 		incorrectAttemptInkCost: 5,
-		buttonGradient: ['#F2ECF8', '#D4C2E2'],
+		buttonGradient: ['#DDE2F8', '#C69ADA'],
 		backgroundTint: `${colors.gems.third}0A`,
 	},
 	4: {
@@ -104,7 +104,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		cardCostIncrease: 0,
 		attemptInkCost: 10,
 		incorrectAttemptInkCost: 10,
-		buttonGradient: ['#EEE7F7', '#C7ADD9'],
+		buttonGradient: ['#EBCFF0', '#AA8AD0'],
 		backgroundTint: `${colors.gems.third}0A`,
 	},
 	5: {
@@ -117,7 +117,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		cardCostIncrease: 0,
 		attemptInkCost: 10,
 		incorrectAttemptInkCost: 10,
-		buttonGradient: ['#F6F0D5', '#D9E8F4', '#F5E2CF', '#EFDEEB'],
+		buttonGradient: ['#F5DEA0', '#B9DCEC', '#F2C499', '#D8AFD9'],
 		backgroundTint: `${colors.gems.third}0A`,
 	},
 };

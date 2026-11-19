@@ -8,9 +8,12 @@ import WordTipModal from '@/src/components/WordCard/WordTipModal';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { getGlossarySections, glossaryLetters } from '@/src/util/glossary';
 import { useSoftTapSound } from '@/src/util/softTapSound';
+import { ImageBackground } from 'expo-image';
 import { useMemo, useRef, useState, type RefObject } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
+
+const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 /**
  * Typing
@@ -113,7 +116,11 @@ export default function GlossaryView(scrollProps: CollectionsPageScrollProps) {
 	}
 
 	return (
-		<View style={styles.paper}>
+		<ImageBackground
+			source={postcardBackground}
+			contentFit="cover"
+			style={styles.paper}
+		>
 			<View style={styles.heading}>
 				<View style={styles.headingRow}>
 					<Text
@@ -200,7 +207,7 @@ export default function GlossaryView(scrollProps: CollectionsPageScrollProps) {
 					onClose={() => setSelectedTip(null)}
 				/>
 			)}
-		</View>
+		</ImageBackground>
 	);
 }
 
@@ -210,14 +217,11 @@ export default function GlossaryView(scrollProps: CollectionsPageScrollProps) {
 const styles = StyleSheet.create({
 	paper: {
 		flex: 1,
-		marginHorizontal: 16,
-		marginTop: 8,
-		marginBottom: 16,
-		borderWidth: 1,
+		borderTopWidth: 1,
+		borderBottomWidth: 1,
 		borderColor: colors.light.border,
-		borderRadius: 8,
 		overflow: 'hidden',
-		backgroundColor: colors.light.text,
+		backgroundColor: colors.light.background,
 	},
 	heading: {
 		padding: 12,
@@ -295,7 +299,6 @@ const styles = StyleSheet.create({
 		padding: 10,
 		borderTopWidth: 1,
 		borderTopColor: colors.light.border,
-		backgroundColor: colors.light.text,
 	},
 	letterButton: {
 		...buttonContentStyles.miniButton,

@@ -42,6 +42,11 @@ const completedPuzzleGradient: PuzzleButtonGradient = {
 };
 
 /**
+ * Reserve the active button's height even when every puzzle is locked or completed.
+ */
+const activePuzzleButtonSize = 64;
+
+/**
  * Shows all five paragraph puzzles with their progress and next available puzzle.
  */
 export default function SolvePuzzleButtons({
@@ -314,7 +319,7 @@ const styles = StyleSheet.create({
 	puzzleRow: {
 		width: '100%',
 		maxWidth: 464,
-		minHeight: 64,
+		minHeight: activePuzzleButtonSize,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -326,8 +331,8 @@ const styles = StyleSheet.create({
 		zIndex: 1,
 	},
 	currentPuzzleSlot: {
-		width: 64,
-		height: 64,
+		width: activePuzzleButtonSize,
+		height: activePuzzleButtonSize,
 	},
 	connector: {
 		width: 16,

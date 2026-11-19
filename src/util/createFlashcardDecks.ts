@@ -1,6 +1,14 @@
 import shuffleArray from './shuffleArray';
 
-// Count how many decks the paragraph needs while keeping each deck within the size limit.
+interface CreateFlashcardDecksOptions {
+	wordIds: string[];
+	targetCardsPerDeck: number;
+	shouldShuffle: boolean;
+}
+
+/**
+ * Count how many decks the paragraph needs while keeping each deck within the size limit.
+ */
 export function getFlashcardDeckCount(wordCount: number, targetCardsPerDeck: number): number {
 	if (!Number.isInteger(targetCardsPerDeck) || targetCardsPerDeck < 1) {
 		throw new Error('The flashcard target must be a positive whole number.');
@@ -14,24 +22,36 @@ export function getFlashcardDeckCount(wordCount: number, targetCardsPerDeck: num
 }
 
 /**
- * Shuffle the paragraph's words into evenly sized decks.
- * Include each word once and keep every deck within the learner's card limit.
+ * Split the paragraph's words into evenly sized decks in passage order or shuffled order.
  */
-export function createFlashcardDecks(wordIds: string[], targetCardsPerDeck: number): string[][] {
+export function createFlashcardDecks({
+	wordIds,
+	targetCardsPerDeck,
+	shouldShuffle,
+}: CreateFlashcardDecksOptions): string[][] {
+	/**
+	 * Deck sizes and word order
+	 */
 	const uniqueWordIds = [...new Set(wordIds)];
 	const decks: string[][] = [];
 	const deckCount = getFlashcardDeckCount(uniqueWordIds.length, targetCardsPerDeck);
+	let orderedWordIds = uniqueWordIds;
 	let startIndex = 0;
 
 	if (uniqueWordIds.length === 0) {
 		return decks;
 	}
 
-	const shuffledWordIds = shuffleArray(uniqueWordIds);
-	const baseDeckSize = Math.floor(shuffledWordIds.length / deckCount);
-	const largerDeckCount = shuffledWordIds.length % deckCount;
+	const baseDeckSize = Math.floor(uniqueWordIds.length / deckCount);
+	const largerDeckCount = uniqueWordIds.length % deckCount;
 
-	// Spread leftover cards across decks so their sizes differ by no more than one.
+	if (shouldShuffle) {
+		orderedWordIds = shuffleArray(uniqueWordIds);
+	}
+
+	/**
+	 * Spread leftover cards across decks so their sizes differ by no more than one.
+	 */
 	for (let deckIndex = 0; deckIndex < deckCount; deckIndex++) {
 		let deckSize = baseDeckSize;
 
@@ -40,7 +60,7 @@ export function createFlashcardDecks(wordIds: string[], targetCardsPerDeck: numb
 		}
 
 		const endIndex = startIndex + deckSize;
-		const deckWordIds = shuffledWordIds.slice(startIndex, endIndex);
+		const deckWordIds = orderedWordIds.slice(startIndex, endIndex);
 
 		decks.push(deckWordIds);
 		startIndex = endIndex;

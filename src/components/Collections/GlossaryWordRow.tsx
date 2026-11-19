@@ -9,6 +9,7 @@ import { getEnglishTranslations } from '@/src/util/englishWordParts';
 import formatFrenchWordWithArticle from '@/src/util/formatFrenchWordWithArticle';
 import formatOtherWordForm from '@/src/util/formatOtherWordForm';
 import type { GlossaryEntry } from '@/src/util/glossary';
+import { getWordProgressDefinitionByKey } from '@/src/util/wordProgress';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 /**
@@ -50,7 +51,7 @@ function showOtherGlossaryForms(entry: GlossaryEntry): void {
 }
 
 /**
- * Shows a seen word's meanings, pronunciation, and detail buttons.
+ * Shows a seen word's meanings, pronunciation, learning levels, and detail buttons.
  */
 export default function GlossaryWordRow({ entry, onSelectTip }: GlossaryWordRowProps) {
 	/**
@@ -61,7 +62,7 @@ export default function GlossaryWordRow({ entry, onSelectTip }: GlossaryWordRowP
 	/**
 	 * Word details
 	 */
-	const { word, otherForms, tips } = entry;
+	const { word, progress, otherForms, tips } = entry;
 	const frenchWord = formatFrenchWordWithArticle({
 		article: word.frenchArticle,
 		word: word.frenchWord,
@@ -70,6 +71,17 @@ export default function GlossaryWordRow({ entry, onSelectTip }: GlossaryWordRowP
 	const translation = englishDefinitions.join(', ');
 	const wordDetails = [word.partOfSpeech, word.form, word.tense].filter(Boolean).join(' | ');
 	const hasDetailButtons = otherForms.length > 0 || tips.length > 0;
+
+	/**
+	 * Learning level and CEFR colors
+	 */
+	const learningLevel = getWordProgressDefinitionByKey(progress);
+	const learningLevelStyle = {
+		backgroundColor: colors.wordProgress[progress],
+	};
+	const cefrStyle = {
+		backgroundColor: colors.light.CEFR[word.CEFR],
+	};
 
 	/**
 	 * Initial pronunciation
@@ -97,50 +109,77 @@ export default function GlossaryWordRow({ entry, onSelectTip }: GlossaryWordRowP
 				/>
 			</View>
 			<Text style={styles.translation}>{translation}</Text>
-			{Boolean(wordDetails) && <Text style={styles.metadata}>{wordDetails}</Text>}
-			{hasDetailButtons && (
-				<View style={styles.actions}>
-					{otherForms.length > 0 && (
-						<Pressable
-							accessibilityRole="button"
-							accessibilityLabel={`Other seen forms of ${word.frenchWord}`}
-							onPress={() => showOtherGlossaryForms(entry)}
-							style={({ pressed }) => [
-								styles.miniButton,
-								pressed && buttonContentStyles.pressedMiniButton,
-							]}
-						>
-							<MaterialSymbol
-								name="language"
-								size={15}
-								color={colors.dark.primary}
-								style={styles.buttonIcon}
-							/>
-							<Text style={styles.buttonLabel}>Other forms</Text>
-						</Pressable>
+			<View style={styles.footer}>
+				<View style={styles.footerDetails}>
+					{Boolean(wordDetails) && <Text style={styles.metadata}>{wordDetails}</Text>}
+					{hasDetailButtons && (
+						<View style={styles.actions}>
+							{otherForms.length > 0 && (
+								<Pressable
+									accessibilityRole="button"
+									accessibilityLabel={`Other seen forms of ${word.frenchWord}`}
+									onPress={() => showOtherGlossaryForms(entry)}
+									style={({ pressed }) => [
+										styles.miniButton,
+										pressed && buttonContentStyles.pressedMiniButton,
+									]}
+								>
+									<MaterialSymbol
+										name="language"
+										size={15}
+										color={colors.dark.primary}
+										style={styles.buttonIcon}
+									/>
+									<Text style={styles.buttonLabel}>Other forms</Text>
+								</Pressable>
+							)}
+							{tips.map(tip => (
+								<Pressable
+									key={tip.id}
+									accessibilityRole="button"
+									accessibilityLabel={`Read ${tip.title} for ${word.frenchWord}`}
+									onPress={() => onSelectTip(tip)}
+									style={({ pressed }) => [
+										styles.miniButton,
+										pressed && buttonContentStyles.pressedMiniButton,
+									]}
+								>
+									<MaterialSymbol
+										name="lightbulb_2"
+										size={15}
+										color={colors.dark.primary}
+										style={styles.buttonIcon}
+									/>
+									<Text style={styles.buttonLabel}>{getGlossaryTipLabel(tip)}</Text>
+								</Pressable>
+							))}
+						</View>
 					)}
-					{tips.map(tip => (
-						<Pressable
-							key={tip.id}
-							accessibilityRole="button"
-							accessibilityLabel={`Read ${tip.title} for ${word.frenchWord}`}
-							onPress={() => onSelectTip(tip)}
-							style={({ pressed }) => [
-								styles.miniButton,
-								pressed && buttonContentStyles.pressedMiniButton,
-							]}
-						>
-							<MaterialSymbol
-								name="lightbulb_2"
-								size={15}
-								color={colors.dark.primary}
-								style={styles.buttonIcon}
-							/>
-							<Text style={styles.buttonLabel}>{getGlossaryTipLabel(tip)}</Text>
-						</Pressable>
-					))}
 				</View>
-			)}
+				<View style={styles.learningLevels}>
+					<View
+						accessible
+						accessibilityLabel={`Learning level: ${learningLevel.name}`}
+						style={[styles.levelBadge, learningLevelStyle]}
+					>
+						<MaterialSymbol
+							name={learningLevel.symbolName}
+							size={12}
+							color={colors.light.text}
+						/>
+						<Text style={[styles.levelBadgeLabel, styles.learningLevelLabel]}>
+							{learningLevel.name}
+						</Text>
+					</View>
+					<View
+						accessible
+						accessibilityLabel={`CEFR level ${word.CEFR}`}
+						style={[styles.levelBadge, cefrStyle]}
+					>
+						<Text style={styles.levelBadgeLabel}>{word.CEFR}</Text>
+					</View>
+				</View>
+			</View>
 		</View>
 	);
 }
@@ -180,6 +219,41 @@ const styles = StyleSheet.create({
 		lineHeight: 17,
 		color: colors.dark.text,
 		textAlign: 'left',
+	},
+	footer: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		alignItems: 'flex-end',
+		gap: 8,
+	},
+	footerDetails: {
+		flexGrow: 1,
+		flexBasis: 160,
+		minWidth: 0,
+	},
+	learningLevels: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'flex-end',
+		marginLeft: 'auto',
+		gap: 8,
+	},
+	levelBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 3,
+		borderRadius: 4,
+		paddingHorizontal: 3,
+		paddingVertical: 3,
+	},
+	levelBadgeLabel: {
+		fontFamily: 'azeret-mono-600',
+		fontSize: 11,
+		lineHeight: 14,
+		color: colors.dark.text,
+	},
+	learningLevelLabel: {
+		color: colors.light.text,
 	},
 	readablePronunciation: {
 		fontFamily: 'lexend-400',
