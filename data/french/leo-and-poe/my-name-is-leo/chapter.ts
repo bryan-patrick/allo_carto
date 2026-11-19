@@ -8,12 +8,12 @@ import { paragraph6 } from './paragraph_6';
 import { paragraph7 } from './paragraph_7';
 
 /**
- * Keep the chapter’s paragraphs in reading order.
+ * Lists the chapter's paragraphs in reading order.
  */
-export const iAmACatChapter: Chapter = {
+export const myNameIsLeoChapter: Chapter = {
 	id: 'leo-and-poe-chapter-1',
 	label: 'Chapter 1',
-	name: 'I Am a Cat',
+	name: 'My name is Léo',
 	characterImage: require('@/src/app/assets/images/chapter-images/welcome-to-allo-carto/CH01.png'),
 	solveUnlockLevels: {
 		4: 5,

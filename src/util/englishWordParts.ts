@@ -125,23 +125,18 @@ export function getEnglishFlashcardAnswers(word: EnglishWordDefinition): string[
 }
 
 /**
- * Lists a puzzle card's canonical English answers, falling back to its first meaning.
+ * Joins a word's English prefixes with its canonical puzzle meanings or its first meaning.
  */
 export function getEnglishPuzzleAnswers(word: EnglishWordDefinition): string[] {
 	const canonicalAnswers = getCanonicalEnglishAnswers(word.canonicalEnglish);
-	let meaning = word.englishWords[0];
+	const puzzleDefinition: EnglishWordDefinition = {
+		englishWords: canonicalAnswers,
+		englishPrefixes: word.englishPrefixes,
+	};
 
-	if (canonicalAnswers.length > 0) {
-		return canonicalAnswers;
+	if (canonicalAnswers.length === 0) {
+		puzzleDefinition.englishWords = word.englishWords.slice(0, 1);
 	}
 
-	if (word.englishPrefixes) {
-		meaning = getEnglishTranslations(word)[0];
-	}
-
-	if (meaning === undefined) {
-		return [];
-	}
-
-	return [meaning];
+	return getEnglishTranslations(puzzleDefinition);
 }

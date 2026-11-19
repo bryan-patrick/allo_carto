@@ -6,6 +6,7 @@ import type {
 } from '@/src/components/Solve/solveTypes';
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import {
+	getCanonicalEnglishAnswers,
 	getEnglishPuzzleAnswers,
 	parseCanonicalEnglish,
 	parseEnglishPrefixes,
@@ -174,12 +175,20 @@ export default async function getSolvePuzzle({
 		if (word) {
 			const englishDefinition: EnglishWordDefinition = {
 				englishWords: JSON.parse(word.englishWords),
-				canonicalEnglish: segment.canonicalEnglish ?? parseCanonicalEnglish(word.canonicalEnglish),
+				canonicalEnglish: parseCanonicalEnglish(word.canonicalEnglish),
 				englishArticle: word.englishArticle,
 				englishPrefixes: parseEnglishPrefixes(word.englishPrefixes),
 			};
 
 			englishWords = getEnglishPuzzleAnswers(englishDefinition);
+
+			/**
+			 * A paragraph can replace the full English answer when its sentence needs different wording.
+			 */
+			if (segment.canonicalEnglish !== undefined && segment.canonicalEnglish !== null) {
+				englishWords = getCanonicalEnglishAnswers(segment.canonicalEnglish);
+			}
+
 			englishPrompt = englishWords[0] ?? '';
 
 			if (sentenceStartPositions.has(position)) {

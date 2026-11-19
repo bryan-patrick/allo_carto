@@ -2,31 +2,17 @@
 
 # Difficulty: Very Easy
 
-## Story
-
-Hello. My name is Léo. I am a cat.
-
-I live in Québec City. The city is beautiful. I live near a park.
-
-Today is Monday. It is warm outside. There is no snow until tomorrow.
-
-Warm days are my favorite. I like to walk to the park. I nap in my favorite tree.
-
-Today, I see two birds at the park. One is small and red. One is big and purple.
-
-Some cats chase birds. Not me. Birds are my friends. I talk with my friends. Meow!
-
-I find my tree. I climb it slowly. I listen to my bird friends. It is time for a long nap.
+[Shared tips](../tips.md)
 
 ## Stamps (collection name)
 
 - Monday - Leo's Favorite Nap Days
-- Cat - Animals
+- Cat - On the Plains
 - Two - Counting To Ten
 - Snow - The Snow Capital
 - Nap - To Be a Cat
 - Sleep - To Be a Cat
-- Purple - The Color of Birds
+- Purple - The Colors of Birds
 - Tree - In the Park
 
 ## Paragraph 1
@@ -41,17 +27,16 @@ Bonjour. Je m'appelle Léo. Je suis un chat.
 
 ### Vocabulary
 
-| English | French  | CEFR | Rarity      | Is Québécois | Tip |
-| ------- | ------- | ---- | ----------- | ------------ | --- |
-| Hello   | Bonjour | A1   | Common      | false        |     |
-| I       | Je      | A1   | Common      | false        |     |
-| myself  | m'      | A1   | Common      | false        | 1   |
-| call    | appelle | A1   | Common      | false        | 1   |
-| Léo     | Léo     | —    | Proper noun | false        |     |
-| I       | Je      | A1   | Common      | false        |     |
-| am      | suis    | A1   | Common      | false        |     |
-| a       | un      | A1   | Common      | false        |     |
-| cat     | chat    | A1   | Common      | false        |     |
+| English | English prefix | French    | CEFR | Rarity      | Is Québécois | Tip |
+| ------- | -------------- | --------- | ---- | ----------- | ------------ | --- |
+| Hello   |                | Bonjour   | A1   | Common      | false        |     |
+| I       |                | Je        | A1   | Common      | false        |     |
+| call    | myself         | m'appelle | A1   | Common      | false        | 1   |
+| Léo     |                | Léo       | —    | Proper noun | false        |     |
+| I       |                | Je        | A1   | Common      | false        |     |
+| am      |                | suis      | A1   | Common      | false        |     |
+| a       |                | un        | A1   | Common      | false        |     |
+| cat     |                | chat      | A1   | Common      | false        |     |
 
 ## Paragraph 2
 
@@ -65,22 +50,19 @@ J'habite à Québec. La ville est belle. J'habite près d'un parc.
 
 ### Vocabulary
 
-| English     | French | CEFR | Rarity      | Is Québécois | Tip |
-| ----------- | ------ | ---- | ----------- | ------------ | --- |
-| I           | J'     | A1   | Common      | false        |     |
-| live        | habite | A1   | Common      | false        |     |
-| in          | à      | A1   | Common      | false        | 2   |
-| Québec City | Québec | —    | Proper noun | false        |     |
-| The         | La     | A1   | Common      | false        |     |
-| city        | ville  | A1   | Common      | false        |     |
-| is          | est    | A1   | Common      | false        |     |
-| beautiful   | belle  | A1   | Common      | false        |     |
-| I           | J'     | A1   | Common      | false        |     |
-| live        | habite | A1   | Common      | false        |     |
-| near        | près   | A1   | Common      | false        |     |
-| of          | d'     | A1   | Common      | false        |     |
-| a           | un     | A1   | Common      | false        |     |
-| park        | parc   | A1   | Common      | false        |     |
+| English     | English prefix | French   | CEFR | Rarity      | Is Québécois | Tip |
+| ----------- | -------------- | -------- | ---- | ----------- | ------------ | --- |
+| live        | I              | J'habite | A1   | Common      | false        |     |
+| in          |                | à        | A1   | Common      | false        | 2   |
+| Québec City |                | Québec   | —    | Proper noun | false        |     |
+| The         |                | La       | A1   | Common      | false        |     |
+| city        |                | ville    | A1   | Common      | false        |     |
+| is          |                | est      | A1   | Common      | false        |     |
+| beautiful   |                | belle    | A1   | Common      | false        |     |
+| live        | I              | J'habite | A1   | Common      | false        |     |
+| near        |                | près     | A1   | Common      | false        |     |
+| a           | of             | d'un     | A1   | Common      | false        |     |
+| park        |                | parc     | A1   | Common      | false        |     |
 
 ## Paragraph 3
 
@@ -94,20 +76,19 @@ Aujourd'hui, c'est lundi. Il fait chaud dehors. La neige arrive demain.
 
 ### Vocabulary
 
-| English   | French      | CEFR | Rarity | Is Québécois | Tip |
-| --------- | ----------- | ---- | ------ | ------------ | --- |
-| Today     | Aujourd'hui | A1   | Common | false        |     |
-| It        | c'          | A1   | Common | false        |     |
-| is        | est         | A1   | Common | false        |     |
-| Monday    | lundi       | A1   | Common | false        |     |
-| It        | Il          | A1   | Common | false        |     |
-| is        | fait        | A1   | Common | false        | 8   |
-| warm      | chaud       | A1   | Common | false        | 8   |
-| outside   | dehors      | A1   | Common | false        |     |
-| The       | La          | A1   | Common | false        |     |
-| snow      | neige       | A1   | Common | false        |     |
-| is coming | arrive      | A1   | Common | false        |     |
-| tomorrow  | demain      | A1   | Common | false        |     |
+| English   | English prefix | French      | CEFR | Rarity | Is Québécois | Tip |
+| --------- | -------------- | ----------- | ---- | ------ | ------------ | --- |
+| Today     |                | Aujourd'hui | A1   | Common | false        |     |
+| is        | it             | c'est       | A1   | Common | false        |     |
+| Monday    |                | lundi       | A1   | Common | false        |     |
+| It        |                | Il          | A1   | Common | false        |     |
+| is        |                | fait        | A1   | Common | false        | 8   |
+| warm      |                | chaud       | A1   | Common | false        | 8   |
+| outside   |                | dehors      | A1   | Common | false        |     |
+| The       |                | La          | A1   | Common | false        |     |
+| snow      |                | neige       | A1   | Common | false        |     |
+| is coming |                | arrive      | A1   | Common | false        |     |
+| tomorrow  |                | demain      | A1   | Common | false        |     |
 
 ## Paragraph 4
 
@@ -121,24 +102,24 @@ J'aime les jours chauds. Je vais au parc à pied. Je dors dans mon arbre préfé
 
 ### Vocabulary
 
-| English  | French  | CEFR | Rarity | Is Québécois | Tip |
-| -------- | ------- | ---- | ------ | ------------ | --- |
-| I        | J'      | A1   | Common | false        |     |
-| like     | aime    | A1   | Common | false        |     |
-| the      | les     | A1   | Common | false        |     |
-| days     | jours   | A1   | Common | false        |     |
-| warm     | chauds  | A1   | Common | false        |     |
-| I        | Je      | A1   | Common | false        |     |
-| go       | vais    | A1   | Common | false        |     |
-| to the   | au      | A1   | Common | false        |     |
-| park     | parc    | A1   | Common | false        |     |
-| on foot  | à pied  | A1   | Common | false        |     |
-| I        | Je      | A1   | Common | false        |     |
-| sleep    | dors    | A1   | Common | false        |     |
-| in       | dans    | A1   | Common | false        |     |
-| my       | mon     | A1   | Common | false        |     |
-| tree     | arbre   | A1   | Common | false        |     |
-| favorite | préféré | A1   | Common | false        |     |
+| English    | English prefix | French  | CEFR | Rarity | Is Québécois | Tip |
+| ---------- | -------------- | ------- | ---- | ------ | ------------ | --- |
+| like, love | I              | J'aime  | A1   | Common | false        |     |
+| the        |                | les     | A1   | Common | false        |     |
+| days       |                | jours   | A1   | Common | false        |     |
+| warm       |                | chauds  | A1   | Common | false        |     |
+| I          |                | Je      | A1   | Common | false        |     |
+| go         |                | vais    | A1   | Common | false        |     |
+| to the     |                | au      | A1   | Common | false        |     |
+| park       |                | parc    | A1   | Common | false        |     |
+| on         |                | à       | A1   | Common | false        |     |
+| foot       |                | pied    | A1   | Common | false        |     |
+| I          |                | Je      | A1   | Common | false        |     |
+| sleep      |                | dors    | A1   | Common | false        |     |
+| in         |                | dans    | A1   | Common | false        |     |
+| my         |                | mon     | A1   | Common | false        |     |
+| tree       |                | arbre   | A1   | Common | false        |     |
+| favorite   |                | préféré | A1   | Common | false        |     |
 
 ## Paragraph 5
 
@@ -152,25 +133,25 @@ Aujourd'hui, je vois deux oiseaux au parc. Un est petit et rouge. L'autre est gr
 
 ### Vocabulary
 
-| English   | French      | CEFR | Rarity | Is Québécois | Tip |
-| --------- | ----------- | ---- | ------ | ------------ | --- |
-| Today     | Aujourd'hui | A1   | Common | false        |     |
-| I         | je          | A1   | Common | false        |     |
-| see       | vois        | A1   | Common | false        |     |
-| two       | deux        | A1   | Common | false        |     |
-| birds     | oiseaux     | A1   | Common | false        |     |
-| at the    | au          | A1   | Common | false        |     |
-| park      | parc        | A1   | Common | false        |     |
-| One       | Un          | A1   | Common | false        |     |
-| is        | est         | A1   | Common | false        |     |
-| small     | petit       | A1   | Common | false        |     |
-| and       | et          | A1   | Common | false        |     |
-| red       | rouge       | A1   | Common | false        |     |
-| The other | L'autre     | A1   | Common | false        |     |
-| is        | est         | A1   | Common | false        |     |
-| big       | grand       | A1   | Common | false        |     |
-| and       | et          | A1   | Common | false        |     |
-| purple    | violet      | A1   | Common | false        |     |
+| English | English prefix | French      | CEFR | Rarity | Is Québécois | Tip |
+| ------- | -------------- | ----------- | ---- | ------ | ------------ | --- |
+| Today   |                | Aujourd'hui | A1   | Common | false        |     |
+| I       |                | je          | A1   | Common | false        |     |
+| see     |                | vois        | A1   | Common | false        |     |
+| two     |                | deux        | A1   | Common | false        |     |
+| birds   |                | oiseaux     | A1   | Common | false        |     |
+| at the  |                | au          | A1   | Common | false        |     |
+| park    |                | parc        | A1   | Common | false        |     |
+| One     |                | Un          | A1   | Common | false        |     |
+| is      |                | est         | A1   | Common | false        |     |
+| small   |                | petit       | A1   | Common | false        |     |
+| and     |                | et          | A1   | Common | false        |     |
+| red     |                | rouge       | A1   | Common | false        |     |
+| other   | the            | L'autre     | A1   | Common | false        |     |
+| is      |                | est         | A1   | Common | false        |     |
+| big     |                | grand       | A1   | Common | false        |     |
+| and     |                | et          | A1   | Common | false        |     |
+| purple  |                | violet      | A1   | Common | false        |     |
 
 ## Paragraph 6
 
@@ -184,26 +165,26 @@ Des chats chassent les oiseaux. Pas moi. Les oiseaux sont mes amis. Je parle ave
 
 ### Vocabulary
 
-| English | French   | CEFR | Rarity | Is Québécois | Tip |
-| ------- | -------- | ---- | ------ | ------------ | --- |
-| Some    | Des      | A1   | Common | false        |     |
-| cats    | chats    | A1   | Common | false        |     |
-| chase   | chassent | A2   | Common | false        |     |
-| the     | les      | A1   | Common | false        |     |
-| birds   | oiseaux  | A1   | Common | false        |     |
-| Not     | Pas      | A1   | Common | false        |     |
-| me      | moi      | A1   | Common | false        |     |
-| The     | Les      | A1   | Common | false        |     |
-| birds   | oiseaux  | A1   | Common | false        |     |
-| are     | sont     | A1   | Common | false        |     |
-| my      | mes      | A1   | Common | false        |     |
-| friends | amis     | A1   | Common | false        |     |
-| I       | Je       | A1   | Common | false        |     |
-| talk    | parle    | A1   | Common | false        |     |
-| with    | avec     | A1   | Common | false        |     |
-| my      | mes      | A1   | Common | false        |     |
-| friends | amis     | A1   | Common | false        |     |
-| Meow    | Miaou    | A1   | Common | false        |     |
+| English | English prefix | French   | CEFR | Rarity | Is Québécois | Tip |
+| ------- | -------------- | -------- | ---- | ------ | ------------ | --- |
+| Some    |                | Des      | A1   | Common | false        |     |
+| cats    |                | chats    | A1   | Common | false        |     |
+| chase   |                | chassent | A2   | Common | false        |     |
+| the     |                | les      | A1   | Common | false        |     |
+| birds   |                | oiseaux  | A1   | Common | false        |     |
+| Not     |                | Pas      | A1   | Common | false        |     |
+| me      |                | moi      | A1   | Common | false        |     |
+| The     |                | Les      | A1   | Common | false        |     |
+| birds   |                | oiseaux  | A1   | Common | false        |     |
+| are     |                | sont     | A1   | Common | false        |     |
+| my      |                | mes      | A1   | Common | false        |     |
+| friends |                | amis     | A1   | Common | false        |     |
+| I       |                | Je       | A1   | Common | false        |     |
+| talk    |                | parle    | A1   | Common | false        |     |
+| with    |                | avec     | A1   | Common | false        |     |
+| my      |                | mes      | A1   | Common | false        |     |
+| friends |                | amis     | A1   | Common | false        |     |
+| Meow    |                | Miaou    | A1   | Common | false        |     |
 
 ## Paragraph 7
 
@@ -217,23 +198,22 @@ Je trouve mon arbre. Je grimpe lentement. J'écoute mes amis, les oiseaux. Je fa
 
 ### Vocabulary
 
-| English   | French    | CEFR | Rarity | Is Québécois | Tip |
-| --------- | --------- | ---- | ------ | ------------ | --- |
-| I         | Je        | A1   | Common | false        |     |
-| find      | trouve    | A1   | Common | false        |     |
-| my        | mon       | A1   | Common | false        |     |
-| tree      | arbre     | A1   | Common | false        |     |
-| I         | Je        | A1   | Common | false        |     |
-| climb     | grimpe    | A2   | Common | false        |     |
-| slowly    | lentement | A1   | Common | false        |     |
-| I         | J'        | A1   | Common | false        |     |
-| listen to | écoute    | A1   | Common | false        |     |
-| my        | mes       | A1   | Common | false        |     |
-| friends   | amis      | A1   | Common | false        |     |
-| the       | les       | A1   | Common | false        |     |
-| birds     | oiseaux   | A1   | Common | false        |     |
-| I         | Je        | A1   | Common | false        |     |
-| take      | fais      | A1   | Common | false        | 12  |
-| a         | une       | A1   | Common | false        | 12  |
-| long      | longue    | A1   | Common | false        |     |
-| nap       | sieste    | A2   | Common | false        | 12  |
+| English   | English prefix | French    | CEFR | Rarity | Is Québécois | Tip |
+| --------- | -------------- | --------- | ---- | ------ | ------------ | --- |
+| I         |                | Je        | A1   | Common | false        |     |
+| find      |                | trouve    | A1   | Common | false        |     |
+| my        |                | mon       | A1   | Common | false        |     |
+| tree      |                | arbre     | A1   | Common | false        |     |
+| I         |                | Je        | A1   | Common | false        |     |
+| climb     |                | grimpe    | A2   | Common | false        |     |
+| slowly    |                | lentement | A1   | Common | false        |     |
+| listen to | I              | J'écoute  | A1   | Common | false        |     |
+| my        |                | mes       | A1   | Common | false        |     |
+| friends   |                | amis      | A1   | Common | false        |     |
+| the       |                | les       | A1   | Common | false        |     |
+| birds     |                | oiseaux   | A1   | Common | false        |     |
+| I         |                | Je        | A1   | Common | false        |     |
+| take      |                | fais      | A1   | Common | false        | 12  |
+| a         |                | une       | A1   | Common | false        | 12  |
+| long      |                | longue    | A1   | Common | false        |     |
+| nap       |                | sieste    | A2   | Common | false        | 12  |

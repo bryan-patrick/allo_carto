@@ -13,8 +13,8 @@ export const elisionTip: FrenchTip = {
 export const introducingYourNameTip: FrenchTip = {
 	id: 'french_saying_your_name',
 	draftTipId: 1,
-	title: 'Saying your name',
-	description: `"Je m'appelle" is used when saying your name. The expression literally means I me call (or I call myself).`,
+	title: 'Introducing your name',
+	description: `"Je m'appelle" is used when introducing your name. The expression literally means I me call (or I call myself).`,
 };
 
 export const cityNamesTip: FrenchTip = {
