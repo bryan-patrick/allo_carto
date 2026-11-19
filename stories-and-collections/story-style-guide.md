@@ -46,6 +46,21 @@ A concept can be:
 
 **The goal is to start easy and gradually make the French harder without making the stories feel blahish.**
 
+## Sentence words and flashcards
+
+Flashcards should follow the words as they appear in the sentence.
+
+- Keep separate words on separate flashcards by default. For `un chat`, teach `un` and `chat` separately.
+- Keep elisions joined as written. Forms such as `j’aime`, `j’habite`, `l’homme`, and `d’un` each get one vocabulary row and one flashcard.
+- Use the flashcard's English prefix and word choices for these joined forms. For `j’aime`, the learner chooses `I` and `like` on the same card. For `l’homme`, the choices are `the` and `man`.
+- Do not add an article to every noun. A `chat` card should show `chat`, with its pronunciation and meaning, rather than automatically becoming `le chat`. Teach the article only where it appears in the sentence, either as a separate word or within a joined elision.
+- Keep these same word boundaries in the chapter vocabulary table, passage, flashcards, and puzzles. Do not add extra cards for the parts of a joined elision.
+- Keep expressions together only when they represent one English word or have a meaning that cannot be understood from their separate words, such as `il y a` meaning "there is" or "there are."
+
+For example, `J’aime beaucoup parler` gives three flashcards: **j’aime**, **beaucoup**, and **parler**. The two English choices on **j’aime** still belong to one flashcard.
+
+These guidelines apply to new and rewritten content and replace the earlier rule that split every elision into separate cards.
+
 ## Why This Style Guide Exists
 
 When I started writing Allô Carto's stories, I thought short, fun, well written content would be enough to keep users progressing through the app.
