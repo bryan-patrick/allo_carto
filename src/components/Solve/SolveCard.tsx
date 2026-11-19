@@ -65,7 +65,7 @@ export default function SolveCard({
 	let importantForAccessibility: ViewProps['importantForAccessibility'] = 'auto';
 
 	/**
-	 * Show each solved French word as it appears in the passage, such as J’ before habite.
+	 * Shows each solved French word with the spelling used in the passage.
 	 */
 	if (stage === 2) {
 		prompt = card.englishPrompt;
@@ -86,8 +86,18 @@ export default function SolveCard({
 
 	if (!card.wordId) {
 		return (
-			<View style={[styles.card, styles.exemptCard]}>
+			<View
+				accessible
+				accessibilityLabel={`${card.text}, proper noun, already provided`}
+				style={[styles.card, styles.exemptCard]}
+			>
 				<Text style={[styles.word, wordColor]}>{card.text}</Text>
+				<Text
+					accessible={false}
+					style={styles.properNounCheckmark}
+				>
+					✓
+				</Text>
 			</View>
 		);
 	}
@@ -217,6 +227,13 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontFamily: 'lexend-400',
 		color: colors.dark.success,
+		textAlign: 'center',
+	},
+	properNounCheckmark: {
+		marginTop: 2,
+		fontSize: 14,
+		fontFamily: 'lexend-400',
+		color: colors.dark.text,
 		textAlign: 'center',
 	},
 });

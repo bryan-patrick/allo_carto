@@ -9,6 +9,7 @@ export interface WordRow {
 	frenchArticle?: string;
 	englishArticle?: string;
 	englishPrefixes?: string | null;
+	isEnglishPrefixReversed: number;
 	pronunciation: string;
 	ipaPronunciation: string;
 	isVulgar: number;

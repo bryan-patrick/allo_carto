@@ -2,7 +2,7 @@
 
 | ID | Title | Tip |
 | --- | --- | --- |
-| 1 | Introducing your name | "Je m'appelle" is used when introducing your name. The expression literally means I me call (or I call myself). |
+| 1 | Introducing your name | "Je m'appelle Léo" means "My name is Léo." French puts "myself" before "call". English puzzles accept either order for this expression. |
 | 2 | À with city names | French uses "à" with city names when saying where someone lives. |
 | 3 | Dépanneur in Québec | In Québec, "dépanneur" means convenience store. |
 | 4 | De l'eau | "De l'eau" is a common French expression meaning some water. You'll see it often when people talk about drinking or having water. |

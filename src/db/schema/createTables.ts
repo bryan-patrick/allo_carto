@@ -18,8 +18,6 @@ const createUserProgressTableSQL = `
 
 /**
  * Creates the words table for French words, English words, and card details.
- *
- * Off we go again.
  */
 async function createWordsTable(): Promise<void> {
 	const database = await getDB();
@@ -35,6 +33,7 @@ async function createWordsTable(): Promise<void> {
 					frenchArticle TEXT,
 					englishArticle TEXT,
 					englishPrefixes TEXT,
+					isEnglishPrefixReversed INTEGER NOT NULL DEFAULT 0 CHECK (isEnglishPrefixReversed IN (0, 1)),
 					pronunciation TEXT NOT NULL,
 					ipaPronunciation TEXT NOT NULL,
 					isVulgar INTEGER NOT NULL,

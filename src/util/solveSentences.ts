@@ -1,6 +1,10 @@
 import type { Paragraph } from '@/src/components/CardDeck/cardDeckTypes';
 import type { SolveSentence, SolveSentenceKeyword } from '@/src/components/Solve/solveTypes';
-import { getCanonicalEnglishAnswers } from './englishWordParts';
+import {
+	getCanonicalEnglishAnswers,
+	getEnglishPuzzleAnswers,
+	type EnglishWordDefinition,
+} from './englishWordParts';
 import type { SolvePassageSegment } from './getSolvePassage';
 import { getFrenchSentencePreposition, getSentenceKeywords } from './solveSentenceAnswer';
 import { getWordOrderCards, isCompleteWordOrder } from './solveWordOrder';
@@ -9,9 +13,8 @@ import { splitFrenchSentences, type SentencePassage } from './splitFrenchSentenc
 /**
  * Typing
  */
-export interface SolveSentenceWord {
+export interface SolveSentenceWord extends EnglishWordDefinition {
 	id: string;
-	englishWords: string[];
 	partOfSpeech: string | null;
 }
 
@@ -135,10 +138,13 @@ function getSentenceCardKeywords(
 		let englishWords = [segment.text];
 
 		if (word) {
-			englishWords = word.englishWords;
-		}
+			const englishDefinition: EnglishWordDefinition = {
+				...word,
+				canonicalEnglish: segment.canonicalEnglish ?? word.canonicalEnglish,
+			};
 
-		if (segment.canonicalEnglish !== undefined) {
+			englishWords = getEnglishPuzzleAnswers(englishDefinition);
+		} else if (segment.canonicalEnglish !== undefined) {
 			englishWords = getCanonicalEnglishAnswers(segment.canonicalEnglish);
 		}
 

@@ -1,5 +1,5 @@
-import type { Progression } from '@/src/util/progression';
 import type { CanonicalEnglish } from '@/src/util/englishWordParts';
+import type { Progression } from '@/src/util/progression';
 
 /**
  * Typing
@@ -113,6 +113,10 @@ export interface Word {
 	frenchArticle?: string;
 	englishArticle?: string;
 	englishPrefixes?: string[];
+	/**
+	 * Puts the prefix after the meaning in English and accepts either order in English puzzles.
+	 */
+	isEnglishPrefixReversed?: boolean;
 	pronunciation: string;
 	ipaPronunciation: string;
 	isVulgar: boolean;
