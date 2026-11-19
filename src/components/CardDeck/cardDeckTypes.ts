@@ -101,7 +101,7 @@ export interface Word {
 	frenchWord: string;
 	englishWords: string[];
 	/**
-	 * The English answer or answers used in puzzles, which a passage can override.
+	 * The English meanings used before adding a word's prefix, which a passage can override for puzzles.
 	 */
 	canonicalEnglish?: CanonicalEnglish | null;
 	elision?: WordElision;

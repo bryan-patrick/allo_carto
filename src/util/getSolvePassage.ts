@@ -8,8 +8,7 @@ export interface SolvePassageSegment extends PassageSegment {
 }
 
 /**
- * Give each passage word a puzzle position.
- * Keep elided words (such as d’) separate from the word that follows them.
+ * Gives each passage segment its own puzzle position.
  */
 export function getSolvePassage(passage: PassageSegment[]): SolvePassageSegment[] {
 	return passage.map((segment, position) => {

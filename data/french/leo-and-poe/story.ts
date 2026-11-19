@@ -1,5 +1,5 @@
 import type { Story } from '../types';
-import { iAmACatChapter } from './i-am-a-cat/chapter';
+import { myNameIsLeoChapter } from './my-name-is-leo/chapter';
 
 export const leoAndPoeStory: Story = {
 	id: 'leo-and-poe',
@@ -9,7 +9,7 @@ export const leoAndPoeStory: Story = {
 	category: 'Beginner',
 	materialSymbolName: 'pets',
 	chapters: [
-		iAmACatChapter,
+		myNameIsLeoChapter,
 		{
 			id: 'leo-and-poe-chapter-2',
 			label: 'Chapter 2',
