@@ -1,6 +1,6 @@
 import { matchSentenceKeywords } from './matchSentenceKeywords';
 import { getSentenceKeywords, getTextKeywords } from './sentenceKeywords';
-import { getSentenceTokens } from './sentenceTokens';
+import { getSentenceTokens, markSentenceProperNouns } from './sentenceTokens';
 import type {
 	ReviewSentenceAnswerOptions,
 	SentenceAnswerReview,
@@ -29,6 +29,8 @@ export function reviewSentenceAnswer({
 		missingWordCount: 0,
 	};
 	let bestMatch: SentenceMatch | undefined;
+
+	markSentenceProperNouns(tokens, properNouns, language);
 
 	/**
 	 * Collect the allowed wordings so the player can give more than one correct translation.
@@ -73,6 +75,11 @@ export function reviewSentenceAnswer({
 		const word = tokens.words[position];
 		const part = result.words[word.partIndex];
 		const status = bestMatch?.words[position] ?? 'incorrect';
+
+		if (word.isProperNoun) {
+			part.status = 'neutral';
+			continue;
+		}
 
 		if (part.status !== 'incorrect' && status !== 'neutral') {
 			part.status = status;

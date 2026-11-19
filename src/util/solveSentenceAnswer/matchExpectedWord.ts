@@ -78,11 +78,11 @@ export function matchExpectedWord({
 			wordStatus = 'correct';
 		}
 
-		if (isProperNoun) {
+		if (isProperNoun || answerWord.isProperNoun) {
 			wordStatus = 'neutral';
 		}
 
-		if (answerWord.isOptional) {
+		if (answerWord.isOptional || answerWord.isProperNoun) {
 			extraWordStatus = 'neutral';
 		}
 
@@ -94,7 +94,7 @@ export function matchExpectedWord({
 			matchedWord.cost++;
 		}
 
-		if (isCorrect && !isProperNoun) {
+		if (isCorrect && !isProperNoun && !answerWord.isProperNoun) {
 			matchedWord.correctWordCount++;
 		}
 
@@ -102,7 +102,7 @@ export function matchExpectedWord({
 		missingWord.cost++;
 		missingWord.missingWordCount++;
 
-		if (!answerWord.isOptional) {
+		if (!answerWord.isOptional && !answerWord.isProperNoun) {
 			extraWord.cost++;
 		}
 

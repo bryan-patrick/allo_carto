@@ -38,7 +38,7 @@ export function matchSentenceKeywords(
 		};
 		let wordStatus: SentenceAnswerWordStatus = 'incorrect';
 
-		if (word.isOptional) {
+		if (word.isOptional || word.isProperNoun) {
 			wordStatus = 'neutral';
 		} else {
 			unmatchedWord.cost++;

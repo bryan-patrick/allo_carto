@@ -14,6 +14,36 @@ const plainFrenchOptionalWords = new Set(
 );
 
 /**
+ * Marks known names in the typed answer so nearby mistakes cannot make them count as wrong words.
+ */
+export function markSentenceProperNouns(
+	tokens: SentenceTokens,
+	properNouns: string[],
+	language: SentenceAnswerLanguage,
+): void {
+	for (const name of properNouns) {
+		const nameTokens = getSentenceTokens(name, language);
+		const nameWordCount = nameTokens.words.length;
+
+		if (nameWordCount === 0) {
+			continue;
+		}
+
+		for (let position = 0; position <= tokens.words.length - nameWordCount; position++) {
+			const isMatchingName = nameTokens.words.every((word, offset) => {
+				return tokens.words[position + offset].text === word.text;
+			});
+
+			if (isMatchingName) {
+				for (let offset = 0; offset < nameWordCount; offset++) {
+					tokens.words[position + offset].isProperNoun = true;
+				}
+			}
+		}
+	}
+}
+
+/**
  * Splits an answer into words to check
  */
 export function getSentenceTokens(text: string, language: SentenceAnswerLanguage): SentenceTokens {

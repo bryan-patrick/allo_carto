@@ -144,7 +144,7 @@ function SolvePuzzleButton({
 	/**
 	 * Button availability and colors
 	 */
-	const isDisabled = disabled || !isUnlocked;
+	const isDisabled = disabled || (!isUnlocked && !isCompleted);
 	const isCurrentPuzzleUnlocked = isCurrentPuzzle && isUnlocked;
 	const definition = solveStages[stage];
 	let gradientColors = definition.buttonGradient;
@@ -175,7 +175,7 @@ function SolvePuzzleButton({
 		actionSymbol = 'check';
 		iconColor = colors.dark.success;
 		accessibilityLabel = `Puzzle ${stage}, completed`;
-		accessibilityHint = 'This puzzle is complete.';
+		accessibilityHint = 'View the correct answers for this completed puzzle.';
 	}
 
 	if (showNewBadge) {
@@ -314,6 +314,7 @@ const styles = StyleSheet.create({
 	puzzleRow: {
 		width: '100%',
 		maxWidth: 464,
+		minHeight: 64,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',

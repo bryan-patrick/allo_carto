@@ -2,7 +2,6 @@ import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
 import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import WordOrderBoard from '@/src/components/Solve/WordOrderBoard';
@@ -619,15 +618,25 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 				{!puzzle ?
 					<Text style={styles.notice}>{loadError || 'Loading puzzle...'}</Text>
 				: isComplete ?
-					<View style={styles.completion}>
-						<MaterialSymbol
-							name="diamond"
-							filled
-							size={32}
-							color={colors.gems.earned}
+					<View style={styles.completedPuzzle}>
+						<View style={styles.completion}>
+							<MaterialSymbol
+								name="diamond"
+								filled
+								size={32}
+								color={colors.gems.earned}
+							/>
+							<Text style={styles.title}>Third gem earned!</Text>
+							<Text style={styles.text}>{completionMessage}</Text>
+						</View>
+						<WordOrderClaims
+							deckId={deckId}
+							cards={puzzle.cards}
+							positions={positions}
+							rewards={puzzle.rewards}
+							disabled
+							onRewardClaimed={handleCardRewardClaimed}
 						/>
-						<Text style={styles.title}>Third gem earned!</Text>
-						<Text style={styles.text}>{completionMessage}</Text>
 					</View>
 				: isShowingGemClaim && pendingGem ?
 					<SolveGemClaim
@@ -682,7 +691,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					)}
 					<View style={styles.actions}>
 						<View style={styles.actionButton}>
-							<SecondaryButton
+							<LinkButton
 								SVGElement={
 									<MaterialSymbol
 										name="close"
@@ -690,7 +699,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 										color={storyColor}
 									/>
 								}
-								onPress={handleClose}
+								handler={handleClose}
 								disabled={isCloseDisabled}
 								accessibilityState={{
 									disabled: isCloseDisabled,
@@ -698,10 +707,11 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 								style={isCloseDisabled && styles.disabledCloseButton}
 								color={storyColor}
 								type="outline"
+								useArrow={false}
 								fullwidth
 							>
 								Close
-							</SecondaryButton>
+							</LinkButton>
 						</View>
 						{puzzle && !isComplete && !isShowingGemClaim && (
 							<View style={styles.solveActionButton}>
@@ -807,8 +817,10 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: colors.dark.text,
 	},
-	completion: {
+	completedPuzzle: {
 		flex: 1,
+	},
+	completion: {
 		alignItems: 'center',
 		justifyContent: 'center',
 		gap: 12,
