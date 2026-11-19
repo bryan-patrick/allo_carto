@@ -1011,6 +1011,7 @@ export const leoAndPoeWords: Word[] = [
 		englishWords: ['call', 'name'],
 		canonicalEnglish: 'call',
 		englishPrefixes: ['myself'],
+		isEnglishPrefixReversed: true,
 		pronunciation: 'mah-pel',
 		ipaPronunciation: 'mapɛl',
 		CEFR: 'A1',

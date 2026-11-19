@@ -20,7 +20,6 @@ export const paragraph1 = createParagraph({
 		{
 			text: 'm’appelle',
 			wordId: 'word_expression_m_appelle',
-			canonicalEnglish: ['call myself', 'am called'],
 			tipId: introducingYourNameTip.id,
 		},
 		{

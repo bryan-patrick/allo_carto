@@ -2,7 +2,7 @@ import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import type { CollectionStamp } from '@/src/util/vocabularyCollections';
 import { getWordProgressDefinitionByKey } from '@/src/util/wordProgress';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
 import MaterialSymbol from '../MaterialSymbol';
 import WordProgressBar from '../WordProgressBar';
 import StampIllustration from './StampIllustration';
@@ -17,40 +17,64 @@ interface VocabularyStampProps {
  * Shows a word's collectible stamp or a locked space until its flashcard is discovered.
  */
 export default function VocabularyStamp({ stamp }: VocabularyStampProps) {
+	/**
+	 * Stamp discovery and learning level
+	 */
 	const isDiscovered = stamp.progress !== 'unseen';
 	const learningLevel = getWordProgressDefinitionByKey(stamp.progress);
-	const accessibilityLabel =
-		isDiscovered ?
-			`${stamp.frenchWord}. Learning stage: ${learningLevel.name}.`
-		:	'Undiscovered word.';
+
+	/**
+	 * Capitalized stamp name
+	 */
+	const firstCharacter = stamp.frenchWord.charAt(0);
+	const capitalizedFirstCharacter = firstCharacter.toUpperCase();
+	const remainingText = stamp.frenchWord.slice(1);
+	const stampName = `${capitalizedFirstCharacter}${remainingText}`;
+
+	/**
+	 * Initial stamp display and screen reader description
+	 */
+	let backgroundSource: ImageSourcePropType | undefined = stampPaper;
+	let accessibilityLabel = 'Undiscovered word.';
+	let stampContent = (
+		<View style={styles.lockedContent}>
+			<MaterialSymbol
+				name="lock"
+				size={32}
+				color={colors.wordProgress.unseen}
+			/>
+			<Text style={styles.hiddenWord}>???</Text>
+		</View>
+	);
+
+	if (isDiscovered) {
+		backgroundSource = undefined;
+		accessibilityLabel = `${stampName}. Learning stage: ${learningLevel.name}.`;
+		stampContent = (
+			<>
+				<StampIllustration image={stamp.image} />
+				<Text style={styles.word}>{stampName}</Text>
+				<WordProgressBar progress={stamp.progress} />
+			</>
+		);
+	}
 
 	return (
 		<BackgroundImage
 			accessible
 			accessibilityLabel={accessibilityLabel}
-			source={isDiscovered ? undefined : stampPaper}
+			source={backgroundSource}
 			imageStyle={styles.paperImage}
 			style={[styles.stamp, !isDiscovered && styles.lockedStamp]}
 		>
-			{isDiscovered ?
-				<>
-					<StampIllustration image={stamp.image} />
-					<Text style={styles.word}>{stamp.frenchWord}</Text>
-					<WordProgressBar progress={stamp.progress} />
-				</>
-			:	<View style={styles.lockedContent}>
-					<MaterialSymbol
-						name="lock"
-						size={32}
-						color={colors.wordProgress.unseen}
-					/>
-					<Text style={styles.hiddenWord}>???</Text>
-				</View>
-			}
+			{stampContent}
 		</BackgroundImage>
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	stamp: {
 		flexGrow: 1,

@@ -11,6 +11,7 @@ export interface EnglishPrefixDefinition {
 export interface EnglishWordDefinition extends EnglishPrefixDefinition {
 	englishWords: string[];
 	canonicalEnglish?: CanonicalEnglish | null;
+	isEnglishPrefixReversed?: boolean;
 }
 
 /**
@@ -91,7 +92,7 @@ export function getEnglishPrefixes(word: EnglishPrefixDefinition): string[] {
 }
 
 /**
- * Join each accepted prefixes with the word meanings.
+ * Joins each English prefix and meaning in English order.
  */
 export function getEnglishTranslations(word: EnglishWordDefinition): string[] {
 	const prefixes = getEnglishPrefixes(word);
@@ -103,7 +104,13 @@ export function getEnglishTranslations(word: EnglishWordDefinition): string[] {
 
 	for (const prefix of prefixes) {
 		for (const meaning of word.englishWords) {
-			translations.push(`${prefix} ${meaning}`);
+			let translation = `${prefix} ${meaning}`;
+
+			if (word.isEnglishPrefixReversed) {
+				translation = `${meaning} ${prefix}`;
+			}
+
+			translations.push(translation);
 		}
 	}
 
@@ -125,18 +132,27 @@ export function getEnglishFlashcardAnswers(word: EnglishWordDefinition): string[
 }
 
 /**
- * Joins a word's English prefixes with its canonical puzzle meanings or its first meaning.
+ * Builds English puzzle answers and accepts either prefix order for flagged words.
  */
 export function getEnglishPuzzleAnswers(word: EnglishWordDefinition): string[] {
 	const canonicalAnswers = getCanonicalEnglishAnswers(word.canonicalEnglish);
 	const puzzleDefinition: EnglishWordDefinition = {
 		englishWords: canonicalAnswers,
 		englishPrefixes: word.englishPrefixes,
+		isEnglishPrefixReversed: word.isEnglishPrefixReversed,
 	};
+	const answers: string[] = [];
 
 	if (canonicalAnswers.length === 0) {
 		puzzleDefinition.englishWords = word.englishWords.slice(0, 1);
 	}
 
-	return getEnglishTranslations(puzzleDefinition);
+	answers.push(...getEnglishTranslations(puzzleDefinition));
+
+	if (word.isEnglishPrefixReversed && word.englishPrefixes?.length) {
+		puzzleDefinition.isEnglishPrefixReversed = false;
+		answers.push(...getEnglishTranslations(puzzleDefinition));
+	}
+
+	return Array.from(new Set(answers));
 }

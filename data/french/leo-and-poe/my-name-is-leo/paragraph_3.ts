@@ -15,7 +15,6 @@ export const paragraph3 = createParagraph({
 		{
 			text: 'c’est',
 			wordId: 'word_expression_cest',
-			canonicalEnglish: ['is', 'it is'],
 		},
 		{
 			text: 'lundi',

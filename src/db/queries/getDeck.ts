@@ -30,6 +30,7 @@ function parseWordRow(row: DeckWordRow): Word {
 		englishWords,
 		canonicalEnglish,
 		englishPrefixes,
+		isEnglishPrefixReversed,
 		tipId,
 		isVulgar,
 		isQuebecois,
@@ -42,6 +43,7 @@ function parseWordRow(row: DeckWordRow): Word {
 		englishWords: JSON.parse(englishWords),
 		canonicalEnglish: parseCanonicalEnglish(canonicalEnglish),
 		englishPrefixes: parseEnglishPrefixes(englishPrefixes),
+		isEnglishPrefixReversed: Boolean(isEnglishPrefixReversed),
 		tipId: tipId ?? undefined,
 		isVulgar: Boolean(isVulgar),
 		isQuebecois: Boolean(isQuebecois),
@@ -92,12 +94,12 @@ export default async function getDeck({
 		const unseenWordIds = unseenWords.map(word => word.id);
 
 		/**
-		 * Attach this paragraph's answers and tips to its flashcards.
+		 * Applies the paragraph's meaning choices and tips to its flashcards.
 		 */
 		for (const segment of deck.passage) {
 			const word = wordsById.get(segment.wordId ?? '');
 
-			if (word && segment.canonicalEnglish) {
+			if (word && segment.canonicalEnglish !== undefined) {
 				word.canonicalEnglish = segment.canonicalEnglish;
 			}
 

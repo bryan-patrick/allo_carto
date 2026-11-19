@@ -14,7 +14,7 @@ export const introducingYourNameTip: FrenchTip = {
 	id: 'french_saying_your_name',
 	draftTipId: 1,
 	title: 'Introducing your name',
-	description: `"Je m'appelle" is used when introducing your name. The expression literally means I me call (or I call myself).`,
+	description: `"Je m'appelle Léo" means "My name is Léo." French puts "myself" before "call". English puzzles accept either order for this expression.`,
 };
 
 export const cityNamesTip: FrenchTip = {

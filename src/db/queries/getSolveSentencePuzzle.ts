@@ -4,12 +4,7 @@ import {
 	getChapterSolveUnlockLevel,
 	isItemUnlocked,
 } from '@/src/util/atlasCompletion';
-import {
-	getEnglishPuzzleAnswers,
-	parseCanonicalEnglish,
-	parseEnglishPrefixes,
-	type EnglishWordDefinition,
-} from '@/src/util/englishWordParts';
+import { parseCanonicalEnglish, parseEnglishPrefixes } from '@/src/util/englishWordParts';
 import { getPassageWordIds } from '@/src/util/getPassageWordIds';
 import { getSolvePassage } from '@/src/util/getSolvePassage';
 import {
@@ -37,6 +32,7 @@ interface SentenceWordRow {
 	englishWords: string;
 	canonicalEnglish: string | null;
 	englishPrefixes: string | null;
+	isEnglishPrefixReversed: number;
 	partOfSpeech: string | null;
 }
 
@@ -61,7 +57,8 @@ export default async function getSolveSentencePuzzle({
 	const wordIds = getPassageWordIds(passage);
 	const placeholders = wordIds.map(() => '?').join(',');
 	const getWordsStatement = `
-		SELECT id, englishWords, canonicalEnglish, englishPrefixes, partOfSpeech FROM words
+		SELECT id, englishWords, canonicalEnglish, englishPrefixes, isEnglishPrefixReversed, partOfSpeech
+		FROM words
 		WHERE id IN (${placeholders});
 	`;
 	const progressById = await getUserProgress({
@@ -109,15 +106,12 @@ export default async function getSolveSentencePuzzle({
 	}
 
 	const words: SolveSentenceWord[] = wordRows.map(word => {
-		const englishDefinition: EnglishWordDefinition = {
+		return {
+			id: word.id,
 			englishWords: JSON.parse(word.englishWords),
 			canonicalEnglish: parseCanonicalEnglish(word.canonicalEnglish),
 			englishPrefixes: parseEnglishPrefixes(word.englishPrefixes),
-		};
-
-		return {
-			id: word.id,
-			englishWords: getEnglishPuzzleAnswers(englishDefinition),
+			isEnglishPrefixReversed: Boolean(word.isEnglishPrefixReversed),
 			partOfSpeech: word.partOfSpeech,
 		};
 	});

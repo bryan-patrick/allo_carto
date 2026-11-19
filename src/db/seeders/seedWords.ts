@@ -39,6 +39,7 @@ export default async function seedWords(): Promise<void> {
 					frenchArticle,
 					englishArticle,
 					englishPrefixes,
+					isEnglishPrefixReversed,
 					pronunciation,
 					ipaPronunciation,
 					isVulgar,
@@ -52,7 +53,7 @@ export default async function seedWords(): Promise<void> {
 					correctCount,
 					rarity
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				ON CONFLICT(id) DO UPDATE SET
 					frenchWord = excluded.frenchWord,
 					englishWords = excluded.englishWords,
@@ -61,6 +62,7 @@ export default async function seedWords(): Promise<void> {
 					frenchArticle = excluded.frenchArticle,
 					englishArticle = excluded.englishArticle,
 					englishPrefixes = excluded.englishPrefixes,
+					isEnglishPrefixReversed = excluded.isEnglishPrefixReversed,
 					pronunciation = excluded.pronunciation,
 					ipaPronunciation = excluded.ipaPronunciation,
 					isVulgar = excluded.isVulgar,
@@ -82,6 +84,7 @@ export default async function seedWords(): Promise<void> {
 					word.frenchArticle ?? null,
 					word.englishArticle ?? null,
 					savedEnglishPrefixes,
+					Number(word.isEnglishPrefixReversed ?? false),
 					word.pronunciation,
 					word.ipaPronunciation,
 					Number(word.isVulgar),

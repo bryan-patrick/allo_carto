@@ -49,7 +49,6 @@ export const paragraph2 = createParagraph({
 		{
 			text: 'd’un',
 			wordId: 'word_preposition_d_un',
-			canonicalEnglish: ['a', 'of a'],
 		},
 		{
 			text: 'parc',

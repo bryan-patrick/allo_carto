@@ -6,7 +6,6 @@ import type {
 } from '@/src/components/Solve/solveTypes';
 import { findParagraphById, isItemUnlocked } from '@/src/util/atlasCompletion';
 import {
-	getCanonicalEnglishAnswers,
 	getEnglishPuzzleAnswers,
 	parseCanonicalEnglish,
 	parseEnglishPrefixes,
@@ -45,6 +44,7 @@ interface SolveWordRow {
 	frenchArticle: string | null;
 	englishArticle: string | null;
 	englishPrefixes: string | null;
+	isEnglishPrefixReversed: number;
 	englishWords: string;
 	canonicalEnglish: string | null;
 	rarity: CardRarity;
@@ -138,7 +138,7 @@ export default async function getSolvePuzzle({
 
 	if (solveWordIds.length > 0) {
 		words = await database.getAllAsync<SolveWordRow>(
-			`SELECT id, frenchWord, frenchArticle, englishArticle, englishPrefixes, englishWords,
+			`SELECT id, frenchWord, frenchArticle, englishArticle, englishPrefixes, isEnglishPrefixReversed, englishWords,
 			 canonicalEnglish, rarity
 			 FROM words WHERE id IN (${placeholders});`,
 			...solveWordIds,
@@ -175,20 +175,13 @@ export default async function getSolvePuzzle({
 		if (word) {
 			const englishDefinition: EnglishWordDefinition = {
 				englishWords: JSON.parse(word.englishWords),
-				canonicalEnglish: parseCanonicalEnglish(word.canonicalEnglish),
+				canonicalEnglish: segment.canonicalEnglish ?? parseCanonicalEnglish(word.canonicalEnglish),
 				englishArticle: word.englishArticle,
 				englishPrefixes: parseEnglishPrefixes(word.englishPrefixes),
+				isEnglishPrefixReversed: Boolean(word.isEnglishPrefixReversed),
 			};
 
 			englishWords = getEnglishPuzzleAnswers(englishDefinition);
-
-			/**
-			 * A paragraph can replace the full English answer when its sentence needs different wording.
-			 */
-			if (segment.canonicalEnglish !== undefined && segment.canonicalEnglish !== null) {
-				englishWords = getCanonicalEnglishAnswers(segment.canonicalEnglish);
-			}
-
 			englishPrompt = englishWords[0] ?? '';
 
 			if (sentenceStartPositions.has(position)) {
