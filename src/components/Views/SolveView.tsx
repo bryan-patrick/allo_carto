@@ -3,7 +3,6 @@ import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import ReadingLink from '@/src/components/ReadingLink';
-import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
@@ -338,6 +337,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	let prompt = 'No card selected.';
 	let statusMessage = '';
 	let puzzleNotice = loadError || unlockMessage;
+	let visibleCards = sentenceCards;
 	let completionMessage =
 		'Complete Solve+ and Solve++ and claim all 3 gems to unlock the next paragraph.';
 
@@ -356,6 +356,10 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 
 	if (isLoading) {
 		puzzleNotice = 'Loading puzzle...';
+	}
+
+	if (isComplete && puzzle) {
+		visibleCards = puzzle.positions;
 	}
 
 	if (paragraphNumber) {
@@ -782,7 +786,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 							bounces={false}
 							overScrollMode="never"
 						>
-							{sentenceCards.map(card => (
+							{visibleCards.map(card => (
 								<SolveCard
 									key={card.position}
 									deckId={deckId}
@@ -878,7 +882,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 					)}
 					<View style={styles.actions}>
 						<View style={styles.actionButton}>
-							<SecondaryButton
+							<LinkButton
 								SVGElement={
 									<MaterialSymbol
 										name="close"
@@ -886,7 +890,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 										color={storyColor}
 									/>
 								}
-								onPress={handleClose}
+								handler={handleClose}
 								disabled={isCloseDisabled}
 								accessibilityState={{
 									disabled: isCloseDisabled,
@@ -894,10 +898,11 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 								style={isCloseDisabled && styles.disabledCloseButton}
 								color={storyColor}
 								type="outline"
+								useArrow={false}
 								fullwidth
 							>
 								Close
-							</SecondaryButton>
+							</LinkButton>
 						</View>
 						{isEligible && !isComplete && !isShowingGemClaim && (
 							<View style={styles.solveActionButton}>

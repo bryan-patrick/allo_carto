@@ -30,6 +30,7 @@ export interface SentenceWordToken {
 	text: string;
 	partIndex: number;
 	isOptional: boolean;
+	isProperNoun?: boolean;
 }
 
 export interface SentenceTokens {

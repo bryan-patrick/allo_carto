@@ -3,7 +3,6 @@ import BackgroundImage from '@/src/components/BackgroundImage';
 import CollectionGems from '@/src/components/CollectionGems';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
-import SecondaryButton from '@/src/components/SecondaryButton';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
 import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
@@ -36,6 +35,7 @@ import {
 import {
 	reviewSentenceAnswer,
 	type SentenceAnswerReview,
+	type SentenceAnswerWord,
 	type SentenceAnswerWordStatus,
 } from '@/src/util/solveSentenceAnswer';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -81,6 +81,11 @@ interface SentenceFeedback {
 	backgroundColor: string;
 }
 
+interface SentenceAnswerLegendItem {
+	status: SentenceAnswerWordStatus;
+	label: string;
+}
+
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 
 const sentenceAnswerInstructions =
@@ -88,16 +93,30 @@ const sentenceAnswerInstructions =
 
 const answerReviewWordStyles: Record<SentenceAnswerWordStatus, TextStyle> = {
 	correct: {
-		color: colors.ink.available,
+		backgroundColor: colors.light.success,
 	},
 	incorrect: {
-		color: colors.gems.earned,
-		textDecorationLine: 'underline',
+		backgroundColor: `${colors.light.danger}33`,
 	},
 	neutral: {
-		color: colors.dark.text,
+		backgroundColor: colors.light.polaroid,
 	},
 };
+
+const answerReviewLegend: SentenceAnswerLegendItem[] = [
+	{
+		status: 'incorrect',
+		label: 'Incorrect',
+	},
+	{
+		status: 'neutral',
+		label: 'Not counted',
+	},
+	{
+		status: 'correct',
+		label: 'Correct',
+	},
+];
 
 const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 	4: {
@@ -115,6 +134,17 @@ const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 		completionMessage: 'All five Solve stages are complete. Your gems are now prismatic.',
 	},
 };
+
+/**
+ * Highlights checked words while leaving spaces and punctuation clear.
+ */
+function getAnswerReviewWordStyle(word: SentenceAnswerWord): TextStyle | undefined {
+	if (!/[\p{L}\p{N}]/u.test(word.text)) {
+		return undefined;
+	}
+
+	return answerReviewWordStyles[word.status];
+}
 
 /**
  * Show the result and ink cost after a sentence answer is submitted.
@@ -561,15 +591,44 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					{!puzzle ?
 						<Text style={styles.text}>{loadError || 'Loading puzzle...'}</Text>
 					: isComplete ?
-						<View style={styles.completion}>
-							<CollectionGems
-								title={paragraphLabel}
-								progress={completionProgress}
-								size={32}
-							/>
-							<Text style={styles.title}>{stageText.completionTitle}</Text>
-							<Text style={[styles.text, styles.centeredText]}>{stageText.completionMessage}</Text>
-						</View>
+						<>
+							<View style={styles.completion}>
+								<CollectionGems
+									title={paragraphLabel}
+									progress={completionProgress}
+									size={32}
+								/>
+								<Text style={styles.title}>{stageText.completionTitle}</Text>
+								<Text style={[styles.text, styles.centeredText]}>
+									{stageText.completionMessage}
+								</Text>
+							</View>
+							{sentences.map(sentence => {
+								let sentencePrompt = sentence.frenchText;
+
+								if (isFrenchAnswer) {
+									sentencePrompt = sentence.englishText ?? '';
+								}
+
+								return (
+									<View
+										key={sentence.position}
+										style={styles.sentenceCard}
+									>
+										<Text
+											style={styles.sentencePrompt}
+											accessibilityLabel={`${stageText.promptLanguage} sentence: ${sentencePrompt}`}
+										>
+											{sentencePrompt}
+										</Text>
+										<View style={styles.savedAnswer}>
+											<Text style={styles.text}>✓ Sentence solved</Text>
+											<Text style={styles.text}>{sentence.acceptedAnswer}</Text>
+										</View>
+									</View>
+								);
+							})}
+						</>
 					: pendingGem ?
 						<>
 							{answer !== '' && (
@@ -712,7 +771,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 												{answerReview.words.map((word, index) => (
 													<Text
 														key={index}
-														style={answerReviewWordStyles[word.status]}
+														style={getAnswerReviewWordStyle(word)}
 													>
 														{word.text}
 													</Text>
@@ -721,10 +780,16 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 											{answerReview.missingWordCount > 0 && (
 												<Text style={styles.text}>Some required words are missing.</Text>
 											)}
-											<Text style={styles.reviewLegend}>
-												Green words match. Underlined red words need another look. Names and words
-												that are not graded stay uncolored.
-											</Text>
+											<View style={styles.answerReviewKey}>
+												{answerReviewLegend.map(item => (
+													<Text
+														key={item.status}
+														style={[styles.reviewKeyLabel, answerReviewWordStyles[item.status]]}
+													>
+														{item.label}
+													</Text>
+												))}
+											</View>
 										</>
 									)}
 								</ScrollView>
@@ -733,7 +798,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					)}
 					<View style={styles.actions}>
 						<View style={styles.actionButton}>
-							<SecondaryButton
+							<LinkButton
 								SVGElement={
 									<MaterialSymbol
 										name="close"
@@ -741,7 +806,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 										color={storyColor}
 									/>
 								}
-								onPress={handleClose}
+								handler={handleClose}
 								disabled={isCloseDisabled}
 								accessibilityState={{
 									disabled: isCloseDisabled,
@@ -749,10 +814,11 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 								style={isCloseDisabled && styles.disabledCloseButton}
 								color={storyColor}
 								type="outline"
+								useArrow={false}
 								fullwidth
 							>
 								Close
-							</SecondaryButton>
+							</LinkButton>
 						</View>
 						{puzzle && !isComplete && !pendingGem && (
 							<View style={styles.solveActionButton}>
@@ -909,7 +975,6 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.light.success,
 	},
 	completion: {
-		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
 		gap: 16,
@@ -938,6 +1003,20 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		lineHeight: 18,
 		color: colors.dark.text,
+	},
+	answerReviewKey: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 6,
+		marginTop: 6,
+	},
+	reviewKeyLabel: {
+		fontFamily: 'lexend-400',
+		fontSize: 11,
+		color: colors.dark.text,
+		paddingHorizontal: 4,
+		paddingVertical: 2,
+		borderRadius: 2,
 	},
 	actions: {
 		flexDirection: 'row',

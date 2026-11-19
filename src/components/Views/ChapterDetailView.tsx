@@ -79,6 +79,8 @@ export default function ChapterDetailView() {
 		solvedPuzzleCount += getCompletedSolveStages(progressById[paragraph.id]);
 	}
 
+	const areAllChapterPuzzlesSolved = puzzleCount > 0 && solvedPuzzleCount === puzzleCount;
+
 	/**
 	 * Queues up a reveal animation when another paragraph unlocks.
 	 */
@@ -227,7 +229,12 @@ export default function ChapterDetailView() {
 						</View>
 					</View>
 				</BackgroundImage>
-				<View style={styles.chapterDetails}>
+				<View
+					style={[
+						styles.chapterDetails,
+						areAllChapterPuzzlesSolved && styles.completedChapterDetails,
+					]}
+				>
 					<Text style={styles.chapterProgress}>
 						{solvedPuzzleCount} of {puzzleCount} puzzles solved
 					</Text>
@@ -322,6 +329,9 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderColor: colors.light.goldenBorder,
 		gap: 4,
+	},
+	completedChapterDetails: {
+		backgroundColor: colors.light.success,
 	},
 	chapterName: {
 		fontFamily: 'lexend-700',

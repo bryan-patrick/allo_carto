@@ -45,7 +45,7 @@ interface WordOrderAttemptRow {
 	status: 'exact' | 'incorrect';
 }
 
-interface GetSolvedSentenceGroupsOptions {
+interface SavedWordOrderContent {
 	paragraph: Paragraph;
 	paragraphCards: SolveWordOrderCard[];
 	sentenceGroups: WordOrderSentence[];
@@ -126,7 +126,7 @@ function getSolvedSentenceGroups({
 	paragraphCards,
 	sentenceGroups,
 	savedAnswers,
-}: GetSolvedSentenceGroupsOptions): boolean[] {
+}: SavedWordOrderContent): boolean[] {
 	/**
 	 * Original sentences and older paragraph answers
 	 */
@@ -171,6 +171,38 @@ function getSolvedSentenceGroups({
 	}
 
 	return solvedSentenceGroups;
+}
+
+/**
+ * Joins the saved correct card orders so every sentence appears in the completed puzzle.
+ */
+function getCompletedParagraphCardOrder({
+	paragraph,
+	sentenceGroups,
+	savedAnswers,
+}: SavedWordOrderContent): number[] {
+	const completedCardOrder: number[] = [];
+
+	for (const [sentencePosition, sentenceGroup] of sentenceGroups.entries()) {
+		const sentenceCards = getWordOrderCards(paragraph, sentencePosition);
+		const firstOriginalSentencePosition = sentenceGroup.originalSentencePositions[0];
+		const savedSentenceAnswer = savedAnswers.find(savedAnswer => {
+			return savedAnswer.position === firstOriginalSentencePosition;
+		});
+		let solvedCardOrder = sentenceCards.map(card => card.id);
+
+		if (savedSentenceAnswer) {
+			const savedCardOrder = readWordOrder(savedSentenceAnswer.acceptedAnswer, sentenceCards);
+
+			if (savedCardOrder !== null) {
+				solvedCardOrder = savedCardOrder;
+			}
+		}
+
+		completedCardOrder.push(...solvedCardOrder);
+	}
+
+	return completedCardOrder;
 }
 
 /**
@@ -248,7 +280,7 @@ function getLastWordOrderAttempt(
 }
 
 /**
- * Load the puzzle
+ * Loads saved cards for an unfinished sentence or a completed paragraph puzzle.
  */
 export default async function getSolveWordOrderPuzzle({
 	database,
@@ -415,6 +447,16 @@ export default async function getSolveWordOrderPuzzle({
 
 	if (savedSentenceCardOrder !== null) {
 		puzzleResult.positions = savedSentenceCardOrder;
+	}
+
+	if (completedSolveStages >= wordOrderPuzzleStage) {
+		puzzleResult.cards = paragraphCards;
+		puzzleResult.positions = getCompletedParagraphCardOrder({
+			paragraph,
+			paragraphCards,
+			sentenceGroups,
+			savedAnswers: savedPuzzleProgress.solvedPositions,
+		});
 	}
 
 	return puzzleResult;
