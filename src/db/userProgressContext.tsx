@@ -186,6 +186,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const [toastQueue, setToastQueue] = useState<UserNotification[]>([]);
 	const [progressById, setProgressById] = useState<ProgressById>({});
 	const [wordProgressById, setWordProgressById] = useState<UserWordProgressById>({});
+	const [stampWordProgressById, setStampWordProgressById] = useState<UserWordProgressById>({});
 	const [collectionClaims, setCollectionClaims] = useState<CollectionRewardClaim[]>([]);
 	const [tipClaims, setTipClaims] = useState<TipRewardClaim[]>([]);
 	const [tipDiscoveries, setTipDiscoveries] = useState<TipDiscovery[]>([]);
@@ -231,6 +232,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 				nextTipDiscoveries,
 				nextActivity,
 				nextNotifications,
+				nextStampWordProgressById,
 			] = await Promise.all([
 				getUserProgress({
 					database,
@@ -265,6 +267,11 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 					database,
 					userId,
 				}),
+				getUserWordProgress({
+					database,
+					userId,
+					shouldRequireCorrectAnswer: true,
+				}),
 			]);
 			const newestNotificationId = nextNotifications[0]?.id ?? 0;
 			const previousNotificationId = latestNotificationId.current;
@@ -287,6 +294,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 			setNotifications(nextNotifications);
 			setProgressById(nextProgress);
 			setWordProgressById(nextWordProgressById);
+			setStampWordProgressById(nextStampWordProgressById);
 			setCollectionClaims(nextCollectionClaims);
 			setTipClaims(nextTipClaims);
 			setTipDiscoveries(nextTipDiscoveries);
@@ -301,7 +309,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 
 	const collections = useMemo(() => {
 		const collectionWordProgressById: UserWordProgressById = {
-			...wordProgressById,
+			...stampWordProgressById,
 		};
 
 		// Reveal unseen stamps for screenshots without writing to saved word progress.
@@ -324,7 +332,7 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 				claims: collectionClaims,
 			});
 		});
-	}, [collectionClaims, wordProgressById, previewAllStamps]);
+	}, [collectionClaims, stampWordProgressById, previewAllStamps]);
 
 	/**
 	 * Groups tips by discovery and shows which XP rewards are available.

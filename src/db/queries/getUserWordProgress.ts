@@ -6,6 +6,7 @@ export type UserWordProgressById = Partial<Record<string, WordProgressKey>>;
 interface GetUserWordProgressOptions {
 	database: SQLiteDatabase;
 	userId: string;
+	shouldRequireCorrectAnswer?: boolean;
 }
 
 interface UserWordProgressRow {
@@ -15,14 +16,20 @@ interface UserWordProgressRow {
 }
 
 /**
- * Loads the player's word levels so stories and collections use the same saved progress.
+ * Loads saved word levels and can limit them to words answered correctly at least once.
  */
 export default async function getUserWordProgress({
 	database,
 	userId,
+	shouldRequireCorrectAnswer = false,
 }: GetUserWordProgressOptions): Promise<UserWordProgressById> {
-	const statement = 'SELECT wordId, correctCount, seenCount FROM userWords WHERE userId = ?;';
 	const progressByWordId: UserWordProgressById = {};
+	let statement = 'SELECT wordId, correctCount, seenCount FROM userWords WHERE userId = ?';
+
+	if (shouldRequireCorrectAnswer) {
+		statement += ' AND correctCount > 0';
+	}
+
 	const rows = await database.getAllAsync<UserWordProgressRow>(statement, userId);
 
 	for (const row of rows) {

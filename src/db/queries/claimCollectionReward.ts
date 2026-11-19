@@ -75,6 +75,7 @@ export default async function claimCollectionReward({
 		const wordProgressById = await getUserWordProgress({
 			database: transaction,
 			userId,
+			shouldRequireCorrectAnswer: true,
 		});
 		const progress = getVocabularyCollectionProgress({
 			collection,

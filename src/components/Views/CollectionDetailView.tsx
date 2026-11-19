@@ -131,7 +131,7 @@ export default function CollectionDetailView() {
 
 	if (!progress || !progress.isDiscovered) {
 		if (progress) {
-			notice = 'Find one of this collection’s words in flashcards to reveal its album.';
+			notice = 'Answer one of this collection’s words correctly in flashcards to reveal its album.';
 		}
 
 		return (

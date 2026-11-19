@@ -84,7 +84,9 @@ export default function StampsView(scrollProps: CollectionsPageScrollProps) {
 			style={collectionsPageStyles.scrollView}
 			contentContainerStyle={collectionsPageStyles.content}
 		>
-			<Text style={collectionsPageStyles.introduction}>Do flashcards to complete collections!</Text>
+			<Text style={collectionsPageStyles.introduction}>
+				Answer flashcards correctly to collect stamps!
+			</Text>
 			{stampSections.map(section => (
 				<StampSection
 					key={section.key}

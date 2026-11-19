@@ -35,7 +35,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 	/**
 	 * Stamp, learning level, and reward state
 	 */
-	const firstStamp = progress.stamps[0];
+	const firstDiscoveredStamp = progress.stamps.find(stamp => stamp.progress !== 'unseen');
 	const isNextXPRewardReadyToClaim = section === 'ready';
 
 	const matchingLearningLevel = wordProgressDefinitions.find(
@@ -103,7 +103,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 		title = collection.name;
 		accessibilityLabel = `${title}. ${learningLevel.name}. ${rewardDescription} ${readyDescription}`;
 		accessibilityHint = 'Open the stamp album.';
-		illustration = <StampIllustration image={firstStamp?.image} />;
+		illustration = <StampIllustration image={firstDiscoveredStamp?.image} />;
 	}
 
 	/**
@@ -111,7 +111,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
 	 */
 	function openCollection() {
 		if (!isDiscovered) {
-			Alert.alert('???', 'Find words in this collection by doing flashcards.');
+			Alert.alert('???', 'Answer a word correctly in flashcards to reveal its album.');
 			return;
 		}
 

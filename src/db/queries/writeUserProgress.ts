@@ -268,7 +268,7 @@ export async function writeCorrectAnswer({
 		await incrementCorrectCount(userId, wordId, database);
 		await incrementUserXP(database, userId, nextAward.xp);
 
-		if (nextAward.previousProgress === 'unseen') {
+		if (previousProgress.correctCount === 0) {
 			await recordStampUnlockActivity({
 				database,
 				userId,
@@ -518,8 +518,7 @@ export async function writeDeckCompletion({
 }
 
 /**
- * Save that a flashcard was seen and update its paragraph's progress.
- * A collection word also reveals its stamp the first time it is seen.
+ * Records a seen flashcard and updates its paragraph's progress.
  */
 export async function writeWordSeen({
 	database: sqliteDatabase,
@@ -547,14 +546,6 @@ export async function writeWordSeen({
 		});
 
 		await incrementSeenCount(userId, wordId, database);
-
-		if (previousWordProgress === 'unseen') {
-			await recordStampUnlockActivity({
-				database,
-				userId,
-				wordId,
-			});
-		}
 
 		if (deckId) {
 			await database.runAsync(
