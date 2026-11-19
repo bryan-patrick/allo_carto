@@ -14,7 +14,7 @@ interface VocabularyStampProps {
 }
 
 /**
- * Shows a word's collectible stamp or a locked space until its flashcard is discovered.
+ * Shows a word's stamp after its first correct flashcard answer or a locked space until then.
  */
 export default function VocabularyStamp({ stamp }: VocabularyStampProps) {
 	/**
