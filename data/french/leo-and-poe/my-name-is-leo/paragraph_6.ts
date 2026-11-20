@@ -1,3 +1,4 @@
+import { generalArticlesTip } from '@/data/french/tips';
 import { createParagraph } from '@/src/util/createParagraph';
 
 export const paragraph6 = createParagraph({
@@ -22,6 +23,7 @@ export const paragraph6 = createParagraph({
 		{
 			text: 'les',
 			wordId: 'word_article_les',
+			tipId: generalArticlesTip.id,
 		},
 		{
 			text: 'oiseaux',
@@ -40,6 +42,7 @@ export const paragraph6 = createParagraph({
 		{
 			text: 'Les',
 			wordId: 'word_article_les',
+			tipId: generalArticlesTip.id,
 		},
 		{
 			text: 'oiseaux',

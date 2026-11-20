@@ -6,7 +6,7 @@ import { collectionLevelRewards } from './learning-level-rewards';
  */
 export const toBeACatCollection: VocabularyCollection = {
 	id: 'to-be-a-cat',
-	name: 'To Be a Cat',
+	name: 'To Be A Cat',
 	description: 'Sleep and take a nap like Léo.',
 	words: [
 		{

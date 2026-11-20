@@ -1,4 +1,4 @@
-import { cityNamesTip } from '@/data/french/tips';
+import { cityNamesTip, nearAPlaceTip } from '@/data/french/tips';
 import { createParagraph } from '@/src/util/createParagraph';
 
 export const paragraph2 = createParagraph({
@@ -14,6 +14,7 @@ export const paragraph2 = createParagraph({
 		{
 			text: 'à',
 			wordId: 'word_preposition_a',
+			canonicalEnglish: ['in'],
 			tipId: cityNamesTip.id,
 		},
 		{
@@ -45,10 +46,12 @@ export const paragraph2 = createParagraph({
 		{
 			text: 'près',
 			wordId: 'word_adverb_pres',
+			tipId: nearAPlaceTip.id,
 		},
 		{
 			text: 'd’un',
 			wordId: 'word_preposition_d_un',
+			tipId: nearAPlaceTip.id,
 		},
 		{
 			text: 'parc',

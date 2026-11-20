@@ -1,4 +1,5 @@
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
+import { auContractionTip, listeningTip, weekdayCapitalizationTip } from '../tips';
 
 /**
  * Words and related forms for Léo and Poe's active paragraphs
@@ -84,7 +85,7 @@ export const leoAndPoeWords: Word[] = [
 		id: 'word_adverb_pres',
 		frenchWord: 'près',
 		englishWords: ['near', 'nearby'],
-		canonicalEnglish: ['near', 'nearby'],
+		canonicalEnglish: 'near',
 		pronunciation: 'preh',
 		ipaPronunciation: 'pʁɛ',
 		CEFR: 'A1',
@@ -149,8 +150,8 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_article_un',
 		frenchWord: 'un',
-		englishWords: ['a', 'one'],
-		canonicalEnglish: ['a', 'one'],
+		englishWords: ['a', 'an', 'one'],
+		canonicalEnglish: ['a', 'an', 'one'],
 		isVulgar: false,
 		lemmaId: 'un',
 		form: 'masculine',
@@ -165,8 +166,8 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_article_une',
 		frenchWord: 'une',
-		englishWords: ['a'],
-		canonicalEnglish: 'a',
+		englishWords: ['a', 'an'],
+		canonicalEnglish: ['a', 'an'],
 		pronunciation: 'ewn',
 		ipaPronunciation: 'ʏn',
 		CEFR: 'A1',
@@ -186,7 +187,8 @@ export const leoAndPoeWords: Word[] = [
 		isVulgar: false,
 		lemmaId: 'word_verb_etre',
 		form: 'present',
-		partOfSpeech: 'auxiliary',
+		tense: 'présent',
+		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'ay',
 		ipaPronunciation: 'e',
@@ -201,7 +203,8 @@ export const leoAndPoeWords: Word[] = [
 		isVulgar: false,
 		lemmaId: 'word_verb_etre',
 		form: 'present',
-		partOfSpeech: 'auxiliary',
+		tense: 'présent',
+		partOfSpeech: 'verb',
 		CEFR: 'A1',
 		pronunciation: 'swee',
 		ipaPronunciation: 'sɥi',
@@ -216,7 +219,7 @@ export const leoAndPoeWords: Word[] = [
 		pronunciation: 'sohn',
 		ipaPronunciation: 'sɔ̃',
 		CEFR: 'A1',
-		partOfSpeech: 'auxiliary',
+		partOfSpeech: 'verb',
 		lemmaId: 'word_verb_etre',
 		form: 'present',
 		tense: 'présent',
@@ -396,7 +399,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_noun_ville',
 		frenchWord: 'ville',
-		englishWords: ['city'],
+		englishWords: ['city', 'town'],
 		canonicalEnglish: 'city',
 		pronunciation: 'veel',
 		ipaPronunciation: 'vɪl',
@@ -442,8 +445,8 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_preposition_a',
 		frenchWord: 'à',
-		englishWords: ['to', 'at', 'in', 'on'],
-		canonicalEnglish: 'in',
+		englishWords: ['to', 'at', 'in'],
+		canonicalEnglish: ['to', 'at', 'in'],
 		isVulgar: false,
 		lemmaId: 'a',
 		partOfSpeech: 'preposition',
@@ -456,7 +459,8 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_preposition_au',
 		frenchWord: 'au',
-		englishWords: ['at the', 'to the'],
+		tipId: auContractionTip.id,
+		englishWords: ['to the', 'at the'],
 		canonicalEnglish: 'to the',
 		pronunciation: 'oh',
 		ipaPronunciation: 'o',
@@ -651,8 +655,8 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_verb_faire',
 		frenchWord: 'faire',
-		englishWords: ['do', 'make', 'be'],
-		canonicalEnglish: 'do',
+		englishWords: ['do', 'make'],
+		canonicalEnglish: ['do', 'make'],
 		pronunciation: 'fair',
 		ipaPronunciation: 'fɛʁ',
 		CEFR: 'A1',
@@ -666,8 +670,8 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_verb_fais',
 		frenchWord: 'fais',
-		englishWords: ['take', 'do', 'make'],
-		canonicalEnglish: 'take',
+		englishWords: ['do', 'make'],
+		canonicalEnglish: ['do', 'make'],
 		pronunciation: 'feh',
 		ipaPronunciation: 'fɛ',
 		CEFR: 'A1',
@@ -682,8 +686,8 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_verb_fait',
 		frenchWord: 'fait',
-		englishWords: ['is', 'does', 'makes'],
-		canonicalEnglish: 'is',
+		englishWords: ['makes', 'does'],
+		canonicalEnglish: ['makes', 'does'],
 		pronunciation: 'feh',
 		ipaPronunciation: 'fɛ',
 		CEFR: 'A1',
@@ -991,8 +995,9 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_expression_j_ecoute',
 		frenchWord: 'j’écoute',
-		englishWords: ['listen to', 'hear'],
-		canonicalEnglish: 'listen to',
+		tipId: listeningTip.id,
+		englishWords: ['listen to', 'listen'],
+		canonicalEnglish: ['listen to', 'listen'],
 		englishPrefixes: ['I'],
 		pronunciation: 'zhay-koot',
 		ipaPronunciation: 'ʒekut',
@@ -1060,6 +1065,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_noun_lundi',
 		frenchWord: 'lundi',
+		tipId: weekdayCapitalizationTip.id,
 		englishWords: ['Monday'],
 		canonicalEnglish: 'Monday',
 		pronunciation: 'lun-dee',
@@ -1144,8 +1150,8 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_verb_arrive',
 		frenchWord: 'arrive',
-		englishWords: ['is coming', 'arrives', 'is arriving'],
-		canonicalEnglish: ['is coming', 'arrives'],
+		englishWords: ['arrives', 'is coming', 'is arriving'],
+		canonicalEnglish: ['arrives', 'is coming'],
 		pronunciation: 'ah-reev',
 		ipaPronunciation: 'aʁiv',
 		CEFR: 'A1',
@@ -1195,8 +1201,9 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_verb_ecoute',
 		frenchWord: 'écoute',
-		englishWords: ['listen to', 'hear'],
-		canonicalEnglish: 'listen to',
+		tipId: listeningTip.id,
+		englishWords: ['listen to', 'listen'],
+		canonicalEnglish: ['listen to', 'listen'],
 		pronunciation: 'ay-koot',
 		ipaPronunciation: 'ekut',
 		CEFR: 'A1',

@@ -66,7 +66,7 @@ export const weatherTip: FrenchTip = {
 	draftTipId: 8,
 	title: 'Faire for weather and temperature',
 	description:
-		'French uses "faire" ("fait") to describe weather conditions, such as temperature, and how warm or cold a place feels.',
+		'"Fait" means "makes" or "does." French uses it for weather: "Il fait chaud" means "It is warm," rather than "It makes warm."',
 };
 
 export const morningTip: FrenchTip = {
@@ -97,7 +97,7 @@ export const napTip: FrenchTip = {
 	draftTipId: 12,
 	title: 'Faire une sieste',
 	description:
-		'"Faire une sieste" means to take a nap. French uses "faire" (do) rather than "prendre" (take) in this expression.',
+		'"Je fais une sieste" means "I take a nap." "Fais" means "do" or "make"; the whole expression uses "take" in English.',
 };
 
 export const nearbyTip: FrenchTip = {
@@ -139,6 +139,54 @@ export const meBeforeTheVerbTip: FrenchTip = {
 		'In French, an object pronoun like "me" normally goes before the verb it belongs to. "Il me donne" means "he gives me," but the word order is literally "he me gives." In "Il aime me donner à manger," "me" goes before "donner" because it tells us who receives what he gives. English puts "me" after "give" instead.',
 };
 
+export const weekdayCapitalizationTip: FrenchTip = {
+	id: 'french_lowercase_weekdays',
+	draftTipId: 18,
+	title: 'Lowercase weekdays',
+	description:
+		'French days of the week are lowercase: "lundi" means Monday. They still take a capital at the start of a sentence.',
+};
+
+export const onFootTip: FrenchTip = {
+	id: 'french_a_pied',
+	draftTipId: 19,
+	title: 'On foot',
+	description:
+		'"À pied" means "on foot." Its words do not translate directly into English: "à" usually means "to," "at," or "in," and "pied" means "foot."',
+};
+
+export const nearAPlaceTip: FrenchTip = {
+	id: 'french_pres_de',
+	draftTipId: 20,
+	title: 'Near a place',
+	description:
+		'"Près de" means "near." The "de" becomes "d’" before "un": "près d’un parc" means "near a park."',
+};
+
+export const auContractionTip: FrenchTip = {
+	id: 'french_au_contraction',
+	draftTipId: 21,
+	title: 'Au combines à and le',
+	description:
+		'"Au" combines "à" + "le." It means "to the" when going somewhere and "at the" when saying where something is.',
+};
+
+export const listeningTip: FrenchTip = {
+	id: 'french_ecouter_direct_object',
+	draftTipId: 22,
+	title: 'Listen to',
+	description:
+		'"Écouter" means "listen to." French puts the person or sound straight after the verb: "j’écoute mes amis" means "I listen to my friends."',
+};
+
+export const generalArticlesTip: FrenchTip = {
+	id: 'french_general_definite_articles',
+	draftTipId: 23,
+	title: 'Talking about things in general',
+	description:
+		'French uses "le," "la," or "les" when talking about things in general. "J’aime les jours chauds" means "I like warm days"; English leaves out "the."',
+};
+
 const frenchTips: FrenchTip[] = [
 	elisionTip,
 	introducingYourNameTip,
@@ -158,6 +206,12 @@ const frenchTips: FrenchTip[] = [
 	indirectObjectTip,
 	whileTip,
 	meBeforeTheVerbTip,
+	weekdayCapitalizationTip,
+	onFootTip,
+	nearAPlaceTip,
+	auContractionTip,
+	listeningTip,
+	generalArticlesTip,
 ];
 
 /**

@@ -1,3 +1,4 @@
+import { generalArticlesTip, onFootTip } from '@/data/french/tips';
 import { createParagraph } from '@/src/util/createParagraph';
 
 export const paragraph4 = createParagraph({
@@ -13,6 +14,7 @@ export const paragraph4 = createParagraph({
 		{
 			text: 'les',
 			wordId: 'word_article_les',
+			tipId: generalArticlesTip.id,
 		},
 		{
 			text: 'jours',
@@ -42,11 +44,12 @@ export const paragraph4 = createParagraph({
 		{
 			text: 'à',
 			wordId: 'word_preposition_a',
-			canonicalEnglish: ['on'],
+			tipId: onFootTip.id,
 		},
 		{
 			text: 'pied',
 			wordId: 'word_noun_pied',
+			tipId: onFootTip.id,
 			after: '. ',
 		},
 		{

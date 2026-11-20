@@ -5,7 +5,8 @@ export const paragraph7 = createParagraph({
 	id: 'leo-and-poe-chapter-1-paragraph-7',
 	description: 'Léo climbs his tree and takes a long nap.',
 	CEFR: ['A1', 'A2'],
-	englishPassage: 'I find my tree. I climb slowly. I listen to my bird friends. I take a long nap.',
+	englishPassage:
+		'I find my tree. I climb slowly. I listen to my friends, the birds. I take a long nap.',
 	passage: [
 		{
 			text: 'Je',

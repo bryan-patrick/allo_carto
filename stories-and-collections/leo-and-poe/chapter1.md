@@ -7,13 +7,13 @@
 ## Stamps (collection name)
 
 - Monday - Leo's Favorite Nap Days
-- Cat - On the Plains
+- Cat - On The Plains
 - Two - Counting To Ten
 - Snow - The Snow Capital
-- Nap - To Be a Cat
-- Sleep - To Be a Cat
-- Purple - The Colors of Birds
-- Tree - In the Park
+- Nap - To Be A Cat
+- Sleep - To Be A Cat
+- Purple - The Colors Of Birds
+- Tree - In The Park
 
 ## Paragraph 1
 
@@ -60,8 +60,8 @@ J'habite à Québec. La ville est belle. J'habite près d'un parc.
 | is          |                | est      | A1   | Common      | false        |     |
 | beautiful   |                | belle    | A1   | Common      | false        |     |
 | live        | I              | J'habite | A1   | Common      | false        |     |
-| near        |                | près     | A1   | Common      | false        |     |
-| a           | of             | d'un     | A1   | Common      | false        |     |
+| near        |                | près     | A1   | Common      | false        | 20  |
+| a           | of             | d'un     | A1   | Common      | false        | 20  |
 | park        |                | parc     | A1   | Common      | false        |     |
 
 ## Paragraph 3
@@ -76,19 +76,19 @@ Aujourd'hui, c'est lundi. Il fait chaud dehors. La neige arrive demain.
 
 ### Vocabulary
 
-| English   | English prefix | French      | CEFR | Rarity | Is Québécois | Tip |
-| --------- | -------------- | ----------- | ---- | ------ | ------------ | --- |
-| Today     |                | Aujourd'hui | A1   | Common | false        |     |
-| is        | it             | c'est       | A1   | Common | false        |     |
-| Monday    |                | lundi       | A1   | Common | false        |     |
-| It        |                | Il          | A1   | Common | false        |     |
-| is        |                | fait        | A1   | Common | false        | 8   |
-| warm      |                | chaud       | A1   | Common | false        | 8   |
-| outside   |                | dehors      | A1   | Common | false        |     |
-| The       |                | La          | A1   | Common | false        |     |
-| snow      |                | neige       | A1   | Common | false        |     |
-| is coming |                | arrive      | A1   | Common | false        |     |
-| tomorrow  |                | demain      | A1   | Common | false        |     |
+| English  | English prefix | French      | CEFR | Rarity | Is Québécois | Tip |
+| -------- | -------------- | ----------- | ---- | ------ | ------------ | --- |
+| Today    |                | Aujourd'hui | A1   | Common | false        |     |
+| is       | it             | c'est       | A1   | Common | false        |     |
+| Monday   |                | lundi       | A1   | Common | false        | 18  |
+| It       |                | Il          | A1   | Common | false        |     |
+| makes    |                | fait        | A1   | Common | false        | 8   |
+| warm     |                | chaud       | A1   | Common | false        | 8   |
+| outside  |                | dehors      | A1   | Common | false        |     |
+| The      |                | La          | A1   | Common | false        |     |
+| snow     |                | neige       | A1   | Common | false        |     |
+| arrives  |                | arrive      | A1   | Common | false        |     |
+| tomorrow |                | demain      | A1   | Common | false        |     |
 
 ## Paragraph 4
 
@@ -105,15 +105,15 @@ J'aime les jours chauds. Je vais au parc à pied. Je dors dans mon arbre préfé
 | English    | English prefix | French  | CEFR | Rarity | Is Québécois | Tip |
 | ---------- | -------------- | ------- | ---- | ------ | ------------ | --- |
 | like, love | I              | J'aime  | A1   | Common | false        |     |
-| the        |                | les     | A1   | Common | false        |     |
+| the        |                | les     | A1   | Common | false        | 23  |
 | days       |                | jours   | A1   | Common | false        |     |
 | warm       |                | chauds  | A1   | Common | false        |     |
 | I          |                | Je      | A1   | Common | false        |     |
 | go         |                | vais    | A1   | Common | false        |     |
-| to the     |                | au      | A1   | Common | false        |     |
+| to the     |                | au      | A1   | Common | false        | 21  |
 | park       |                | parc    | A1   | Common | false        |     |
-| on         |                | à       | A1   | Common | false        |     |
-| foot       |                | pied    | A1   | Common | false        |     |
+| to         |                | à       | A1   | Common | false        | 19  |
+| foot       |                | pied    | A1   | Common | false        | 19  |
 | I          |                | Je      | A1   | Common | false        |     |
 | sleep      |                | dors    | A1   | Common | false        |     |
 | in         |                | dans    | A1   | Common | false        |     |
@@ -125,7 +125,7 @@ J'aime les jours chauds. Je vais au parc à pied. Je dors dans mon arbre préfé
 
 ### English
 
-Today, I see two birds at the park. One is small and red. One is big and purple.
+Today, I see two birds at the park. One is small and red. The other is big and purple.
 
 ### French (Québécois)
 
@@ -140,7 +140,7 @@ Aujourd'hui, je vois deux oiseaux au parc. Un est petit et rouge. L'autre est gr
 | see     |                | vois        | A1   | Common | false        |     |
 | two     |                | deux        | A1   | Common | false        |     |
 | birds   |                | oiseaux     | A1   | Common | false        |     |
-| at the  |                | au          | A1   | Common | false        |     |
+| at the  |                | au          | A1   | Common | false        | 21  |
 | park    |                | parc        | A1   | Common | false        |     |
 | One     |                | Un          | A1   | Common | false        |     |
 | is      |                | est         | A1   | Common | false        |     |
@@ -170,11 +170,11 @@ Des chats chassent les oiseaux. Pas moi. Les oiseaux sont mes amis. Je parle ave
 | Some    |                | Des      | A1   | Common | false        |     |
 | cats    |                | chats    | A1   | Common | false        |     |
 | chase   |                | chassent | A2   | Common | false        |     |
-| the     |                | les      | A1   | Common | false        |     |
+| the     |                | les      | A1   | Common | false        | 23  |
 | birds   |                | oiseaux  | A1   | Common | false        |     |
 | Not     |                | Pas      | A1   | Common | false        |     |
 | me      |                | moi      | A1   | Common | false        |     |
-| The     |                | Les      | A1   | Common | false        |     |
+| The     |                | Les      | A1   | Common | false        | 23  |
 | birds   |                | oiseaux  | A1   | Common | false        |     |
 | are     |                | sont     | A1   | Common | false        |     |
 | my      |                | mes      | A1   | Common | false        |     |
@@ -190,7 +190,7 @@ Des chats chassent les oiseaux. Pas moi. Les oiseaux sont mes amis. Je parle ave
 
 ### English
 
-I find my tree. I climb slowly. I listen to my bird friends. I take a long nap.
+I find my tree. I climb slowly. I listen to my friends, the birds. I take a long nap.
 
 ### French (Québécois)
 
@@ -207,13 +207,13 @@ Je trouve mon arbre. Je grimpe lentement. J'écoute mes amis, les oiseaux. Je fa
 | I         |                | Je        | A1   | Common | false        |     |
 | climb     |                | grimpe    | A2   | Common | false        |     |
 | slowly    |                | lentement | A1   | Common | false        |     |
-| listen to | I              | J'écoute  | A1   | Common | false        |     |
+| listen to | I              | J'écoute  | A1   | Common | false        | 22  |
 | my        |                | mes       | A1   | Common | false        |     |
 | friends   |                | amis      | A1   | Common | false        |     |
 | the       |                | les       | A1   | Common | false        |     |
 | birds     |                | oiseaux   | A1   | Common | false        |     |
 | I         |                | Je        | A1   | Common | false        |     |
-| take      |                | fais      | A1   | Common | false        | 12  |
+| do        |                | fais      | A1   | Common | false        | 12  |
 | a         |                | une       | A1   | Common | false        | 12  |
 | long      |                | longue    | A1   | Common | false        |     |
 | nap       |                | sieste    | A2   | Common | false        | 12  |

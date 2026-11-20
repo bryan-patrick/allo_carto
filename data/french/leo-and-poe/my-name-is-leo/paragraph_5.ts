@@ -5,7 +5,7 @@ export const paragraph5 = createParagraph({
 	description: 'Léo sees two colorful birds at the park.',
 	CEFR: ['A1'],
 	englishPassage:
-		'Today, I see two birds at the park. One is small and red. One is big and purple.',
+		'Today, I see two birds at the park. One is small and red. The other is big and purple.',
 	passage: [
 		{
 			text: 'Aujourd’hui',

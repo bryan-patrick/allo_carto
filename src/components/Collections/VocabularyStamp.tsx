@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { capitalizeName } from '@/src/util/capitalizeName';
 import type { CollectionStamp } from '@/src/util/vocabularyCollections';
 import { getWordProgressDefinitionByKey } from '@/src/util/wordProgress';
 import { StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
@@ -26,10 +27,7 @@ export default function VocabularyStamp({ stamp }: VocabularyStampProps) {
 	/**
 	 * Capitalized stamp name
 	 */
-	const firstCharacter = stamp.frenchWord.charAt(0);
-	const capitalizedFirstCharacter = firstCharacter.toUpperCase();
-	const remainingText = stamp.frenchWord.slice(1);
-	const stampName = `${capitalizedFirstCharacter}${remainingText}`;
+	const stampName = capitalizeName(stamp.frenchWord);
 
 	/**
 	 * Initial stamp display and screen reader description
