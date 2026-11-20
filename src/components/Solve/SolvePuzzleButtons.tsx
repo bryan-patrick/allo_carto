@@ -73,7 +73,7 @@ export default function SolvePuzzleButtons({
 	}
 
 	return (
-		<View style={styles.section}>
+		<View style={[styles.section, !unlockMessage && styles.sectionWithoutInstruction]}>
 			<View style={styles.heading}>
 				<View style={styles.headingLine} />
 				<Text
@@ -300,6 +300,9 @@ const styles = StyleSheet.create({
 		paddingBottom: 12,
 		paddingHorizontal: 2,
 		gap: 4,
+	},
+	sectionWithoutInstruction: {
+		paddingBottom: 0,
 	},
 	heading: {
 		flexDirection: 'row',

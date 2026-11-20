@@ -278,8 +278,8 @@ const styles = StyleSheet.create({
 	stampGrid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		justifyContent: 'space-between',
-		rowGap: 8,
+		justifyContent: 'flex-start',
+		gap: 8,
 		marginVertical: 4,
 	},
 	notice: {
