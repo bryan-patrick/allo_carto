@@ -35,7 +35,6 @@ interface GetSolvePuzzleOptions {
 	userId: string;
 	deckId: string;
 	stage?: SolveWordStage;
-	fastSolveUnlocks?: boolean;
 }
 
 interface SolveWordRow {
@@ -76,7 +75,6 @@ export default async function getSolvePuzzle({
 	userId,
 	deckId,
 	stage = 1,
-	fastSolveUnlocks = true,
 }: GetSolvePuzzleOptions): Promise<SolvePuzzle> {
 	const deck = findParagraphById(deckId);
 	const positions: SolvePosition[] = [];
@@ -113,7 +111,6 @@ export default async function getSolvePuzzle({
 		stage,
 		completedStages: completedSolveStages,
 		playerLevel: experience?.level ?? 1,
-		fastSolveUnlocks,
 		isParagraphUnlocked: isUnlocked,
 		wordCount: deck.wordIds.length,
 		seenWordCount: progress?.seenWordCount ?? 0,

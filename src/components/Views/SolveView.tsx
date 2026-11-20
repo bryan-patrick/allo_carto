@@ -19,7 +19,6 @@ import { getDB } from '@/src/db/interface';
 import getSolvePuzzle from '@/src/db/queries/getSolvePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { useAppSettings } from '@/src/settings/useAppSettings';
 import { findCompletionPath, getParagraphNumber } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
 import {
@@ -182,7 +181,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		isUpdatingProgress,
 		writeSolveAttempt,
 	} = useUserProgress();
-	const { settings } = useAppSettings();
 	const playCorrectWord = useSoundEffect('correctWord');
 	const playIncorrect = useSoundEffect('incorrect');
 
@@ -213,7 +211,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	/**
 	 * Sentence pages and paragraph progress
 	 */
-	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const stageDefinition = solveStages[stage];
 	const isFrenchAnswer = stageDefinition.answerLanguage === 'french';
 	const sentencePages = getSolveSentencePages(puzzle);
@@ -255,7 +252,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 		stage,
 		completedStages,
 		playerLevel: experience.level,
-		fastSolveUnlocks,
 		isParagraphUnlocked: puzzle?.isUnlocked ?? false,
 		wordCount: puzzle?.deck.wordIds.length ?? 0,
 		seenWordCount: progressById[deckId]?.seenWordCount ?? 0,
@@ -447,7 +443,6 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 						userId,
 						deckId,
 						stage,
-						fastSolveUnlocks,
 					});
 					const savedSentencePages = getSolveSentencePages(savedPuzzle);
 					const sentencePageToOpen = getSolveSentencePageToOpen(savedSentencePages);
@@ -479,7 +474,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 			return () => {
 				isActive = false;
 			};
-		}, [deckId, userId, stage, fastSolveUnlocks]),
+		}, [deckId, userId, stage]),
 	);
 
 	/**

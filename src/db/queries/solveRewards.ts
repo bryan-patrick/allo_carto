@@ -14,6 +14,7 @@ import { getActivityItemLabel } from '@/src/util/userActivity';
 import {
 	correctAnswerXPByRarity,
 	correctAnswerXPMultiplierByCEFR,
+	solveGemXPByStage,
 	userExperienceConfig,
 } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
@@ -110,7 +111,9 @@ export async function saveSolveCardReward({
 	await database.runAsync(statements.saveReward, userId, deckId, stage, 'card', position, xp);
 }
 
-// Save a gem reward when the puzzle is solved. Claiming it will reveal the gem.
+/**
+ * Saves the finished puzzle's gem and XP reward for the player to claim.
+ */
 export async function saveSolveGemReward({
 	database,
 	userId,
@@ -124,7 +127,7 @@ export async function saveSolveGemReward({
 		stage,
 		'gem',
 		0,
-		userExperienceConfig.solveGemXP,
+		solveGemXPByStage[stage],
 	);
 	const paragraphLabel = getActivityItemLabel(deckId);
 	const puzzleLabel = solveStages[stage].label;

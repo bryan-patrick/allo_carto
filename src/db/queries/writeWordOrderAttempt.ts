@@ -22,7 +22,6 @@ import { getSolveRewards, saveSolveCardReward, saveSolveGemReward } from './solv
 interface WriteWordOrderAttemptOptions extends WordOrderAttemptRequest {
 	database: SQLiteDatabase;
 	userId: string;
-	fastSolveUnlocks: boolean;
 }
 
 interface WordOrderReceiptRow {
@@ -50,7 +49,6 @@ export default async function writeWordOrderAttempt({
 	position,
 	positions,
 	attemptId,
-	fastSolveUnlocks,
 }: WriteWordOrderAttemptOptions): Promise<SolveAttemptResult> {
 	const statements = {
 		getReceipt: `
@@ -145,7 +143,6 @@ export default async function writeWordOrderAttempt({
 			database: transaction,
 			userId,
 			deckId,
-			fastSolveUnlocks,
 		});
 
 		if (

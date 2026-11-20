@@ -19,7 +19,6 @@ import getSolveWordOrderPuzzle from '@/src/db/queries/getSolveWordOrderPuzzle';
 import saveWordOrderDraft from '@/src/db/queries/saveWordOrderDraft';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { useAppSettings } from '@/src/settings/useAppSettings';
 import {
 	findCompletionPath,
 	findNextParagraph,
@@ -109,7 +108,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		reloadProgress,
 		writeWordOrderAttempt,
 	} = useUserProgress();
-	const { settings } = useAppSettings();
 	const playCorrectWord = useSoundEffect('correctWord');
 	const playIncorrect = useSoundEffect('incorrect');
 	const [puzzle, setPuzzle] = useState<SolveWordOrderPuzzle>();
@@ -124,7 +122,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 	const isBusy = useRef(false);
 	const pendingAttempt = useRef<WordOrderAttemptRequest | null>(null);
 	const lastFeedbackAttemptId = useRef<string | null>(null);
-	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const stageDefinition = solveStages[3];
 	const inkCost = stageDefinition.attemptInkCost ?? stageDefinition.incorrectAttemptInkCost;
 	const savedCompletedStages = getCompletedSolveStages(progressById[deckId]);
@@ -143,7 +140,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 		stage: 3,
 		completedStages,
 		playerLevel: experience.level,
-		fastSolveUnlocks,
 		isParagraphUnlocked: puzzle?.isUnlocked ?? false,
 		wordCount: puzzle?.deck.wordIds.length ?? 0,
 		seenWordCount: progressById[deckId]?.seenWordCount ?? 0,
@@ -260,7 +256,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						database,
 						userId,
 						deckId,
-						fastSolveUnlocks,
 					});
 					const savedOrder = JSON.stringify(savedPuzzle.positions);
 					const lastAttempt = savedPuzzle.lastAttempt;
@@ -309,7 +304,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 			return () => {
 				isActive = false;
 			};
-		}, [deckId, userId, fastSolveUnlocks, reloadProgress]),
+		}, [deckId, userId, reloadProgress]),
 	);
 
 	/**
@@ -402,7 +397,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 				database,
 				userId,
 				deckId,
-				fastSolveUnlocks,
 			});
 			const hasPendingGem = nextPuzzle.rewards.some(reward => reward.kind === 'gem');
 
@@ -510,7 +504,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					database,
 					userId,
 					deckId,
-					fastSolveUnlocks,
 					sentencePosition: attempt.position,
 				});
 				const hasPendingGem = nextPuzzle.rewards.some(reward => reward.kind === 'gem');

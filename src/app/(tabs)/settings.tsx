@@ -22,7 +22,6 @@ import {
 	type PronunciationFormat,
 } from '../../settings/appSettings';
 import { useAppSettings } from '../../settings/useAppSettings';
-import { solveStages } from '../../util/solveProgression';
 import colors from '../colors';
 
 /**
@@ -94,24 +93,9 @@ const pronunciationOptions: PronunciationOption[] = [
 	{ value: 'ipa', label: 'IPA' },
 ];
 
-/**
- * Explains both unlock settings
- */
-function getSolveUnlockDescription(): string {
-	const stageDefinitions = Object.values(solveStages);
-	const enhancedStages = stageDefinitions.filter(stage => stage.fastUnlockLevel > 0);
-	const fastLevels = enhancedStages.map(stage => stage.fastUnlockLevel);
-	const normalLevels = enhancedStages.map(stage => stage.normalUnlockLevel);
-	const fastLevelsText = fastLevels.join(', ');
-	const normalLevelsText = normalLevels.join(', ');
-
-	return `Use player levels ${fastLevelsText} instead of ${normalLevelsText}. Complete each puzzle before starting the next one.`;
-}
-
 export default function Settings() {
 	const { reloadProgress, isUpdatingProgress } = useUserProgress();
 	const { settings, setSetting } = useAppSettings();
-	const solveUnlockDescription = getSolveUnlockDescription();
 
 	/**
 	 * State
@@ -294,26 +278,6 @@ export default function Settings() {
 			{settings.showDebugOptions && (
 				<View style={styles.section}>
 					<Text style={styles.heading}>Debug</Text>
-					<View style={styles.section}>
-						<Text style={styles.heading}>Puzzle progression</Text>
-						<View style={styles.settingRow}>
-							<View style={styles.settingText}>
-								<Text style={styles.settingLabel}>Fast puzzle unlocks</Text>
-								<Text style={styles.text}>{solveUnlockDescription}</Text>
-							</View>
-							<Switch
-								accessibilityLabel="Fast puzzle unlocks"
-								accessibilityHint="Change player level requirements. Saved puzzle progress is kept."
-								ios_backgroundColor={colors.dark.border}
-								onValueChange={enabled => setSetting('fastSolveUnlocks', enabled)}
-								trackColor={{
-									false: colors.dark.border,
-									true: colors.dark.primaryActive,
-								}}
-								value={settings.fastSolveUnlocks}
-							/>
-						</View>
-					</View>
 					<View style={styles.settingRow}>
 						<View style={styles.settingText}>
 							<Text style={styles.settingLabel}>Reveal all stamps</Text>

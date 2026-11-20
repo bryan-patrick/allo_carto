@@ -12,7 +12,6 @@ import { getSolveRewards, saveSolveCardReward, saveSolveGemReward } from './solv
 interface WriteSolvePlusAttemptOptions extends SolveAttemptRequest {
 	database: SQLiteDatabase;
 	userId: string;
-	fastSolveUnlocks: boolean;
 }
 
 interface SavedSolvePlusAttempt {
@@ -36,7 +35,6 @@ export default async function writeSolvePlusAttempt({
 	position,
 	answer,
 	attemptId,
-	fastSolveUnlocks,
 }: WriteSolvePlusAttemptOptions): Promise<SolveAttemptResult> {
 	const statements = {
 		getReceipt: `
@@ -119,7 +117,6 @@ export default async function writeSolvePlusAttempt({
 			userId,
 			deckId,
 			stage: 2,
-			fastSolveUnlocks,
 		});
 
 		const card = puzzle.positions.find(card => card.position === position);

@@ -16,8 +16,8 @@ export const myNameIsLeoChapter: Chapter = {
 	name: 'My name is Léo',
 	characterImage: require('@/src/app/assets/images/chapter-images/welcome-to-allo-carto/CH01.png'),
 	solveUnlockLevels: {
-		4: 5,
-		5: 8,
+		4: 10,
+		5: 12,
 	},
 	paragraphs: [paragraph1, paragraph2, paragraph3, paragraph4, paragraph5, paragraph6, paragraph7],
 };

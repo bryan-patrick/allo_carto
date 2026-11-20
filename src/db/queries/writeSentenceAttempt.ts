@@ -12,7 +12,6 @@ import { getSolveRewards, saveSolveGemReward } from './solveRewards';
 interface WriteSentenceAttemptOptions extends SentenceAttemptRequest {
 	database: SQLiteDatabase;
 	userId: string;
-	fastSolveUnlocks: boolean;
 }
 
 interface SentenceReceiptRow {
@@ -37,7 +36,6 @@ export default async function writeSentenceAttempt({
 	position,
 	answer,
 	attemptId,
-	fastSolveUnlocks,
 }: WriteSentenceAttemptOptions): Promise<SolveAttemptResult> {
 	const statements = {
 		getReceipt: `
@@ -120,7 +118,6 @@ export default async function writeSentenceAttempt({
 			userId,
 			deckId,
 			stage,
-			fastSolveUnlocks,
 		});
 		const sentence = puzzle.sentences.find(sentence => sentence.position === position);
 		const remainingSentences = puzzle.sentences.filter(sentence => {
