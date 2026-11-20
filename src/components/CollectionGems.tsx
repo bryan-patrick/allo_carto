@@ -48,8 +48,8 @@ interface PrismaticGemGradient {
 /**
  * Consts
  */
-const gemSpinDuration = 4000;
-const gemSpinDegrees = 10 * 360;
+const gemSpinDuration = 1500;
+const gemSpinDegrees = 360;
 
 const gemColors = [colors.gems.earned, colors.gems.earned, colors.gems.earned];
 
@@ -263,7 +263,7 @@ function CollectionGemsContent({
 			{
 				rotateY: rotation.interpolate({
 					inputRange: [0, gemSpinDegrees],
-					outputRange: ['0deg', `${gemSpinDegrees / 3}deg`],
+					outputRange: ['0deg', `${gemSpinDegrees}deg`],
 				}),
 			},
 			{
@@ -273,7 +273,7 @@ function CollectionGemsContent({
 	};
 
 	/**
-	 * Spins and shrinks the backdrop while the small gem stays still.
+	 * Spins and shrinks the new gem together before revealing it in the row.
 	 */
 	useEffect(() => {
 		const spin = Animated.timing(rotation, {
@@ -284,10 +284,11 @@ function CollectionGemsContent({
 		});
 		const shrinkBackdrop = Animated.timing(backdropScale, {
 			toValue: 1,
-			duration: gemSpinDuration / 2,
+			duration: gemSpinDuration,
 			easing: Easing.out(Easing.quad),
 			useNativeDriver: true,
 		});
+		const landingAnimation = Animated.parallel([spin, shrinkBackdrop]);
 
 		if (!celebrationStage || !celebrationReady) {
 			return;
@@ -295,16 +296,14 @@ function CollectionGemsContent({
 
 		rotation.setValue(0);
 		backdropScale.setValue(8);
-		spin.start();
-		shrinkBackdrop.start(({ finished }) => {
+		landingAnimation.start(({ finished }) => {
 			if (finished) {
 				setHasRevealedGem(true);
 			}
 		});
 
 		return () => {
-			shrinkBackdrop.stop();
-			spin.stop();
+			landingAnimation.stop();
 		};
 	}, [celebrationStage, celebrationReady, rotation, backdropScale]);
 
