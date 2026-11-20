@@ -9,7 +9,7 @@ import { getCompletionPercentage } from '@/src/util/progression';
 import type { CompletedSolveStages, SolveStage } from '@/src/util/solveProgression';
 import { getSolveSentences, type SolveSentenceWord } from '@/src/util/solveSentences';
 import { getWordOrderCards } from '@/src/util/solveWordOrder';
-import { userExperienceConfig } from '@/src/util/userExperience';
+import { solveGemXPByStage } from '@/src/util/userExperience';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { runDatabaseTransaction } from '../runDatabaseTransaction';
 import getUserProgress from './getUserProgress';
@@ -226,7 +226,7 @@ export default async function applyMockParagraphProgress({
 					statements.saveUnclaimedGem,
 					userId,
 					paragraph.id,
-					userExperienceConfig.solveGemXP,
+					solveGemXPByStage[1],
 				);
 			}
 

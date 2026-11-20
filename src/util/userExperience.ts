@@ -1,4 +1,5 @@
 import type { CardRarity, CEFR } from '@/src/components/CardDeck/cardDeckTypes';
+import type { SolveStage } from './solveProgression';
 
 /**
  * Typing
@@ -39,10 +40,20 @@ export const correctAnswerXPMultiplierByCEFR: Record<CEFR, number> = {
 	C2: 32,
 };
 
+/**
+ * XP for claiming each puzzle's completion gem
+ */
+export const solveGemXPByStage: Record<SolveStage, number> = {
+	1: 100,
+	2: 250,
+	3: 400,
+	4: 750,
+	5: 2000,
+};
+
 export const userExperienceConfig = {
 	tipXP: 40,
 	solveCardXPMultiplier: 2,
-	solveGemXP: 200,
 	learningLevelBonusMultiplier: 3,
 	deckCompletionXP: 50,
 	firstDeckCompletionXP: 15,
