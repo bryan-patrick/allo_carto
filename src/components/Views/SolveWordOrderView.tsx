@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { buttonContentStyles, buttonIconSize } from '@/src/components/buttonContentStyles';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SolveAlert from '@/src/components/Solve/SolveAlert';
@@ -707,7 +708,8 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 								SVGElement={
 									<MaterialSymbol
 										name="close"
-										size={20}
+										size={buttonIconSize}
+										style={buttonContentStyles.icon}
 										color={storyColor}
 									/>
 								}

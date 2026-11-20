@@ -471,7 +471,7 @@ export default function WordOrderBoard({
 					disabled={moveEarlierDisabled}
 					handler={handleMoveEarlier}
 					contentPaddingHorizontal={6}
-					contentPaddingVertical={6}
+					contentPaddingVertical={8}
 					style={[styles.moveButton, moveEarlierDisabled && styles.disabled]}
 					SVGElement={
 						<MaterialSymbol
@@ -489,7 +489,7 @@ export default function WordOrderBoard({
 					disabled={moveLaterDisabled}
 					handler={handleMoveLater}
 					contentPaddingHorizontal={6}
-					contentPaddingVertical={6}
+					contentPaddingVertical={8}
 					style={[styles.moveButton, moveLaterDisabled && styles.disabled]}
 					SVGElement={
 						<MaterialSymbol
@@ -527,9 +527,7 @@ const styles = StyleSheet.create({
 		padding: 8,
 	},
 	moveButton: {
-		flexDirection: 'row',
 		flex: 1,
-		minHeight: 44,
 	},
 	viewport: {
 		flex: 1,

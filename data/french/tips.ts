@@ -66,7 +66,7 @@ export const weatherTip: FrenchTip = {
 	draftTipId: 8,
 	title: 'faire for weather and temperature',
 	description:
-		'"Fait" means "makes" or "does." French uses it for weather: "Il fait chaud" means "It is warm," rather than "It makes warm."',
+		'"Fait" means "makes" or "does." French uses it for weather: "Il fait chaud" means "It is warm," rather than "It makes warm." If "makes" feels confusing here, it is fine to think of "fait" as "is" in weather expressions.',
 };
 
 export const morningTip: FrenchTip = {
