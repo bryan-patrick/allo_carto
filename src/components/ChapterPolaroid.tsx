@@ -1,4 +1,5 @@
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import type { ReactNode } from 'react';
 import {
 	Animated,
@@ -122,18 +123,11 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 	frame: {
+		...solidSurfaceShadow,
 		width: '100%',
 		backgroundColor: '#eee9df',
 		borderWidth: 1,
 		borderColor: colors.light.border,
-		elevation: 2,
-		shadowColor: '#000000',
-		shadowOffset: {
-			width: 0,
-			height: 1,
-		},
-		shadowRadius: 1,
-		shadowOpacity: 0.4,
 	},
 	backPolaroid: {
 		zIndex: 0,
@@ -146,14 +140,6 @@ const styles = StyleSheet.create({
 				rotate: '-4deg',
 			},
 		],
-		elevation: 2,
-		shadowColor: '#000000',
-		shadowOffset: {
-			width: 0,
-			height: 1,
-		},
-		shadowRadius: 1,
-		shadowOpacity: 0.4,
 	},
 	cornerBadge: {
 		position: 'absolute',
@@ -171,14 +157,6 @@ const styles = StyleSheet.create({
 		borderColor: colors.dark.border,
 		padding: 8,
 		paddingBottom: 28,
-		elevation: 2,
-		shadowColor: '#000000',
-		shadowOffset: {
-			width: 0,
-			height: 1,
-		},
-		shadowRadius: 1,
-		shadowOpacity: 0.4,
 	},
 	paperWithFooter: {
 		paddingBottom: 0,

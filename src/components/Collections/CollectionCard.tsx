@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import type { VocabularyCollectionProgress } from '@/src/util/vocabularyCollections';
 import { wordProgressDefinitions } from '@/src/util/wordProgress';
 import { useRouter } from 'expo-router';
@@ -175,6 +176,7 @@ export default function CollectionCard({ progress }: CollectionCardProps) {
  */
 const styles = StyleSheet.create({
 	card: {
+		...solidSurfaceShadow,
 		padding: 4,
 		borderRadius: 8,
 		borderWidth: 1,

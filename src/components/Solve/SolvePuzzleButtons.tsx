@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import { useSolveProgress } from '@/src/components/Solve/useSolveProgress';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
@@ -420,6 +421,7 @@ const styles = StyleSheet.create({
 		includeFontPadding: false,
 	},
 	newBadge: {
+		...solidSurfaceShadow,
 		position: 'absolute',
 		top: -6,
 		alignSelf: 'center',

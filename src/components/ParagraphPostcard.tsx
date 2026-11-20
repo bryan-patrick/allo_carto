@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import { useNavigation, type NativeStackNavigationProp } from 'expo-router';
 import type { ParamListBase } from 'expo-router/react-navigation';
 import { useLayoutEffect, useState, type ReactNode } from 'react';
@@ -18,7 +19,7 @@ import PostcardPostmark from './PostcardPostmark';
 const postcardBackground = require('@/src/app/assets/images/postcard-parts/background.jpg');
 const borderedPostcardBackground = require('@/src/app/assets/images/postcard-parts/background-bordered.jpg');
 const postcardPadding = 6;
-const postcardBorderWidth = 2;
+const postcardBorderWidth = 1;
 
 /**
  * Typing
@@ -70,6 +71,7 @@ export function ParagraphPostcardBacking({ index = 0 }: ParagraphPostcardBacking
 			pointerEvents="none"
 			source={borderedPostcardBackground}
 			resizeMode="stretch"
+			imageStyle={styles.backPostcardImage}
 			style={[styles.postcard, styles.backPostcard, backPostcardTiltStyle]}
 		/>
 	);
@@ -224,14 +226,16 @@ const styles = StyleSheet.create({
 		position: 'relative',
 	},
 	postcard: {
+		...solidSurfaceShadow,
 		padding: postcardPadding,
 		backgroundColor: colors.dark.background,
+		borderColor: colors.dark.border,
 		borderWidth: postcardBorderWidth,
-		borderColor: colors.light.border,
 		borderRadius: 12,
 		overflow: 'hidden',
 	},
 	backPostcard: {
+		...solidSurfaceShadow,
 		zIndex: 0,
 		padding: 0,
 		position: 'absolute',
@@ -239,6 +243,9 @@ const styles = StyleSheet.create({
 		left: 0,
 		height: '100%',
 		width: '100%',
+	},
+	backPostcardImage: {
+		borderRadius: 10,
 	},
 	backPostcardTiltLeft: {
 		transform: [
@@ -260,6 +267,7 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.goldenBorder,
 	},
 	newBadge: {
+		...solidSurfaceShadow,
 		position: 'absolute',
 		top: -4,
 		right: -4,

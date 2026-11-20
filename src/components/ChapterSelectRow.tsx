@@ -1,11 +1,12 @@
 import type { Chapter } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import { getUnlockCriteria, isItemUnlocked } from '@/src/util/atlasCompletion';
 import { hasChapterContent } from '@/src/util/atlasContent';
 import type { ProgressById } from '@/src/util/progression';
 import { useNavigation, type NativeStackNavigationProp } from 'expo-router';
 import type { ParamListBase } from 'expo-router/react-navigation';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState, type ReactNode } from 'react';
 import { Animated, Easing, StyleSheet, Text, View, type LayoutRectangle } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import ChapterPolaroid from './ChapterPolaroid';
@@ -99,9 +100,18 @@ export default function ChapterSelectRow({
 		],
 	};
 	let actionLabel = hasStartedChapter ? 'Continue' : 'Start Chapter';
+	let newBadge: ReactNode = null;
 
 	if (chapterProgress?.hasFirstGem) {
 		actionLabel = 'Continue';
+	}
+
+	if (isNew) {
+		newBadge = (
+			<View style={styles.newBadge}>
+				<Text style={styles.newLabel}>New</Text>
+			</View>
+		);
 	}
 
 	/**
@@ -186,7 +196,7 @@ export default function ChapterSelectRow({
 							photoNoiseOpacity={0.2}
 							style={styles.polaroid}
 							frontStyle={frontPolaroidStyle}
-							badge={isNew ? <Text style={styles.newLabel}>New</Text> : undefined}
+							badge={newBadge}
 							footer={
 								<View style={styles.polaroidMetadata}>
 									<Text style={[styles.label, styles.polaroidLabel]}>{chapter.label}</Text>
@@ -301,14 +311,17 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		textTransform: 'none',
 	},
-	newLabel: {
-		fontFamily: 'lexend-600',
-		fontSize: 11,
-		color: colors.light.text,
+	newBadge: {
+		...solidSurfaceShadow,
 		backgroundColor: colors.dark.success,
 		borderRadius: 4,
 		paddingHorizontal: 12,
 		paddingVertical: 4,
+	},
+	newLabel: {
+		fontFamily: 'lexend-600',
+		fontSize: 11,
+		color: colors.light.text,
 	},
 	title: {
 		fontFamily: 'lexend-600',
