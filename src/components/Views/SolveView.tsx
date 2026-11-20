@@ -803,7 +803,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 									onRewardClaimed={handleCardRewardClaimed}
 									card={card}
 									stage={stage}
-									isSelected={card.position === selectedPosition}
+									isSelected={card.position === selectedPosition && card.acceptedAnswer === null}
 									disabled={disabled || needsRetry}
 									storyColor={storyColor}
 									onSelect={handleSelectCard}
