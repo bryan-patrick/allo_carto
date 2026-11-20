@@ -26,6 +26,7 @@ import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import formatOtherWordForm from '@/src/util/formatOtherWordForm';
 import { useSoftTapSound } from '@/src/util/softTapSound';
 import { useButtonWiggle } from '@/src/util/useButtonWiggle';
+import { useTipIconTilt } from '@/src/util/useTipIconTilt';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { Stack, useNavigation } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -111,6 +112,8 @@ export default function CardDeck() {
 		areFlashcardButtonsVisible && shouldShowElision && !isElisionTipRewardClaimed;
 	const wordTipAnimatedStyle = useButtonWiggle(shouldWiggleWordTip);
 	const elisionTipAnimatedStyle = useButtonWiggle(shouldWiggleElisionTip);
+	const wordTipIconAnimatedStyle = useTipIconTilt(shouldWiggleWordTip);
+	const elisionTipIconAnimatedStyle = useTipIconTilt(shouldWiggleElisionTip);
 
 	// Play the tap sound and keep the native Back button's usual navigation.
 	function handleBack() {
@@ -309,12 +312,14 @@ export default function CardDeck() {
 												pressed && buttonContentStyles.pressedMiniButton,
 											]}
 										>
-											<MaterialSymbol
-												style={buttonContentStyles.icon}
-												name="lightbulb_2"
-												size={buttonIconSize}
-												color={colors.dark.primary}
-											/>
+											<Animated.View style={elisionTipIconAnimatedStyle}>
+												<MaterialSymbol
+													style={buttonContentStyles.icon}
+													name="lightbulb_2"
+													size={buttonIconSize}
+													color={colors.dark.primary}
+												/>
+											</Animated.View>
 											<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
 												Elision!
 											</Text>
@@ -333,12 +338,14 @@ export default function CardDeck() {
 												pressed && buttonContentStyles.pressedMiniButton,
 											]}
 										>
-											<MaterialSymbol
-												style={buttonContentStyles.icon}
-												name="lightbulb_2"
-												size={buttonIconSize}
-												color={colors.dark.primary}
-											/>
+											<Animated.View style={wordTipIconAnimatedStyle}>
+												<MaterialSymbol
+													style={buttonContentStyles.icon}
+													name="lightbulb_2"
+													size={buttonIconSize}
+													color={colors.dark.primary}
+												/>
+											</Animated.View>
 											<Text style={[sharedWordCardStyles.wordDetailText, styles.wordLinkText]}>
 												Tip!
 											</Text>
