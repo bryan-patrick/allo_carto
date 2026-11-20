@@ -1,5 +1,6 @@
 import type { Story } from '@/data/french/storyAtlas';
 import colors from '@/src/app/colors';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import BackgroundImage from './BackgroundImage';
 import MaterialSymbol from './MaterialSymbol';
@@ -68,18 +69,11 @@ const styles = StyleSheet.create({
 		maxWidth: '100%',
 	},
 	paperTab: {
+		...solidSurfaceShadow,
 		backgroundColor: colors.light.background,
 		borderBottomLeftRadius: 16,
 		borderBottomRightRadius: 16,
 		maxWidth: '100%',
-		elevation: 2,
-		shadowColor: '#000000',
-		shadowOffset: {
-			width: 0,
-			height: 1,
-		},
-		shadowRadius: 1,
-		shadowOpacity: 0.4,
 	},
 	paperCorners: {
 		borderBottomLeftRadius: 16,

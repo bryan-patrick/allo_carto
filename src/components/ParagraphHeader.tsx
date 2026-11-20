@@ -1,4 +1,5 @@
 import colors from '@/src/app/colors';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import type { UserProgressRow } from '@/src/util/progression';
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	newBadge: {
+		...solidSurfaceShadow,
 		flexShrink: 0,
 		alignSelf: 'flex-start',
 		justifyContent: 'center',

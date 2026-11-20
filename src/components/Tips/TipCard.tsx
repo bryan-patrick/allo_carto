@@ -1,6 +1,7 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import { useSoftTapSound } from '@/src/util/softTapSound';
 import { useButtonWiggle } from '@/src/util/useButtonWiggle';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -64,7 +65,7 @@ export default function TipCard({ progress, onSelectTip }: TipCardProps) {
 			<BackgroundImage
 				source={postcardBackground}
 				imageStyle={styles.paperImage}
-				style={styles.card}
+				style={[styles.card, isDiscovered && solidSurfaceShadow]}
 			>
 				<View style={styles.titleRow}>
 					<Text style={styles.title}>{title}</Text>
@@ -119,6 +120,7 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	claimBadge: {
+		...solidSurfaceShadow,
 		alignSelf: 'flex-start',
 		backgroundColor: colors.dark.primary,
 		borderRadius: 4,

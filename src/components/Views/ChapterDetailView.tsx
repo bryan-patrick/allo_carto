@@ -5,6 +5,7 @@ import ChapterSelectHeader from '@/src/components/ChapterSelectHeader';
 import CollectionGems from '@/src/components/CollectionGems';
 import Loader from '@/src/components/Loader';
 import ReadingLink from '@/src/components/ReadingLink';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findAtlasLocationByChapterId, isItemUnlocked } from '@/src/util/atlasCompletion';
@@ -320,6 +321,9 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 	},
 	chapterDetails: {
+		...solidSurfaceShadow,
+		backgroundColor: colors.light.secondary,
+		zIndex: 1,
 		alignItems: 'center',
 		paddingHorizontal: 20,
 		paddingVertical: 4,

@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import { useSolveProgress } from '@/src/components/Solve/useSolveProgress';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
@@ -73,7 +74,7 @@ export default function SolvePuzzleButtons({
 	}
 
 	return (
-		<View style={styles.section}>
+		<View style={[styles.section, !unlockMessage && styles.sectionWithoutInstruction]}>
 			<View style={styles.heading}>
 				<View style={styles.headingLine} />
 				<Text
@@ -301,6 +302,9 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 		gap: 4,
 	},
+	sectionWithoutInstruction: {
+		paddingBottom: 0,
+	},
 	heading: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -417,6 +421,7 @@ const styles = StyleSheet.create({
 		includeFontPadding: false,
 	},
 	newBadge: {
+		...solidSurfaceShadow,
 		position: 'absolute',
 		top: -6,
 		alignSelf: 'center',
