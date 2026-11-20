@@ -623,6 +623,7 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 				{!puzzle ?
 					<SolveAlert
 						isWiggleEnabled={Boolean(loadError)}
+						containerStyle={styles.noticeContainer}
 						style={styles.notice}
 					>
 						{loadError || 'Loading puzzle...'}
@@ -670,7 +671,13 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						onReorder={handleReorder}
 						onDraggingChange={setIsDragging}
 					/>
-				:	<SolveAlert style={styles.notice}>{unlockMessage}</SolveAlert>}
+				:	<SolveAlert
+						containerStyle={styles.noticeContainer}
+						style={styles.notice}
+					>
+						{unlockMessage}
+					</SolveAlert>
+				}
 				<View style={styles.footer}>
 					{puzzle && !isComplete && isShowingGemClaim && pendingGem && (
 						<SolveGemClaim
@@ -826,9 +833,11 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: colors.dark.text,
 	},
-	notice: {
+	noticeContainer: {
 		flex: 1,
 		padding: 16,
+	},
+	notice: {
 		fontFamily: 'lexend-400',
 		fontSize: 14,
 		color: colors.dark.text,

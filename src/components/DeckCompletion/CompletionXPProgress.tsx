@@ -130,6 +130,7 @@ export default function CompletionXPProgress({
 					key={experience.level}
 					color={color}
 					percent={experience.progressPercentage}
+					isGlowEnabled={false}
 					style={styles.bar}
 				/>
 				<Text style={styles.level}>{nextLevelLabel}</Text>
