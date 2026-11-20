@@ -139,14 +139,25 @@ const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 };
 
 /**
- * Highlights checked words while leaving spaces and punctuation clear.
+ * Highlights checked words and missing text while leaving ordinary spaces and punctuation clear.
  */
 function getAnswerReviewWordStyle(word: SentenceAnswerWord): TextStyle | undefined {
-	if (!/[\p{L}\p{N}]/u.test(word.text)) {
+	if (!word.isMissing && !/[\p{L}\p{N}]/u.test(word.text)) {
 		return undefined;
 	}
 
 	return answerReviewWordStyles[word.status];
+}
+
+/**
+ * Describes a missing letter or word for screen readers.
+ */
+function getAnswerReviewWordLabel(word: SentenceAnswerWord): string | undefined {
+	if (word.isMissing) {
+		return 'Missing text';
+	}
+
+	return undefined;
 }
 
 /**
@@ -784,6 +795,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 												{answerReview.words.map((word, index) => (
 													<Text
 														key={index}
+														accessibilityLabel={getAnswerReviewWordLabel(word)}
 														style={getAnswerReviewWordStyle(word)}
 													>
 														{word.text}

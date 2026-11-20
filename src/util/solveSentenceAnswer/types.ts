@@ -15,6 +15,7 @@ export type SentenceAnswerWordStatus = 'correct' | 'incorrect' | 'neutral';
 export interface SentenceAnswerWord {
 	text: string;
 	status: SentenceAnswerWordStatus;
+	isMissing?: boolean;
 }
 
 export interface SentenceAnswerReview extends SolveAnswerResult {
@@ -48,4 +49,6 @@ export interface SentenceMatch {
 	correctWordCount: number;
 	missingWordCount: number;
 	words: SentenceAnswerWordStatus[];
+	expectedWords: string[];
+	missingWordPositions: number[];
 }
