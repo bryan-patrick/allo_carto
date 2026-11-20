@@ -152,7 +152,7 @@ export const onFootTip: FrenchTip = {
 	draftTipId: 19,
 	title: 'On foot',
 	description:
-		'"À pied" means "on foot." Its words do not translate directly into English: "à" usually means "to," "at," or "in," and "pied" means "foot."',
+		'"À pied" means "on foot." In this expression, "à" translates as "on" and "pied" means "foot." In other contexts, "à" can mean "to," "at," or "in."',
 };
 
 export const nearAPlaceTip: FrenchTip = {

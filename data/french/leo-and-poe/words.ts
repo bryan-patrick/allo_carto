@@ -445,8 +445,8 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_preposition_a',
 		frenchWord: 'à',
-		englishWords: ['to', 'at', 'in'],
-		canonicalEnglish: ['to', 'at', 'in'],
+		englishWords: ['to', 'at', 'in', 'on'],
+		canonicalEnglish: ['to', 'at', 'in', 'on'],
 		isVulgar: false,
 		lemmaId: 'a',
 		partOfSpeech: 'preposition',

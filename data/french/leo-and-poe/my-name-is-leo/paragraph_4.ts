@@ -44,6 +44,7 @@ export const paragraph4 = createParagraph({
 		{
 			text: 'à',
 			wordId: 'word_preposition_a',
+			canonicalEnglish: ['on'],
 			tipId: onFootTip.id,
 		},
 		{

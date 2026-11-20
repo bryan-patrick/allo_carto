@@ -128,7 +128,7 @@ J'aime les jours chauds. Je vais au parc à pied. Je dors dans mon arbre préfé
 | go         |                | vais    | A1   | Common | false        |     |
 | to the     |                | au      | A1   | Common | false        | 21  |
 | park       |                | parc    | A1   | Common | false        |     |
-| to         |                | à       | A1   | Common | false        | 19  |
+| on         |                | à       | A1   | Common | false        | 19  |
 | foot       |                | pied    | A1   | Common | false        | 19  |
 | I          |                | Je      | A1   | Common | false        |     |
 | sleep      |                | dors    | A1   | Common | false        |     |
