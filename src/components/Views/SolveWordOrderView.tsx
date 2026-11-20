@@ -2,6 +2,7 @@ import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import SolveAlert from '@/src/components/Solve/SolveAlert';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
 import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
 import WordOrderBoard from '@/src/components/Solve/WordOrderBoard';
@@ -619,7 +620,12 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					</Text>
 				</View>
 				{!puzzle ?
-					<Text style={styles.notice}>{loadError || 'Loading puzzle...'}</Text>
+					<SolveAlert
+						isWiggleEnabled={Boolean(loadError)}
+						style={styles.notice}
+					>
+						{loadError || 'Loading puzzle...'}
+					</SolveAlert>
 				: isComplete ?
 					<View style={styles.completedPuzzle}>
 						<View style={styles.completion}>
@@ -670,25 +676,28 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 						onReorder={handleReorder}
 						onDraggingChange={setIsDragging}
 					/>
-				:	<Text style={styles.notice}>{unlockMessage}</Text>}
+				:	<SolveAlert style={styles.notice}>{unlockMessage}</SolveAlert>}
 				<View style={styles.footer}>
 					{puzzle && !isComplete && !isShowingGemClaim && (
 						<>
 							{isEligible && !isSentenceSolved && !hasEnoughInk && !feedback?.needsInk && (
-								<Text style={styles.text}>
+								<SolveAlert
+									accessibilityLiveRegion="polite"
+									style={styles.text}
+								>
 									<Text style={styles.warningHighlight}>
 										You need {inkCost} Ink to submit. Close this puzzle and practice flashcards to
 										earn more.
 									</Text>
-								</Text>
+								</SolveAlert>
 							)}
 							{feedback && (
-								<Text
+								<SolveAlert
 									accessibilityLiveRegion="polite"
 									style={styles.text}
 								>
 									<Text style={feedbackStyle}>{feedback.text}</Text>
-								</Text>
+								</SolveAlert>
 							)}
 						</>
 					)}

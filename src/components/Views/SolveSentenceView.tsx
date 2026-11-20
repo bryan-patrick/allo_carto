@@ -3,6 +3,7 @@ import BackgroundImage from '@/src/components/BackgroundImage';
 import CollectionGems from '@/src/components/CollectionGems';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import SolveAlert from '@/src/components/Solve/SolveAlert';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
 import SolveGemClaim from '@/src/components/Solve/SolveGemClaim';
@@ -589,7 +590,12 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					overScrollMode="never"
 				>
 					{!puzzle ?
-						<Text style={styles.text}>{loadError || 'Loading puzzle...'}</Text>
+						<SolveAlert
+							isWiggleEnabled={Boolean(loadError)}
+							style={styles.text}
+						>
+							{loadError || 'Loading puzzle...'}
+						</SolveAlert>
 					: isComplete ?
 						<>
 							<View style={styles.completion}>
@@ -645,7 +651,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 							/>
 						</>
 					: !isEligible ?
-						<Text style={styles.text}>{unlockMessage}</Text>
+						<SolveAlert style={styles.text}>{unlockMessage}</SolveAlert>
 					: selectedSentence ?
 						<>
 							{!isSentenceSolved && (
@@ -689,7 +695,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 											/>
 										)}
 										{!hasEnoughInk && (
-											<Text
+											<SolveAlert
 												accessibilityLiveRegion="polite"
 												style={styles.text}
 											>
@@ -697,7 +703,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 													You need {inkCost} Ink to type an answer. Close this puzzle and practice
 													flashcards to earn more.
 												</Text>
-											</Text>
+											</SolveAlert>
 										)}
 									</>
 								}
@@ -758,12 +764,12 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 									bounces={false}
 									overScrollMode="never"
 								>
-									<Text
+									<SolveAlert
 										accessibilityLiveRegion="polite"
 										style={styles.text}
 									>
 										<Text style={feedbackStyle}>{feedback.text}</Text>
-									</Text>
+									</SolveAlert>
 									{answerReview && (
 										<>
 											<Text style={styles.reviewLegend}>Last submitted answer</Text>

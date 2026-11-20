@@ -14,8 +14,7 @@ interface WordOrderClaimsProps {
 }
 
 /**
- * Show a correctly arranged sentence with an XP claim for each learnable word.
- * Claimed words stay in place until the player chooses the next sentence.
+ * Shows solved cards with XP claims or checkmarks for words that need no claim.
  */
 export default function WordOrderClaims({
 	deckId,
@@ -41,7 +40,7 @@ export default function WordOrderClaims({
 				const card = cardsById.get(cardId);
 				const reward = rewards.find(saved => saved.kind === 'card' && saved.position === cardId);
 				const hasPendingReward = reward?.claimedAt === null;
-				const isRewardClaimed = Boolean(reward && reward.claimedAt !== null);
+				const shouldShowCheckmark = !hasPendingReward;
 
 				if (!card) {
 					return null;
@@ -61,12 +60,14 @@ export default function WordOrderClaims({
 								onClaimed={onRewardClaimed}
 							/>
 						)}
-						{isRewardClaimed && (
-							<MaterialSymbol
-								name="lock"
-								size={22}
-								color={colors.dark.success}
-							/>
+						{shouldShowCheckmark && (
+							<View style={styles.cardStatus}>
+								<MaterialSymbol
+									name="check"
+									size={22}
+									color={colors.dark.text}
+								/>
+							</View>
 						)}
 					</View>
 				);
@@ -106,5 +107,10 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: colors.dark.text,
 		textAlign: 'center',
+	},
+	cardStatus: {
+		minHeight: 52,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 });

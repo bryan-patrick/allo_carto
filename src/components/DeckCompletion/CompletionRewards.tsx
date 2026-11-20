@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
 	},
 	label: {
 		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontSize: 16,
 		color: colors.dark.text,
 	},
 	note: {

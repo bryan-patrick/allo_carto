@@ -71,6 +71,7 @@ describe('<WordCardContainer />', () => {
 			maxInkBalance: 0,
 			isUpdatingProgress: false,
 			progressById: {},
+			wordProgressById: {},
 			writeCorrectAnswer: jest.fn(),
 			writeIncorrectAnswer: jest.fn(),
 			writeDeckCompletion: jest.fn(),
