@@ -131,7 +131,7 @@ const sentenceStageText: Record<SolveSentenceStage, SentenceStageText> = {
 	5: {
 		promptLanguage: 'English',
 		answerLanguage: 'French',
-		instruction: "Translate the sentence to French. Don't give up!",
+		instruction: 'Translate the sentence to French.',
 		completionTitle: 'Paragraph mastered!',
 		completionMessage: 'All five puzzles are complete. Your gems are now prismatic.',
 	},
