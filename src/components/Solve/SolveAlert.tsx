@@ -6,7 +6,7 @@ interface SolveAlertProps extends TextProps {
 }
 
 /**
- * Shows a puzzle alert with a gentle wiggle suited to wide messages.
+ * Shows a puzzle alert with a gentle wiggle that keeps its text at the same size.
  */
 export default function SolveAlert({
 	isWiggleEnabled = true,
@@ -14,7 +14,10 @@ export default function SolveAlert({
 	children,
 	...textProps
 }: SolveAlertProps) {
-	const animatedStyle = useButtonWiggle(isWiggleEnabled, 0.5);
+	/**
+	 * Keep the text from growing outward from the center of its full-width box.
+	 */
+	const animatedStyle = useButtonWiggle(isWiggleEnabled, 0.5, 1);
 
 	return (
 		<Animated.Text

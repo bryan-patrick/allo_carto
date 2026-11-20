@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { buttonContentStyles, buttonIconSize } from '@/src/components/buttonContentStyles';
 import CollectionGems from '@/src/components/CollectionGems';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
@@ -25,6 +26,7 @@ import {
 	getParagraphNumber,
 } from '@/src/util/atlasCompletion';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
+import { useSoundEffect } from '@/src/util/useSoundEffect';
 import type { UserProgressRow } from '@/src/util/progression';
 import {
 	getCompletedSolveStages,
@@ -198,6 +200,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		writeSentenceAttempt,
 	} = useUserProgress();
 	const { settings } = useAppSettings();
+	const playIncorrect = useSoundEffect('incorrect');
 	const [puzzle, setPuzzle] = useState<SolveSentencePuzzle>();
 	const [claimedGem, setClaimedGem] = useState<SolveReward>();
 	const [selectedPosition, setSelectedPosition] = useState(0);
@@ -498,6 +501,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 			updateSavedSentence(attempt.position, result);
 
 			if (result.status === 'incorrect') {
+				void playIncorrect();
 				setAnswerReview(
 					reviewSentenceAnswer({
 						answer: attempt.answer,
@@ -808,7 +812,8 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 								SVGElement={
 									<MaterialSymbol
 										name="close"
-										size={20}
+										size={buttonIconSize}
+										style={buttonContentStyles.icon}
 										color={storyColor}
 									/>
 								}

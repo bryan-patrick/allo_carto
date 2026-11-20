@@ -25,7 +25,7 @@ interface ProgressBarProps {
  */
 const glowDuration = 200;
 const fillDelay = 80;
-const fillDuration = 2400;
+const fillDuration = 2000;
 export const progressBarAnimationDuration = fillDelay + fillDuration;
 
 /**

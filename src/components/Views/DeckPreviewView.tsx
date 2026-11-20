@@ -27,12 +27,13 @@ interface DeckPreviewViewProps {
 
 interface PreviewWordRowProps {
 	word: Word;
+	isLastWord: boolean;
 }
 
 /**
  * Show each word's meaning, language level, and TTS button.
  */
-function PreviewWordRow({ word }: PreviewWordRowProps) {
+function PreviewWordRow({ word, isLastWord }: PreviewWordRowProps) {
 	const frenchWord = formatFrenchWordWithArticle({
 		article: word.frenchArticle,
 		word: word.frenchWord,
@@ -44,7 +45,7 @@ function PreviewWordRow({ word }: PreviewWordRowProps) {
 	};
 
 	return (
-		<View style={styles.wordRow}>
+		<View style={[styles.wordRow, isLastWord && styles.lastWordRow]}>
 			<View
 				accessible
 				style={styles.wordDetails}
@@ -138,10 +139,11 @@ export default function DeckPreviewView({
 								style={styles.scrollContent}
 							>
 								<View style={styles.wordList}>
-									{deck.words.map(word => (
+									{deck.words.map((word, wordIndex) => (
 										<PreviewWordRow
 											key={word.id}
 											word={word}
+											isLastWord={wordIndex === deck.words.length - 1}
 										/>
 									))}
 								</View>
@@ -290,6 +292,9 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
 		gap: 8,
+	},
+	lastWordRow: {
+		borderBottomWidth: 0,
 	},
 	wordDetails: {
 		flex: 1,

@@ -45,7 +45,7 @@ function playButtonWiggle(animationProgress: Animated.Value, animationLoop: Butt
 /**
  * Gives an enabled button a repeating wiggle unless reduced motion is turned on.
  */
-export function useButtonWiggle(isEnabled: boolean, rotationDegrees = 5) {
+export function useButtonWiggle(isEnabled: boolean, rotationDegrees = 5, wiggleScale = 1.1) {
 	/**
 	 * Motion preference and animation progress
 	 */
@@ -60,7 +60,7 @@ export function useButtonWiggle(isEnabled: boolean, rotationDegrees = 5) {
 			{
 				scale: animationProgress.interpolate({
 					inputRange: [0, 80, 280, 360],
-					outputRange: [1, 1.1, 1.1, 1],
+					outputRange: [1, wiggleScale, wiggleScale, 1],
 				}),
 			},
 			{

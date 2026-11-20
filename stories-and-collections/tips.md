@@ -9,7 +9,7 @@
 | 5 | Questions with est-ce que | "Est-ce que" is a phrase that is placed at the beginning of a statement to turn it into a question. |
 | 6 | Dans la ville and en ville | "Dans la ville" means in the city, but "en ville" is another common expression that can also mean in the city or urban life. |
 | 7 | Negation with ne and pas | "Ne" and "pas" both surround a verb to make a statement negative. |
-| 8 | Faire for weather and temperature | "Fait" means "makes" or "does." French uses it for weather: "Il fait chaud" means "It is warm," rather than "It makes warm." |
+| 8 | Faire for weather and temperature | "Fait" means "makes" or "does." French uses it for weather: "Il fait chaud" means "It is warm," rather than "It makes warm." If "makes" feels confusing here, it is fine to think of "fait" as "is" in weather expressions. |
 | 9 | Le matin | "Le matin" is translated more closely to in the morning instead of just the morning. |
 | 10 | Le soir | "Le soir" is translated more closely to in the evening instead of just the evening. |
 | 11 | Jusqu'au | "Jusqu'au" is an expression that means up to or all the way to. It's formed from "jusque" + "à" + "le". |

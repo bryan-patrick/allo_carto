@@ -1,5 +1,6 @@
 import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
+import { buttonContentStyles, buttonIconSize } from '@/src/components/buttonContentStyles';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import SolveAlert from '@/src/components/Solve/SolveAlert';
@@ -183,6 +184,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 	} = useUserProgress();
 	const { settings } = useAppSettings();
 	const playCorrectWord = useSoundEffect('correctWord');
+	const playIncorrect = useSoundEffect('incorrect');
 
 	/**
 	 * State
@@ -669,6 +671,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 			 * cannot charge for the same answer again.
 			 */
 			if (result.status === 'incorrect') {
+				void playIncorrect();
 				setAnswer('');
 				setAnswerSelection({
 					start: 0,
@@ -890,7 +893,8 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 								SVGElement={
 									<MaterialSymbol
 										name="close"
-										size={20}
+										size={buttonIconSize}
+										style={buttonContentStyles.icon}
 										color={storyColor}
 									/>
 								}
