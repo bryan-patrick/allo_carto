@@ -44,6 +44,7 @@ import Animated, {
 	withTiming,
 	type SharedValue,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 
 const carouselBackground = require('@/src/app/assets/images/chapters/background-alt.jpg');
@@ -300,7 +301,7 @@ function CarouselPostcard({
  */
 export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarouselProps) {
 	/**
-	 * Chapter content and motion preference
+	 * Chapter content, motion preference, and screen edges
 	 */
 	const {
 		chapterId,
@@ -312,6 +313,11 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 		onUnlockRevealComplete,
 	} = props;
 	const isReducedMotionEnabled = useReducedMotion();
+	const safeAreaInsets = useSafeAreaInsets();
+	const bottomContentInset = Math.max(safeAreaInsets.bottom, 12);
+	const carouselInsets = {
+		paddingBottom: bottomContentInset,
+	};
 
 	/**
 	 * Selected paragraph and measured sizes
@@ -369,7 +375,7 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 		backgroundTravel = Math.min(viewportHeight * 0.25, 160);
 	}
 
-	const backgroundImageHeight = viewportHeight + backgroundTravel;
+	const backgroundImageHeight = viewportHeight + bottomContentInset + backgroundTravel;
 	const backgroundImageStyle = useAnimatedStyle(() => {
 		const boundedPosition = Math.max(0, Math.min(position.get(), maximumParagraphIndex));
 		const chapterPosition = boundedPosition / maximumParagraphIndex;
@@ -641,14 +647,14 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 
 	return (
 		<GestureHandlerRootView style={styles.root}>
-			<View style={styles.carousel}>
-				<Animated.Image
-					accessible={false}
-					pointerEvents="none"
-					source={carouselBackground}
-					resizeMode="cover"
-					style={[styles.backgroundImage, backgroundImageStyle]}
-				/>
+			<Animated.Image
+				accessible={false}
+				pointerEvents="none"
+				source={carouselBackground}
+				resizeMode="cover"
+				style={[styles.backgroundImage, backgroundImageStyle]}
+			/>
+			<View style={[styles.carousel, carouselInsets]}>
 				<View
 					accessible
 					accessibilityRole="adjustable"
@@ -715,10 +721,12 @@ export default function ParagraphPostcardCarousel(props: ParagraphPostcardCarous
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
+		overflow: 'hidden',
 	},
 	carousel: {
 		flex: 1,
 		flexDirection: 'row',
+		paddingHorizontal: 8,
 		overflow: 'hidden',
 	},
 	backgroundImage: {

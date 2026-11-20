@@ -588,6 +588,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					</Text>
 				</View>
 				<ScrollView
+					style={styles.scroll}
 					contentContainerStyle={styles.body}
 					keyboardShouldPersistTaps="handled"
 					bounces={false}
@@ -647,12 +648,6 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 									<Text style={styles.text}>{answer}</Text>
 								</View>
 							)}
-							<SolveGemClaim
-								deckId={deckId}
-								reward={pendingGem}
-								disabled={disabled}
-								onClaimed={setClaimedGem}
-							/>
 						</>
 					: !isEligible ?
 						<SolveAlert style={styles.text}>{unlockMessage}</SolveAlert>
@@ -758,6 +753,14 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 					:	null}
 				</ScrollView>
 				<View style={styles.footer}>
+					{puzzle && !isComplete && pendingGem && (
+						<SolveGemClaim
+							deckId={deckId}
+							reward={pendingGem}
+							disabled={disabled}
+							onClaimed={setClaimedGem}
+						/>
+					)}
 					{puzzle && !isComplete && !pendingGem && (
 						<>
 							{feedback && (
@@ -917,6 +920,9 @@ const styles = StyleSheet.create({
 		gap: 6,
 		paddingHorizontal: 12,
 		paddingBottom: 8,
+	},
+	scroll: {
+		flex: 1,
 	},
 	body: {
 		flexGrow: 1,
