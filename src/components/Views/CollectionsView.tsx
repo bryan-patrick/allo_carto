@@ -10,9 +10,9 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
+import GlossaryView from './GlossaryView';
 import StampsView from './StampsView';
 import TipsView from './TipsView';
-import GlossaryView from './GlossaryView';
 
 const collectionsPageBackground = require('@/src/app/assets/images/collections/page-background.jpg');
 

@@ -1,7 +1,7 @@
 import colors from '@/src/app/colors';
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
 import type { DeckWordResultProps } from '@/src/components/CardDeck/deckSessionTypes';
-import CountUp from '@/src/components/CountUp';
+import CountUp, { countUpDuration } from '@/src/components/CountUp';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
 import { WordProgressIcon } from '@/src/components/WordProgress';
 import { getEnglishPuzzleAnswers } from '@/src/util/englishWordParts';
@@ -52,6 +52,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 	 * Wait until the row appears before counting its XP.
 	 */
 	const countDelay = getCompletionDelay(index + 1) + completionEntryDuration;
+	const wordResultCountDuration = countUpDuration / 2;
 
 	/**
 	 * Get the saved bonus for raising this word's learning level.
@@ -208,6 +209,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 						<CountUp
 							value={learningBonusXP}
 							delay={countDelay}
+							duration={wordResultCountDuration}
 							prefix="+"
 							suffix=" XP"
 							style={styles.learningBonusText}
@@ -219,6 +221,7 @@ function WordResultRow({ word, result, color, index }: WordResultRowProps) {
 				<CountUp
 					value={result.xp}
 					delay={countDelay}
+					duration={wordResultCountDuration}
 					prefix={xpPrefix}
 					suffix=" XP"
 					style={[

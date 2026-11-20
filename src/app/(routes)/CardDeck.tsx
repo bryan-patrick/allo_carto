@@ -80,9 +80,11 @@ export default function CardDeck() {
 	 * Show the elision link when the French article or word contains an apostrophe.
 	 */
 	const frenchWordWithArticle = `${currentCard.frenchArticle ?? ''}${currentCard.frenchWord}`;
+	const isCurrentWordElision = currentCard.form === 'elision';
 	const shouldShowElision = /['’ʼ]/u.test(frenchWordWithArticle);
 
 	const shouldShowOtherForms =
+		!isCurrentWordElision &&
 		otherFormsAvailability?.wordId === currentWordId &&
 		otherFormsAvailability?.lemmaId === currentLemmaId &&
 		otherFormsAvailability?.hasOtherForms === true;

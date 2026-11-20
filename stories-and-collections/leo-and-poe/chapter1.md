@@ -2,6 +2,22 @@
 
 # Difficulty: Very Easy
 
+## Story
+
+Hello. My name is Léo. I am a cat.
+
+I live in Québec City. The city is beautiful. I live near a park.
+
+Today is Monday. It is warm outside. Snow is coming tomorrow.
+
+I like warm days. I walk to the park. I sleep in my favorite tree.
+
+Today, I see two birds at the park. One is small and red. The other is big and purple.
+
+Some cats chase birds. Not me. Birds are my friends. I talk with my friends. Meow!
+
+I find my tree. I climb slowly. I listen to my friends, the birds. I take a long nap.
+
 [Shared tips](../tips.md)
 
 ## Stamps (collection name)

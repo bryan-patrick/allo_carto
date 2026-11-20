@@ -11,6 +11,7 @@ import {
 	type GestureResponderEvent,
 } from 'react-native';
 import { useSolveXPFeedback, type SolveXPFeedback } from './SolveXPFeedback';
+import SolveAlert from './SolveAlert';
 import type { SolveReward, SolveRewardReceipt } from './solveTypes';
 
 /**
@@ -132,12 +133,12 @@ export default function SolveRewardClaimButton({
 				</Animated.View>
 			</View>
 			{Boolean(errorMessage) && (
-				<Text
+				<SolveAlert
 					accessibilityLiveRegion="polite"
 					style={styles.error}
 				>
 					{errorMessage}
-				</Text>
+				</SolveAlert>
 			)}
 		</View>
 	);

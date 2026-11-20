@@ -186,20 +186,6 @@ export default function DeckResultsView() {
 									</View>
 								)}
 								<View style={styles.section}>
-									<Text
-										accessibilityRole="header"
-										style={[styles.sectionTitle, headingStyle]}
-									>
-										Rewards
-									</Text>
-									<CompletionRewards
-										session={session}
-										color={storyColor}
-										inkBalance={inkBalance}
-										maxInkBalance={maxInkBalance}
-									/>
-								</View>
-								<View style={styles.section}>
 									<Pressable
 										accessibilityRole="button"
 										accessibilityLabel={wordResultsLabel}
@@ -226,6 +212,20 @@ export default function DeckResultsView() {
 											color={storyColor}
 										/>
 									)}
+								</View>
+								<View style={styles.section}>
+									<Text
+										accessibilityRole="header"
+										style={[styles.sectionTitle, headingStyle]}
+									>
+										Rewards
+									</Text>
+									<CompletionRewards
+										session={session}
+										color={storyColor}
+										inkBalance={inkBalance}
+										maxInkBalance={maxInkBalance}
+									/>
 								</View>
 							</>
 						)}
@@ -314,8 +314,10 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	sectionTitle: {
-		fontSize: 14,
-		fontFamily: 'lexend-600',
+		fontSize: 26,
+		lineHeight: 34,
+		fontFamily: 'shadows-400',
+		flexShrink: 1,
 	},
 	section: {
 		paddingHorizontal: 6,

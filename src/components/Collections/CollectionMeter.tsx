@@ -40,6 +40,9 @@ export default function CollectionMeter({
 	);
 }
 
+/**
+ * Styles
+ */
 const styles = StyleSheet.create({
 	container: {
 		gap: 5,

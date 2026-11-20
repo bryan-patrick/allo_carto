@@ -1,7 +1,7 @@
 import { Easing, FadeInLeft, ReduceMotion } from 'react-native-reanimated';
 
-export const completionEntryDuration = 360;
-export const completionStagger = 180;
+export const completionEntryDuration = 180;
+export const completionStagger = 90;
 
 /**
  * Delay each result row based on its position so the rows appear one after another.

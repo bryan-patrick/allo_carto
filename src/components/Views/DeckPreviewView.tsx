@@ -237,8 +237,8 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		flexShrink: 1,
-		fontSize: 16,
-		fontFamily: 'lexend-600',
+		fontSize: 26,
+		fontFamily: 'shadows-400',
 	},
 	disabledReadLink: {
 		opacity: 0.5,

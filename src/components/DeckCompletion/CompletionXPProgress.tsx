@@ -153,8 +153,10 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	sectionTitle: {
-		fontFamily: 'lexend-600',
-		fontSize: 14,
+		fontFamily: 'shadows-400',
+		fontSize: 26,
+		lineHeight: 34,
+		flexShrink: 1,
 	},
 	levelUp: {
 		fontFamily: 'lexend-600',
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
 	},
 	level: {
 		fontFamily: 'lexend-400',
-		fontSize: 11,
+		fontSize: 12,
 		color: colors.dark.text,
 	},
 	bar: {
@@ -182,7 +184,7 @@ const styles = StyleSheet.create({
 	},
 	progressLabel: {
 		fontFamily: 'azeret-mono-400',
-		fontSize: 11,
+		fontSize: 12,
 		textAlign: 'right',
 		color: colors.dark.text,
 	},

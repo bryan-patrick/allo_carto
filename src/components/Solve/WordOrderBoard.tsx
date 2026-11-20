@@ -49,9 +49,7 @@ interface WordOrderDrag {
 }
 
 /**
- * Lets the player put one sentence's French cards in order for Solve++.
- * Correct cards stay locked on an attempt.
- * The remaining cards can still move though.
+ * Lets the player arrange French cards while keeping correct cards in place.
  */
 export default function WordOrderBoard({
 	deckId,
@@ -372,7 +370,6 @@ export default function WordOrderBoard({
 								saved => saved.kind === 'card' && saved.position === cardId,
 							);
 							const hasPendingReward = reward?.claimedAt === null;
-							const isRewardClaimed = Boolean(reward && reward.claimedAt !== null);
 							let accessibilityHint =
 								'Select this card, then use Move earlier or Move later to change its position, or drag it by its handle.';
 							let accessibilityActions = [
@@ -391,7 +388,7 @@ export default function WordOrderBoard({
 							}
 
 							if (isLocked) {
-								accessibilityHint = 'Correct position. This word is locked.';
+								accessibilityHint = 'Correct position. This word stays in place.';
 								accessibilityActions = [];
 							}
 
@@ -424,7 +421,7 @@ export default function WordOrderBoard({
 									>
 										<Text style={styles.word}>{card.text}</Text>
 									</Pressable>
-									{(!isLocked || isRewardClaimed) && (
+									{(!isLocked || !hasPendingReward) && (
 										<View
 											accessible={false}
 											onStartShouldSetResponder={() => !disabled && !isLocked}
@@ -442,11 +439,11 @@ export default function WordOrderBoard({
 													color={colors.dark.primary}
 												/>
 											)}
-											{isLocked && isRewardClaimed && (
+											{isLocked && (
 												<MaterialSymbol
-													name="lock"
+													name="check"
 													size={22}
-													color={colors.dark.success}
+													color={colors.dark.text}
 												/>
 											)}
 										</View>

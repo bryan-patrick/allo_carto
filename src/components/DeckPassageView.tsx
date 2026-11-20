@@ -590,7 +590,7 @@ export default function DeckPassageView({
 						accessibilityLabel="TTS speed"
 						style={styles.speechControlGroup}
 					>
-						<Text style={styles.speechControlLabel}>Speed</Text>
+						<Text style={[styles.speechControlLabel, styles.speechControlTitle]}>Speed</Text>
 						<View style={styles.speechControlButtons}>
 							{readingSpeechRates.map(rate => {
 								const isSelected = speechRate === rate;
@@ -622,7 +622,7 @@ export default function DeckPassageView({
 					</View>
 					<View style={styles.speechControlsDivider} />
 					<View style={styles.speechControlGroup}>
-						<Text style={styles.speechControlLabel}>Controls</Text>
+						<Text style={[styles.speechControlLabel, styles.speechControlTitle]}>Controls</Text>
 						<View style={styles.speechControlButtons}>
 							<Pressable
 								accessibilityLabel="Read from previous word"
@@ -963,6 +963,10 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		fontSize: 12,
 	},
+	speechControlTitle: {
+		fontFamily: 'shadows-400',
+		fontSize: 14,
+	},
 	speechControlButton: {
 		alignItems: 'center',
 		borderColor: colors.light.goldenBorder,
@@ -1008,8 +1012,8 @@ const styles = StyleSheet.create({
 	},
 	filterAccordionTitle: {
 		color: colors.dark.text,
-		fontFamily: 'lexend-600',
-		fontSize: 14,
+		fontFamily: 'shadows-400',
+		fontSize: 22,
 	},
 	filterAccordionContent: {
 		gap: 8,

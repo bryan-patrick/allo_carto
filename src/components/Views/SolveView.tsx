@@ -2,6 +2,7 @@ import colors from '@/src/app/colors';
 import BackgroundImage from '@/src/components/BackgroundImage';
 import LinkButton from '@/src/components/LinkButton';
 import MaterialSymbol from '@/src/components/MaterialSymbol';
+import SolveAlert from '@/src/components/Solve/SolveAlert';
 import SolveCard from '@/src/components/Solve/SolveCard';
 import SolveCharacterKeyboard from '@/src/components/Solve/SolveCharacterKeyboard';
 import SolveGemCelebration from '@/src/components/Solve/SolveGemCelebration';
@@ -770,7 +771,14 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 						</Text>
 					</View>
 				</View>
-				{!isEligible && <Text style={styles.notice}>{puzzleNotice}</Text>}
+				{!isEligible && (
+					<SolveAlert
+						isWiggleEnabled={!isLoading}
+						style={styles.notice}
+					>
+						{puzzleNotice}
+					</SolveAlert>
+				)}
 				{isEligible && (
 					<>
 						<ScrollView
@@ -828,20 +836,21 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 								<>
 									<Text style={styles.text}>{prompt}</Text>
 									{Boolean(statusMessage) && (
-										<Text
+										<SolveAlert
+											isWiggleEnabled={!disabled}
 											accessibilityLiveRegion="polite"
 											style={styles.text}
 										>
 											<Text style={statusTextStyle}>{statusMessage}</Text>
-										</Text>
+										</SolveAlert>
 									)}
 									{feedback && (
-										<Text
+										<SolveAlert
 											accessibilityLiveRegion="polite"
 											style={styles.text}
 										>
 											<Text style={feedbackTextStyle}>{feedback.text}</Text>
-										</Text>
+										</SolveAlert>
 									)}
 									{!isShowingNextSentence && (
 										<TextInput

@@ -156,7 +156,10 @@ function Button({
 				backgroundColor: 'transparent',
 				borderColor: color,
 			};
-			outlineTextStyle.color = color;
+			outlineTextStyle = {
+				...outlineTextStyle,
+				color,
+			};
 			resolvedArrowColor = color;
 
 			if (isValidElement<ButtonIconProps>(SVGElement)) {
