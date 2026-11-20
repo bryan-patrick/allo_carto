@@ -1,5 +1,14 @@
 import type { Word } from '@/src/components/CardDeck/cardDeckTypes';
-import { auContractionTip, listeningTip, weekdayCapitalizationTip } from '../tips';
+import {
+	aOrOneTip,
+	auContractionTip,
+	grandAndGrosTip,
+	listeningTip,
+	negationTip,
+	pluralBirdsTip,
+	pluralMyTip,
+	weekdayCapitalizationTip,
+} from '../tips';
 
 /**
  * Words and related forms for Léo and Poe's active paragraphs
@@ -70,6 +79,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_adverb_pas',
 		frenchWord: 'pas',
+		tipId: negationTip.id,
 		englishWords: ['not'],
 		canonicalEnglish: 'not',
 		pronunciation: 'pah',
@@ -150,6 +160,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_article_un',
 		frenchWord: 'un',
+		tipId: aOrOneTip.id,
 		englishWords: ['a', 'an', 'one'],
 		canonicalEnglish: ['a', 'an', 'one'],
 		isVulgar: false,
@@ -166,6 +177,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_article_une',
 		frenchWord: 'une',
+		tipId: aOrOneTip.id,
 		englishWords: ['a', 'an'],
 		canonicalEnglish: ['a', 'an'],
 		pronunciation: 'ewn',
@@ -244,6 +256,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_determiner_mon',
 		frenchWord: 'mon',
+		tipId: pluralMyTip.id,
 		englishWords: ['my'],
 		canonicalEnglish: 'my',
 		pronunciation: 'mohn',
@@ -351,6 +364,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_noun_oiseaux',
 		frenchWord: 'oiseaux',
+		tipId: pluralBirdsTip.id,
 		englishWords: ['birds'],
 		canonicalEnglish: 'birds',
 		pronunciation: 'wah-zoh',
@@ -415,6 +429,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_numeral_un',
 		frenchWord: 'un',
+		tipId: aOrOneTip.id,
 		englishWords: ['one'],
 		canonicalEnglish: 'one',
 		pronunciation: 'uhn',
@@ -784,6 +799,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_adjective_grand',
 		frenchWord: 'grand',
+		tipId: grandAndGrosTip.id,
 		englishWords: ['big', 'large', 'tall'],
 		canonicalEnglish: ['big', 'large'],
 		pronunciation: 'grahn',
@@ -928,6 +944,7 @@ export const leoAndPoeWords: Word[] = [
 	{
 		id: 'word_determiner_mes',
 		frenchWord: 'mes',
+		tipId: pluralMyTip.id,
 		englishWords: ['my'],
 		canonicalEnglish: 'my',
 		pronunciation: 'may',

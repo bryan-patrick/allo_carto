@@ -58,7 +58,8 @@ export const negationTip: FrenchTip = {
 	id: 'french_ne_pas',
 	draftTipId: 7,
 	title: 'Negation with ne and pas',
-	description: '"Ne" and "pas" both surround a verb to make a statement negative.',
+	description:
+		'"Ne... pas" usually works together to mean "not." With a simple verb, put "ne" before it and "pas" after it: "Je ne suis pas un chat" means "I am not a cat." "Ne" becomes "n’" before a vowel or silent h. Do not translate the two parts as two separate English "nots." "Pas" can also mean "not" in a short phrase without a verb: "Pas moi" means "Not me." In everyday speech, people often leave out "ne" and keep "pas."',
 };
 
 export const weatherTip: FrenchTip = {
@@ -97,7 +98,7 @@ export const napTip: FrenchTip = {
 	draftTipId: 12,
 	title: 'faire une sieste',
 	description:
-		'"Je fais une sieste" means "I take a nap." "Fais" means "do" or "make"; the whole expression uses "take" in English.',
+		'"Faire" means "do" or "make," and "fais" is the form used with "je." French says "faire une sieste," literally "do a nap." English just uses "take": "Je fais une sieste" means "I take a nap."',
 };
 
 export const nearbyTip: FrenchTip = {
@@ -187,6 +188,38 @@ export const generalArticlesTip: FrenchTip = {
 		'French uses "le," "la," or "les" when talking about things in general. "J’aime les jours chauds" means "I like warm days"; English leaves out "the."',
 };
 
+export const pluralBirdsTip: FrenchTip = {
+	id: 'french_oiseaux_plural_x',
+	draftTipId: 24,
+	title: 'Oiseaux and plural x',
+	description:
+		'"Oiseau" means "bird," and "oiseaux" means "birds." Most French nouns add an "s" for the plural, but nouns ending in "-eau" add an "x." The final "x" is silent when the word is said on its own, so "oiseau" and "oiseaux" sound the same.',
+};
+
+export const grandAndGrosTip: FrenchTip = {
+	id: 'french_grand_and_gros',
+	draftTipId: 25,
+	title: 'Grand and gros',
+	description:
+		'"Grand" and "gros" can both mean "big." "Grand" describes height or overall size: "un grand arbre" is a tall or large tree. "Gros" focuses on bulk or volume: "un gros chat" is a big, bulky cat. For a person, "grand" usually means "tall," while "gros" means "fat."',
+};
+
+export const pluralMyTip: FrenchTip = {
+	id: 'french_mes_plural_my',
+	draftTipId: 26,
+	title: 'Mes is plural my',
+	description:
+		'French changes "my" to match the noun: "mon arbre" means "my tree," "ma sieste" means "my nap," and "mes amis" means "my friends." Use "mes" before a plural noun, whether it is masculine or feminine. English keeps "my" the same for one thing or several.',
+};
+
+export const aOrOneTip: FrenchTip = {
+	id: 'french_un_une_a_or_one',
+	draftTipId: 27,
+	title: 'Un and une mean a or one',
+	description:
+		'"Un" means "a," "an," or "one" with masculine nouns; "une" does the same with feminine nouns. "Un chat" can mean "a cat" or "one cat." French uses the same word for the article and the number. The context tells you which meaning fits.',
+};
+
 const frenchTips: FrenchTip[] = [
 	elisionTip,
 	introducingYourNameTip,
@@ -212,6 +245,10 @@ const frenchTips: FrenchTip[] = [
 	auContractionTip,
 	listeningTip,
 	generalArticlesTip,
+	pluralBirdsTip,
+	grandAndGrosTip,
+	pluralMyTip,
+	aOrOneTip,
 ];
 
 /**
