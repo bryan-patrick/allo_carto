@@ -8,7 +8,6 @@ import TTSButton from '@/src/components/TTSButton';
 import { getEnglishTranslations } from '@/src/util/englishWordParts';
 import formatFrenchWordWithArticle from '@/src/util/formatFrenchWordWithArticle';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
-import { ImageBackground } from 'expo-image';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -102,9 +101,10 @@ export default function DeckPreviewView({
 					bottom: 'maximum',
 				}}
 			>
-				<ImageBackground
+				<BackgroundImage
 					source={postcardBackground}
-					contentFit="cover"
+					resizeMode="repeat"
+					imageStyle={styles.paperImage}
 					style={styles.postcard}
 				>
 					<View style={styles.postcardBorder}>
@@ -127,13 +127,25 @@ export default function DeckPreviewView({
 								</View>
 							</View>
 						</View>
-						<ScrollView contentContainerStyle={styles.wordList}>
-							{deck.words.map(word => (
-								<PreviewWordRow
-									key={word.id}
-									word={word}
-								/>
-							))}
+						<ScrollView
+							style={styles.scrollView}
+							contentContainerStyle={styles.scrollContent}
+						>
+							<BackgroundImage
+								source={postcardBackground}
+								resizeMode="repeat"
+								imageStyle={styles.paperImage}
+								style={styles.scrollContent}
+							>
+								<View style={styles.wordList}>
+									{deck.words.map(word => (
+										<PreviewWordRow
+											key={word.id}
+											word={word}
+										/>
+									))}
+								</View>
+							</BackgroundImage>
 						</ScrollView>
 						<View style={styles.footer}>
 							<LinkButton
@@ -178,7 +190,7 @@ export default function DeckPreviewView({
 							</LinkButton>
 						</View>
 					</View>
-				</ImageBackground>
+				</BackgroundImage>
 			</SafeAreaView>
 		</BackgroundImage>
 	);
@@ -199,7 +211,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		width: '100%',
 		alignSelf: 'center',
-		padding: 6,
 		borderWidth: 1,
 		borderColor: colors.light.border,
 		borderRadius: 12,
@@ -208,10 +219,15 @@ const styles = StyleSheet.create({
 	},
 	postcardBorder: {
 		flex: 1,
+		margin: 6,
 		borderWidth: 1,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
 		overflow: 'hidden',
+	},
+	paperImage: {
+		width: '100%',
+		height: '100%',
 	},
 	heading: {
 		paddingHorizontal: 12,
@@ -255,7 +271,16 @@ const styles = StyleSheet.create({
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 	},
+	scrollView: {
+		flex: 1,
+	},
+	scrollContent: {
+		flexGrow: 1,
+		width: '100%',
+	},
 	wordList: {
+		flexGrow: 1,
+		width: '100%',
 		paddingHorizontal: 12,
 	},
 	wordRow: {

@@ -1,4 +1,5 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import CompletionPassage from '@/src/components/DeckCompletion/CompletionPassage';
 import CompletionRewards from '@/src/components/DeckCompletion/CompletionRewards';
 import CompletionWordResults from '@/src/components/DeckCompletion/CompletionWordResults';
@@ -9,7 +10,6 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { findCompletionPath } from '@/src/util/atlasCompletion';
 import { getCardsPerDeck } from '@/src/util/cardsPerDeck';
 import { getDeckStoryColor } from '@/src/util/getDeckStoryColor';
-import { ImageBackground } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -146,9 +146,10 @@ export default function DeckResultsView() {
 				bottom: 'maximum',
 			}}
 		>
-			<ImageBackground
+			<BackgroundImage
 				source={postcardBackground}
-				contentFit="cover"
+				resizeMode="repeat"
+				imageStyle={styles.paperImage}
 				style={styles.postcard}
 			>
 				<View style={styles.postcardBorder}>
@@ -168,67 +169,77 @@ export default function DeckResultsView() {
 							{description && <Text style={styles.description}>{description}</Text>}
 						</View>
 					</View>
-					<ScrollView>
-						{hasReview && session && (
-							<>
-								{cardDeck.passage.length > 0 && (
+					<ScrollView
+						style={styles.scrollView}
+						contentContainerStyle={styles.scrollContent}
+					>
+						<BackgroundImage
+							source={postcardBackground}
+							resizeMode="repeat"
+							imageStyle={styles.paperImage}
+							style={styles.scrollContent}
+						>
+							{hasReview && session && (
+								<>
+									{cardDeck.passage.length > 0 && (
+										<View style={styles.section}>
+											<Text
+												accessibilityRole="header"
+												style={[styles.sectionTitle, headingStyle]}
+											>
+												Paragraph
+											</Text>
+											<CompletionPassage
+												deck={cardDeck}
+												results={session.results}
+											/>
+										</View>
+									)}
+									<View style={styles.section}>
+										<Pressable
+											accessibilityRole="button"
+											accessibilityLabel={wordResultsLabel}
+											accessibilityState={{ expanded: showWordResults }}
+											onPress={handleToggleWordResults}
+											style={[styles.headingRow, styles.wordResultsToggle]}
+										>
+											<Text
+												accessibilityRole="header"
+												style={[styles.sectionTitle, headingStyle]}
+											>
+												Word results
+											</Text>
+											<MaterialSymbol
+												name={wordResultsIcon}
+												size={24}
+												color={storyColor}
+											/>
+										</Pressable>
+										{showWordResults && (
+											<CompletionWordResults
+												words={cardDeck.words}
+												results={session.results}
+												color={storyColor}
+											/>
+										)}
+									</View>
 									<View style={styles.section}>
 										<Text
 											accessibilityRole="header"
 											style={[styles.sectionTitle, headingStyle]}
 										>
-											Paragraph
+											Rewards
 										</Text>
-										<CompletionPassage
-											deck={cardDeck}
-											results={session.results}
+										<CompletionRewards
+											session={session}
+											color={storyColor}
+											inkBalance={inkBalance}
+											maxInkBalance={maxInkBalance}
 										/>
 									</View>
-								)}
-								<View style={styles.section}>
-									<Pressable
-										accessibilityRole="button"
-										accessibilityLabel={wordResultsLabel}
-										accessibilityState={{ expanded: showWordResults }}
-										onPress={handleToggleWordResults}
-										style={[styles.headingRow, styles.wordResultsToggle]}
-									>
-										<Text
-											accessibilityRole="header"
-											style={[styles.sectionTitle, headingStyle]}
-										>
-											Word results
-										</Text>
-										<MaterialSymbol
-											name={wordResultsIcon}
-											size={24}
-											color={storyColor}
-										/>
-									</Pressable>
-									{showWordResults && (
-										<CompletionWordResults
-											words={cardDeck.words}
-											results={session.results}
-											color={storyColor}
-										/>
-									)}
-								</View>
-								<View style={styles.section}>
-									<Text
-										accessibilityRole="header"
-										style={[styles.sectionTitle, headingStyle]}
-									>
-										Rewards
-									</Text>
-									<CompletionRewards
-										session={session}
-										color={storyColor}
-										inkBalance={inkBalance}
-										maxInkBalance={maxInkBalance}
-									/>
-								</View>
-							</>
-						)}
+								</>
+							)}
+						</BackgroundImage>
 					</ScrollView>
 					<View style={styles.footer}>
 						<LinkButton
@@ -261,7 +272,7 @@ export default function DeckResultsView() {
 						)}
 					</View>
 				</View>
-			</ImageBackground>
+			</BackgroundImage>
 		</SafeAreaView>
 	);
 }
@@ -279,7 +290,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		width: '100%',
 		alignSelf: 'center',
-		padding: 6,
 		borderWidth: 1,
 		borderColor: colors.light.border,
 		borderRadius: 12,
@@ -288,10 +298,15 @@ const styles = StyleSheet.create({
 	},
 	postcardBorder: {
 		flex: 1,
+		margin: 6,
 		borderWidth: 1,
 		borderRadius: 8,
 		borderColor: colors.light.goldenBorder,
 		overflow: 'hidden',
+	},
+	paperImage: {
+		width: '100%',
+		height: '100%',
 	},
 	headingRow: {
 		flexDirection: 'row',
@@ -325,6 +340,13 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: colors.light.goldenBorder,
 		gap: 8,
+	},
+	scrollView: {
+		flex: 1,
+	},
+	scrollContent: {
+		flexGrow: 1,
+		width: '100%',
 	},
 	wordResultsToggle: {},
 	footer: {
