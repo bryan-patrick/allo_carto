@@ -17,6 +17,7 @@ import {
 	View,
 	type ColorValue,
 } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 import MaterialSymbol from './MaterialSymbol';
 
 /**
@@ -62,6 +63,13 @@ const gemAppearanceDescriptions: Partial<Record<CompletedSolveStages, string>> =
 	4: ' All three gems are glowing.',
 	5: ' All three gems are prismatic. You have fully mastered this paragraph, congrats!',
 };
+
+/**
+ * Creates a separate hop position for each gem.
+ */
+function createGemHopOffsets(): Animated.Value[] {
+	return gemColors.map(() => new Animated.Value(0));
+}
 
 /**
  * Gives the paragraph gems a cool prismatic color effect
@@ -197,8 +205,14 @@ function CollectionGemsContent({
 	celebrationReady = true,
 }: CollectionGemsProps) {
 	/**
+	 * Motion preference
+	 */
+	const isReducedMotionEnabled = useReducedMotion();
+
+	/**
 	 * Celebration animation and reveal state
 	 */
+	const [gemHopOffsets] = useState(createGemHopOffsets);
 	const [rotation] = useState(function createGemRotation() {
 		return new Animated.Value(0);
 	});
@@ -294,6 +308,55 @@ function CollectionGemsContent({
 		};
 	}, [celebrationStage, celebrationReady, rotation, backdropScale]);
 
+	/**
+	 * Makes the gems hop from left to right with each hop starting halfway through the previous one.
+	 */
+	useEffect(() => {
+		const hopHeight = size * 0.3;
+		const hopRiseDuration = 100;
+		const hopFallDuration = 120;
+		const hopDuration = hopRiseDuration + hopFallDuration;
+		const hopStartDelay = hopDuration / 2;
+		const gemHops = gemHopOffsets.map(gemHopOffset =>
+			Animated.sequence([
+				Animated.timing(gemHopOffset, {
+					toValue: -hopHeight,
+					duration: hopRiseDuration,
+					easing: Easing.out(Easing.quad),
+					useNativeDriver: true,
+				}),
+				Animated.timing(gemHopOffset, {
+					toValue: 0,
+					duration: hopFallDuration,
+					easing: Easing.in(Easing.quad),
+					useNativeDriver: true,
+				}),
+			]),
+		);
+		const hopSequence = Animated.stagger(hopStartDelay, gemHops);
+
+		if (!celebrationStage || !celebrationReady || !hasRevealedGem || isReducedMotionEnabled) {
+			return;
+		}
+
+		hopSequence.start();
+
+		return () => {
+			hopSequence.stop();
+
+			for (const gemHopOffset of gemHopOffsets) {
+				gemHopOffset.setValue(0);
+			}
+		};
+	}, [
+		celebrationStage,
+		celebrationReady,
+		hasRevealedGem,
+		isReducedMotionEnabled,
+		gemHopOffsets,
+		size,
+	]);
+
 	function showProgress() {
 		Alert.alert(`${title} (${response.label})`, response.description);
 	}
@@ -353,11 +416,18 @@ function CollectionGemsContent({
 								const glowColor = {
 									textShadowColor: gemColor,
 								};
+								const gemHopStyle = {
+									transform: [
+										{
+											translateY: gemHopOffsets[index],
+										},
+									],
+								};
 
 								return (
-									<View
+									<Animated.View
 										key={index}
-										style={gemSlotStyle}
+										style={[gemSlotStyle, gemHopStyle]}
 									>
 										<MaterialSymbol
 											name="diamond"
@@ -366,7 +436,7 @@ function CollectionGemsContent({
 											style={[styles.glowGem, glowGemStyle, glowColor]}
 											filled
 										/>
-									</View>
+									</Animated.View>
 								);
 							})}
 						</View>
@@ -374,11 +444,18 @@ function CollectionGemsContent({
 					<View style={styles.row}>
 						{gemColors.map((gemColor, index) => {
 							const filled = index < displayedResponse.filledCount;
+							const gemHopStyle = {
+								transform: [
+									{
+										translateY: gemHopOffsets[index],
+									},
+								],
+							};
 
 							return (
-								<View
+								<Animated.View
 									key={index}
-									style={gemSlotStyle}
+									style={[gemSlotStyle, gemHopStyle]}
 								>
 									{hasPrismaticGems ?
 										<PrismaticGem size={size} />
@@ -390,7 +467,7 @@ function CollectionGemsContent({
 											style={[gemSlotStyle, gemTextStyle, !filled && styles.unfilled]}
 										/>
 									}
-								</View>
+								</Animated.View>
 							);
 						})}
 					</View>
