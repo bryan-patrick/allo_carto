@@ -51,7 +51,7 @@ Bonjour. Je m'appelle Léo. Je suis un chat.
 | Léo     |                | Léo       | —    | Proper noun | false        |     |
 | I       |                | Je        | A1   | Common      | false        |     |
 | am      |                | suis      | A1   | Common      | false        |     |
-| a       |                | un        | A1   | Common      | false        |     |
+| a       |                | un        | A1   | Common      | false        | 27  |
 | cat     |                | chat      | A1   | Common      | false        |     |
 
 ## Paragraph 2
@@ -133,7 +133,7 @@ J'aime les jours chauds. Je vais au parc à pied. Je dors dans mon arbre préfé
 | I          |                | Je      | A1   | Common | false        |     |
 | sleep      |                | dors    | A1   | Common | false        |     |
 | in         |                | dans    | A1   | Common | false        |     |
-| my         |                | mon     | A1   | Common | false        |     |
+| my         |                | mon     | A1   | Common | false        | 26  |
 | tree       |                | arbre   | A1   | Common | false        |     |
 | favorite   |                | préféré | A1   | Common | false        |     |
 
@@ -155,17 +155,17 @@ Aujourd'hui, je vois deux oiseaux au parc. Un est petit et rouge. L'autre est gr
 | I       |                | je          | A1   | Common | false        |     |
 | see     |                | vois        | A1   | Common | false        |     |
 | two     |                | deux        | A1   | Common | false        |     |
-| birds   |                | oiseaux     | A1   | Common | false        |     |
+| birds   |                | oiseaux     | A1   | Common | false        | 24  |
 | at the  |                | au          | A1   | Common | false        | 21  |
 | park    |                | parc        | A1   | Common | false        |     |
-| One     |                | Un          | A1   | Common | false        |     |
+| One     |                | Un          | A1   | Common | false        | 27  |
 | is      |                | est         | A1   | Common | false        |     |
 | small   |                | petit       | A1   | Common | false        |     |
 | and     |                | et          | A1   | Common | false        |     |
 | red     |                | rouge       | A1   | Common | false        |     |
 | other   | the            | L'autre     | A1   | Common | false        |     |
 | is      |                | est         | A1   | Common | false        |     |
-| big     |                | grand       | A1   | Common | false        |     |
+| big     |                | grand       | A1   | Common | false        | 25  |
 | and     |                | et          | A1   | Common | false        |     |
 | purple  |                | violet      | A1   | Common | false        |     |
 
@@ -187,18 +187,18 @@ Des chats chassent les oiseaux. Pas moi. Les oiseaux sont mes amis. Je parle ave
 | cats    |                | chats    | A1   | Common | false        |     |
 | chase   |                | chassent | A2   | Common | false        |     |
 | the     |                | les      | A1   | Common | false        | 23  |
-| birds   |                | oiseaux  | A1   | Common | false        |     |
-| Not     |                | Pas      | A1   | Common | false        |     |
+| birds   |                | oiseaux  | A1   | Common | false        | 24  |
+| Not     |                | Pas      | A1   | Common | false        | 7   |
 | me      |                | moi      | A1   | Common | false        |     |
 | The     |                | Les      | A1   | Common | false        | 23  |
-| birds   |                | oiseaux  | A1   | Common | false        |     |
+| birds   |                | oiseaux  | A1   | Common | false        | 24  |
 | are     |                | sont     | A1   | Common | false        |     |
-| my      |                | mes      | A1   | Common | false        |     |
+| my      |                | mes      | A1   | Common | false        | 26  |
 | friends |                | amis     | A1   | Common | false        |     |
 | I       |                | Je       | A1   | Common | false        |     |
 | talk    |                | parle    | A1   | Common | false        |     |
 | with    |                | avec     | A1   | Common | false        |     |
-| my      |                | mes      | A1   | Common | false        |     |
+| my      |                | mes      | A1   | Common | false        | 26  |
 | friends |                | amis     | A1   | Common | false        |     |
 | Meow    |                | Miaou    | A1   | Common | false        |     |
 
@@ -218,16 +218,16 @@ Je trouve mon arbre. Je grimpe lentement. J'écoute mes amis, les oiseaux. Je fa
 | --------- | -------------- | --------- | ---- | ------ | ------------ | --- |
 | I         |                | Je        | A1   | Common | false        |     |
 | find      |                | trouve    | A1   | Common | false        |     |
-| my        |                | mon       | A1   | Common | false        |     |
+| my        |                | mon       | A1   | Common | false        | 26  |
 | tree      |                | arbre     | A1   | Common | false        |     |
 | I         |                | Je        | A1   | Common | false        |     |
 | climb     |                | grimpe    | A2   | Common | false        |     |
 | slowly    |                | lentement | A1   | Common | false        |     |
 | listen to | I              | J'écoute  | A1   | Common | false        | 22  |
-| my        |                | mes       | A1   | Common | false        |     |
+| my        |                | mes       | A1   | Common | false        | 26  |
 | friends   |                | amis      | A1   | Common | false        |     |
 | the       |                | les       | A1   | Common | false        |     |
-| birds     |                | oiseaux   | A1   | Common | false        |     |
+| birds     |                | oiseaux   | A1   | Common | false        | 24  |
 | I         |                | Je        | A1   | Common | false        |     |
 | do        |                | fais      | A1   | Common | false        | 12  |
 | a         |                | une       | A1   | Common | false        | 12  |
