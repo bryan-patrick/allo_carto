@@ -6,7 +6,7 @@ import { collectionLevelRewards } from './learning-level-rewards';
  */
 export const theColorsOfBirdsCollection: VocabularyCollection = {
 	id: 'the-colors-of-birds',
-	name: 'The Colors of Birds',
+	name: 'The Colors Of Birds',
 	description: 'Find the purple bird at the park.',
 	words: [
 		{

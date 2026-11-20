@@ -3,7 +3,7 @@ import {
 	buttonIconGap,
 	buttonIconSize,
 } from '@/src/components/buttonContentStyles';
-import { getTipById } from '@/data/french/tips';
+import { elisionTip, getTipById } from '@/data/french/tips';
 import colors from '@/src/app/colors';
 import { useCardDeck } from '@/src/components/CardDeck/useCardDeck';
 import DeckBoxModal from '@/src/components/DeckBox/DeckBoxModal';
@@ -25,10 +25,11 @@ import { useUserProgress } from '@/src/db/useUserProgress';
 import { isItemUnlocked } from '@/src/util/atlasCompletion';
 import formatOtherWordForm from '@/src/util/formatOtherWordForm';
 import { useSoftTapSound } from '@/src/util/softTapSound';
+import { useButtonWiggle } from '@/src/util/useButtonWiggle';
 import type { WordProgressKey } from '@/src/util/wordProgress';
 import { Stack, useNavigation } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
 /**
  * Typing
@@ -45,7 +46,7 @@ interface OtherFormsAvailability {
 }
 
 /**
- * Deck view - A route wrapper in (routes)
+ * Shows a paragraph's flashcards, reading options, and word tips.
  */
 export default function CardDeck() {
 	const navigation = useNavigation();
@@ -53,7 +54,7 @@ export default function CardDeck() {
 	const { cardDeckState, currentCard } = useCardDeck();
 	const { cardDeck } = cardDeckState;
 	const { id: userId } = useUserContext() ?? {};
-	const { isUpdatingProgress, progressById, status } = useUserProgress();
+	const { isUpdatingProgress, progressById, status, tipClaims } = useUserProgress();
 	const isOpeningWordDetails = useRef(false);
 
 	const [isDeckPreviewVisible, setIsDeckPreviewVisible] = useState(
@@ -85,6 +86,29 @@ export default function CardDeck() {
 		otherFormsAvailability?.wordId === currentWordId &&
 		otherFormsAvailability?.lemmaId === currentLemmaId &&
 		otherFormsAvailability?.hasOtherForms === true;
+
+	/**
+	 * Saved tip rewards
+	 */
+	const isWordTipRewardClaimed = tipClaims.some(claim => claim.tipId === currentTip?.id);
+	const isElisionTipRewardClaimed = tipClaims.some(claim => claim.tipId === elisionTip.id);
+
+	/**
+	 * Wiggle visible tip buttons until their rewards are claimed.
+	 */
+	const areFlashcardButtonsVisible =
+		status === 'ready' &&
+		!isLocked &&
+		!isDeckPreviewVisible &&
+		!isPassageVisible &&
+		!isElisionVisible &&
+		!isWordTipVisible;
+	const shouldWiggleWordTip =
+		areFlashcardButtonsVisible && Boolean(currentTip) && !isWordTipRewardClaimed;
+	const shouldWiggleElisionTip =
+		areFlashcardButtonsVisible && shouldShowElision && !isElisionTipRewardClaimed;
+	const wordTipAnimatedStyle = useButtonWiggle(shouldWiggleWordTip);
+	const elisionTipAnimatedStyle = useButtonWiggle(shouldWiggleElisionTip);
 
 	// Play the tap sound and keep the native Back button's usual navigation.
 	function handleBack() {
@@ -272,7 +296,7 @@ export default function CardDeck() {
 									</>
 								)}
 								{shouldShowElision && (
-									<>
+									<Animated.View style={elisionTipAnimatedStyle}>
 										<Pressable
 											accessibilityLabel="Learn about elisions"
 											accessibilityRole="button"
@@ -293,10 +317,10 @@ export default function CardDeck() {
 												Elision!
 											</Text>
 										</Pressable>
-									</>
+									</Animated.View>
 								)}
 								{currentTip && (
-									<>
+									<Animated.View style={wordTipAnimatedStyle}>
 										<Pressable
 											accessibilityLabel="Read a tip about this word"
 											accessibilityRole="button"
@@ -317,7 +341,7 @@ export default function CardDeck() {
 												Tip!
 											</Text>
 										</Pressable>
-									</>
+									</Animated.View>
 								)}
 							</View>
 						</View>

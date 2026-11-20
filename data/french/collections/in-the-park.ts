@@ -6,7 +6,7 @@ import { collectionLevelRewards } from './learning-level-rewards';
  */
 export const inTheParkCollection: VocabularyCollection = {
 	id: 'in-the-park',
-	name: 'In the Park',
+	name: 'In The Park',
 	description: 'Find Léo’s favorite tree at the park.',
 	words: [
 		{

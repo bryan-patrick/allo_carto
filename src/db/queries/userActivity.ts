@@ -1,5 +1,6 @@
 import { collectionAtlas } from '@/data/french/collectionAtlas';
 import { getAtlasCompletionItems, isItemUnlocked } from '@/src/util/atlasCompletion';
+import { capitalizeName } from '@/src/util/capitalizeName';
 import { getMaxInkBalance } from '@/src/util/ink';
 import type { ProgressById, ProgressType } from '@/src/util/progression';
 import { getCompletedSolveStages, type SolveStage } from '@/src/util/solveProgression';
@@ -112,7 +113,9 @@ export async function saveUserActivity({
 	await database.runAsync(statements.removeOldActivity, userId, userId, userActivityLimit);
 }
 
-// Record a newly revealed stamp with its word and collection name.
+/**
+ * Records a stamp unlock with its capitalized stamp and collection names.
+ */
 export async function recordStampUnlockActivity({
 	database,
 	userId,
@@ -136,7 +139,7 @@ export async function recordStampUnlockActivity({
 		database,
 		userId,
 		type: 'stampUnlocked',
-		description: `${word.frenchWord} · ${collection.name}`,
+		description: `${capitalizeName(word.frenchWord)} · ${collection.name}`,
 	});
 }
 

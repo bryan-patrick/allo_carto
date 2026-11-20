@@ -6,7 +6,7 @@ import { collectionLevelRewards } from './learning-level-rewards';
  */
 export const onThePlainsCollection: VocabularyCollection = {
 	id: 'on-the-plains',
-	name: 'On the Plains',
+	name: 'On The Plains',
 	description: 'Meet Léo, a cat who lives in Québec City.',
 	words: [
 		{
