@@ -777,6 +777,7 @@ export default function SolveView({ deckId, stage }: SolveViewProps) {
 				{!isEligible && (
 					<SolveAlert
 						isWiggleEnabled={!isLoading}
+						containerStyle={styles.noticeContainer}
 						style={styles.notice}
 					>
 						{puzzleNotice}
@@ -1010,9 +1011,11 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 		fontSize: 14,
 	},
-	notice: {
+	noticeContainer: {
 		flex: 1,
 		padding: 16,
+	},
+	notice: {
 		fontFamily: 'lexend-400',
 		color: colors.dark.text,
 		fontSize: 16,

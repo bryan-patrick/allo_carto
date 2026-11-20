@@ -14,6 +14,7 @@ import {
 	type AccessibilityActionEvent,
 	type GestureResponderEvent,
 	type LayoutChangeEvent,
+	type ViewProps,
 } from 'react-native';
 import SolveRewardClaimButton from './SolveRewardClaimButton';
 import type { SolveReward, SolveWordOrderCard } from './solveTypes';
@@ -370,6 +371,7 @@ export default function WordOrderBoard({
 								saved => saved.kind === 'card' && saved.position === cardId,
 							);
 							const hasPendingReward = reward?.claimedAt === null;
+							let importantForAccessibility: ViewProps['importantForAccessibility'] = 'auto';
 							let accessibilityHint =
 								'Select this card, then use Move earlier or Move later to change its position, or drag it by its handle.';
 							let accessibilityActions = [
@@ -392,6 +394,10 @@ export default function WordOrderBoard({
 								accessibilityActions = [];
 							}
 
+							if (hasPendingReward) {
+								importantForAccessibility = 'no-hide-descendants';
+							}
+
 							return (
 								<Animated.View
 									key={cardId}
@@ -406,6 +412,8 @@ export default function WordOrderBoard({
 									]}
 								>
 									<Pressable
+										accessibilityElementsHidden={hasPendingReward}
+										importantForAccessibility={importantForAccessibility}
 										accessibilityRole="button"
 										accessibilityLabel={`${card.text}. Position ${index + 1} of ${positions.length}.`}
 										accessibilityHint={accessibilityHint}
@@ -417,39 +425,38 @@ export default function WordOrderBoard({
 										onAccessibilityAction={event => handleAccessibilityMove(cardId, event)}
 										disabled={isCardDisabled}
 										onPress={() => handleSelect(cardId)}
-										style={styles.cardTextArea}
+										style={[styles.cardTextArea, hasPendingReward && styles.hiddenCardContent]}
 									>
 										<Text style={styles.word}>{card.text}</Text>
 									</Pressable>
-									{(!isLocked || !hasPendingReward) && (
-										<View
-											accessible={false}
-											onStartShouldSetResponder={() => !disabled && !isLocked}
-											onResponderGrant={event => handleDragStart(cardId, event)}
-											onResponderMove={handleDragMove}
-											onResponderRelease={handleDragEnd}
-											onResponderTerminate={clearDrag}
-											onResponderTerminationRequest={() => false}
-											style={styles.dragHandle}
-										>
-											{!isLocked && (
-												<MaterialSymbol
-													name="drag_indicator"
-													size={22}
-													color={colors.dark.primary}
-												/>
-											)}
-											{isLocked && (
-												<MaterialSymbol
-													name="check"
-													size={22}
-													color={colors.dark.text}
-												/>
-											)}
-										</View>
-									)}
+									{/* Keep the handle's space while the claim button covers the card. */}
+									<View
+										accessible={false}
+										onStartShouldSetResponder={() => !disabled && !isLocked}
+										onResponderGrant={event => handleDragStart(cardId, event)}
+										onResponderMove={handleDragMove}
+										onResponderRelease={handleDragEnd}
+										onResponderTerminate={clearDrag}
+										onResponderTerminationRequest={() => false}
+										style={[styles.dragHandle, hasPendingReward && styles.hiddenCardContent]}
+									>
+										{!isLocked && (
+											<MaterialSymbol
+												name="drag_indicator"
+												size={22}
+												color={colors.dark.primary}
+											/>
+										)}
+										{isLocked && (
+											<MaterialSymbol
+												name="check"
+												size={22}
+												color={colors.dark.text}
+											/>
+										)}
+									</View>
 									{isLocked && hasPendingReward && reward && (
-										<View style={styles.claim}>
+										<View style={styles.claimOverlay}>
 											<SolveRewardClaimButton
 												deckId={deckId}
 												reward={reward}
@@ -542,7 +549,8 @@ const styles = StyleSheet.create({
 		width: '30%',
 		alignItems: 'center',
 		flexGrow: 1,
-		maxWidth: 140,
+		maxWidth: 120,
+		minHeight: 78,
 		borderWidth: 2,
 		borderColor: colors.light.goldenBorder,
 		borderRadius: 8,
@@ -552,9 +560,19 @@ const styles = StyleSheet.create({
 		borderColor: colors.dark.success,
 		backgroundColor: colors.light.success,
 	},
-	claim: {
-		marginTop: 2,
-		paddingBottom: 8,
+	hiddenCardContent: {
+		opacity: 0,
+	},
+	claimOverlay: {
+		...StyleSheet.absoluteFill,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: colors.light.background,
+		borderColor: colors.dark.border,
+		borderRadius: 4,
+		borderWidth: 1,
+		margin: 2,
+		padding: 2,
 	},
 	selectedCard: {
 		borderColor: colors.dark.primary,
