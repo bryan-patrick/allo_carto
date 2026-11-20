@@ -648,13 +648,6 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 							onRewardClaimed={handleCardRewardClaimed}
 						/>
 					</View>
-				: isShowingGemClaim && pendingGem ?
-					<SolveGemClaim
-						deckId={deckId}
-						reward={pendingGem}
-						disabled={disabled}
-						onClaimed={setClaimedGem}
-					/>
 				: isEligible && isSentenceSolved ?
 					<WordOrderClaims
 						deckId={deckId}
@@ -679,6 +672,14 @@ export default function SolveWordOrderView({ deckId }: SolveWordOrderViewProps) 
 					/>
 				:	<SolveAlert style={styles.notice}>{unlockMessage}</SolveAlert>}
 				<View style={styles.footer}>
+					{puzzle && !isComplete && isShowingGemClaim && pendingGem && (
+						<SolveGemClaim
+							deckId={deckId}
+							reward={pendingGem}
+							disabled={disabled}
+							onClaimed={setClaimedGem}
+						/>
+					)}
 					{puzzle && !isComplete && !isShowingGemClaim && (
 						<>
 							{isEligible && !isSentenceSolved && !hasEnoughInk && !feedback?.needsInk && (

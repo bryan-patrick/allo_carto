@@ -197,7 +197,7 @@ export default function ChapterDetailView() {
 		>
 			<View
 				key={chapter.id}
-				style={[styles.chapterContent, chapterContentStyle]}
+				style={styles.chapterContent}
 			>
 				<BackgroundImage
 					source={headingBackground}
@@ -270,9 +270,6 @@ const styles = StyleSheet.create({
 	},
 	paragraphArea: {
 		flex: 1,
-		paddingHorizontal: 8,
-		borderBottomWidth: 1,
-		borderColor: colors.light.goldenBorder,
 	},
 	readChapterLink: {
 		fontFamily: 'lexend-400',
