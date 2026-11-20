@@ -1,4 +1,5 @@
 import colors from '@/src/app/colors';
+import BackgroundImage from '@/src/components/BackgroundImage';
 import { buttonContentStyles } from '@/src/components/buttonContentStyles';
 import type { CollectionsPageScrollProps } from '@/src/components/Collections/collectionsPageTypes';
 import GlossaryWordRow from '@/src/components/Collections/GlossaryWordRow';
@@ -8,7 +9,6 @@ import WordTipModal from '@/src/components/WordCard/WordTipModal';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { getGlossarySections, glossaryLetters } from '@/src/util/glossary';
 import { useSoftTapSound } from '@/src/util/softTapSound';
-import { ImageBackground } from 'expo-image';
 import { useMemo, useRef, useState, type RefObject } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
@@ -116,9 +116,10 @@ export default function GlossaryView(scrollProps: CollectionsPageScrollProps) {
 	}
 
 	return (
-		<ImageBackground
+		<BackgroundImage
 			source={postcardBackground}
-			contentFit="cover"
+			resizeMode="repeat"
+			imageStyle={styles.paperImage}
 			style={styles.paper}
 		>
 			<View style={styles.heading}>
@@ -140,33 +141,42 @@ export default function GlossaryView(scrollProps: CollectionsPageScrollProps) {
 				overScrollMode="never"
 				scrollEventThrottle={16}
 				style={styles.scrollView}
-				contentContainerStyle={styles.content}
+				contentContainerStyle={styles.scrollContent}
 			>
-				{sections.map(section => (
-					<View
-						key={section.letter}
-						onLayout={event => {
-							sectionOffsets.current[section.letter] = event.nativeEvent.layout.y;
-						}}
-						style={styles.section}
-					>
-						<Text
-							accessibilityRole="header"
-							style={styles.letterHeading}
-						>
-							{section.letter}
-						</Text>
-						<View style={styles.wordList}>
-							{section.entries.map(entry => (
-								<GlossaryWordRow
-									key={entry.word.id}
-									entry={entry}
-									onSelectTip={setSelectedTip}
-								/>
-							))}
-						</View>
+				<BackgroundImage
+					source={postcardBackground}
+					resizeMode="repeat"
+					imageStyle={styles.paperImage}
+					style={styles.scrollContent}
+				>
+					<View style={styles.content}>
+						{sections.map(section => (
+							<View
+								key={section.letter}
+								onLayout={event => {
+									sectionOffsets.current[section.letter] = event.nativeEvent.layout.y;
+								}}
+								style={styles.section}
+							>
+								<Text
+									accessibilityRole="header"
+									style={styles.letterHeading}
+								>
+									{section.letter}
+								</Text>
+								<View style={styles.wordList}>
+									{section.entries.map(entry => (
+										<GlossaryWordRow
+											key={entry.word.id}
+											entry={entry}
+											onSelectTip={setSelectedTip}
+										/>
+									))}
+								</View>
+							</View>
+						))}
 					</View>
-				))}
+				</BackgroundImage>
 			</Animated.ScrollView>
 			{areAlphabetShortcutsVisible && (
 				<View style={styles.alphabet}>
@@ -207,7 +217,7 @@ export default function GlossaryView(scrollProps: CollectionsPageScrollProps) {
 					onClose={() => setSelectedTip(null)}
 				/>
 			)}
-		</ImageBackground>
+		</BackgroundImage>
 	);
 }
 
@@ -222,6 +232,10 @@ const styles = StyleSheet.create({
 		borderColor: colors.light.border,
 		overflow: 'hidden',
 		backgroundColor: colors.light.background,
+	},
+	paperImage: {
+		width: '100%',
+		height: '100%',
 	},
 	heading: {
 		padding: 12,
@@ -249,7 +263,13 @@ const styles = StyleSheet.create({
 	scrollView: {
 		flex: 1,
 	},
+	scrollContent: {
+		flexGrow: 1,
+		width: '100%',
+	},
 	content: {
+		flexGrow: 1,
+		width: '100%',
 		paddingHorizontal: 12,
 		paddingBottom: 24,
 	},
