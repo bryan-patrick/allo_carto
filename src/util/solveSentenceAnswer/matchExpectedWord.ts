@@ -30,6 +30,7 @@ export function matchExpectedWord({
 	const firstMatch = previousMatches[0];
 	const firstMissingWord: SentenceMatch = {
 		...firstMatch,
+		missingWordPositions: [...firstMatch.missingWordPositions, 0],
 	};
 	const nextMatches: SentenceMatch[] = [];
 
@@ -58,13 +59,17 @@ export function matchExpectedWord({
 			correctWordCount: previousMatch.correctWordCount,
 			missingWordCount: previousMatch.missingWordCount,
 			words: [...previousMatch.words],
+			expectedWords: [...previousMatch.expectedWords, expectedWord],
+			missingWordPositions: previousMatch.missingWordPositions,
 		};
 		const missingWord: SentenceMatch = {
 			...previousMissing,
+			missingWordPositions: [...previousMissing.missingWordPositions, position],
 		};
 		const extraWord: SentenceMatch = {
 			...previousExtra,
 			words: [...previousExtra.words],
+			expectedWords: [...previousExtra.expectedWords, ''],
 		};
 		let bestWithoutExtra: SentenceMatch;
 

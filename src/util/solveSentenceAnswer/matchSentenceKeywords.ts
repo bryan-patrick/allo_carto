@@ -24,6 +24,8 @@ export function matchSentenceKeywords(
 		correctWordCount: 0,
 		missingWordCount: 0,
 		words: [],
+		expectedWords: [],
+		missingWordPositions: [],
 	};
 	let matches: SentenceMatch[] = [result];
 
@@ -35,6 +37,7 @@ export function matchSentenceKeywords(
 		const unmatchedWord: SentenceMatch = {
 			...previous,
 			words: [...previous.words],
+			expectedWords: [...previous.expectedWords, ''],
 		};
 		let wordStatus: SentenceAnswerWordStatus = 'incorrect';
 

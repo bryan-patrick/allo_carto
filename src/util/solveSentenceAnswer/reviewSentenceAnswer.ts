@@ -1,4 +1,5 @@
 import { matchSentenceKeywords } from './matchSentenceKeywords';
+import { addMissingAnswerSpaces } from './missingAnswerSpaces';
 import { getSentenceKeywords, getTextKeywords } from './sentenceKeywords';
 import { getSentenceTokens, markSentenceProperNouns } from './sentenceTokens';
 import type {
@@ -96,6 +97,10 @@ export function reviewSentenceAnswer({
 	} else if (bestMatch?.cost === 0) {
 		result.status = 'exact';
 		result.acceptedAnswer = answer.trim();
+	}
+
+	if (result.status === 'incorrect' && bestMatch) {
+		result.words = addMissingAnswerSpaces(tokens, bestMatch);
 	}
 
 	return result;
