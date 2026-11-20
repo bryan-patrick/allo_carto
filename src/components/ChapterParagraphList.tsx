@@ -255,10 +255,12 @@ export default function ChapterParagraphList({
 												color={storyColor}
 												disabled={arePostcardActionsDisabled}
 											/>
-											<SolveEligibilityHint
-												deck={paragraph}
-												textStyle={styles.helpText}
-											/>
+											<View style={styles.instructionMessage}>
+												<SolveEligibilityHint
+													deck={paragraph}
+													textStyle={styles.helpText}
+												/>
+											</View>
 										</View>
 										<View style={styles.paragraphActionRow}>
 											<LinkButton
@@ -395,6 +397,10 @@ const styles = StyleSheet.create({
 	},
 	flashcardButtonText: {
 		fontFamily: 'lexend-600',
+	},
+	instructionMessage: {
+		height: 15,
+		justifyContent: 'center',
 	},
 	helpText: {
 		fontSize: 15,
