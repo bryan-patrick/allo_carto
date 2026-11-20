@@ -174,7 +174,6 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 	const { settings } = useAppSettings();
 	const playLevelUp = useSoundEffect('levelUp');
 	const playClaimSound = useSoundEffect('pop');
-	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const previewAllStamps = settings.previewAllStamps;
 
 	/**
@@ -582,15 +581,14 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 					database,
 					userId: userId!,
 					...request,
-					fastSolveUnlocks,
 				}),
 			);
 		},
-		[database, runProgressWrite, userId, fastSolveUnlocks],
+		[database, runProgressWrite, userId],
 	);
 
 	/**
-	 * Submits the Solve++ answer using the current unlock setting, then reloads the player's Ink and gems.
+	 * Submits the word order answer and reloads the player's Ink and gems.
 	 */
 	const recordWordOrderAttempt = useCallback(
 		async (request: WordOrderAttemptRequest): Promise<SolveAttemptResult | false> => {
@@ -599,11 +597,10 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 					database,
 					userId: userId!,
 					...request,
-					fastSolveUnlocks,
 				}),
 			);
 		},
-		[database, runProgressWrite, userId, fastSolveUnlocks],
+		[database, runProgressWrite, userId],
 	);
 
 	/**
@@ -616,11 +613,10 @@ function UserProgressState({ children, userId }: UserProgressProviderProps) {
 					database,
 					userId: userId!,
 					...request,
-					fastSolveUnlocks,
 				}),
 			);
 		},
-		[database, runProgressWrite, userId, fastSolveUnlocks],
+		[database, runProgressWrite, userId],
 	);
 
 	// Play the claim sound, save puzzle XP, and refresh the player's level and earned gems.

@@ -1,5 +1,4 @@
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { useAppSettings } from '@/src/settings/useAppSettings';
 import {
 	findParagraphById,
 	getChapterSolveUnlockLevel,
@@ -30,7 +29,6 @@ export interface SolveProgress extends SolveStageEligibility {
  */
 export function useSolveProgress(deckId: string): SolveProgress {
 	const { progressById, experience } = useUserProgress();
-	const { settings } = useAppSettings();
 	const deck = findParagraphById(deckId);
 	const progress = progressById[deckId];
 	const completedStages = getCompletedSolveStages(progress);
@@ -59,7 +57,6 @@ export function useSolveProgress(deckId: string): SolveProgress {
 		chapterUnlockLevel: getChapterSolveUnlockLevel(deckId, nextStage),
 		completedStages,
 		playerLevel: experience.level,
-		fastSolveUnlocks: settings.fastSolveUnlocks,
 		isParagraphUnlocked,
 		wordCount: deck?.wordIds.length ?? 0,
 		seenWordCount: progress?.seenWordCount ?? 0,

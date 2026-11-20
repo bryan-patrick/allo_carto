@@ -25,8 +25,7 @@ export interface SolveStageDefinition {
 	isImplemented: boolean;
 	challengeType: SolveChallengeType;
 	answerLanguage: SolveAnswerLanguage | null;
-	fastUnlockLevel: number;
-	normalUnlockLevel: number;
+	unlockLevel: number;
 	cardCostIncrease: number;
 	attemptInkCost: number | null;
 	incorrectAttemptInkCost: number;
@@ -38,7 +37,6 @@ export interface SolveStageEligibilityOptions {
 	stage: SolveStage;
 	completedStages: CompletedSolveStages;
 	playerLevel: number;
-	fastSolveUnlocks: boolean;
 	isParagraphUnlocked: boolean;
 	wordCount: number;
 	seenWordCount: number;
@@ -60,8 +58,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		isImplemented: true,
 		challengeType: 'word',
 		answerLanguage: 'english',
-		fastUnlockLevel: 0,
-		normalUnlockLevel: 0,
+		unlockLevel: 0,
 		cardCostIncrease: 0,
 		attemptInkCost: null,
 		incorrectAttemptInkCost: inkConfig.incorrectSolveAttempt,
@@ -73,8 +70,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		isImplemented: true,
 		challengeType: 'word',
 		answerLanguage: 'french',
-		fastUnlockLevel: 0,
-		normalUnlockLevel: 0,
+		unlockLevel: 0,
 		cardCostIncrease: 1,
 		attemptInkCost: null,
 		incorrectAttemptInkCost: inkConfig.incorrectSolveAttempt + 1,
@@ -86,8 +82,7 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		isImplemented: true,
 		challengeType: 'wordOrder',
 		answerLanguage: null,
-		fastUnlockLevel: 0,
-		normalUnlockLevel: 0,
+		unlockLevel: 0,
 		cardCostIncrease: 0,
 		attemptInkCost: 5,
 		incorrectAttemptInkCost: 5,
@@ -99,11 +94,10 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		isImplemented: true,
 		challengeType: 'sentence',
 		answerLanguage: 'english',
-		fastUnlockLevel: 4,
-		normalUnlockLevel: 15,
+		unlockLevel: 15,
 		cardCostIncrease: 0,
-		attemptInkCost: 10,
-		incorrectAttemptInkCost: 10,
+		attemptInkCost: 5,
+		incorrectAttemptInkCost: 5,
 		buttonGradient: ['#EBCFF0', '#AA8AD0'],
 		backgroundTint: `${colors.gems.third}0A`,
 	},
@@ -112,11 +106,10 @@ export const solveStages: Record<SolveStage, SolveStageDefinition> = {
 		isImplemented: true,
 		challengeType: 'sentence',
 		answerLanguage: 'french',
-		fastUnlockLevel: 5,
-		normalUnlockLevel: 20,
+		unlockLevel: 20,
 		cardCostIncrease: 0,
-		attemptInkCost: 10,
-		incorrectAttemptInkCost: 10,
+		attemptInkCost: 8,
+		incorrectAttemptInkCost: 8,
 		buttonGradient: ['#F5DEA0', '#B9DCEC', '#F2C499', '#D8AFD9'],
 		backgroundTint: `${colors.gems.third}0A`,
 	},
@@ -162,19 +155,14 @@ export function getSolveStageEligibility({
 	stage,
 	completedStages,
 	playerLevel,
-	fastSolveUnlocks,
 	isParagraphUnlocked,
 	wordCount,
 	seenWordCount,
 	chapterUnlockLevel,
 }: SolveStageEligibilityOptions): SolveStageEligibility {
 	const definition = solveStages[stage];
-	let requiredPlayerLevel = definition.normalUnlockLevel;
+	let requiredPlayerLevel = definition.unlockLevel;
 	let lockReason: SolveLockReason | null = null;
-
-	if (fastSolveUnlocks) {
-		requiredPlayerLevel = definition.fastUnlockLevel;
-	}
 
 	if (chapterUnlockLevel !== undefined) {
 		requiredPlayerLevel = chapterUnlockLevel;

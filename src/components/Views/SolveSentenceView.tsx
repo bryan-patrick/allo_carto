@@ -18,7 +18,6 @@ import { getDB } from '@/src/db/interface';
 import getSolveSentencePuzzle from '@/src/db/queries/getSolveSentencePuzzle';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
-import { useAppSettings } from '@/src/settings/useAppSettings';
 import {
 	findCompletionPath,
 	getAtlasItemLabel,
@@ -210,7 +209,6 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		isUpdatingProgress,
 		writeSentenceAttempt,
 	} = useUserProgress();
-	const { settings } = useAppSettings();
 	const playIncorrect = useSoundEffect('incorrect');
 	const [puzzle, setPuzzle] = useState<SolveSentencePuzzle>();
 	const [claimedGem, setClaimedGem] = useState<SolveReward>();
@@ -228,7 +226,6 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 	const isBusy = useRef(false);
 	const pendingAttempt = useRef<SentenceAttemptRequest | null>(null);
 	const answerInput = useRef<TextInputInstance>(null);
-	const fastSolveUnlocks = settings.fastSolveUnlocks;
 	const stageDefinition = solveStages[stage];
 	const stageText = sentenceStageText[stage];
 	const isFrenchAnswer = stageDefinition.answerLanguage === 'french';
@@ -253,7 +250,6 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 		chapterUnlockLevel: getChapterSolveUnlockLevel(deckId, stage),
 		completedStages,
 		playerLevel: experience.level,
-		fastSolveUnlocks,
 		isParagraphUnlocked: puzzle?.isUnlocked ?? false,
 		wordCount: puzzle?.deck.wordIds.length ?? 0,
 		seenWordCount: progress?.seenWordCount ?? 0,
@@ -337,7 +333,6 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 						userId,
 						deckId,
 						stage,
-						fastSolveUnlocks,
 					});
 					const firstUnsolved = savedPuzzle.sentences.find(
 						sentence => sentence.acceptedAnswer === null,
@@ -370,7 +365,7 @@ export default function SolveSentenceView({ deckId, stage = 4 }: SolveSentenceVi
 			return () => {
 				isActive = false;
 			};
-		}, [deckId, userId, fastSolveUnlocks, stage]),
+		}, [deckId, userId, stage]),
 	);
 
 	function handleAnswerChange(nextAnswer: string) {

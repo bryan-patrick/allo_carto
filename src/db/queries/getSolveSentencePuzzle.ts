@@ -24,7 +24,6 @@ interface GetSolveSentencePuzzleOptions {
 	userId: string;
 	deckId: string;
 	stage?: SolveSentenceStage;
-	fastSolveUnlocks: boolean;
 }
 
 interface SentenceWordRow {
@@ -44,7 +43,6 @@ export default async function getSolveSentencePuzzle({
 	userId,
 	deckId,
 	stage = 4,
-	fastSolveUnlocks,
 }: GetSolveSentencePuzzleOptions): Promise<SolveSentencePuzzle> {
 	const deck = findParagraphById(deckId);
 	let wordRows: SentenceWordRow[] = [];
@@ -95,7 +93,6 @@ export default async function getSolveSentencePuzzle({
 		chapterUnlockLevel: getChapterSolveUnlockLevel(deckId, stage),
 		completedStages: completedSolveStages,
 		playerLevel: experience.level,
-		fastSolveUnlocks,
 		isParagraphUnlocked: isUnlocked,
 		wordCount: deck.wordIds.length,
 		seenWordCount: progress?.seenWordCount ?? 0,

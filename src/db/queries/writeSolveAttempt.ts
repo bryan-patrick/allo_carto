@@ -14,7 +14,6 @@ import writeSolvePlusAttempt from './writeSolvePlusAttempt';
 interface WriteSolveAttemptOptions extends SolveAttemptRequest {
 	database: SQLiteDatabase;
 	userId: string;
-	fastSolveUnlocks?: boolean;
 }
 
 interface SavedSolveAttempt extends Omit<SolveAttemptResult, 'firstGemEarned'> {
@@ -34,7 +33,6 @@ export default async function writeSolveAttempt({
 	answer,
 	attemptId,
 	stage = 1,
-	fastSolveUnlocks = true,
 }: WriteSolveAttemptOptions): Promise<SolveAttemptResult> {
 	const statements = {
 		getReceipt: `
@@ -70,7 +68,6 @@ export default async function writeSolveAttempt({
 			position,
 			answer,
 			attemptId,
-			fastSolveUnlocks,
 		});
 	}
 

@@ -14,7 +14,6 @@ interface BooleanSettings {
 	showDebugOptions: boolean;
 	previewAllStamps: boolean;
 	showSkipWordLink: boolean;
-	fastSolveUnlocks: boolean;
 }
 
 export interface AppSettings extends BooleanSettings {
@@ -37,7 +36,6 @@ const booleanSettingKeys: BooleanSettingKey[] = [
 	'showDebugOptions',
 	'previewAllStamps',
 	'showSkipWordLink',
-	'fastSolveUnlocks',
 ];
 
 const volumeSettingKeys: ('soundEffectsVolume' | 'ttsVolume')[] = [
@@ -82,7 +80,6 @@ export const defaultAppSettings: AppSettings = {
 	showDebugOptions: false,
 	previewAllStamps: false,
 	showSkipWordLink: false,
-	fastSolveUnlocks: true,
 	pronunciationFormat: 'readable',
 };
 

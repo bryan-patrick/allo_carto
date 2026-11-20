@@ -30,7 +30,6 @@ interface GetSolveWordOrderPuzzleOptions {
 	database: SQLiteDatabase;
 	userId: string;
 	deckId: string;
-	fastSolveUnlocks: boolean;
 	sentencePosition?: number;
 }
 
@@ -286,7 +285,6 @@ export default async function getSolveWordOrderPuzzle({
 	database,
 	userId,
 	deckId,
-	fastSolveUnlocks,
 	sentencePosition: requestedSentencePosition,
 }: GetSolveWordOrderPuzzleOptions): Promise<SolveWordOrderPuzzle> {
 	/**
@@ -376,7 +374,6 @@ export default async function getSolveWordOrderPuzzle({
 		stage: wordOrderPuzzleStage,
 		completedStages: completedSolveStages,
 		playerLevel: playerExperience.level,
-		fastSolveUnlocks,
 		isParagraphUnlocked,
 		wordCount: paragraph.wordIds.length,
 		seenWordCount: paragraphProgress?.seenWordCount ?? 0,
