@@ -5,7 +5,6 @@ import ChapterSelectHeader from '@/src/components/ChapterSelectHeader';
 import CollectionGems from '@/src/components/CollectionGems';
 import Loader from '@/src/components/Loader';
 import ReadingLink from '@/src/components/ReadingLink';
-import { solidSurfaceShadow } from '@/src/components/surfaceStyles';
 import { useUserContext } from '@/src/db/useUserContext';
 import { useUserProgress } from '@/src/db/useUserProgress';
 import { findAtlasLocationByChapterId, isItemUnlocked } from '@/src/util/atlasCompletion';
@@ -284,15 +283,7 @@ const styles = StyleSheet.create({
 		paddingTop: 16,
 		paddingBottom: 10,
 		borderBottomWidth: 1,
-		borderBottomColor: colors.light.border,
-		// elevation: 3,
-		// shadowColor: colors.dark.background,
-		// shadowOffset: {
-		// 	width: 0,
-		// 	height: 3,
-		// },
-		// shadowOpacity: 0.12,
-		// shadowRadius: 4,
+		borderBottomColor: colors.light.goldenBorder,
 		zIndex: 1,
 	},
 	absgems: {
@@ -321,14 +312,13 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 	},
 	chapterDetails: {
-		...solidSurfaceShadow,
 		backgroundColor: colors.light.secondary,
 		zIndex: 1,
 		alignItems: 'center',
 		paddingHorizontal: 20,
 		paddingVertical: 4,
 		borderBottomWidth: 1,
-		borderColor: colors.light.goldenBorder,
+		borderBottomColor: colors.light.goldenBorder,
 		gap: 4,
 	},
 	completedChapterDetails: {
