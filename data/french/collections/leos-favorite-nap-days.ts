@@ -6,7 +6,7 @@ import { collectionLevelRewards } from './learning-level-rewards';
  */
 export const leosFavoriteNapDaysCollection: VocabularyCollection = {
 	id: 'leos-favorite-nap-days',
-	name: "Leo's Favorite Nap Days",
+	name: "Léo's Favorite Nap Days",
 	description: 'A warm Monday is a good day for a nap.',
 	words: [
 		{

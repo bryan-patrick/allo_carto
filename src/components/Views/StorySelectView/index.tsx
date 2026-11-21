@@ -45,7 +45,7 @@ export default function StorySelectView({ onSelect, isSelecting }: StorySelectVi
 					<View style={styles.areaHeading}>
 						<MaterialSymbol
 							name={area.materialSymbolName}
-							color={area.color}
+							color={colors.dark.text}
 							size={28}
 						/>
 						<View style={styles.areaDetails}>
@@ -103,11 +103,10 @@ const styles = StyleSheet.create({
 	},
 	areaDetails: {
 		flex: 1,
-		gap: 4,
 	},
 	areaName: {
-		fontFamily: 'lexend-600',
-		fontSize: 20,
+		fontFamily: 'shadows-400',
+		fontSize: 24,
 		color: colors.dark.text,
 	},
 	areaLevels: {
@@ -116,8 +115,8 @@ const styles = StyleSheet.create({
 		color: colors.dark.text,
 	},
 	areaDescription: {
-		fontFamily: 'lexend-400',
-		fontSize: 12,
+		fontFamily: 'lexend-600',
+		fontSize: 16,
 		color: colors.dark.text,
 	},
 });

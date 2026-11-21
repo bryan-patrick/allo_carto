@@ -1,6 +1,6 @@
 import GettingStartedPage from './GettingStartedPage';
 
-const description = `Good luck, and enjoy reading about the adventures of Leo and Poe. I hope a little of their magic finds its way to you as it did for me.`;
+const description = `Good luck, and enjoy reading about the adventures of Léo and Poe. I hope a little of their magic finds its way to you as it did for me.`;
 
 export default function GoodLuckPage() {
 	return (
